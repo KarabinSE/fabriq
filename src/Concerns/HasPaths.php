@@ -1,13 +1,13 @@
 <?php
 
-namespace Ikoncept\Fabriq\Concerns;
+namespace Karabin\Fabriq\Concerns;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\MenuItem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\MenuItem;
 
 trait HasPaths
 {
@@ -97,9 +97,9 @@ trait HasPaths
             return $slugGroups;
         }
 
-        foreach ($supportedLocales as $locale => $item) {
+        foreach ($supportedLocales as $locale) {
             $slugGroups->push([
-                $locale => $this->slugs->where('locale', $locale)->pluck('slug')->map(function ($item) {
+                $locale->iso_code => $this->slugs->where('locale', $locale->iso_code)->pluck('slug')->map(function ($item) {
                     return '/'.$item;
                 }),
             ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;

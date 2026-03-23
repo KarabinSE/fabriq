@@ -1,20 +1,22 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class BustCacheController extends ApiController
+class BustCacheController extends Controller
 {
-    use ApiControllerTrait;
-
     public function store(): JsonResponse
     {
         Cache::flush();
 
-        return $this->respondWithSuccess('Cache was purged successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Cache was purged successfully',
+        ]);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests\Feature;
+namespace Karabin\Fabriq\Tests\Feature;
 
-use Ikoncept\Fabriq\Models\User;
-use Ikoncept\Fabriq\Notifications\AskToLeaveNotification;
-use Ikoncept\Fabriq\Notifications\LeaveDeclinedNotification;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Models\User;
+use Karabin\Fabriq\Notifications\AskToLeaveNotification;
+use Karabin\Fabriq\Notifications\LeaveDeclinedNotification;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\Notification;
 
 class AskToLeaveFeatureTest extends AdminUserTestCase

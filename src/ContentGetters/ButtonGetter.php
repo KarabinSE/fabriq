@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\ContentGetters;
+namespace Karabin\Fabriq\ContentGetters;
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;

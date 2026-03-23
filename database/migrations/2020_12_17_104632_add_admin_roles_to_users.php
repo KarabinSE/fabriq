@@ -1,6 +1,6 @@
 <?php
 
-use Ikoncept\Fabriq\Models\User;
+use Karabin\Fabriq\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;

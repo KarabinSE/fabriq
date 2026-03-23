@@ -1,19 +1,19 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\Concerns\BroadcastsModelEvents;
-use Ikoncept\Fabriq\Concerns\HasPaths;
-use Ikoncept\Fabriq\ContentGetters\ButtonGetter;
-use Ikoncept\Fabriq\ContentGetters\ButtonsGetter;
-use Ikoncept\Fabriq\ContentGetters\FileGetter;
-use Ikoncept\Fabriq\ContentGetters\ImageGetter;
-use Ikoncept\Fabriq\ContentGetters\MediaGetter;
-use Ikoncept\Fabriq\ContentGetters\SmartBlockGetter;
-use Ikoncept\Fabriq\ContentGetters\VideoGetter;
-use Ikoncept\Fabriq\Database\Factories\PageFactory;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Traits\Commentable;
+use Karabin\Fabriq\Concerns\BroadcastsModelEvents;
+use Karabin\Fabriq\Concerns\HasPaths;
+use Karabin\Fabriq\ContentGetters\ButtonGetter;
+use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\ContentGetters\MediaGetter;
+use Karabin\Fabriq\ContentGetters\SmartBlockGetter;
+use Karabin\Fabriq\ContentGetters\VideoGetter;
+use Karabin\Fabriq\Database\Factories\PageFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\Commentable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -243,7 +243,7 @@ class Page extends Model implements HasMedia
         // saving non localized meta data
         $locales = Fabriq::getModelClass('locale')->cachedLocales();
         $value = collect($value)->sortBy(function ($item, $key) use ($locales) {
-            return $locales->firstWhere('iso_code', $key)->sortindex;
+            return data_get($locales->firstWhere('iso_code', $key), 'sort_index', PHP_INT_MAX);
         })->reverse()->toArray();
 
         foreach ($value as $locale => $localeContent) {

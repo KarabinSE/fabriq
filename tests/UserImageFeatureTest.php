@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests;
+namespace Karabin\Fabriq\Tests;
 
-use Ikoncept\Fabriq\Models\Image;
+use Karabin\Fabriq\Models\Image;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 

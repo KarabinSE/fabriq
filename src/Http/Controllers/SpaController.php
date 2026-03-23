@@ -1,23 +1,18 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers;
+namespace Karabin\Fabriq\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SpaController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\JsonResponse
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        if (request()->wantsJson()) {
+        if ($request->wantsJson()) {
             return response()->json('Get outta here!', 404);
         }
 
-        /** @var view-string $viewString * */
-        $viewString = 'vendor.fabriq.index';
-
-        return view($viewString);
+        abort(404);
     }
 }

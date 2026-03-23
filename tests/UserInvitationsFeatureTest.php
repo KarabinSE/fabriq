@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests;
+namespace Karabin\Fabriq\Tests;
 
-use Ikoncept\Fabriq\Mail\AccountInvitation;
-use Ikoncept\Fabriq\Models\User;
+use Karabin\Fabriq\Mail\AccountInvitation;
+use Karabin\Fabriq\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 

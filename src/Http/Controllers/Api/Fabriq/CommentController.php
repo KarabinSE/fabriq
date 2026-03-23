@@ -1,27 +1,26 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\DeleteCommentRequest;
-use Ikoncept\Fabriq\Http\Requests\UpdateCommentRequest;
-use Ikoncept\Fabriq\Models\Comment;
 use Illuminate\Http\JsonResponse;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\CommentData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\DeleteCommentRequest;
+use Karabin\Fabriq\Http\Requests\UpdateCommentRequest;
+use Karabin\Fabriq\Models\Comment;
+use Symfony\Component\HttpFoundation\Response;
 
-class CommentController extends ApiController
+class CommentController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function update(UpdateCommentRequest $request, int $id): JsonResponse
+    public function update(UpdateCommentRequest $request, int $id): Response
     {
         $comment = Comment::findOrFail($id);
         $comment->comment = $request->comment;
         $comment->edited_at = now();
         $comment->save();
 
-        return $this->respondWithItem($comment, Fabriq::getTransformerFor('comment'));
+        return CommentData::fromModel($comment)->wrap('data')->toResponse($request);
     }
 
     public function destroy(DeleteCommentRequest $request, int $id): JsonResponse
@@ -36,6 +35,10 @@ class CommentController extends ApiController
 
         $comment->delete();
 
-        return $this->respondWithSuccess('Comment was deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Comment was deleted',
+        ]);
     }
 }

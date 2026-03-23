@@ -1,24 +1,21 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Actions\ClonePage;
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Actions\ClonePage;
+use Karabin\Fabriq\Data\PageData;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Page;
+use Symfony\Component\HttpFoundation\Response;
 
-class ClonePageController extends ApiController
+class ClonePageController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Create a new resource.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request, int $id, ClonePage $clonePage)
+    public function store(Request $request, int $id, ClonePage $clonePage): Response
     {
         $pageRoot = Fabriq::getModelClass('page')->whereNull('parent_id')
             ->where('name', 'root')
@@ -29,6 +26,11 @@ class ClonePageController extends ApiController
 
         $page = $clonePage($pageRoot, $pageToClone, $request->name ?? 'Kopia av '.$pageToClone->name);
 
-        return $this->respondWithItem($page, Fabriq::getTransformerFor('page'), 201);
+        /** @var Page $page */
+
+        return PageData::fromModel($page)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 }

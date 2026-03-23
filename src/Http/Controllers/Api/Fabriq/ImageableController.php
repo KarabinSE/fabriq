@@ -1,32 +1,31 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Exception;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Image;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
 use InvalidArgumentException;
+use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Image;
+use Spatie\LaravelData\DataCollection;
+use Symfony\Component\HttpFoundation\Response;
 
-class ImageableController extends ApiController
+class ImageableController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Get associated images for another model.
      *
-     * @param  Request  $request
      * @param  string  $model
      * @param  int  $modelId
-     * @return JsonResponse
      *
      * @throws InvalidArgumentException
      */
-    public function index(Request $request, $model, $modelId): JsonResponse
+    public function index(Request $request, $model, $modelId): Response
     {
         $guess = Str::lower(Str::studly(Str::singular($model)));
         $relatedModelClass = config('fabriq.models.'.$guess);
@@ -37,18 +36,18 @@ class ImageableController extends ApiController
 
         $relatedModel = $relatedModelClass::findOrFail($modelId);
 
-        return $this->respondWithCollection($relatedModel->images, Fabriq::getTransformerFor('image'));
+        return ImageData::collect($relatedModel->images, DataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
     /**
      * Associate an image with another model.
      *
-     * @param  Request  $request
      * @param  int  $imageId
      * @param  string  $model
-     * @return JsonResponse
      */
-    public function store(Request $request, $imageId, $model): JsonResponse
+    public function store(Request $request, $imageId, $model): Response
     {
         $modelId = $request->model_id;
         $image = Image::findOrFail($imageId);
@@ -67,6 +66,20 @@ class ImageableController extends ApiController
             return $this->errorWrongArgs('Image has no relation to '.$model);
         }
 
-        return $this->respondWithItem($image, Fabriq::getTransformerFor('image'), 201);
+        return ImageData::fromModel($image)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
+    }
+
+    private function errorWrongArgs(string $message): JsonResponse
+    {
+        return response()->json([
+            'error' => [
+                'code' => ApiResponseCode::WrongArgs->value,
+                'http_code' => 400,
+                'message' => $message,
+            ],
+        ], 400);
     }
 }

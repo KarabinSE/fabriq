@@ -1,33 +1,42 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Mail\AccountInvitation;
-use Ikoncept\Fabriq\Models\Invitation;
-use Ikoncept\Fabriq\Transformers\InvitationTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\InvitationData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Mail\AccountInvitation;
+use Karabin\Fabriq\Models\Invitation;
+use Karabin\Fabriq\Models\User;
+use Symfony\Component\HttpFoundation\Response;
 
-class InvitationController extends ApiController
+class InvitationController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function store(Request $request, int $userId): JsonResponse
+    public function store(Request $request, int $userId): Response
     {
         $user = Fabriq::getFqnModel('user')::where('id', $userId)
             ->firstOrFail();
 
-        $invitation = $user->createInvitation(auth()->user()->id);
+        $invitedBy = $request->user();
+
+        if (! $invitedBy instanceof User) {
+            abort(401);
+        }
+
+        $invitation = $user->createInvitation($invitedBy->id);
         $invitation->load('invitedBy', 'user');
 
         Mail::to($user->email)
             ->queue(new AccountInvitation($invitation));
 
-        return $this->respondWithItem($invitation, new InvitationTransformer(), 201);
+        return InvitationData::fromModel($invitation)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 
     public function destroy(Request $request, int $userId): JsonResponse
@@ -37,6 +46,10 @@ class InvitationController extends ApiController
 
         $invitation->delete();
 
-        return $this->respondWithSuccess('Invitation was deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Invitation was deleted successfully',
+        ]);
     }
 }

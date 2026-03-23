@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\ContentGetters;
+namespace Karabin\Fabriq\ContentGetters;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Video;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Video;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 
 class VideoGetter

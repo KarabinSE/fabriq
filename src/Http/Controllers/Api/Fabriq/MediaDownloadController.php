@@ -1,19 +1,17 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class MediaDownloadController extends ApiController
+class MediaDownloadController extends Controller
 {
-    use ApiControllerTrait;
-
     public function show(Request $request, string $uuid): BinaryFileResponse|StreamedResponse
     {
         $mediaFile = Fabriq::getModelClass('media')
@@ -30,6 +28,9 @@ class MediaDownloadController extends ApiController
             return response()->download($mediaFile->getPath(), $name, $headers);
         }
 
-        return Storage::disk($disk)->download($mediaFile->getPath(), $name, $headers);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($disk);
+
+        return $storage->download($mediaFile->getPath(), $name, $headers);
     }
 }

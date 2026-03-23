@@ -1,26 +1,28 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Video;
-use Ikoncept\Fabriq\QueryBuilders\TagSort;
-use Ikoncept\Fabriq\QueryBuilders\VideoSort;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\VideoData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Video;
+use Karabin\Fabriq\QueryBuilders\TagSort;
+use Karabin\Fabriq\QueryBuilders\VideoSort;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class VideoController extends ApiController
+class VideoController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Video::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+
         $videos = QueryBuilder::for(Fabriq::getFqnModel('video'))
             ->allowedFilters([
                 AllowedFilter::scope('search'),
@@ -31,25 +33,32 @@ class VideoController extends ApiController
                 AllowedSort::custom('size', new VideoSort),
                 AllowedSort::custom('tags', new TagSort, 'videos'),
             ])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->allowedIncludes(...Video::RELATIONSHIPS)
+            ->paginate($number);
 
-        return $this->respondWithPaginator($videos, Fabriq::getTransformerFor('video'));
+        $collection = new PaginatedDataCollection(
+            VideoData::class,
+            $videos->through(fn (Video $video) => VideoData::fromModel($video)),
+        );
+
+        return $collection->wrap('data')->toResponse($request);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Video::RELATIONSHIPS);
+        $video = QueryBuilder::for(Fabriq::getFqnModel('video'))
+            ->allowedIncludes(...Video::RELATIONSHIPS)
+            ->where('id', $id)
+            ->firstOrFail();
 
-        $video = Fabriq::getFqnModel('video')::where('id', $id)->with($eagerLoad)->firstOrFail();
+        /** @var Video $video */
 
-        return $this->respondWithItem($video, Fabriq::getTransformerFor('video'));
+        return VideoData::fromModel($video)->wrap('data')->toResponse($request);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad();
-        $video = Fabriq::getFqnModel('video')::where('id', $id)->with($eagerLoad)->firstOrFail();
+        $video = Fabriq::getFqnModel('video')::findOrFail($id);
         $video->alt_text = $request->alt_text;
         $video->caption = $request->caption;
 
@@ -61,7 +70,7 @@ class VideoController extends ApiController
 
         $video->save();
 
-        return $this->respondWithItem($video, Fabriq::getTransformerFor('video'));
+        return VideoData::fromModel($video)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -69,6 +78,10 @@ class VideoController extends ApiController
         $video = Fabriq::getFqnModel('video')::findOrFail($id);
         $video->delete();
 
-        return $this->respondWithSuccess('Video has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Video has been deleted',
+        ]);
     }
 }

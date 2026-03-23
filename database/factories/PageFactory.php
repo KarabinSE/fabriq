@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 

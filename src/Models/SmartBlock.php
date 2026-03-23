@@ -1,13 +1,13 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\ContentGetters\ButtonGetter;
-use Ikoncept\Fabriq\ContentGetters\ButtonsGetter;
-use Ikoncept\Fabriq\ContentGetters\FileGetter;
-use Ikoncept\Fabriq\ContentGetters\ImageGetter;
-use Ikoncept\Fabriq\ContentGetters\VideoGetter;
-use Ikoncept\Fabriq\Database\Factories\SmartBlockFactory;
+use Karabin\Fabriq\ContentGetters\ButtonGetter;
+use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\ContentGetters\VideoGetter;
+use Karabin\Fabriq\Database\Factories\SmartBlockFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

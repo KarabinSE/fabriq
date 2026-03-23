@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Models\Contact;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Models\Contact;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class ContactsFeatureTest extends AdminUserTestCase
 {
@@ -13,7 +13,7 @@ class ContactsFeatureTest extends AdminUserTestCase
     public function it_can_get_all_contacts()
     {
         // Arrange
-        $contacts = \Ikoncept\Fabriq\Models\Contact::factory()->count(5)->create();
+        $contacts = Contact::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', $this->endpoint);
@@ -27,7 +27,7 @@ class ContactsFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_contact()
     {
         // Arrange
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
+        $contact = Contact::factory()->create();
 
         // Act
         $response = $this->json('GET', $this->endpoint.$contact->id);
@@ -55,7 +55,7 @@ class ContactsFeatureTest extends AdminUserTestCase
     public function it_can_update_a_contact()
     {
         // Arrange
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
+        $contact = Contact::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act
@@ -111,7 +111,7 @@ class ContactsFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_contact()
     {
         // Arrange
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
+        $contact = Contact::factory()->create();
 
         // Act
         $response = $this->json('DELETE', $this->endpoint.$contact->id);
@@ -127,7 +127,7 @@ class ContactsFeatureTest extends AdminUserTestCase
     public function it_can_attach_tags_to_a_contact()
     {
         // Arrange
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
+        $contact = Contact::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act
@@ -144,6 +144,11 @@ class ContactsFeatureTest extends AdminUserTestCase
         $response->assertOk();
         $this->assertDatabaseHas('tags', [
             'type' => 'contacts',
+            'plain_name' => 'Reception',
+        ]);
+        $this->assertDatabaseMissing('tags', [
+            'type' => null,
+            'plain_name' => 'Reception',
         ]);
     }
 

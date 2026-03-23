@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
-use Ikoncept\Fabriq\Actions\ClonePage;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Actions\ClonePage;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;

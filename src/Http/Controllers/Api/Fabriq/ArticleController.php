@@ -1,64 +1,85 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Controllers\Controller;
-use Ikoncept\Fabriq\Http\Requests\CreateArticleRequest;
-use Ikoncept\Fabriq\Http\Requests\UpdateArticleRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\ArticleData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateArticleRequest;
+use Karabin\Fabriq\Http\Requests\UpdateArticleRequest;
+use Karabin\Fabriq\Models\Article;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): PaginatedDataCollection
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('article')::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+        $allowedIncludes = [
+            ...Fabriq::getFqnModel('article')::RELATIONSHIPS,
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
         $articles = QueryBuilder::for(Fabriq::getFqnModel('article'))
             ->allowedSorts(['name', 'updated_at', 'publishes_at'])
             ->allowedFilters([
                 AllowedFilter::scope('search'),
                 AllowedFilter::scope('published'),
             ])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->allowedIncludes(...$allowedIncludes)
+            ->paginate($number);
 
-        return $this->respondWithPaginator($articles, Fabriq::getTransformerFor('article'));
+        $collection = new PaginatedDataCollection(
+            ArticleData::class,
+            $articles->through(fn (Article $article) => ArticleData::fromModel($article)),
+        );
+
+        return $collection->wrap('data');
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('article')::RELATIONSHIPS);
-        $article = Fabriq::getFqnModel('article')::where('id', $id)
-            ->with($eagerLoad)
+        $allowedIncludes = [
+            ...Fabriq::getFqnModel('article')::RELATIONSHIPS,
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
+        $article = QueryBuilder::for(Fabriq::getFqnModel('article'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
             ->firstOrFail();
 
-        return $this->respondWithItem($article, Fabriq::getTransformerFor('article'));
+        /** @var Article $article */
+
+        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
     }
 
-    public function store(CreateArticleRequest $request): JsonResponse
+    public function store(CreateArticleRequest $request): Response
     {
         $article = Fabriq::getModelClass('article');
         $article->fill($request->validated());
         $article->template_id = 2;
         $article->save();
 
-        return $this->respondWithItem($article, Fabriq::getTransformerFor('article'), 201);
+        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
     }
 
-    public function update(UpdateArticleRequest $request, int $id): JsonResponse
+    public function update(UpdateArticleRequest $request, int $id): Response
     {
         $article = Fabriq::getFqnModel('article')::findOrFail($id);
         $article->fill($request->validated());
         $article->updateContent($request->content);
         $article->save();
 
-        return $this->respondWithItem($article, Fabriq::getTransformerFor('article'));
+        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -66,6 +87,10 @@ class ArticleController extends Controller
         $article = Fabriq::getFqnModel('article')::findOrFail($id);
         $article->delete();
 
-        return $this->respondWithSuccess('Article deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Article deleted successfully',
+        ]);
     }
 }

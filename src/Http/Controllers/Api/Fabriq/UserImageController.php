@@ -1,22 +1,23 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Controllers\Controller;
-use Ikoncept\Fabriq\Http\Requests\CreateUserImageRequest;
-use Ikoncept\Fabriq\Models\Image;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\UserData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateUserImageRequest;
+use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\Models\User;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserImageController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function store(CreateUserImageRequest $request): JsonResponse
+    public function store(CreateUserImageRequest $request): Response
     {
-        $image = new Image();
+        $image = new Image;
         $image->save();
         try {
             $image->saveMedia(false, 'profile_image');
@@ -27,20 +28,38 @@ class UserImageController extends Controller
         } catch (\Throwable $exception) {
             $image->delete();
 
-            return $this->setStatusCode(500)
-                ->respondWithArray(['message' => 'Kunde inte ladda upp bilden']);
+            return response()->json([
+                'error' => [
+                    'code' => ApiResponseCode::InternalError->value,
+                    'http_code' => 500,
+                    'message' => 'Kunde inte ladda upp bilden',
+                ],
+            ], 500);
         }
 
-        return $this->respondWithItem($request->user(), Fabriq::getTransformerFor('user'));
+        $user = $request->user();
+
+        abort_unless($user instanceof User, 401);
+
+        $user = Fabriq::getModelClass('user')::with('roles')->findOrFail($user->id);
+
+        return UserData::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request): JsonResponse
     {
         $user = $request->user();
+
+        abort_unless($user instanceof User, 401);
+
         $user->image->delete();
         $user->image_id = null;
         $user->save();
 
-        return $this->respondWithSuccess('Image was deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Image was deleted successfully',
+        ]);
     }
 }

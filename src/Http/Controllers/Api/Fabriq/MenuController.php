@@ -1,56 +1,50 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Menu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\MenuData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Menu;
+use Spatie\LaravelData\PaginatedDataCollection;
+use Symfony\Component\HttpFoundation\Response;
 
-class MenuController extends ApiController
+class MenuController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Get index of the resource.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('menu')::RELATIONSHIPS);
-        $paginator = Fabriq::getFqnModel('menu')::with($eagerLoad)->paginate($this->number);
+        $number = $request->integer('number', 100);
 
-        return $this->respondWithPaginator($paginator, Fabriq::getTransformerFor('menu'));
+        $paginator = Fabriq::getFqnModel('menu')::paginate($number);
+
+        return MenuData::collect($paginator, PaginatedDataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
     /**
      * Get a single resource.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Menu::RELATIONSHIPS);
         $menu = Fabriq::getFqnModel('menu')::where('id', $id)
-            ->with($eagerLoad)
             ->firstOrFail();
 
-        return $this->respondWithItem($menu, Fabriq::getTransformerFor('menu'));
+        /** @var Menu $menu */
+
+        return MenuData::fromModel($menu)->wrap('data')->toResponse($request);
     }
 
     /**
      * Create a new resource.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): Response
     {
         $menu = Fabriq::getModelClass('menu');
         $menu->name = $request->name;
@@ -60,39 +54,39 @@ class MenuController extends ApiController
             'menu_id' => $menu->id,
         ]);
 
-        return $this->respondWithItem($menu, Fabriq::getTransformerFor('menu'), 201);
+        return MenuData::fromModel($menu)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 
     /**
      * Update a resource.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('menu')::RELATIONSHIPS);
         $menu = Fabriq::getFqnModel('menu')::where('id', $id)
-            ->with($eagerLoad)
             ->firstOrFail();
         $menu->name = $request->name;
         $menu->save();
 
-        return $this->respondWithItem($menu, Fabriq::getTransformerFor('menu'));
+        /** @var Menu $menu */
+
+        return MenuData::fromModel($menu)->wrap('data')->toResponse($request);
     }
 
     /**
      * Destroy a resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $menu = Fabriq::getFqnModel('menu')::where('id', $id)->firstOrFail();
         $menu->delete();
 
-        return $this->respondWithSuccess('Menu has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Menu has been deleted',
+        ]);
     }
 }

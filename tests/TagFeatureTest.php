@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Spatie\Tags\Tag;
 
 class TagFeatureTest extends AdminUserTestCase
@@ -15,7 +15,7 @@ class TagFeatureTest extends AdminUserTestCase
         // Arrange
         // $this->withoutExceptionHandling();
         $tag = Tag::findOrCreate('my tag');
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
+        $contact = \Karabin\Fabriq\Models\Contact::factory()->create();
         $contact->contactTags = ['One', 'Two', 'Three'];
         $contact->save();
 

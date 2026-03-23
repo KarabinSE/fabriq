@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Database\Seeders\DatabaseSeeder;
-use Ikoncept\Fabriq\Database\Seeders\PageTemplateSeeder;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
+use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class ClonePageFeatureTest extends AdminUserTestCase
@@ -20,15 +20,15 @@ class ClonePageFeatureTest extends AdminUserTestCase
     public function it_can_clone_another_page()
     {
         // Arrange
-        $root = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $root = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'root',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create([
+        $image = \Karabin\Fabriq\Models\Image::factory()->create([
             'id' => 12,
         ]);
         $page->updateContent([

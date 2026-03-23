@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Carbon\Carbon;
-use Ikoncept\Fabriq\Database\Factories\EventFactory;
+use Karabin\Fabriq\Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

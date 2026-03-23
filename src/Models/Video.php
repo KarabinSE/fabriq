@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\Database\Factories\VideoFactory;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Database\Factories\VideoFactory;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

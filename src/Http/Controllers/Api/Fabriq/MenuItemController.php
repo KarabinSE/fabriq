@@ -1,48 +1,67 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\UpdateMenuItemRequest;
-use Ikoncept\Fabriq\Models\Menu;
-use Ikoncept\Fabriq\Models\MenuItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\MenuItemData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\UpdateMenuItemRequest;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\QueryBuilder\AllowedInclude;
+use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class MenuItemController extends ApiController
+class MenuItemController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Show a single item.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(MenuItem::RELATIONSHIPS);
-        $item = Fabriq::getFqnModel('menuItem')::where('id', $id)
-            ->with($eagerLoad)
+        $allowedIncludes = [
+            ...MenuItem::RELATIONSHIPS,
+            AllowedInclude::custom('content', new NoOpInclude),
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+        ];
+
+        $item = QueryBuilder::for(Fabriq::getFqnModel('menuItem'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
             ->firstOrFail();
 
-        return $this->respondWithItem($item, Fabriq::getTransformerFor('menuItem'));
+        /** @var MenuItem $item */
+
+        return MenuItemData::fromModel($item)->wrap('data')->toResponse($request);
     }
 
     /**
      * Update a menu item.
-     *
-     * @param  UpdateMenuItemRequest  $request
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function update(UpdateMenuItemRequest $request, int $id): JsonResponse
+    public function update(UpdateMenuItemRequest $request, int $id): Response
     {
-        $item = Fabriq::getFqnModel('menuItem')::findOrFail($id);
-        $item->updateMetaContent($request->content);
+        $allowedIncludes = [
+            ...MenuItem::RELATIONSHIPS,
+            AllowedInclude::custom('content', new NoOpInclude),
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+        ];
+
+        $item = QueryBuilder::for(Fabriq::getFqnModel('menuItem'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
+            ->firstOrFail();
+
+        /** @var MenuItem $item */
+        $content = $request->input('content', []);
+
+        if (! is_array($content)) {
+            $content = [];
+        }
+
+        $item->updateMetaContent($content);
         $item->page_id = $request->input('item.page_id');
         $item->type = $request->input('item.type');
         $item->page_id = $request->input('item.page_id');
@@ -51,17 +70,13 @@ class MenuItemController extends ApiController
         }
         $item->save();
 
-        return $this->respondWithItem($item, Fabriq::getTransformerFor('menuItem'));
+        return MenuItemData::fromModel($item)->wrap('data')->toResponse($request);
     }
 
     /**
      * Store a new menu item.
-     *
-     * @param  UpdateMenuItemRequest  $request
-     * @param  int  $menuId
-     * @return JsonResponse
      */
-    public function store(UpdateMenuItemRequest $request, int $menuId): JsonResponse
+    public function store(UpdateMenuItemRequest $request, int $menuId): Response
     {
         $menuItemRoot = Fabriq::getFqnModel('menuItem')::where('menu_id', $menuId)
             ->whereNull('parent_id')
@@ -72,22 +87,32 @@ class MenuItemController extends ApiController
         $menuItem->menu_id = $menuId;
         $menuItem->type = $request->input('item.type');
         $menuItem->save();
-        $menuItem->updateMetaContent($request->content);
+        $content = $request->input('content', []);
 
-        return $this->respondWithItem($menuItem, Fabriq::getTransformerFor('menuItem'), 201);
+        if (! is_array($content)) {
+            $content = [];
+        }
+
+        $menuItem->updateMetaContent($content);
+
+        return MenuItemData::fromModel($menuItem)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 
     /**
      * Delete a menu item.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $menuItem = Fabriq::getFqnModel('menuItem')::findOrFail($id);
         $menuItem->delete();
 
-        return $this->respondWithSuccess('The menu item has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'The menu item has been deleted',
+        ]);
     }
 }

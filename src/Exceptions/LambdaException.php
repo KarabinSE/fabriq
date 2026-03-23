@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Exceptions;
+namespace Karabin\Fabriq\Exceptions;
 
 use Exception;
 

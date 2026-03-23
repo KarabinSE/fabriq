@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Jobs;
+namespace Karabin\Fabriq\Jobs;
 
 use Exception;
-use Ikoncept\Fabriq\Events\MediaFinishedProcessing;
-use Ikoncept\Fabriq\Services\ResponsiveImageGenerator;
+use Karabin\Fabriq\Events\MediaFinishedProcessing;
+use Karabin\Fabriq\Services\ResponsiveImageGenerator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -26,7 +26,7 @@ class GenerateResponsiveImagesJob implements ShouldQueue
 
     public function handle(): bool
     {
-        /** @var \Ikoncept\Fabriq\Services\ResponsiveImageGenerator $responsiveImageGenerator */
+        /** @var \Karabin\Fabriq\Services\ResponsiveImageGenerator $responsiveImageGenerator */
         $responsiveImageGenerator = app(ResponsiveImageGenerator::class);
 
         try {

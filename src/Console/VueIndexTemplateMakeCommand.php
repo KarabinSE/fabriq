@@ -1,17 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
-use Infab\Core\Console\ReplacesModelName;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
 class VueIndexTemplateMakeCommand extends GeneratorCommand
 {
-    use ReplacesModelName;
-
     /**
      * The console command name.
      *
@@ -24,7 +21,7 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Creates a Fabriq opionated Vue idnex templates from stubs';
+    protected $description = 'Creates a Fabriq opinionated Inertia index page stub from stubs';
 
     /**
      * The type of class being generated.
@@ -58,6 +55,7 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
     protected function replaceModel($stub, $model)
     {
         $modelClass = $this->parseModel($model);
+        $pluralModel = Str::pluralStudly(class_basename($modelClass));
 
         $replace = [
             'DummyFullModelClass' => $modelClass,
@@ -66,11 +64,12 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
             'DummyModelClass' => class_basename($modelClass),
             '{{ model }}' => class_basename($modelClass),
             '{{model}}' => class_basename($modelClass),
-            '{{ pluralModel }}' => Str::pluralStudly(class_basename($modelClass)),
+            '{{ pluralModel }}' => $pluralModel,
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
             '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
             '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
             '{{ pluralModelVariable }}' => Str::plural(lcfirst(class_basename($modelClass))),
+            '{{ pluralModelRoute }}' => Str::kebab($pluralModel),
             '{{ swedishPluralName }}' => Str::lower($this->option('swedish-name-plural')),
             '{{ swedishName }}' => Str::lower($this->option('swedish-name')),
             '{{ SwedishName }}' => Str::studly($this->option('swedish-name')),
@@ -90,7 +89,7 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
      * @param  string  $model
      * @return string
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function parseModel($model)
     {
@@ -103,9 +102,9 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
 
     protected function alreadyExists($rawName)
     {
-        $name = Str::plural(Str::camel(class_basename(str_replace('\\', '/', $rawName))));
+        $name = Str::pluralStudly(class_basename(str_replace('\\', '/', $rawName)));
 
-        $path = "{$this->laravel['path']}/../resources/js/{$name}/Index.vue";
+        $path = "{$this->laravel['path']}/../resources/js/inertia/pages/Admin/{$name}/Index.vue";
 
         return file_exists($path);
     }
@@ -141,8 +140,8 @@ class VueIndexTemplateMakeCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        $name = Str::plural(Str::camel(class_basename(str_replace('\\', '/', $name))));
+        $name = Str::pluralStudly(class_basename(str_replace('\\', '/', $name)));
 
-        return "{$this->laravel['path']}/../resources/js/{$name}/Index.vue";
+        return "{$this->laravel['path']}/../resources/js/inertia/pages/Admin/{$name}/Index.vue";
     }
 }

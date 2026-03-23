@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Events;
+namespace Karabin\Fabriq\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

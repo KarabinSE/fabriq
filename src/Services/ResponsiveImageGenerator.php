@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Services;
+namespace Karabin\Fabriq\Services;
 
 use GuzzleHttp\Promise\Utils;
 use Illuminate\Support\Collection;

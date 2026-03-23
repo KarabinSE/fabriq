@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Notifications\NotifyAboutNotification;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Notifications\NotifyAboutNotification;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;

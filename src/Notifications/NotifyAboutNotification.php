@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Notifications;
+namespace Karabin\Fabriq\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;

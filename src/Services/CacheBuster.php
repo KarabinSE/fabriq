@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Services;
+namespace Karabin\Fabriq\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Contact;
+use Karabin\Fabriq\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ContactFactory extends Factory

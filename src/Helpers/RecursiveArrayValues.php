@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Helpers;
+namespace Karabin\Fabriq\Helpers;
 
 use Illuminate\Support\Collection;
 

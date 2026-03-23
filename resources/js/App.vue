@@ -45,6 +45,7 @@ import FileModal from '@/files/FileModal.vue'
 import BlockTypeModal from '@/pages/BlockTypeModal.vue'
 import VideoModal from '@/videos/VideoModal.vue'
 import CommentSection from '@/comments/CommentSection.vue'
+import * as types from '@/store/mutation-types'
 export default {
     name: 'App',
     components: {
@@ -70,9 +71,20 @@ export default {
         },
         userRoles () {
             return this.$store.getters['user/userRoles']
-        }
+        },
+        activeLocale: {
+            get () {
+                return this.$store.getters['config/activeLocale']
+            },
+
+            set (value) {
+                console.warn(value)
+                this.$store.commit(`config/${types.SET_ACTIVE_LOCALE}`, value)
+            },
+        },
     },
     async created () {
+        this.activeLocale = 'sv'
         await this.$store.dispatch('user/index')
         this.$store.dispatch('config/index')
         this.$store.dispatch('user/notifications')

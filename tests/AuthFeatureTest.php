@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\TestCase;
+use Karabin\Fabriq\Tests\TestCase;
 
 class AuthFeatureTest extends TestCase
 {

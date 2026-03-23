@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\QueryBuilders;
+namespace Karabin\Fabriq\QueryBuilders;
 
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\QueryBuilder\Sorts\Sort;

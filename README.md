@@ -1,7 +1,7 @@
-[![Latest Stable Version](http://poser.pugx.org/ikoncept/fabriq/v)](https://packagist.org/packages/ikoncept/fabriq)
-[![tests](https://github.com/ikoncept/fabriq/actions/workflows/phpunit.yml/badge.svg)](https://github.com/ikoncept/fabriq/actions/workflows/phpunit.yml)
-[![PHPStanLevel7](https://github.com/ikoncept/fabriq/actions/workflows/phpStan.yml/badge.svg)](https://github.com/ikoncept/fabriq/actions/workflows/phpStan.yml)
-[![PHP Version Require](http://poser.pugx.org/ikoncept/fabriq/require/php)](https://packagist.org/packages/ikoncept/fabriq)
+[![Latest Stable Version](http://poser.pugx.org/karabinse/fabriq/v)](https://packagist.org/packages/karabinse/fabriq)
+[![tests](https://github.com/karabinse/fabriq/actions/workflows/phpunit.yml/badge.svg)](https://github.com/karabinse/fabriq/actions/workflows/phpunit.yml)
+[![PHPStanLevel7](https://github.com/karabinse/fabriq/actions/workflows/phpStan.yml/badge.svg)](https://github.com/karabinse/fabriq/actions/workflows/phpStan.yml)
+[![PHP Version Require](http://poser.pugx.org/karabinse/fabriq/require/php)](https://packagist.org/packages/karabinse/fabriq)
 
 
 ![Fabriq CMS logo](https://media.fabriq-cms.se/public/fabriq-og-image-1200.jpg)
@@ -26,7 +26,7 @@ Add the customer repository url for the make-user-command in your `composer.json
 Install Fabriq:
 
 ```
-composer require ikoncept/fabriq "^2.0" -W
+composer require karabinse/fabriq "^2.0" -W
 ```
 
 If you're planning on using AWS s3:
@@ -57,7 +57,7 @@ SESSION_DOMAIN=your-domain.test
 
 Publish the configurations:
 ```
-php artisan vendor:publish --provider="Ikoncept\Fabriq\FabriqCoreServiceProvider" --tag=config
+php artisan vendor:publish --provider="Karabin\Fabriq\FabriqCoreServiceProvider" --tag=config
 php artisan vendor:publish --provider="Karabin\TranslatableRevisions\TranslatableRevisionsServiceProvider" --tag=config
 ```
 
@@ -72,7 +72,7 @@ The user model need to extend the Fabriq\Models\User::class
 // app/Models/User.php
 
 //...
-use Ikoncept\Fabriq\Models\User as FabriqUser;
+use Karabin\Fabriq\Models\User as FabriqUser;
 //...
 
 class User extends FabriqUser
@@ -144,7 +144,7 @@ Enable the Laravel Sanctum middleware in `app\Http\Kernel.php`
 Register the routes that makes sense for your app. See below examples
 ```php
 // routes/api.php
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 
 Fabriq::routes(function ($router) {
     $router->forDevProtected();
@@ -176,7 +176,7 @@ Fabriq::routes(function ($router) {
 ```php
 // routes/web.php
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 
 Fabriq::routes(
     function ($router) {
@@ -198,12 +198,12 @@ Assets can be published using their respective tags. The tags that are available
 
 You can publish these assets using the command below:
 ```
-php artisan vendor:publish --provider="Ikoncept\Fabriq\FabriqCoreServiceProvider" --tag=the-tag
+php artisan vendor:publish --provider="Karabin\Fabriq\FabriqCoreServiceProvider" --tag=the-tag
 ```
 
 If you want to overwrite your old published assets with new ones (for example when the package has updated views) you can use the `--force` flag
 ```
-php artisan vendor:publish --provider="Ikoncept\Fabriq\FabriqCoreServiceProvider" --tag=fabriq-views --force
+php artisan vendor:publish --provider="Karabin\Fabriq\FabriqCoreServiceProvider" --tag=fabriq-views --force
 ```
 
 **Note** _Above tags have been published when the `fabriq:install` was run_
@@ -211,16 +211,7 @@ php artisan vendor:publish --provider="Ikoncept\Fabriq\FabriqCoreServiceProvider
 ### Broadcasting 📢
 Fabriq leverages [laravel/echo](https://github.com/laravel/echo) as a front end dependency to communicate with a pusher server. This package is preconfigured to use Ikoncept's own websocket server, but a pusher implementation can be swapped in.
 
-To enable semi automatic prescense broadcasting go to the `/resources/js/plugins/index.js` and un-comment the the line for Laravel Echo:
-```js
-// import '~/plugins/laravel-echo'
-import '~/plugins/toast'
-import '~/plugins/v-calendar'
-import '~/plugins/v-mask'
-// ...
-```
-
-If the Laravel Echo plugin isn't imported it will not be enabled.
+For the migrated Inertia admin, Echo is initialized on demand from the package runtime when websocket config is available. There is no manual `resources/js/plugins/index.js` import step anymore, and there is no client-side route middleware wiring to maintain.
 
 Don't forget to add the proper `.env` variables:
 
@@ -232,33 +223,7 @@ PUSHER_APP_SECRET=your-secret
 PUSHER_APP_CLUSTER=mt1
 ```
 
-If you want to have a presence channel for a specific page, simply add it to the route:
-```js
-    {
-        path: '/articles/:id/edit',
-        name: 'articles.edit',
-        component: ArticlesEdit,
-        meta: {
-            middleware: [RolesMiddleware, PresenceMiddleware], // <- Added here (PresenceMiddleware)
-            roles: ['admin'],
-        }
-    },
-```
-
-If you want to have a broadcast channel for a specific page, simply add it to the route:
-```js
-    {
-        path: '/articles/:id/edit',
-        name: 'articles.edit',
-        component: ArticlesEdit,
-        meta: {
-            middleware: [RolesMiddleware, BroadcastMiddleware], // <- Added here (PresenceMiddleware)
-            roles: ['admin'],
-            broadcastName: 'article'
-        }
-    },
-```
-When the broadcast middleware is applied it will listen to `updated`, `created` and `deleted` events. Which is useful for index views when live updates are needed.
+Presence and broadcast subscriptions for the migrated admin are package-owned and are wired from the relevant Inertia surfaces, primarily the page editor/comments runtime. Host apps only need the websocket configuration and backend broadcasting setup.
 
 
 

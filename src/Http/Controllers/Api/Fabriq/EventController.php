@@ -1,45 +1,57 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Carbon\CarbonImmutable;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreateEventRequest;
-use Ikoncept\Fabriq\Models\Event;
-use Ikoncept\Fabriq\Services\CalendarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\EventData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateEventRequest;
+use Karabin\Fabriq\Models\Event;
+use Karabin\Fabriq\Services\CalendarService;
+use Spatie\LaravelData\DataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class EventController extends ApiController
+class EventController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
+        $number = $request->integer('number', 100);
+
         $events = QueryBuilder::for(Fabriq::getFqnModel('event'))
             ->allowedFilters(AllowedFilter::scope('dateRange'))
-            ->paginate($this->number);
+            ->paginate($number);
 
         $end = CarbonImmutable::parse(explode(',', $request->filter['dateRange'])[1]);
         $computedEvents = CalendarService::getComputedDailyIntervals($events, $end);
 
         $mergedEvents = $events->toBase()->merge($computedEvents);
+        $eventData = $mergedEvents->map(function ($event) {
+            if ($event instanceof Event) {
+                return EventData::fromModel($event);
+            }
 
-        return $this->respondWithCollection($mergedEvents, Fabriq::getTransformerFor('event'));
+            return EventData::fromModel(Event::make((array) $event));
+        });
+
+        $collection = new DataCollection(EventData::class, $eventData);
+
+        return $collection->wrap('data')->toResponse($request);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
         $event = Event::where('id', $id)->firstOrFail();
 
-        return $this->respondWithItem($event, Fabriq::getTransformerFor('event'));
+        return EventData::fromModel($event)->wrap('data')->toResponse($request);
     }
 
-    public function store(CreateEventRequest $request): JsonResponse
+    public function store(CreateEventRequest $request): Response
     {
         $event = new Event;
         $event->fill($request->validated());
@@ -49,10 +61,10 @@ class EventController extends ApiController
             $event->updateContent($content, $locale);
         }
 
-        return $this->respondWithItem($event, Fabriq::getTransformerFor('event'), 201);
+        return EventData::fromModel($event)->wrap('data')->toResponse($request);
     }
 
-    public function update(CreateEventRequest $request, int $id): JsonResponse
+    public function update(CreateEventRequest $request, int $id): Response
     {
         $event = Event::findOrFail($id);
         $event->fill($request->validated());
@@ -62,7 +74,7 @@ class EventController extends ApiController
             $event->updateContent($content, $locale);
         }
 
-        return $this->respondWithItem($event, Fabriq::getTransformerFor('event'));
+        return EventData::fromModel($event)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -70,6 +82,10 @@ class EventController extends ApiController
         $event = Event::findOrFail($id);
         $event->delete();
 
-        return $this->respondWithSuccess('Event was deleted succesfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Event was deleted succesfully',
+        ]);
     }
 }

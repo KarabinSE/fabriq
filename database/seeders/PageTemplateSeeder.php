@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Seeders;
+namespace Karabin\Fabriq\Database\Seeders;
 
-use Ikoncept\Fabriq\Models\BlockType;
+use Karabin\Fabriq\Models\BlockType;
 use Illuminate\Database\Seeder;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;

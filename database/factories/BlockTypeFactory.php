@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\BlockType;
+use Karabin\Fabriq\Models\BlockType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BlockTypeFactory extends Factory

@@ -1,27 +1,27 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Transformers\TemplateTransformer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\RevisionTemplateData;
+use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Spatie\LaravelData\DataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class RevisionTemplateController extends ApiController
+class RevisionTemplateController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
         $templates = QueryBuilder::for(RevisionTemplate::class)
             ->allowedFilters(
                 AllowedFilter::exact('type')
             )->get();
 
-        return $this->respondWithCollection($templates, new TemplateTransformer);
+        return RevisionTemplateData::collect($templates, DataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 }

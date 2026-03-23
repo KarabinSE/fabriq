@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;

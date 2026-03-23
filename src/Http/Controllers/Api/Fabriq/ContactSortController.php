@@ -1,17 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class ContactSortController extends ApiController
+class ContactSortController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): JsonResponse
     {
         $contacts = collect($request->contacts);
 
@@ -20,6 +19,10 @@ class ContactSortController extends ApiController
                 ->update(['sortindex' => $contact['sortindex']]);
         }
 
-        return $this->respondWithSuccess('Contact order has been updated');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Contact order has been updated',
+        ]);
     }
 }

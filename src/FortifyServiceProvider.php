@@ -1,11 +1,11 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
-use Ikoncept\Fabriq\Actions\Fortify\CreateNewUser;
-use Ikoncept\Fabriq\Actions\Fortify\ResetUserPassword;
-use Ikoncept\Fabriq\Actions\Fortify\UpdateUserPassword;
-use Ikoncept\Fabriq\Actions\Fortify\UpdateUserProfileInformation;
+use Karabin\Fabriq\Actions\Fortify\CreateNewUser;
+use Karabin\Fabriq\Actions\Fortify\ResetUserPassword;
+use Karabin\Fabriq\Actions\Fortify\UpdateUserPassword;
+use Karabin\Fabriq\Actions\Fortify\UpdateUserProfileInformation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

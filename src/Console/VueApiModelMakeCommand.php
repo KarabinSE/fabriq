@@ -1,17 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
-use Infab\Core\Console\ReplacesModelName;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
 class VueApiModelMakeCommand extends GeneratorCommand
 {
-    use ReplacesModelName;
-
     /**
      * The console command name.
      *
@@ -90,7 +87,7 @@ class VueApiModelMakeCommand extends GeneratorCommand
      * @param  string  $model
      * @return string
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function parseModel($model)
     {

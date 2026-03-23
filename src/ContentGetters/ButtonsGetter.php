@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\ContentGetters;
+namespace Karabin\Fabriq\ContentGetters;
 
 use Illuminate\Support\Collection;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;

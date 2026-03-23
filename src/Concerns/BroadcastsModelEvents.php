@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Concerns;
+namespace Karabin\Fabriq\Concerns;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;

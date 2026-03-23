@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\Storage;
 
 class FileFeatureTest extends AdminUserTestCase
@@ -14,7 +14,7 @@ class FileFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $files = \Ikoncept\Fabriq\Models\File::factory()
+        $files = \Karabin\Fabriq\Models\File::factory()
             ->count(5)
             ->create();
 
@@ -30,7 +30,7 @@ class FileFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_file()
     {
         // Arrange
-        $file = \Ikoncept\Fabriq\Models\File::factory()->create();
+        $file = \Karabin\Fabriq\Models\File::factory()->create();
 
         // Act
         $response = $this->json('GET', $this->endpoint.$file->id);
@@ -49,7 +49,7 @@ class FileFeatureTest extends AdminUserTestCase
     public function it_can_update_a_file()
     {
         // Arrange
-        $file = \Ikoncept\Fabriq\Models\File::factory()->create();
+        $file = \Karabin\Fabriq\Models\File::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act
@@ -73,7 +73,7 @@ class FileFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_file()
     {
         // Arrange
-        $file = \Ikoncept\Fabriq\Models\File::factory()->create();
+        $file = \Karabin\Fabriq\Models\File::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/files/'.$file->id);
@@ -96,7 +96,7 @@ class FileFeatureTest extends AdminUserTestCase
     public function it_can_search_for_an_file()
     {
         // Arrange
-        $files = \Ikoncept\Fabriq\Models\File::factory()->count(5)->create();
+        $files = \Karabin\Fabriq\Models\File::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/files?filter[search]='.$files->first()->media->first()->name);
@@ -113,7 +113,7 @@ class FileFeatureTest extends AdminUserTestCase
     public function it_can_sort_on_a_media_field()
     {
         // Arrange
-        $files = \Ikoncept\Fabriq\Models\File::factory()->count(2)->create();
+        $files = \Karabin\Fabriq\Models\File::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/files?sort=-file_name');

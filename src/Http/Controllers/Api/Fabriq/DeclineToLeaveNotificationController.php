@@ -1,18 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Models\User;
-use Ikoncept\Fabriq\Notifications\LeaveDeclinedNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\User;
+use Karabin\Fabriq\Notifications\LeaveDeclinedNotification;
 
-class DeclineToLeaveNotificationController extends ApiController
+class DeclineToLeaveNotificationController extends Controller
 {
-    use ApiControllerTrait;
-
     public function __invoke(Request $request, int $userId): JsonResponse
     {
         $request->validate([
@@ -23,6 +21,10 @@ class DeclineToLeaveNotificationController extends ApiController
 
         $recipient->notify(new LeaveDeclinedNotification($causer, $request->path));
 
-        return $this->respondWithSuccess('Editing rights was declined');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Editing rights was declined',
+        ]);
     }
 }

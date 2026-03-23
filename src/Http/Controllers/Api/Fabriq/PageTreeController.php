@@ -1,18 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Transformers\PageTreeOptionTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\PageTreeOptionData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class PageTreeController extends ApiController
+class PageTreeController extends Controller
 {
-    use ApiControllerTrait;
-
     public function index(Request $request): JsonResponse
     {
         $pageRoot = Fabriq::getModelClass('page')
@@ -25,10 +23,12 @@ class PageTreeController extends ApiController
             ->toTree();
 
         if ($request->has('selectOptions')) {
-            return $this->respondWithItem($tree, new PageTreeOptionTransformer);
+            return response()->json([
+                'data' => PageTreeOptionData::collectTree($tree),
+            ]);
         }
 
-        return $this->respondWithArray([
+        return response()->json([
             'data' => $tree,
         ]);
     }
@@ -41,6 +41,10 @@ class PageTreeController extends ApiController
         $treeData = $request->tree;
         Fabriq::getModelClass('page')->rebuildSubtree($pageRoot, $treeData);
 
-        return $this->respondWithSuccess('Tree updated successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Tree updated successfully',
+        ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
@@ -22,7 +22,7 @@ class VueResourceMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Creates a Vue resource';
+    protected $description = 'Creates Fabriq Inertia page stubs and an API model';
 
     /**
      * Get the stub file for the generator.
@@ -103,42 +103,30 @@ class VueResourceMakeCommand extends GeneratorCommand
         }
 
         if ($this->option('index') || $this->option('edit')) {
-            $this->info('Add below to your routes file');
-            $this->info('Imports:');
+            $this->info('Generated Inertia pages:');
         }
         if ($this->option('index')) {
-            $this->comment("import {$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}Index from '~/{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}/Index'");
+            $this->comment("resources/js/inertia/pages/Admin/{$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}/Index.vue");
         }
         if ($this->option('edit')) {
-            $this->comment("import {$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}Edit from '~/{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}/Edit'");
+            $this->comment("resources/js/inertia/pages/Admin/{$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}/Edit.vue");
         }
 
         if ($this->option('index') || $this->option('edit')) {
-            $this->info('Routes:');
+            $this->info('Wire them from a Laravel controller with Inertia::render():');
         }
 
         if ($this->option('index')) {
-            $this->comment('{');
-            $this->comment("    path: '/{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}',");
-            $this->comment("    name: '{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}.index',");
-            $this->comment("    component: {$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}Index,");
-            $this->comment('    meta: {');
-            $this->comment('        middleware: roles,');
-            $this->comment("        roles: ['admin']");
-            $this->comment('    }');
-            $this->comment('},');
+            $this->comment("return Inertia::render('Admin/{$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}/Index', [");
+            $this->comment("    'pageTitle' => '{$this->swedishPluralName}',");
+            $this->comment(']);');
         }
 
         if ($this->option('edit')) {
-            $this->comment('{');
-            $this->comment("    path: '/{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}/:id/edit',");
-            $this->comment("    name: '{$this->replaceModel($this->argument('name'), '{{ pluralModelVariable }}')}.edit',");
-            $this->comment("    component: {$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}Edit,");
-            $this->comment('    meta: {');
-            $this->comment('        middleware: roles,');
-            $this->comment("        roles: ['admin']");
-            $this->comment('    }');
-            $this->comment('}');
+            $this->comment("return Inertia::render('Admin/{$this->replaceModel($this->argument('name'), '{{ pluralModel }}')}/Edit', [");
+            $this->comment("    'pageTitle' => 'Redigera {$this->swedishSingularName}',");
+            $this->comment("    '{$this->replaceModel($this->argument('name'), '{{ modelVariable }}')}' => \${$this->replaceModel($this->argument('name'), '{{ modelVariable }}')},");
+            $this->comment(']);');
         }
 
         return 0;
@@ -233,6 +221,7 @@ class VueResourceMakeCommand extends GeneratorCommand
     protected function replaceModel($model, $value)
     {
         $modelClass = $this->parseModel($model);
+        $pluralModel = Str::pluralStudly(class_basename($modelClass));
 
         $replace = [
             'DummyFullModelClass' => $modelClass,
@@ -240,12 +229,13 @@ class VueResourceMakeCommand extends GeneratorCommand
             '{{namespacedModel}}' => $modelClass,
             'DummyModelClass' => class_basename($modelClass),
             '{{ model }}' => class_basename($modelClass),
-            '{{ pluralModel }}' => Str::pluralStudly(class_basename($modelClass)),
+            '{{ pluralModel }}' => $pluralModel,
             '{{model}}' => class_basename($modelClass),
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
             '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
             '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
             '{{ pluralModelVariable }}' => Str::plural(lcfirst(class_basename($modelClass))),
+            '{{ pluralModelRoute }}' => Str::kebab($pluralModel),
             // '{{ swedishPluralName }}' => Str::lower($this->option('swedish-name-plural')),
             // '{{ swedishName }}' => Str::lower($this->option('swedish-name')),
             // '{{ SwedishName }}' => Str::studly($this->option('swedish-name')),

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Event;
+use Karabin\Fabriq\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventFactory extends Factory

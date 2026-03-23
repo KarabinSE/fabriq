@@ -1,18 +1,17 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\UploadImageRequest;
-use Illuminate\Http\JsonResponse;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\UploadImageRequest;
+use Symfony\Component\HttpFoundation\Response;
 
-class ImageUploadController extends ApiController
+class ImageUploadController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function store(UploadImageRequest $request): JsonResponse
+    public function store(UploadImageRequest $request): Response
     {
         $image = Fabriq::getModelClass('image');
         $image->save();
@@ -21,13 +20,18 @@ class ImageUploadController extends ApiController
         } catch (\Throwable $exception) {
             $image->delete();
 
-            return $this->setStatusCode(500)
-                ->respondWithArray([
+            return response()->json([
+                'error' => [
+                    'code' => ApiResponseCode::InternalError->value,
+                    'http_code' => 500,
                     'message' => 'Kunde inte ladda upp filen',
                     'exception' => $exception->getMessage(),
-                ]);
+                ],
+            ], 500);
         }
 
-        return $this->respondWithArray(array_merge($image->toArray(), $image->getFirstMedia('images')->only('uuid')));
+        return ImageData::fromModel($image)
+            ->toResponse($request)
+            ->setStatusCode(200);
     }
 }

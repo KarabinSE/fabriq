@@ -1,22 +1,17 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Transformers\ConfigTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Illuminate\Support\Str;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class ConfigController extends ApiController
+class ConfigController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Return config.
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -32,6 +27,10 @@ class ConfigController extends ApiController
         $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
         $config = array_merge($fabriqConfig, ['supported_locales' => $supportedLocales]);
 
-        return $this->respondWithItem($config, new ConfigTransformer);
+        return response()->json([
+            'data' => collect($config)
+                ->reject(fn ($item, $key) => Str::contains((string) $key, 'key'))
+                ->all(),
+        ]);
     }
 }

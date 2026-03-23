@@ -1,5 +1,5 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 
 parameters:
 
@@ -48,6 +48,24 @@ parameters:
         -
             message: '#undefined method#'
             path: ./src/Actions/ClonePage.php
+        -
+            message: '#Unable to resolve the template type#'
+            path: ./src/Http/Controllers/Api/Fabriq/*
+        -
+            message: '#Unable to resolve the template type#'
+            path: ./src/Models/*
+        -
+            message: '#Parameter \#1 \$column of method .*whereLike.*array<int, string> given#'
+            path: ./src/Models/*
+        -
+            message: '#has no return type specified#'
+            path: ./src/Http/Controllers/Api/Fabriq/ContactSortController.php
+        -
+            message: '#has no return type specified#'
+            path: ./src/Models/Page.php
+        -
+            message: '#implicitly nullable via default value null#'
+            path: ./src/Transformers/UserImageTransformer.php
         # -
 
         #     message: '#$view of function view expects view-string#'

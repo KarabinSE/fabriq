@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
@@ -12,7 +12,7 @@ class UserFeatureTest extends AdminUserTestCase
     public function it_can_get_all_users()
     {
         // Arrange
-        $users = \Ikoncept\Fabriq\Models\User::factory()->count(3)->create();
+        $users = \Karabin\Fabriq\Models\User::factory()->count(3)->create();
 
         // Act
         $response = $this->json('GET', '/users');
@@ -28,10 +28,10 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create([
+        $user = \Karabin\Fabriq\Models\User::factory()->create([
             'name' => 'Zebra Green',
         ]);
-        $users = \Ikoncept\Fabriq\Models\User::factory()->count(1)->create();
+        $users = \Karabin\Fabriq\Models\User::factory()->count(1)->create();
 
         // Act
         $response = $this->json('GET', '/users?sort=-name');
@@ -68,7 +68,7 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         app()->setLocale('sv');
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create([
+        $user = \Karabin\Fabriq\Models\User::factory()->create([
             'email' => 'ralf@spray.se',
         ]);
 
@@ -90,7 +90,7 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->markTestSkipped('Skipped since there is no auth middleware');
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
 
         // Act
         $response = $this->actingAs($user)
@@ -105,7 +105,7 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
         $adminRole = DB::table('roles')->insert([
             'name' => 'peasant',
             'display_name' => 'Peasant',
@@ -129,7 +129,7 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
 
         DB::table('roles')->insert([
             'name' => 'editor',
@@ -162,10 +162,10 @@ class UserFeatureTest extends AdminUserTestCase
     public function it_can_search_for_a_specific_user()
     {
         // Arrange
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create([
+        $user = \Karabin\Fabriq\Models\User::factory()->create([
             'name' => 'Alfons',
         ]);
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create([
+        $user = \Karabin\Fabriq\Models\User::factory()->create([
             'name' => 'Jörgen',
         ]);
 
@@ -183,7 +183,7 @@ class UserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/users/'.$user->id);

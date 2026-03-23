@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\ContentGetters\FileGetter;
-use Ikoncept\Fabriq\ContentGetters\ImageGetter;
-use Ikoncept\Fabriq\ContentGetters\VideoGetter;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\ContentGetters\VideoGetter;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 
 class SmartBlocksFeatureTest extends AdminUserTestCase
@@ -32,11 +32,11 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_update_a_smart_block()
     {
         // Arrange
-        $smartBlock = \Ikoncept\Fabriq\Models\SmartBlock::factory()->create();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create();
-        $file = \Ikoncept\Fabriq\Models\File::factory()->create();
-        $file2 = \Ikoncept\Fabriq\Models\File::factory()->create();
+        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
+        $video = \Karabin\Fabriq\Models\Video::factory()->create();
+        $file = \Karabin\Fabriq\Models\File::factory()->create();
+        $file2 = \Karabin\Fabriq\Models\File::factory()->create();
 
         // Act
         $response = $this->json('PATCH', '/smart-blocks/'.$smartBlock->id, [
@@ -82,7 +82,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_get_all_smart_blocks()
     {
         // Arrange
-        $smartBlocks = \Ikoncept\Fabriq\Models\SmartBlock::factory()->count(3)->create();
+        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
 
         // Act
         $response = $this->json('GET', '/smart-blocks');
@@ -96,8 +96,8 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_sort_smart_blocks()
     {
         // Arrange
-        $smartBlocks = \Ikoncept\Fabriq\Models\SmartBlock::factory()->count(3)->create();
-        $smartBlock = \Ikoncept\Fabriq\Models\SmartBlock::factory()->create([
+        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
+        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create([
             'name' => '1st :)',
         ]);
 
@@ -114,8 +114,8 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_search_for_a_smart_block()
     {
         // Arrange
-        $smartBlocks = \Ikoncept\Fabriq\Models\SmartBlock::factory()->count(3)->create();
-        $smartBlock = \Ikoncept\Fabriq\Models\SmartBlock::factory()->create([
+        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
+        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create([
             'name' => 'Find me',
         ]);
 
@@ -132,14 +132,14 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $smartBlock = \Ikoncept\Fabriq\Models\SmartBlock::factory()->create();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create([
+        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create([
             'alt_text' => 'Image alt text',
         ]);
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create([
+        $video = \Karabin\Fabriq\Models\Video::factory()->create([
             'alt_text' => 'Video alt text',
         ]);
-        $file = \Ikoncept\Fabriq\Models\File::factory()->create([
+        $file = \Karabin\Fabriq\Models\File::factory()->create([
             'caption' => 'File caption',
         ]);
         $smartBlock->localizedContent = [
@@ -187,7 +187,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $smartBlock = \Ikoncept\Fabriq\Models\SmartBlock::factory()->create();
+        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/smart-blocks/'.$smartBlock->id);

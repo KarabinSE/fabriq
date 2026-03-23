@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Services;
+namespace Karabin\Fabriq\Services;
 
 use Aws\Credentials\Credentials;
 use Aws\Lambda\LambdaClient;
-use Ikoncept\Fabriq\Exceptions\LambdaException;
+use Karabin\Fabriq\Exceptions\LambdaException;
 
 class LambdaService
 {

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Database\Seeders\DatabaseSeeder;
-use Ikoncept\Fabriq\Database\Seeders\PageTemplateSeeder;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
+use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class SearchTermsFeatureTest extends AdminUserTestCase
@@ -20,7 +20,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
     public function test_it_can_include_content_for_a_single_page()
     {
         // Arrange
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'En sida som ska publiceras',
             'template_id' => RevisionTemplate::all()->first()->id,
             'revision' => 1,
@@ -66,7 +66,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
             'model_type' => Fabriq::getModelClass('page')->getMorphClass(),
             'locale' => 'dk',
             'path' => '/en-siee-saom-skau-paublisers',
-            'search_string' => 'En siee saom skau paublisers DK fosta titeln! DK andra titeln!',
+            'search_string' => 'DK fosta titeln! DK andra titeln! En siee saom skau paublisers',
         ]);
 
         $this->assertDatabaseHas('search_terms', [
@@ -74,7 +74,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
             'model_type' => 'fabriq_page',
             'locale' => 'en',
             'path' => '/the-page-title-for-the-page',
-            'search_string' => 'The page title for the page EN Box 1 title! EN Box 2 title! EN Box 3 title!',
+            'search_string' => 'EN Box 1 title! EN Box 2 title! EN Box 3 title! The page title for the page',
         ]);
 
         $this->assertDatabaseCount('search_terms', 3);

@@ -1,28 +1,29 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\TagData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Spatie\LaravelData\DataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\Tags\Tag;
+use Symfony\Component\HttpFoundation\Response;
 
-class TagController extends ApiController
+class TagController extends Controller
 {
-    use ApiControllerTrait;
-
     public const TAGGABLE_TYPES = [
-        'images' => 'Ikoncept\Fabriq\Models\Image',
-        'files' => 'Ikoncept\Fabriq\Models\File',
-        'videos' => 'Ikoncept\Fabriq\Models\Video',
-        'contacts' => 'Ikoncept\Fabriq\Models\Contact',
+        'images' => 'Karabin\Fabriq\Models\Image',
+        'files' => 'Karabin\Fabriq\Models\File',
+        'videos' => 'Karabin\Fabriq\Models\Video',
+        'contacts' => 'Karabin\Fabriq\Models\Contact',
     ];
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
         $tags = QueryBuilder::for(Fabriq::getFqnModel('tag'))
             ->allowedFilters([
@@ -30,25 +31,45 @@ class TagController extends ApiController
             ])
             ->get();
 
-        return $this->respondWithCollection($tags, Fabriq::getTransformerFor('tag'));
+        return TagData::collect($tags, DataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
     /**
      * Associate a model with a tag.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
         $modelName = self::TAGGABLE_TYPES[$request->model_type] ?? null;
         if (! $modelName) {
-            return $this->errorWrongArgs('This type is not taggable');
+            return response()->json([
+                'error' => [
+                    'code' => ApiResponseCode::WrongArgs->value,
+                    'http_code' => 400,
+                    'message' => 'This type is not taggable',
+                ],
+            ], 400);
         }
 
-        $tags = $request->tags;
+        $tags = collect($request->input('tags', []))
+            ->filter(fn ($tag) => is_string($tag))
+            ->map(fn (string $tag) => trim($tag))
+            ->filter(fn (string $tag) => $tag !== '')
+            ->unique(fn (string $tag) => mb_strtolower($tag))
+            ->values()
+            ->all();
+
+        if ($tags === []) {
+            return response()->json([
+                'code' => ApiResponseCode::Success->value,
+                'http_code' => 200,
+                'message' => 'No tags to attach',
+            ]);
+        }
+
         foreach ($tags as $tag) {
-            /** @var Tag $newTag * */
+            /** @var Tag $newTag */
             $newTag = Tag::findOrCreate($tag, $request->model_type);
             $newTag->save();
         }
@@ -60,6 +81,10 @@ class TagController extends ApiController
                 $item->attachTags($tags, $request->model_type);
             });
 
-        return $this->respondWithSuccess('Tags was attached');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Tags was attached',
+        ]);
     }
 }

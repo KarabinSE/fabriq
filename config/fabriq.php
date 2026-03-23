@@ -1,6 +1,30 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Str;
+use Karabin\Fabriq\Jobs\GenerateResponsiveImagesJob;
+use Karabin\Fabriq\Models\Article;
+use Karabin\Fabriq\Models\BlockType;
+use Karabin\Fabriq\Models\Comment;
+use Karabin\Fabriq\Models\Contact;
+use Karabin\Fabriq\Models\Event;
+use Karabin\Fabriq\Models\File;
+use Karabin\Fabriq\Models\I18nDefinition;
+use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\Models\Locale;
+use Karabin\Fabriq\Models\Media;
+use Karabin\Fabriq\Models\Menu;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\Models\Notification;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\Role;
+use Karabin\Fabriq\Models\Slug;
+use Karabin\Fabriq\Models\SmartBlock;
+use Karabin\Fabriq\Models\Tag;
+use Karabin\Fabriq\Models\Video;
+use Karabin\Fabriq\Services\MediaPathGenerator;
+use Laravel\Fortify\Features;
+use Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob;
 
 return [
     /**
@@ -102,57 +126,34 @@ return [
      * Model mapping
      */
     'models' => [
-        'article' => \Ikoncept\Fabriq\Models\Article::class,
-        'blockType' => \Ikoncept\Fabriq\Models\BlockType::class,
-        'comment' => \Ikoncept\Fabriq\Models\Comment::class,
-        'contact' => \Ikoncept\Fabriq\Models\Contact::class,
-        'event' => \Ikoncept\Fabriq\Models\Event::class,
-        'file' => \Ikoncept\Fabriq\Models\File::class,
-        'i18nDefinition' => \Ikoncept\Fabriq\Models\I18nDefinition::class,
-        'image' => \Ikoncept\Fabriq\Models\Image::class,
-        'locale' => \Ikoncept\Fabriq\Models\Locale::class,
-        'media' => \Ikoncept\Fabriq\Models\Media::class,
-        'menu' => \Ikoncept\Fabriq\Models\Menu::class,
-        'menuItem' => \Ikoncept\Fabriq\Models\MenuItem::class,
-        'notification' => \Ikoncept\Fabriq\Models\Notification::class,
-        'page' => \Ikoncept\Fabriq\Models\Page::class,
-        'role' => \Ikoncept\Fabriq\Models\Role::class,
-        'slug' => \Ikoncept\Fabriq\Models\Slug::class,
-        'smartBlock' => \Ikoncept\Fabriq\Models\SmartBlock::class,
-        'tag' => \Ikoncept\Fabriq\Models\Tag::class,
-        'user' => \App\Models\User::class,
-        'video' => \Ikoncept\Fabriq\Models\Video::class,
-    ],
-    'transformers' => [
-        'article' => \Ikoncept\Fabriq\Transformers\ArticleTransformer::class,
-        'blockType' => \Ikoncept\Fabriq\Transformers\BlockTypeTransformer::class,
-        'comment' => \Ikoncept\Fabriq\Transformers\CommentTransformer::class,
-        'contact' => \Ikoncept\Fabriq\Transformers\ContactTransformer::class,
-        'event' => \Ikoncept\Fabriq\Transformers\EventTransformer::class,
-        'file' => \Ikoncept\Fabriq\Transformers\FileTransformer::class,
-        'i18nDefinition' => '',
-        'image' => \Ikoncept\Fabriq\Transformers\ImageTransformer::class,
-        'locale' => '',
-        'media' => '',
-        'menu' => \Ikoncept\Fabriq\Transformers\MenuTransformer::class,
-        'menuItem' => \Ikoncept\Fabriq\Transformers\MenuItemTransformer::class,
-        'notification' => \Ikoncept\Fabriq\Transformers\NotificationTransformer::class,
-        'page' => \Ikoncept\Fabriq\Transformers\PageTransformer::class,
-        'live_page' => \Ikoncept\Fabriq\Transformers\LivePageTransformer::class,
-        'role' => \Ikoncept\Fabriq\Transformers\RoleTransformer::class,
-        'slug' => \Ikoncept\Fabriq\Transformers\SlugTransformer::class,
-        'smartBlock' => \Ikoncept\Fabriq\Transformers\SmartBlockTransformer::class,
-        'tag' => \Ikoncept\Fabriq\Transformers\TagTransformer::class,
-        'user' => \Ikoncept\Fabriq\Transformers\UserTransformer::class,
-        'video' => \Ikoncept\Fabriq\Transformers\VideoTransformer::class,
+        'article' => Article::class,
+        'blockType' => BlockType::class,
+        'comment' => Comment::class,
+        'contact' => Contact::class,
+        'event' => Event::class,
+        'file' => File::class,
+        'i18nDefinition' => I18nDefinition::class,
+        'image' => Image::class,
+        'locale' => Locale::class,
+        'media' => Media::class,
+        'menu' => Menu::class,
+        'menuItem' => MenuItem::class,
+        'notification' => Notification::class,
+        'page' => Page::class,
+        'role' => Role::class,
+        'slug' => Slug::class,
+        'smartBlock' => SmartBlock::class,
+        'tag' => Tag::class,
+        'user' => User::class,
+        'video' => Video::class,
     ],
     'media-library' => [
         'max_file_size' => 1024 * 1024 * 500, // 500 MB,
         'jobs' => [
-            'perform_conversions' => Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob::class,
-            'generate_responsive_images' => \Ikoncept\Fabriq\Jobs\GenerateResponsiveImagesJob::class,
+            'perform_conversions' => PerformConversionsJob::class,
+            'generate_responsive_images' => GenerateResponsiveImagesJob::class,
         ],
-        'path_generator' => \Ikoncept\Fabriq\Services\MediaPathGenerator::class,
+        'path_generator' => MediaPathGenerator::class,
         'remote' => [
             'extra_headers' => [
                 'CacheControl' => 'max-age=604800',
@@ -163,9 +164,9 @@ return [
 
     'fortify' => [
         'features' => [
-            \Laravel\Fortify\Features::resetPasswords(),
-            \Laravel\Fortify\Features::updateProfileInformation(),
-            \Laravel\Fortify\Features::updatePasswords(),
+            Features::resetPasswords(),
+            Features::updateProfileInformation(),
+            Features::updatePasswords(),
         ],
     ],
     'ui' => [

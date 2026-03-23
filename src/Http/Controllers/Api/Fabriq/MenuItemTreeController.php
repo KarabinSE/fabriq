@@ -1,20 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Models\Menu;
-use Ikoncept\Fabriq\Models\MenuItem;
-use Ikoncept\Fabriq\Repositories\Decorators\CachingMenuRepository;
-use Ikoncept\Fabriq\Transformers\MenuTreeTransformer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\Repositories\Decorators\CachingMenuRepository;
 
-class MenuItemTreeController extends ApiController
+class MenuItemTreeController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Return index of the resource.
      */
@@ -27,7 +23,9 @@ class MenuItemTreeController extends ApiController
             ->descendantsOf($menuItemRoot->id)
             ->toTree();
 
-        return $this->respondWithItem($tree, new MenuTreeTransformer());
+        return response()->json([
+            'data' => $tree->toArray(),
+        ]);
     }
 
     /**
@@ -43,7 +41,11 @@ class MenuItemTreeController extends ApiController
         $treeData = $request->tree;
         MenuItem::rebuildSubtree($menuItemRoot, $treeData);
 
-        return $this->respondWithSuccess('Tree updated successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Tree updated successfully',
+        ]);
     }
 
     /**
@@ -51,6 +53,6 @@ class MenuItemTreeController extends ApiController
      */
     public function show(CachingMenuRepository $repo, Request $request, string $slug): JsonResponse
     {
-        return $this->respondWithArray($repo->findBySlug($slug));
+        return response()->json($repo->findBySlug($slug));
     }
 }

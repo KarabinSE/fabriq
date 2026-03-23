@@ -225,7 +225,7 @@ export default {
                 }
                 const { data } = await Image.show(id, payload)
                 this.image = data
-                this.tags = [...data.tags.data]
+                this.tags = [...data.tags]
             } catch (error) {
                 console.error(error)
             }

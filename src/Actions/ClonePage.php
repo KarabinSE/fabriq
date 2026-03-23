@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Actions;
+namespace Karabin\Fabriq\Actions;
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Model;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
 

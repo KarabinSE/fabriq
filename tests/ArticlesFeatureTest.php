@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests\Feature;
+namespace Karabin\Fabriq\Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
@@ -54,7 +54,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'key' => 'title',
             'translated' => true,
         ]);
-        $article = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $article = \Karabin\Fabriq\Models\Article::factory()->create([
             'template_id' => $template->id,
             'name' => 'News item',
             'template_id' => $template->id,
@@ -99,7 +99,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $articles = \Ikoncept\Fabriq\Models\Article::factory()
+        $articles = \Karabin\Fabriq\Models\Article::factory()
             ->count(4)
             ->create();
 
@@ -115,7 +115,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_show_a_single_article()
     {
         // Arrange
-        $article = \Ikoncept\Fabriq\Models\Article::factory()->create();
+        $article = \Karabin\Fabriq\Models\Article::factory()->create();
 
         // Act
         $response = $this->json('GET', '/articles/'.$article->id);
@@ -131,10 +131,10 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_search_for_an_article()
     {
         // Arrange
-        $article = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $article = \Karabin\Fabriq\Models\Article::factory()->create([
             'name' => 'Hoola',
         ]);
-        $articles = \Ikoncept\Fabriq\Models\Article::factory()
+        $articles = \Karabin\Fabriq\Models\Article::factory()
             ->count(3)
             ->create();
 
@@ -166,7 +166,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'key' => 'image',
             'type' => 'image',
         ]);
-        $article = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $article = \Karabin\Fabriq\Models\Article::factory()->create([
             'revision' => 1,
             'template_id' => $template->id,
         ]);
@@ -203,15 +203,15 @@ class ArticlesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $publishedArticle = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $publishedArticle = \Karabin\Fabriq\Models\Article::factory()->create([
             'name' => 'Published',
             'publishes_at' => now()->subYear(),
         ]);
-        $notPublishedYetArticle = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $notPublishedYetArticle = \Karabin\Fabriq\Models\Article::factory()->create([
             'name' => 'Not published yet',
             'publishes_at' => now()->addYear(),
         ]);
-        $hasBeenPublished = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $hasBeenPublished = \Karabin\Fabriq\Models\Article::factory()->create([
             'name' => 'Has been published',
             'publishes_at' => now()->subYear(),
             'unpublishes_at' => now()->subMonths(3),
@@ -248,7 +248,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'key' => 'header',
             'type' => 'text',
         ]);
-        $article = \Ikoncept\Fabriq\Models\Article::factory()->create([
+        $article = \Karabin\Fabriq\Models\Article::factory()->create([
             'revision' => 1,
             'template_id' => $template->id,
         ]);
@@ -263,7 +263,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
         // Assert
         $this->assertEquals('A nice header right', $content->first());
         $this->assertDatabaseHas('revision_meta', [
-            'model_type' => $article->morphClass,
+            'model_type' => $article->getMorphClass(),
         ]);
     }
 }

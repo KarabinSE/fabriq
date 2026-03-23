@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Listeners;
+namespace Karabin\Fabriq\Listeners;
 
-use Ikoncept\Fabriq\Models\Slug;
+use Karabin\Fabriq\Models\Slug;
 use Illuminate\Support\Str;
 
 class UpdateSlugListener

@@ -1,26 +1,30 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Repositories\EloquentPageRepository;
-use Ikoncept\Fabriq\Transformers\LivePageTransformer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\LivePageData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Repositories\EloquentPageRepository;
+use Symfony\Component\HttpFoundation\Response;
 
-class PageSlugPreviewController extends ApiController
+class PageSlugPreviewController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function show(EloquentPageRepository $repo, Request $request, string $slug): JsonResponse
+    public function show(EloquentPageRepository $repo, Request $request, string $slug): Response
     {
         if (! $request->hasValidSignature()) {
-            return $this->errorUnauthorized('The signature for the link is not valid');
+            return response()->json([
+                'error' => [
+                    'code' => ApiResponseCode::Unauthorized->value,
+                    'http_code' => 401,
+                    'message' => 'The signature for the link is not valid',
+                ],
+            ], 401);
         }
 
         $result = $repo->findPreviewBySlug($slug);
 
-        return $this->respondWithItem($result, new LivePageTransformer);
+        return LivePageData::fromModel($result)->wrap('data')->toResponse($request);
     }
 }

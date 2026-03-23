@@ -1,61 +1,78 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreateSmartBlockRequest;
-use Ikoncept\Fabriq\Models\SmartBlock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\SmartBlockData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateSmartBlockRequest;
+use Karabin\Fabriq\Models\SmartBlock;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class SmartBlockController extends ApiController
+class SmartBlockController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Get index of the resource.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(SmartBlock::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+        $allowedIncludes = [
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
         $paginator = QueryBuilder::for(Fabriq::getFqnModel('smartBlock'))
             ->allowedSorts('name', 'updated_at')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
             ])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->allowedIncludes(...$allowedIncludes)
+            ->paginate($number);
 
-        return $this->respondWithPaginator($paginator, Fabriq::getTransformerFor('smartBlock'));
+        $collection = new PaginatedDataCollection(
+            SmartBlockData::class,
+            $paginator->through(fn (SmartBlock $smartBlock) => SmartBlockData::fromModel($smartBlock)),
+        );
+
+        return $collection->wrap('data')->toResponse($request);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(SmartBlock::RELATIONSHIPS);
-        $smartBlock = SmartBlock::where('id', $id)
-            ->with($eagerLoad)
+        $allowedIncludes = [
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
+        $smartBlock = QueryBuilder::for(Fabriq::getFqnModel('smartBlock'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
             ->firstOrFail();
 
-        return $this->respondWithItem($smartBlock, Fabriq::getTransformerFor('smartBlock'));
+        /** @var SmartBlock $smartBlock */
+
+        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
-    public function store(CreateSmartBlockRequest $request): JsonResponse
+    public function store(CreateSmartBlockRequest $request): Response
     {
-        $smartBlock = new SmartBlock();
+        $smartBlock = new SmartBlock;
         $smartBlock->name = $request->name;
         $smartBlock->save();
 
-        return $this->respondWithItem($smartBlock, Fabriq::getTransformerFor('smartBlock'), 201);
+        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id): Response
     {
         $smartBlock = SmartBlock::findOrFail($id);
         $smartBlock->name = $request->name;
@@ -63,7 +80,7 @@ class SmartBlockController extends ApiController
         $smartBlock->touch();
         $smartBlock->save();
 
-        return $this->respondWithItem($smartBlock, Fabriq::getTransformerFor('smartBlock'));
+        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -72,6 +89,10 @@ class SmartBlockController extends ApiController
 
         $smartBlock->delete();
 
-        return $this->respondWithSuccess('Smart block has been deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Smart block has been deleted successfully',
+        ]);
     }
 }

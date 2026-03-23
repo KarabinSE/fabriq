@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Seeders;
+namespace Karabin\Fabriq\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

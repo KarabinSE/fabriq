@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
 class MenuFeatureTest extends AdminUserTestCase
@@ -11,7 +11,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_get_all_menus()
     {
         // Arrange
-        $menus = \Ikoncept\Fabriq\Models\Menu::factory()->count(2)->create();
+        $menus = \Karabin\Fabriq\Models\Menu::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/menus');
@@ -25,7 +25,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_menu()
     {
         // Arrange
-        $menus = \Ikoncept\Fabriq\Models\Menu::factory()->count(2)->create();
+        $menus = \Karabin\Fabriq\Models\Menu::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/menus/'.$menus->first()->id);
@@ -61,10 +61,30 @@ class MenuFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
+    public function it_can_store_a_new_menu_when_webhooks_are_enabled_without_an_endpoint()
+    {
+        // Arrange
+        $this->withoutExceptionHandling();
+        config()->set('fabriq.webhooks.enabled', true);
+        config()->set('fabriq.webhooks.endpoint', null);
+
+        // Act
+        $response = $this->json('POST', '/menus', [
+            'name' => 'Webhookless menu',
+        ]);
+
+        // Assert
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('menus', [
+            'name' => 'Webhookless menu',
+        ]);
+    }
+
+    /** @test **/
     public function it_can_update_a_menu()
     {
         // Arrange
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
 
         // Act
         $response = $this->json('PATCH', '/menus/'.$menu->id, [
@@ -82,7 +102,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_menu()
     {
         // Arrange
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/menus/'.$menu->id);
@@ -99,11 +119,11 @@ class MenuFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create([
             'slug' => 'main_menu',
             'name' => 'Huvudmeny',
         ]);
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
         $field = RevisionTemplateField::factory()->create([
@@ -111,21 +131,21 @@ class MenuFeatureTest extends AdminUserTestCase
             'key' => 'page_title',
             'translated' => true,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
+        $page = \Karabin\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
         $page->updateContent(['page_title' => 'En titel'], 'en');
         $page->save();
 
-        $page2 = \Ikoncept\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
+        $page2 = \Karabin\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
         $page2->updateContent(['page_title' => 'En annan titel'], 'en');
         $page2->save();
-        $first = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
             'type' => 'internal',
             'page_id' => $page->id,
         ]);
-        $second = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $second = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $first->id,

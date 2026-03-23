@@ -187,7 +187,7 @@
                             class="flex space-x-2"
                         >
                             <UiBadge
-                                v-for="(tag, index) in item.tags.data"
+                                v-for="(tag, index) in item.tags"
                                 :key="index"
                             >{{ tag.name }}</UiBadge>
                         </span>

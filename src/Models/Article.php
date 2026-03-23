@@ -1,11 +1,11 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Carbon\Carbon;
-use Ikoncept\Fabriq\ContentGetters\ImageGetter;
-use Ikoncept\Fabriq\Database\Factories\ArticleFactory;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\Database\Factories\ArticleFactory;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;

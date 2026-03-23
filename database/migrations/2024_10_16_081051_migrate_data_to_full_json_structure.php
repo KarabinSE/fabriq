@@ -1,6 +1,6 @@
 <?php
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Migrations\Migration;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
 

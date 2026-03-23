@@ -161,7 +161,7 @@ export default {
                 }
                 const { data } = await Video.show(id, payload)
                 this.video = data
-                this.tags = [...data.tags.data]
+                this.tags = [...data.tags]
             } catch (error) {
                 console.error(error)
             }

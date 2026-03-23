@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\ContentGetters\ImageGetter;
-use Ikoncept\Fabriq\Database\Factories\ContactFactory;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\Database\Factories\ContactFactory;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
