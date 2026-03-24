@@ -66,6 +66,10 @@ parameters:
         -
             message: '#implicitly nullable via default value null#'
             path: ./src/Transformers/UserImageTransformer.php
+        -
+            identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
         # -
 
         #     message: '#$view of function view expects view-string#'
@@ -79,5 +83,3 @@ parameters:
         - src/Console/*
         - src/RouteRegistrar.php
 
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false

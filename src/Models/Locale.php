@@ -32,22 +32,4 @@ class Locale extends Model
                 });
         });
     }
-
-    /**
-     * @param  array<int|string, mixed>  $value
-     */
-    private function containsIncompleteClass(array $value): bool
-    {
-        foreach ($value as $item) {
-            if (is_object($item) && $item instanceof \__PHP_Incomplete_Class) {
-                return true;
-            }
-
-            if (is_array($item) && $this->containsIncompleteClass($item)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

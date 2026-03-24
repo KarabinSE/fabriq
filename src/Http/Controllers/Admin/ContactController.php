@@ -5,7 +5,6 @@ namespace Karabin\Fabriq\Http\Controllers\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -136,35 +135,6 @@ class ContactController extends AdminController
         }
 
         return Str::startsWith($sort, '-') ? '-'.$column : $column;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function transformContacts(LengthAwarePaginator $paginator): array
-    {
-        $items = [];
-
-        foreach ($paginator->items() as $contact) {
-            if (! $contact instanceof Contact) {
-                continue;
-            }
-
-            $items[] = [
-                'id' => $contact->id,
-                'name' => $contact->name,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'mobile' => $contact->mobile,
-                'sortindex' => $contact->sortindex,
-                'published' => (bool) $contact->published,
-                'imageThumbUrl' => data_get($contact->image, 'thumb_src'),
-                'tags' => $contact->tags->pluck('name')->values()->all(),
-                'editPath' => '/admin/contacts/'.$contact->id.'/edit',
-            ];
-        }
-
-        return $items;
     }
 
     /**
