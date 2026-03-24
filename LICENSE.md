@@ -1,6 +1,7 @@
 MIT License
 
 Copyright (c) 2020-2025 Ikoncept AB
+
 Copyright (c) 2026-present Karabin AB
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
