@@ -8,6 +8,10 @@
 
 ## Fabriq CMS
 
+## Upgrade guides
+
+- See [UPGRADE-v3.md](UPGRADE-v3.md) for upgrading an existing project from v2.x to v3.x.
+
 ## Installation instructions 💻
 
 Add the customer repository url for the make-user-command in your `composer.json` file:
