@@ -183,7 +183,7 @@ export default {
             this.$eventBus.$on('image-selected', this.setImage)
         }
     },
-    beforeDestroy () {
+    beforeUnmount () {
         this.$refs[this.randomRef].removeEventListener('dragover', this.handleDragOver)
         this.$refs[this.randomRef].removeEventListener('dragleave', this.handleDragLeave)
     },

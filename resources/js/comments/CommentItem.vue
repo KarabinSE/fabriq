@@ -8,7 +8,7 @@
         <div class="relative flex items-start space-x-3">
             <div class="relative z-10">
                 <UiAvatar
-                    :user="comment.user.data"
+                    :user="comment.user"
                     :class="isChild ? 'w-6 h-6' : 'w-10 h-10'"
                     class="flex items-center justify-center object-cover mt-1.5 bg-gray-400 rounded-full ring-1 ring-royal-500"
                 />
@@ -45,7 +45,7 @@
                             <div class="pr-4">
                                 <span
                                     class="text-xs font-medium text-gray-900"
-                                    v-text="isOwnedByUser ? 'Du' : comment.user.data.name"
+                                    v-text="isOwnedByUser ? 'Du' : comment.user.name"
                                 />
                                 <span class="text-xs text-gray-500">för {{ comment.created_at | localTime(null, true) }}</span>
                             </div>
@@ -61,7 +61,7 @@
                             <span class="inline-block px-2 py-1 text-xs italic rounded-md text-neutral-600 ">
                                 <span
                                     class="text-xs font-medium text-neutral-600 "
-                                    v-text="isOwnedByUser ? 'Du' : comment.user.data.name"
+                                    v-text="isOwnedByUser ? 'Du' : comment.user.name"
                                 />
                                 tog bort kommentaren {{ comment.anonmyzed_at | localTime }}</span>
                         </div>
@@ -142,7 +142,7 @@ export default {
     },
     computed: {
         isOwnedByUser () {
-            return this.user.email === this.comment.user.data.email
+            return this.user.email === this.comment.user.email
         },
         user () {
             return this.$store.getters['user/user']

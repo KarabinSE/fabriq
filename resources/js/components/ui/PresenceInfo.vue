@@ -124,7 +124,7 @@ export default {
         this.$eventBus.$on('user-asked-to-leave-echo', this.notifyUser)
         this.$eventBus.$on('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$eventBus.$off('user-asked-to-leave-echo', this.notifyUser)
         this.$eventBus.$off('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },

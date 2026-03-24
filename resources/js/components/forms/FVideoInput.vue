@@ -180,7 +180,7 @@ export default {
             this.$eventBus.$on('video-selected', this.setVideo)
         }
     },
-    beforeDestroy () {
+    beforeUnmount () {
         this.$refs[this.randomRef].removeEventListener('dragover', this.handleDragOver)
         this.$refs[this.randomRef].removeEventListener('dragleave', this.handleDragLeave)
     },

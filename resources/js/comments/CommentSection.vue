@@ -92,7 +92,7 @@ export default {
         this.$eventBus.$on('open-comment-section', this.openCommentSection)
         this.$eventBus.$on('comment-posted-echo', this.fetchComments)
     },
-    beforeDestroy () {
+    beforeUnmount () {
         this.$eventBus.$off('open-comment-section', this.openCommentSection)
         this.$eventBus.$off('comment-posted-echo', this.fetchComments)
         this.$refs.comments.removeEventListener('keydown', this.listenForMetaPlusEnter)

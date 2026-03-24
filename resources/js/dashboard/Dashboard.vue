@@ -20,7 +20,7 @@
                     <!-- This will be the popover target (for the events and position) -->
 
                     <!-- This will be the content of the popover -->
-                    <template slot="popover">
+                    <template #popover>
                         <input
                             v-model="msg"
                             class="tooltip-content"

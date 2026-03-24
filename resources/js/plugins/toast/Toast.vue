@@ -219,7 +219,7 @@ export default {
 
         eventBus.$on('toast-clear', this.close)
     },
-    beforeDestroy () {
+    beforeUnmount () {
         eventBus.$off('toast-clear', this.close)
     },
     methods: {

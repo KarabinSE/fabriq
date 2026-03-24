@@ -66,7 +66,7 @@ export default {
         this.selectTab(0)
         this.$eventBus.$on('set-active-tab', this.handleActiveTabEvent)
     },
-    beforeDestroy () {
+    beforeUnmount () {
         this.$eventBus.$off('set-active-tab', this.handleActiveTabEvent)
     },
     methods: {

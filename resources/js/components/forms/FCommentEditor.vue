@@ -106,7 +106,7 @@ export default {
             this.initEditor()
         }, 100)
     },
-    beforeDestroy () {
+    beforeUnmount () {
         this.$eventBus.$off('comment-posted', this.clearContent)
         this.editor.destroy()
     },

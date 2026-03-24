@@ -36,7 +36,7 @@ export default {
             }
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$eventBus.$off('page-updated', this.fetchPaths)
     },
     mounted() {
