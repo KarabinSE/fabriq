@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Database\Seeders\DatabaseSeeder;
-use Ikoncept\Fabriq\Database\Seeders\PageTemplateSeeder;
-use Ikoncept\Fabriq\Models\Page;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
+use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\DB;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
@@ -22,7 +22,7 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_page()
     {
         // Arrange
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
@@ -43,7 +43,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
             'revision' => 1,
@@ -93,7 +93,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
             'revision' => 1,
@@ -122,11 +122,11 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
-        $otherPage = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $otherPage = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den andra startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
@@ -149,12 +149,12 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
         DB::table('slugs')->insert([
-            'model_id' => \Ikoncept\Fabriq\Models\Page::factory()->create()->id,
+            'model_id' => \Karabin\Fabriq\Models\Page::factory()->create()->id,
             'model_type' => 'fabriq_page',
             'slug' => 'en-mycket-bra-titel',
             'locale' => app()->getLocale(),
@@ -210,7 +210,7 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_store_a_new_a_page()
     {
         // Act
-        $root = \Ikoncept\Fabriq\Models\Page::factory()->create(['name' => 'root']);
+        $root = \Karabin\Fabriq\Models\Page::factory()->create(['name' => 'root']);
         $response = $this->json('POST', '/pages', [
             'name' => 'Ny sida',
             'template_id' => 1,
@@ -229,7 +229,7 @@ class PagesFeatureTest extends AdminUserTestCase
     /** @test **/
     public function it_can_delete_a_page()
     {
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
         ]);
@@ -248,11 +248,11 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_get_a_page_via_slug()
     {
         // Arrange
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
         $page->updateContent([
             'page_title' => 'The page title for the page',
         ], $page->revision, 'sv');
-        $otherPage = \Ikoncept\Fabriq\Models\Page::factory()->create();
+        $otherPage = \Karabin\Fabriq\Models\Page::factory()->create();
         $otherPage->updateContent([
             'page_title' => 'The page title for the page',
         ], $page->revision, 'sv');
@@ -269,7 +269,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
             'revision' => 1,
@@ -294,7 +294,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
             'revision' => 1,
@@ -326,7 +326,7 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_publish_a_page()
     {
         // Arrange
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'En sida som ska publiceras',
             'template_id' => RevisionTemplate::all()->first()->id,
             'revision' => 1,
@@ -364,18 +364,18 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_search_for_a_page()
     {
         // Arrange
-        $page = \Ikoncept\Fabriq\Models\Page::factory()
+        $page = \Karabin\Fabriq\Models\Page::factory()
             ->create([
                 'name' => 'Landningssida',
             ]);
-        $otherPage = \Ikoncept\Fabriq\Models\Page::factory()
+        $otherPage = \Karabin\Fabriq\Models\Page::factory()
             ->create([
                 'name' => 'Fooll',
             ]);
         $template = RevisionTemplate::factory()->create([
             'name' => 'Landningssida',
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()
+        $page = \Karabin\Fabriq\Models\Page::factory()
             ->create([
                 'name' => 'Första sidan',
                 'template_id' => $template->id,
@@ -394,7 +394,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'template_id' => RevisionTemplate::all()->first()->id,
             'revision' => 1,
         ]);
@@ -418,8 +418,8 @@ class PagesFeatureTest extends AdminUserTestCase
     public function it_can_have_a_tree_structure()
     {
         // Arrange
-        $parentPage = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
+        $parentPage = \Karabin\Fabriq\Models\Page::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
         $page->parent_id = $parentPage->id;
         $page->save();
 

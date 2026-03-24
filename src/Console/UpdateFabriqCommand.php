@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -52,25 +52,25 @@ class UpdateFabriqCommand extends Command
         }
 
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-frontend-assets',
             '--force' => true,
         ]);
 
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-views',
             '--force' => true,
         ]);
 
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-images',
             '--force' => true,
         ]);
 
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-public-images',
             '--force' => true,
         ]);

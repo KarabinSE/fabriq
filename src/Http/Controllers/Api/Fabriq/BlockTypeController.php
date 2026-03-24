@@ -1,34 +1,36 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreateBlockTypeRequest;
-use Ikoncept\Fabriq\Http\Requests\UpdateBlockTypeRequest;
-use Ikoncept\Fabriq\Models\BlockType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\BlockTypeData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateBlockTypeRequest;
+use Karabin\Fabriq\Http\Requests\UpdateBlockTypeRequest;
+use Karabin\Fabriq\Models\BlockType;
+use Spatie\LaravelData\DataCollection;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class BlockTypeController extends ApiController
+class BlockTypeController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
         $blockTypes = QueryBuilder::for(BlockType::where('active', 1))
             ->allowedSorts('name', 'id')
             ->defaultSort('name')
             ->get();
 
-        return $this->respondWithCollection($blockTypes, Fabriq::getTransformerFor('blockType'));
+        return BlockTypeData::collect($blockTypes, DataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
-    public function store(CreateBlockTypeRequest $request): JsonResponse
+    public function store(CreateBlockTypeRequest $request): Response
     {
-        $blockType = new BlockType();
+        $blockType = new BlockType;
         $blockType->fill($request->validated());
         $blockType->active = true;
         $blockType->type = 'block';
@@ -40,16 +42,21 @@ class BlockTypeController extends ApiController
 
         $blockType->save();
 
-        return $this->respondWithItem($blockType, Fabriq::getTransformerFor('blockType'), 201);
+        return BlockTypeData::fromModel($blockType)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 
-    public function update(UpdateBlockTypeRequest $request, int $id): JsonResponse
+    public function update(UpdateBlockTypeRequest $request, int $id): Response
     {
         $blockType = BlockType::findOrFail($id);
         $blockType->fill($request->validated());
         $blockType->save();
 
-        return $this->respondWithItem($blockType, Fabriq::getTransformerFor('blockType'));
+        return BlockTypeData::fromModel($blockType)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -57,6 +64,10 @@ class BlockTypeController extends ApiController
         $blockType = BlockType::findOrFail($id);
         $blockType->delete();
 
-        return $this->respondWithSuccess('Block type has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Block type has been deleted',
+        ]);
     }
 }

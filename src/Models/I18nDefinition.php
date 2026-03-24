@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Karabin\TranslatableRevisions\Models\I18nDefinition as BaseI18nDefinition;
 use Spatie\MediaLibrary\HasMedia;

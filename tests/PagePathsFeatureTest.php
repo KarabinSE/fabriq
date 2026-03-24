@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Models\Menu;
-use Ikoncept\Fabriq\Models\MenuItem;
-use Ikoncept\Fabriq\Models\Page;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Models\Menu;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 

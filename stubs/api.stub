@@ -1,6 +1,6 @@
 <?php
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 
 Fabriq::routes(function ($router) {
     $router->forDevProtected();

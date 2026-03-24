@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
@@ -25,7 +25,7 @@ class PagePreviewFeatureTest extends AdminUserTestCase
             'sort_index' => 40,
             'translated' => true,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => $template->id,
             'revision' => 1,

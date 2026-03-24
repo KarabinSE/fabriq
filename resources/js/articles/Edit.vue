@@ -136,7 +136,7 @@ export default {
                 image: { id: 0 }
             },
             queryParams: {
-                include: 'content,template,template.groupedFields'
+                include: 'content,template'
             },
             usersIdle: []
         }
@@ -153,7 +153,7 @@ export default {
                 }
                 const { data } = await Article.show(this.id, payload)
                 this.article = data
-                this.content = { ...data.content.data }
+                this.content = { ...this.article.content }
             } catch (error) {
                 console.error(error)
             }

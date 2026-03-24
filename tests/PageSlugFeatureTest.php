@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Models\Slug;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Models\Slug;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class PageSlugFeatureTest extends AdminUserTestCase
 {
@@ -12,8 +12,8 @@ class PageSlugFeatureTest extends AdminUserTestCase
     {
         // Arrange
         // $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $otherPage = \Ikoncept\Fabriq\Models\Page::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
+        $otherPage = \Karabin\Fabriq\Models\Page::factory()->create();
         $slug = Slug::create([
             'model_type' => 'fabriq_page',
             'model_id' => $page->id,

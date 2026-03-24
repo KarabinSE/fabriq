@@ -1,44 +1,54 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\ClearNotificationRequest;
-use Ikoncept\Fabriq\Models\Notification;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\NotificationData;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\ClearNotificationRequest;
+use Karabin\Fabriq\Models\Notification;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class NotificationController extends ApiController
+class NotificationController extends Controller
 {
-    use ApiControllerTrait;
+    private int $defaultPageSize = 100;
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('notification')::RELATIONSHIPS);
+        $number = $request->integer('number', $this->defaultPageSize);
+
         $notifications = QueryBuilder::for(Fabriq::getFqnModel('notification'))
             ->allowedFilters([
                 AllowedFilter::scope('unseen'),
                 AllowedFilter::scope('seen'),
             ])
+            ->allowedIncludes(...array_map(
+                fn (string $include) => AllowedInclude::relationship($include),
+                Notification::RELATIONSHIPS,
+            ))
             ->where('user_id', $request->user()->id)
-            ->with($eagerLoad)
             ->orderBy('created_at', 'desc')
-            ->paginate($this->number);
+            ->paginate($number);
 
-        return $this->respondWithPaginator($notifications, Fabriq::getTransformerFor('notification'));
+        return NotificationData::collect($notifications, PaginatedDataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
-    public function update(ClearNotificationRequest $request, int $id): JsonResponse
+    public function update(ClearNotificationRequest $request, int $id): Response
     {
         $notification = Notification::findOrFail($id);
         $notification->cleared_at = now();
 
         $notification->save();
 
-        return $this->respondWithItem($notification, Fabriq::getTransformerFor('notification'));
+        return NotificationData::fromModel($notification)
+            ->wrap('data')
+            ->toResponse($request);
     }
 }

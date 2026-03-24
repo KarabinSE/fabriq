@@ -1,24 +1,19 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Page;
-use Illuminate\Http\JsonResponse;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Illuminate\Http\Request;
+use Karabin\Fabriq\Data\PageData;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class PublishPageController extends ApiController
+class PublishPageController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Publish a page revision.
-     *
-     * @param  int  $pageId
-     * @return JsonResponse
      */
-    public function store(int $pageId): JsonResponse
+    public function store(Request $request, int $pageId): Response
     {
         $page = Fabriq::getFqnModel('page')::withoutEvents(function () use ($pageId) {
             $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
@@ -27,6 +22,9 @@ class PublishPageController extends ApiController
             return $page;
         });
 
-        return $this->respondWithItem($page, Fabriq::getTransformerFor('page'));
+        return PageData::fromModel($page)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(200);
     }
 }

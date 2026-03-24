@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Requests;
+namespace Karabin\Fabriq\Http\Requests;
 
-use Ikoncept\Fabriq\Models\Comment;
+use Karabin\Fabriq\Models\Comment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCommentRequest extends FormRequest

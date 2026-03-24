@@ -1,9 +1,9 @@
 <?php
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Comment;
-use Ikoncept\Fabriq\Models\SearchTerm;
-use Ikoncept\Fabriq\Models\Slug;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Comment;
+use Karabin\Fabriq\Models\SearchTerm;
+use Karabin\Fabriq\Models\Slug;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Karabin\TranslatableRevisions\Models\I18nTerm;

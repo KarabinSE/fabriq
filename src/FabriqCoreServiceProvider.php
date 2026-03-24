@@ -1,35 +1,32 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
 use Dyrynda\Artisan\Console\Commands\MakeUser;
-use Ikoncept\Fabriq\Console\AddRoleToUserCommand;
-use Ikoncept\Fabriq\Console\ControllerMakeCommand;
-use Ikoncept\Fabriq\Console\CreateMenuCommand;
-use Ikoncept\Fabriq\Console\CreatePageRootCommand;
-use Ikoncept\Fabriq\Console\CreatePageTemplate;
-use Ikoncept\Fabriq\Console\InstallFabriqCommand;
-use Ikoncept\Fabriq\Console\MakeRevisionField;
-use Ikoncept\Fabriq\Console\PublishNotification;
-use Ikoncept\Fabriq\Console\ResourceMakeCommand;
-use Ikoncept\Fabriq\Console\SendNotificationReminders;
-use Ikoncept\Fabriq\Console\TransformerMakeCommand;
-use Ikoncept\Fabriq\Console\UpdateFabriqCommand;
-use Ikoncept\Fabriq\Console\VueApiModelMakeCommand;
-use Ikoncept\Fabriq\Console\VueEditTemplateMakeCommand;
-use Ikoncept\Fabriq\Console\VueIndexTemplateMakeCommand;
-use Ikoncept\Fabriq\Console\VueResourceMakeCommand;
-use Ikoncept\Fabriq\Repositories\Decorators\CachingMenuRepository;
-use Ikoncept\Fabriq\Repositories\Decorators\CachingPageRepository;
-use Ikoncept\Fabriq\Repositories\EloquentMenuRepository;
-use Ikoncept\Fabriq\Repositories\EloquentPageRepository;
-use Ikoncept\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Infab\Core\CoreServiceProvider;
+use Karabin\Fabriq\Console\AddRoleToUserCommand;
+use Karabin\Fabriq\Console\ControllerMakeCommand;
+use Karabin\Fabriq\Console\CreateMenuCommand;
+use Karabin\Fabriq\Console\CreatePageRootCommand;
+use Karabin\Fabriq\Console\CreatePageTemplate;
+use Karabin\Fabriq\Console\InstallFabriqCommand;
+use Karabin\Fabriq\Console\MakeRevisionField;
+use Karabin\Fabriq\Console\PublishNotification;
+use Karabin\Fabriq\Console\ResourceMakeCommand;
+use Karabin\Fabriq\Console\SendNotificationReminders;
+use Karabin\Fabriq\Console\UpdateFabriqCommand;
+use Karabin\Fabriq\Console\VueApiModelMakeCommand;
+use Karabin\Fabriq\Console\VueEditTemplateMakeCommand;
+use Karabin\Fabriq\Console\VueIndexTemplateMakeCommand;
+use Karabin\Fabriq\Console\VueResourceMakeCommand;
+use Karabin\Fabriq\Repositories\Decorators\CachingMenuRepository;
+use Karabin\Fabriq\Repositories\Decorators\CachingPageRepository;
+use Karabin\Fabriq\Repositories\EloquentMenuRepository;
+use Karabin\Fabriq\Repositories\EloquentPageRepository;
+use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
 use Karabin\TranslatableRevisions\TranslatableRevisionsServiceProvider;
-use League\Fractal\Manager;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 use Spatie\QueryBuilder\QueryBuilderServiceProvider;
@@ -107,6 +104,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/fabriq.php', 'fabriq');
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
+        $this->mergeConfigFrom(__DIR__.'/../config/data.php', 'data');
         $this->mergeConfigFrom(
             __DIR__.'/../config/ikoncept-websockets.php',
             'broadcasting.connections'
@@ -115,7 +113,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
         $this->app->register(BroadcastServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
         $this->app->register(TranslatableRevisionsServiceProvider::class);
-        $this->app->register(CoreServiceProvider::class);
         $this->app->register(PermissionServiceProvider::class);
         $this->app->register(MediaLibraryServiceProvider::class);
         $this->app->register(QueryBuilderServiceProvider::class);
@@ -138,7 +135,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
             PublishNotification::class,
             ResourceMakeCommand::class,
             SendNotificationReminders::class,
-            TransformerMakeCommand::class,
             VueApiModelMakeCommand::class,
             VueEditTemplateMakeCommand::class,
             VueIndexTemplateMakeCommand::class,
@@ -155,8 +151,8 @@ class FabriqCoreServiceProvider extends ServiceProvider
             return $cachingRepo;
         });
 
-        $this->app->singleton('Ikoncept\Fabriq\Repositories\Interfaces\MenuRepositoryInterface', function () {
-            $baseRepo = new EloquentMenuRepository(new Manager, Fabriq::getModelClass('menuItem'), Fabriq::getModelClass('menu'));
+        $this->app->singleton('Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface', function () {
+            $baseRepo = new EloquentMenuRepository(Fabriq::getModelClass('menuItem'), Fabriq::getModelClass('menu'));
             $cachingRepo = new CachingMenuRepository($baseRepo, $this->app->get('cache.store'));
 
             return $cachingRepo;
@@ -213,7 +209,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js' => resource_path('fabriq/images/'),
             __DIR__.'/../resources/js' => resource_path('js'),
             __DIR__.'/../resources/fonts' => public_path('fonts'),
-            __DIR__.'/../vite.config.js' => 'vite.config.js',
+            __DIR__.'/../vite.config.mts' => 'vite.config.mts',
             __DIR__.'/../postcss.config.js' => 'postcss.config.js',
             __DIR__.'/../package.json' => 'package.json',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',

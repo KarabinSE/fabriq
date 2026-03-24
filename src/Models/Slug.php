@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

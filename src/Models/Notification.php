@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\Database\Factories\NotificationFactory;
-use Ikoncept\Fabriq\Events\NotificationDeleted;
+use Karabin\Fabriq\Database\Factories\NotificationFactory;
+use Karabin\Fabriq\Events\NotificationDeleted;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

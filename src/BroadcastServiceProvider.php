@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
 use Illuminate\Broadcasting\BroadcastServiceProvider as ServiceProvider;
 // use Illuminate\Support\ServiceProvider;

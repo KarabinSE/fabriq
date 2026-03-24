@@ -1,16 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class PagePathController
+class PagePathController extends Controller
 {
-    use ApiControllerTrait;
-
     public function index(Request $request, int $id): JsonResponse
     {
         $page = Fabriq::getModelClass('page')->whereId($id)
@@ -19,6 +17,6 @@ class PagePathController
 
         $paths = $page->transformPaths();
 
-        return $this->respondWithArray(['data' => $paths]);
+        return response()->json(['data' => $paths]);
     }
 }

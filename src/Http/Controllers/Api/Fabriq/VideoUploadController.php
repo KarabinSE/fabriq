@@ -1,18 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\VideoData;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class VideoUploadController extends ApiController
+class VideoUploadController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): Response
     {
         $video = Fabriq::getModelClass('video');
         $video->save();
@@ -24,6 +22,8 @@ class VideoUploadController extends ApiController
             throw $exception;
         }
 
-        return $this->respondWithArray($video->toArray());
+        return VideoData::fromModel($video)
+            ->toResponse($request)
+            ->setStatusCode(200);
     }
 }

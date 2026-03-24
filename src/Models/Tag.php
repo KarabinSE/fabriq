@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Spatie\Tags\Tag as SpatieTag;
 

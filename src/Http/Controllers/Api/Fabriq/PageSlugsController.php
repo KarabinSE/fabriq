@@ -1,22 +1,19 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Repositories\EloquentPageRepository;
-use Ikoncept\Fabriq\Transformers\LivePageTransformer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\LivePageData;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Repositories\EloquentPageRepository;
+use Symfony\Component\HttpFoundation\Response;
 
-class PageSlugsController extends ApiController
+class PageSlugsController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function show(EloquentPageRepository $repo, Request $request, string $slug): JsonResponse
+    public function show(EloquentPageRepository $repo, Request $request, string $slug): Response
     {
         $result = $repo->findBySlug($slug);
 
-        return $this->respondWithItem($result, new LivePageTransformer);
+        return LivePageData::fromModel($result)->wrap('data')->toResponse($request);
     }
 }

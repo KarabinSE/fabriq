@@ -1,11 +1,11 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\Actions\BustCacheWithWebhook;
-use Ikoncept\Fabriq\Database\Factories\MenuFactory;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Services\CacheBuster;
+use Karabin\Fabriq\Actions\BustCacheWithWebhook;
+use Karabin\Fabriq\Database\Factories\MenuFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Services\CacheBuster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;

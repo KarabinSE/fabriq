@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache" backupStaticProperties="false">
   <testsuites>
-    <testsuite name="Ikoncept Test Suite">
+    <testsuite name="Karabin Test Suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
@@ -9,6 +9,8 @@
     <env name="APP_KEY" value="base64:3mlqMTYe31YTjeQvu9+y2fdCwOIzbx/R2f+4x9PbBlg="/>
     <env name="DB_CONNECTION" value="testing"/>
     <env name="APP_ENV" value="testing"/>
+    <env name="CACHE_STORE" value="array"/>
+    <env name="QUEUE_CONNECTION" value="sync"/>
     <env name="FFMPEG_PATH" value="ffmpeg"/>
     <env name="FFPROBE_PATH" value="ffprobe"/>
     <env name="FABRIQ_WEBHOOK_ENABLED" value="false"/>

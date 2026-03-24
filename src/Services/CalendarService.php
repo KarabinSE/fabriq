@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Services;
+namespace Karabin\Fabriq\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;

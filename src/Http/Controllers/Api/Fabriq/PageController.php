@@ -1,72 +1,97 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreatePageRequest;
-use Ikoncept\Fabriq\Models\Page;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\PageData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreatePageRequest;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class PageController extends ApiController
+class PageController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Return index of pages.
-     *
-     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getModelClass('page')::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+        $allowedIncludes = [
+            ...Fabriq::getModelClass('page')::RELATIONSHIPS,
+            AllowedInclude::relationship('slugs'),
+            AllowedInclude::relationship('children'),
+            AllowedInclude::custom('content', new NoOpInclude),
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('template.groupedFields', new NoOpInclude),
+        ];
+
         $pages = QueryBuilder::for(Fabriq::getFqnModel('page'))
             ->allowedSorts('name', 'slug', 'id', 'created_at', 'updated_at')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
                 AllowedFilter::exact('template_id'),
             ])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->allowedIncludes(...$allowedIncludes)
+            ->paginate($number);
 
-        return $this->respondWithPaginator($pages, Fabriq::getTransformerFor('page'));
+        return PageData::collect($pages, PaginatedDataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getModelClass('page')::RELATIONSHIPS);
+        $allowedIncludes = [
+            ...Fabriq::getModelClass('page')::RELATIONSHIPS,
+            AllowedInclude::relationship('slugs'),
+            AllowedInclude::relationship('children'),
+            AllowedInclude::custom('content', new NoOpInclude),
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('template.groupedFields', new NoOpInclude),
+        ];
 
         $page = QueryBuilder::for(Fabriq::getFqnModel('page'))
+            ->allowedIncludes(...$allowedIncludes)
             ->where('id', $id)
-            ->with($eagerLoad)
             ->firstOrFail();
 
-        return $this->respondWithItem($page, Fabriq::getTransformerFor('page'));
+        /** @var Page $page */
+
+        return PageData::fromModel($page)->wrap('data')->toResponse($request);
     }
 
     /**
      * Update the specified resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getModelClass('page')::RELATIONSHIPS);
+        $allowedIncludes = [
+            ...Fabriq::getModelClass('page')::RELATIONSHIPS,
+            AllowedInclude::relationship('slugs'),
+            AllowedInclude::relationship('children'),
+            AllowedInclude::custom('content', new NoOpInclude),
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('template.groupedFields', new NoOpInclude),
+        ];
 
-        $page = Fabriq::getModelClass('page')->where('id', $id)
-            ->with($eagerLoad)
+        $page = QueryBuilder::for(Fabriq::getFqnModel('page'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
             ->firstOrFail();
+
+        /** @var Page $page */
         $page->name = $request->name;
         $page->touch();
         $page->localizedContent = $request->localizedContent;
@@ -74,15 +99,13 @@ class PageController extends ApiController
 
         $page->save();
 
-        return $this->respondWithItem($page, Fabriq::getTransformerFor('page'));
+        return PageData::fromModel($page)->wrap('data')->toResponse($request);
     }
 
     /**
      * Create a new resource.
-     *
-     * @return JsonResponse
      */
-    public function store(CreatePageRequest $request)
+    public function store(CreatePageRequest $request): Response
     {
         $pageRoot = Fabriq::getModelClass('page')->whereNull('parent_id')
             ->select('id')
@@ -95,21 +118,25 @@ class PageController extends ApiController
         $page->updated_by = $request->user()->id;
         $page->save();
 
-        return $this->respondWithItem($page, Fabriq::getTransformerFor('page'), 201);
+        return PageData::fromModel($page)
+            ->wrap('data')
+            ->toResponse($request)
+            ->setStatusCode(201);
     }
 
     /**
      * Create a new resource.
-     *
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         $page = Fabriq::getModelClass('page')->where('id', $id)->firstOrFail();
 
         $page->delete();
 
-        return $this->respondWithSuccess('Page has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Page has been deleted',
+        ]);
     }
 }

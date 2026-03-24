@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\I18nDefinition;
-use Ikoncept\Fabriq\Models\Page;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\I18nDefinition;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Karabin\TranslatableRevisions\Events\TranslatedRevisionUpdated;
@@ -19,24 +19,24 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $first = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
         ]);
-        $second = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $second = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $first->id,
         ]);
-        $third = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $third = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $second->id,
         ]);
-        $standAlone = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $standAlone = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => null,
             'sortindex' => 20,
@@ -58,21 +58,21 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $first = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
         ]);
-        $second = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $second = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $first->id,
         ]);
 
-        $treeData = \Ikoncept\Fabriq\Models\MenuItem::descendantsOf($root->id)->toTree();
+        $treeData = \Karabin\Fabriq\Models\MenuItem::descendantsOf($root->id)->toTree();
 
         // Act
         $response = $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
@@ -89,12 +89,12 @@ class MenuItemFeatureTest extends AdminUserTestCase
         // Arrange
         Event::fake(TranslatedRevisionUpdated::class);
 
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $first = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
@@ -128,12 +128,12 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $first = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
+        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
@@ -155,11 +155,11 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
 
         // Act
         $response = $this->json('POST', '/menus/'.$menu->id.'/items', [
@@ -183,8 +183,8 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
 
@@ -235,15 +235,15 @@ class MenuItemFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $item = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $item = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $root->id,
         ]);
-        $subItem = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $subItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $item->id,
         ]);
@@ -266,8 +266,8 @@ class MenuItemFeatureTest extends AdminUserTestCase
     public function it_can_include_localized_content()
     {
         // Arrange
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
 
@@ -286,7 +286,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'type' => 'text',
             'translated' => true,
         ]);
-        $menuItem = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menuItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu,
             'type' => 'external',
         ]);
@@ -323,8 +323,8 @@ class MenuItemFeatureTest extends AdminUserTestCase
     public function it_can_update_a_menu_item()
     {
         // Arrange
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create();
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
 
@@ -343,7 +343,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'type' => 'text',
             'translated' => false,
         ]);
-        $menuItem = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menuItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu,
             'type' => 'external',
         ]);
@@ -386,11 +386,11 @@ class MenuItemFeatureTest extends AdminUserTestCase
         Schema::disableForeignKeyConstraints();
         Page::truncate();
         Schema::enableForeignKeyConstraints();
-        $menu = \Ikoncept\Fabriq\Models\Menu::factory()->create(['slug' => 'main_menu']);
-        $root = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create(['slug' => 'main_menu']);
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'template_id' => 3,
         ]);
 
@@ -400,17 +400,17 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'template_id' => 3,
         ]);
         $page->updateContent(['page_title' => 'The root page'], 'en');
-        $subPage = \Ikoncept\Fabriq\Models\Page::factory()->create([
+        $subPage = \Karabin\Fabriq\Models\Page::factory()->create([
             'template_id' => 3,
             'parent_id' => $page->id,
         ]);
         $subPage->updateContent(['page_title' => 'The child page'], 'en');
-        $menuItem = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $menuItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $root->id,
             'page_id' => $page->id,
         ]);
-        $subMenuItem = \Ikoncept\Fabriq\Models\MenuItem::factory()->create([
+        $subMenuItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'parent_id' => $menuItem->id,
             'page_id' => $subPage->id,

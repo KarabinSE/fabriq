@@ -3,67 +3,59 @@
 namespace {{ namespace }};
 
 use {{ namespacedModel }};
-use App\Http\Requests\Create{{ model }}Request;
-use App\Http\Requests\Update{{ model }}Request;
-use App\Transformers\{{ model }}Transformer;
-use Ikoncept\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Traits\ApiControllerTrait;
-use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
 class {{ class }} extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index() : JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad([]);
-        ${{ modelVariable }} = QueryBuilder::for({{ model }}::class)
+        $number = $request->integer('number', 20);
+        ${{ modelVariable }}s = QueryBuilder::for({{ model }}::class)
             ->allowedSorts(['id', 'created_at'])
             ->allowedFilters([])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->paginate($number);
 
-        return $this->respondWithPaginator(${{ modelVariable }}, new {{ model }}Transformer());
+        return response()->json(['data' => ${{ modelVariable }}s]);
     }
 
-    public function show(int $id) : JsonResponse
+    public function show(int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad([]);
-        ${{ modelVariable }} = {{ model }}::where('id', $id)
-            ->with($eagerLoad)
-            ->firstOrFail();
+        ${{ modelVariable }} = {{ model }}::where('id', $id)->firstOrFail();
 
-        return $this->respondWithItem(${{ modelVariable }}, new {{ model }}Transformer);
+        return response()->json(['data' => ${{ modelVariable }}]);
     }
 
-    public function store(Create{{ model }}Request $request) : JsonResponse
+    public function store(Request $request): Response
     {
         ${{ modelVariable }} = new {{ model }};
-        ${{ modelVariable }}->name = $request->name;
         ${{ modelVariable }}->save();
 
-        return $this->respondWithItem(${{ modelVariable }}, new {{ model }}Transformer, 201);
+        return response()->json(['data' => ${{ modelVariable }}], 201);
     }
 
-    public function update(Update{{ model }}Request $request, int $id) : JsonResponse
+    public function update(Request $request, int $id): Response
     {
         ${{ modelVariable }} = {{ model }}::findOrFail($id);
         ${{ modelVariable }}->fill($request->validated());
-
         ${{ modelVariable }}->save();
 
-        return $this->respondWithItem(${{ modelVariable }}, new {{ model }}Transformer);
+        return response()->json(['data' => ${{ modelVariable }}]);
     }
 
-    public function destroy(int $id) : JsonResponse
+    public function destroy(int $id): JsonResponse
     {
         ${{ modelVariable }} = {{ model }}::findOrFail($id);
         ${{ modelVariable }}->delete();
 
-        return $this->respondWithSuccess('The {{ model }} has been deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'The {{ modelVariable }} has been deleted successfully',
+        ]);
     }
-
 }

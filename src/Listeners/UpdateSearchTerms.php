@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Listeners;
+namespace Karabin\Fabriq\Listeners;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Helpers\RecursiveArrayValues;
-use Ikoncept\Fabriq\Models\SearchTerm;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Helpers\RecursiveArrayValues;
+use Karabin\Fabriq\Models\SearchTerm;
 use Karabin\TranslatableRevisions\Events\DefinitionsPublished;
 use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
 

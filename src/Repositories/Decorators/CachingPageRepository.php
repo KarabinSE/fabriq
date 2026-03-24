@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Repositories\Decorators;
+namespace Karabin\Fabriq\Repositories\Decorators;
 
-use Ikoncept\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
+use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\Log;
 

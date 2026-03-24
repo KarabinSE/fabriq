@@ -84,13 +84,13 @@
                         type="tel"
                         name="phone"
                     />
-                    <FInput
+                    <!-- <FInput
                         v-model="contact.mobile"
                         label="Mobil"
                         class="col-span-2 row-start-2"
                         type="tel"
                         name="mobile"
-                    />
+                    /> -->
                     <div class="col-span-4 row-start-2">
                         <FLabel>Sorteringsindex</FLabel>
                         <UiBadge>{{ contact.sortindex }}</UiBadge>
@@ -193,7 +193,7 @@ export default {
     },
     methods: {
         mapLocalizedContent (data) {
-            const localizedContent = { ...data.localizedContent.data }
+            const localizedContent = { ...data.localizedContent }
             Object.keys(localizedContent).forEach((item, key) => {
                 this.$set(this.localizedContent, item, { ...localizedContent[item].content })
             })
@@ -207,8 +207,8 @@ export default {
                 }
                 const { data } = await Contact.show(this.id, payload)
                 this.contact = data
-                this.content = { ...data.content.data }
-                this.tags = [...data.tags.data]
+                this.content = { ...data.content }
+                this.tags = [...data.tags]
                 this.mapLocalizedContent(data)
             } catch (error) {
                 console.error(error)

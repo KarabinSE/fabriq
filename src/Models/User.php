@@ -1,9 +1,7 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\Database\Factories\UserFactory;
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Karabin\Fabriq\Database\Factories\UserFactory;
+use Karabin\Fabriq\Fabriq;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail

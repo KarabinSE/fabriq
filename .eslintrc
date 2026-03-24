@@ -2,31 +2,39 @@
     "root": true,
     "parserOptions": {
         "parser": "@babel/eslint-parser",
-        "ecmaVersion": 2018,
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "extends": [
-        "plugin:vue/recommended"
+        "plugin:vue/vue3-recommended"
     ],
     "rules": {
-        "vue/max-attributes-per-line": ["error", {
-            "singleline": {
-              "max": 1
-            },
-            "multiline": {
-              "max": 1
+        "vue/max-attributes-per-line": [
+            "error",
+            {
+                "singleline": {
+                    "max": 1
+                },
+                "multiline": {
+                    "max": 1
+                }
             }
-        }],
+        ],
         "vue/custom-event-name-casing": [
             "error",
             "kebab-case",
             {
-              "ignores": []
+                "ignores": []
             }
         ],
-        "vue/multi-word-component-names": ["error", {
-            "ignores": ["Toast"]
-        }],
+        "vue/multi-word-component-names": [
+            "error",
+            {
+                "ignores": [
+                    "Toast"
+                ]
+            }
+        ],
         "vue/component-name-in-template-casing": [
             "error",
             "PascalCase",

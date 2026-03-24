@@ -15,7 +15,7 @@ class AddLandingPageTemplateToTemplatesTable extends Migration
     {
         if (! DB::table('revision_templates')->where('type', 'page')->first()) {
             Artisan::call('db:seed', [
-                '--class' => 'Ikoncept\Fabriq\Database\Seeders\PageTemplateSeeder',
+                '--class' => 'Karabin\Fabriq\Database\Seeders\PageTemplateSeeder',
                 '--force' => true,
             ]);
         }

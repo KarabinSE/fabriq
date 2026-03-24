@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Listeners;
+namespace Karabin\Fabriq\Listeners;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

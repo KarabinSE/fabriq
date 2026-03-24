@@ -1,18 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\FileData;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
-class FileUploadController extends ApiController
+class FileUploadController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): Response
     {
         $file = Fabriq::getModelClass('file');
         $file->save();
@@ -23,6 +21,8 @@ class FileUploadController extends ApiController
             throw $exception;
         }
 
-        return $this->respondWithArray($file->toArray());
+        return FileData::fromModel($file)
+            ->toResponse($request)
+            ->setStatusCode(200);
     }
 }

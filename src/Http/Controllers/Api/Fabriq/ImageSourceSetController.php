@@ -1,17 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\JsonResponse;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class ImageSourceSetController extends ApiController
+class ImageSourceSetController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Get src set data.
      */
@@ -39,7 +36,7 @@ class ImageSourceSetController extends ApiController
             'height',
         ))->render();
 
-        return $this->respondWithArray([
+        return response()->json([
             'data' => [
                 'html' => $srcset,
                 'srcset' => $media->getSrcset(''),

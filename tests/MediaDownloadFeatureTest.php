@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests;
+namespace Karabin\Fabriq\Tests;
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Http\UploadedFile;
 
 class MediaDownloadFeatureTest extends AdminUserTestCase

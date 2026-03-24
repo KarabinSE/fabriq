@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Carbon\CarbonImmutable;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
@@ -90,15 +90,15 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_get_all_events()
     {
         // Arrange
-        $event0 = \Ikoncept\Fabriq\Models\Event::factory()->create();
+        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
         ], 'sv');
-        $event1 = \Ikoncept\Fabriq\Models\Event::factory()->create();
+        $event1 = \Karabin\Fabriq\Models\Event::factory()->create();
         $event1->updateContent([
             'title' => 'Stängt hus',
         ], 'sv');
-        $event2 = \Ikoncept\Fabriq\Models\Event::factory()->create([
+        $event2 = \Karabin\Fabriq\Models\Event::factory()->create([
             'start' => now()->startOfDay()->subYears(30)->toDateTimeString(),
         ]);
         $event2->updateContent([
@@ -111,11 +111,14 @@ class EventFeatureTest extends AdminUserTestCase
         // Assert
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
-        $response->assertJsonFragment([
-            'title' => 'Stängt hus',
+        $response->assertJsonMissing([
+            'id' => $event2->id,
         ]);
         $response->assertJsonFragment([
-            'title' => 'Öppet hus',
+            'id' => $event1->id,
+        ]);
+        $response->assertJsonFragment([
+            'id' => $event0->id,
         ]);
     }
 
@@ -123,7 +126,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_event()
     {
         // Arrange
-        $event0 = \Ikoncept\Fabriq\Models\Event::factory()->create();
+        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -144,7 +147,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_delete_an_event()
     {
         // Arrange
-        $event0 = \Ikoncept\Fabriq\Models\Event::factory()->create();
+        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -168,7 +171,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_update_an_event()
     {
         // Arrange
-        $event0 = \Ikoncept\Fabriq\Models\Event::factory()->create();
+        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -220,7 +223,7 @@ class EventFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $start = CarbonImmutable::make('1999-01-01')->startOfDay();
-        $event = \Ikoncept\Fabriq\Models\Event::factory()->create([
+        $event = \Karabin\Fabriq\Models\Event::factory()->create([
             'start' => $start->addDays(5),
             'daily_interval' => 7,
         ]);

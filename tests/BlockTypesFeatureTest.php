@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class BlockTypesFeatureTest extends AdminUserTestCase
 {
@@ -10,8 +10,8 @@ class BlockTypesFeatureTest extends AdminUserTestCase
     public function it_can_get_all_active_block_types()
     {
         // Arrange
-        $blockTypes = \Ikoncept\Fabriq\Models\BlockType::factory()->count(2)->create();
-        $blockTypes = \Ikoncept\Fabriq\Models\BlockType::factory()->count(2)->create([
+        $blockTypes = \Karabin\Fabriq\Models\BlockType::factory()->count(2)->create();
+        $blockTypes = \Karabin\Fabriq\Models\BlockType::factory()->count(2)->create([
             'active' => true,
         ]);
 
@@ -33,11 +33,11 @@ class BlockTypesFeatureTest extends AdminUserTestCase
     /** @test **/
     public function it_can_sort_active_blocks_by_name()
     {
-        $blockType = \Ikoncept\Fabriq\Models\BlockType::factory()->create([
+        $blockType = \Karabin\Fabriq\Models\BlockType::factory()->create([
             'name' => 'BBBlock',
             'active' => true,
         ]);
-        $blockType = \Ikoncept\Fabriq\Models\BlockType::factory()->create([
+        $blockType = \Karabin\Fabriq\Models\BlockType::factory()->create([
             'name' => 'AABlock',
             'active' => true,
         ]);
@@ -53,7 +53,7 @@ class BlockTypesFeatureTest extends AdminUserTestCase
     /** @test **/
     public function it_can_update_a_block()
     {
-        $blockType = \Ikoncept\Fabriq\Models\BlockType::factory()->create([
+        $blockType = \Karabin\Fabriq\Models\BlockType::factory()->create([
             'name' => 'BBBlock',
             'active' => true,
         ]);
@@ -89,7 +89,7 @@ class BlockTypesFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_block_type()
     {
         // Arrange
-        $blockType = \Ikoncept\Fabriq\Models\BlockType::factory()->create([
+        $blockType = \Karabin\Fabriq\Models\BlockType::factory()->create([
             'name' => 'BBBlock',
             'active' => true,
         ]);

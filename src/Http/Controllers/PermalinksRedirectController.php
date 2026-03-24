@@ -1,25 +1,18 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers;
+namespace Karabin\Fabriq\Http\Controllers;
 
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Fabriq;
 
 class PermalinksRedirectController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Return redirect or paths.
      *
-     * @param  Request  $request
-     * @param  string  $hash
-     * @param  string  $locale
      * @return JsonResponse|RedirectResponse
      */
     public function __invoke(Request $request, string $hash, string $locale = 'sv')
@@ -32,7 +25,7 @@ class PermalinksRedirectController extends Controller
         $paths = $page->transformPaths();
 
         if (request()->wantsJson()) {
-            return $this->respondWithArray([
+            return response()->json([
                 'data' => $paths,
             ]);
         }

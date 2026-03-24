@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class RevisionTemplateFeatureTest extends AdminUserTestCase

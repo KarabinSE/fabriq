@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Actions;
+namespace Karabin\Fabriq\Actions;
 
 class ConvertPdfToImage
 {

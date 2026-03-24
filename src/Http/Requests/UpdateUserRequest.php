@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Requests;
+namespace Karabin\Fabriq\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,7 +29,7 @@ class UpdateUserRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                Rule::unique(\Ikoncept\Fabriq\Models\User::class, 'email')->ignore($this->get('id'), 'id'),
+                Rule::unique(\Karabin\Fabriq\Models\User::class, 'email')->ignore($this->get('id'), 'id'),
             ],
             'role_list' => 'array',
         ];

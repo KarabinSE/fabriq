@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Requests;
+namespace Karabin\Fabriq\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

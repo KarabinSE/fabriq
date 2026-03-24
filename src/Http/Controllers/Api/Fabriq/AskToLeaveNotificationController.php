@@ -1,18 +1,16 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Models\User;
-use Ikoncept\Fabriq\Notifications\AskToLeaveNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\User;
+use Karabin\Fabriq\Notifications\AskToLeaveNotification;
 
-class AskToLeaveNotificationController extends ApiController
+class AskToLeaveNotificationController extends Controller
 {
-    use ApiControllerTrait;
-
     public function __invoke(Request $request, int $userId): JsonResponse
     {
         $request->validate([
@@ -23,6 +21,10 @@ class AskToLeaveNotificationController extends ApiController
 
         $recipient->notify(new AskToLeaveNotification($causer, $request->path));
 
-        return $this->respondWithSuccess('User was asked to give up editing');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'User was asked to give up editing',
+        ]);
     }
 }

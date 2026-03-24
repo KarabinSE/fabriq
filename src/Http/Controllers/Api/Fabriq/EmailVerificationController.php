@@ -1,20 +1,22 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class EmailVerificationController extends ApiController
+class EmailVerificationController extends Controller
 {
-    use ApiControllerTrait;
-
     public function store(Request $request): JsonResponse
     {
         $request->user()->sendEmailVerificationNotification();
 
-        return $this->respondWithSuccess('Email verification request sent');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'Email verification request sent',
+        ]);
     }
 }

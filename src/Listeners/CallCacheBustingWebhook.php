@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Listeners;
+namespace Karabin\Fabriq\Listeners;
 
-use Ikoncept\Fabriq\Actions\BustCacheWithWebhook;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Services\CacheBuster;
+use Karabin\Fabriq\Actions\BustCacheWithWebhook;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Services\CacheBuster;
 use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
 
 class CallCacheBustingWebhook

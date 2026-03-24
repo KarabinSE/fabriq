@@ -1,61 +1,86 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreateContactRequest;
-use Ikoncept\Fabriq\Http\Requests\UpdateContactRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\ContactData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateContactRequest;
+use Karabin\Fabriq\Http\Requests\UpdateContactRequest;
+use Karabin\Fabriq\Models\Contact;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class ContactController extends ApiController
+class ContactController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Returns an index of contacts.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('contact')::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+        $allowedIncludes = [
+            ...Fabriq::getFqnModel('contact')::RELATIONSHIPS,
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
         $contacts = QueryBuilder::for(Fabriq::getFqnModel('contact'))
             ->allowedSorts('name', 'email', 'updated_at', 'sortindex', 'published')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
             ])
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->allowedIncludes(...$allowedIncludes)
+            ->paginate($number);
 
-        return $this->respondWithPaginator($contacts, Fabriq::getTransformerFor('contact'));
+        $collection = new PaginatedDataCollection(
+            ContactData::class,
+            $contacts->through(fn (Contact $contact) => ContactData::fromModel($contact)),
+        );
+
+        return $collection->wrap('data')->toResponse($request);
     }
 
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(Fabriq::getFqnModel('contact')::RELATIONSHIPS);
-        $contact = Fabriq::getFqnModel('contact')::where('id', $id)
-            ->with($eagerLoad)
+        $allowedIncludes = [
+            ...Fabriq::getFqnModel('contact')::RELATIONSHIPS,
+            AllowedInclude::custom('localizedContent', new NoOpInclude),
+            AllowedInclude::custom('content', new NoOpInclude),
+        ];
+
+        $contact = QueryBuilder::for(Fabriq::getFqnModel('contact'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->where('id', $id)
             ->firstOrFail();
 
-        return $this->respondWithItem($contact, Fabriq::getTransformerFor('contact'));
+        /** @var Contact $contact */
+
+        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
-    public function store(CreateContactRequest $request): JsonResponse
+    public function store(CreateContactRequest $request): Response
     {
         $contact = Fabriq::getModelClass('contact');
         $contact->name = $request->name;
         $contact->save();
 
-        return $this->respondWithItem($contact, Fabriq::getTransformerFor('contact'), 201);
+        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
-    public function update(UpdateContactRequest $request, int $id): JsonResponse
+    public function update(UpdateContactRequest $request, int $id): Response
     {
         $contact = Fabriq::getFqnModel('contact')::findOrFail($id);
-        $contact->fill($request->validated());
+        $validated = $request->validated();
+
+        $contact->fill(collect($validated)->except('tags')->all());
 
         $contact->contactTags = $request->tags;
         $contact->localizedContent = $request->localizedContent;
@@ -67,7 +92,7 @@ class ContactController extends ApiController
 
         $contact->saveQuietly();
 
-        return $this->respondWithItem($contact, Fabriq::getTransformerFor('contact'));
+        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse
@@ -75,6 +100,10 @@ class ContactController extends ApiController
         $contact = Fabriq::getFqnModel('contact')::findOrFail($id);
         $contact->delete();
 
-        return $this->respondWithSuccess('The contact has been deleted successfully');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'The contact has been deleted successfully',
+        ]);
     }
 }

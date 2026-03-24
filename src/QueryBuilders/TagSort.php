@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\QueryBuilders;
+namespace Karabin\Fabriq\QueryBuilders;
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Support\Facades\Storage;
 
 class ImageFeatureTest extends AdminUserTestCase
@@ -12,7 +12,7 @@ class ImageFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('GET', '/images/'.$image->id);
@@ -33,9 +33,9 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_associate_an_image_with_a_model()
     {
         // Arrange
-        $product = \Ikoncept\Fabriq\Models\Contact::factory()->create();
-        $otherImage = \Ikoncept\Fabriq\Models\Image::factory()->create();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $product = \Karabin\Fabriq\Models\Contact::factory()->create();
+        $otherImage = \Karabin\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('POST', '/images/'.$image->id.'/contacts', [
@@ -55,7 +55,7 @@ class ImageFeatureTest extends AdminUserTestCase
     {
         // Arrange
         // $this->withoutExceptionHandling();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('POST', '/images/'.$image->id.'/whatever', [
@@ -70,7 +70,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_will_return_an_error_if_no_relation_was_found()
     {
         // Arrange
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('POST', '/images/'.$image->id.'/users', [
@@ -86,8 +86,8 @@ class ImageFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $oherImage = \Ikoncept\Fabriq\Models\Image::factory()->create();
-        $product = \Ikoncept\Fabriq\Models\Contact::factory()
+        $oherImage = \Karabin\Fabriq\Models\Image::factory()->create();
+        $product = \Karabin\Fabriq\Models\Contact::factory()
             ->hasImages(3)
             ->create();
 
@@ -104,8 +104,8 @@ class ImageFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->markTestSkipped();
-        $contact = \Ikoncept\Fabriq\Models\Contact::factory()->create();
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $contact = \Karabin\Fabriq\Models\Contact::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
         $contact->images()->attach($image);
 
         // Act
@@ -118,7 +118,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_get_an_index_of_images()
     {
         // Arrange
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(5)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/images');
@@ -132,7 +132,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_get_the_count_of_all_images()
     {
         // Arrange
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(5)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/images/count');
@@ -147,9 +147,9 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_will_get_only_the_correct_image_collection()
     {
         // Arrange
-        \Ikoncept\Fabriq\Models\Image::factory()->count(2)->create();
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(2)->make();
-        $images->each(function (\Ikoncept\Fabriq\Models\Image $image) {
+        \Karabin\Fabriq\Models\Image::factory()->count(2)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(2)->make();
+        $images->each(function (\Karabin\Fabriq\Models\Image $image) {
             $image->addMediaFromString('A nice media')
                 ->toMediaCollection('profile_image');
             $image->save();
@@ -166,7 +166,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_sort_an_index_of_images()
     {
         // Arrange
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(5)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/images?sort=-id');
@@ -182,7 +182,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_search_for_an_image()
     {
         // Arrange
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(5)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/images?filter[search]='.$images->first()->media->first()->name);
@@ -199,7 +199,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_sort_on_a_media_field()
     {
         // Arrange
-        $images = \Ikoncept\Fabriq\Models\Image::factory()->count(2)->create();
+        $images = \Karabin\Fabriq\Models\Image::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/images?sort=-file_name');
@@ -213,7 +213,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_update_an_image()
     {
         // Arrange
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('PATCH', '/images/'.$image->id, [
@@ -243,7 +243,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_delete_an_image()
     {
         // Arrange
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/images/'.$image->id);
@@ -266,7 +266,7 @@ class ImageFeatureTest extends AdminUserTestCase
     public function it_can_attach_tags_to_an_image()
     {
         // Arrange
-        $image = \Ikoncept\Fabriq\Models\Image::factory()->create();
+        $image = \Karabin\Fabriq\Models\Image::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act

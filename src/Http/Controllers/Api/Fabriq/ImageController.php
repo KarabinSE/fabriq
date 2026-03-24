@@ -1,30 +1,32 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\UpdateImageRequest;
-use Ikoncept\Fabriq\Models\Image;
-use Ikoncept\Fabriq\QueryBuilders\ImageSort;
-use Ikoncept\Fabriq\QueryBuilders\TagSort;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\UpdateImageRequest;
+use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\QueryBuilders\ImageSort;
+use Karabin\Fabriq\QueryBuilders\TagSort;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class ImageController extends ApiController
+class ImageController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Get index of the resource.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(Image::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+
         $images = QueryBuilder::for(Fabriq::getFqnModel('image'))
             ->allowedSorts([
                 'id', 'created_at', 'updated_at', 'alt_text',
@@ -36,11 +38,16 @@ class ImageController extends ApiController
             ->allowedFilters([
                 AllowedFilter::scope('search'),
             ])
+            ->allowedIncludes(...Image::RELATIONSHIPS)
             ->has('mediaImages')
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->paginate($number);
 
-        return $this->respondWithPaginator($images, Fabriq::getTransformerFor('image'));
+        $collection = new PaginatedDataCollection(
+            ImageData::class,
+            $images->through(fn (Image $image) => ImageData::fromModel($image)),
+        );
+
+        return $collection->wrap('data')->toResponse($request);
     }
 
     /**
@@ -48,14 +55,19 @@ class ImageController extends ApiController
      *
      * @param  int  $id
      */
-    public function show(Request $request, $id): JsonResponse
+    public function show(Request $request, $id): Response
     {
-        $image = Fabriq::getFqnModel('image')::findOrFail($id);
+        $image = QueryBuilder::for(Fabriq::getFqnModel('image'))
+            ->allowedIncludes(...Image::RELATIONSHIPS)
+            ->where('id', $id)
+            ->firstOrFail();
 
-        return $this->respondWithItem($image, Fabriq::getTransformerFor('image'));
+        /** @var Image $image */
+
+        return ImageData::fromModel($image)->wrap('data')->toResponse($request);
     }
 
-    public function update(UpdateImageRequest $request, int $id): JsonResponse
+    public function update(UpdateImageRequest $request, int $id): Response
     {
         $image = Fabriq::getFqnModel('image')::findOrFail($id);
         $image->fill($request->validated());
@@ -65,7 +77,7 @@ class ImageController extends ApiController
         $media->save();
         $image->save();
 
-        return $this->respondWithItem($image, Fabriq::getTransformerFor('image'));
+        return ImageData::fromModel($image)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -73,6 +85,10 @@ class ImageController extends ApiController
         $image = Fabriq::getFqnModel('image')::findOrFail($id);
         $image->delete();
 
-        return $this->respondWithSuccess('The image has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'The image has been deleted',
+        ]);
     }
 }

@@ -1,72 +1,36 @@
 <?php
 
-namespace Ikoncept\Fabriq\Repositories;
+namespace Karabin\Fabriq\Repositories;
 
-use Ikoncept\Fabriq\Models\Menu;
-use Ikoncept\Fabriq\Models\MenuItem;
-use Ikoncept\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
-use Ikoncept\Fabriq\Transformers\MenuTreeItemTransformer;
-use League\Fractal\Manager;
-use League\Fractal\Resource\Collection;
-use League\Fractal\Scope;
+use Karabin\Fabriq\Models\Menu;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
+use Karabin\Fabriq\Support\MenuTreeSerializer;
 
 class EloquentMenuRepository implements MenuRepositoryInterface
 {
-    /**
-     * Menu model.
-     *
-     * @var mixed
-     */
-    private $model;
-
-    public function __construct(Manager $fractal, MenuItem $model, Menu $menuModel)
-    {
-        $this->fractal = $fractal;
-        $this->model = $model;
-        $this->menuModel = $menuModel;
-        $request = request();
-
-        if ($request->has('include')) {
-            $this->fractal->parseIncludes($request->input('include'));
-        }
-    }
+    public function __construct(private MenuItem $model, private Menu $menuModel) {}
 
     /**
      * Find by slug.
      *
-     * @param  string  $slug
-     * @return mixed
+     * @return array<string, mixed>
      */
-    public function findBySlug(string $slug)
+    public function findBySlug(string $slug): array
     {
         $menu = $this->menuModel->where('slug', $slug)->firstOrFail();
         $menuItemRoot = MenuItem::where('menu_id', $menu->id)
             ->whereNull('parent_id')
             ->first();
 
-        $tree = $this->model->orderBy('sortindex')
-            ->with('ancestors', 'ancestors.page', 'ancestors.page.slugs')
-            ->descendantsOf($menuItemRoot->id)
-            ->toTree();
+        $includes = MenuTreeSerializer::parseIncludes((string) request()->input('include', ''));
 
-        $data = $this->getCollection($tree, new MenuTreeItemTransformer());
+        $query = $this->model->orderBy('sortindex')
+            ->with('ancestors', 'ancestors.page', 'ancestors.page.slugs', 'page', 'page.slugs', 'page.template.fields');
 
-        return $data->toArray();
-    }
+        /** @phpstan-ignore-next-line */
+        $tree = $query->descendantsOf($menuItemRoot->id)->toTree();
 
-    /**
-     * Create data.
-     *
-     * @param  object  $collection
-     * @param  mixed  $callback
-     * @return Scope
-     */
-    public function getCollection($collection, $callback): Scope
-    {
-        $resource = new Collection($collection, $callback, 'data');
-
-        $scope = $this->fractal->createData($resource);
-
-        return $scope;
+        return MenuTreeSerializer::collection($tree, $includes);
     }
 }

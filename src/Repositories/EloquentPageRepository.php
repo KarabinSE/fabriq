@@ -1,11 +1,11 @@
 <?php
 
-namespace Ikoncept\Fabriq\Repositories;
+namespace Karabin\Fabriq\Repositories;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Page;
-use Ikoncept\Fabriq\Models\Slug;
-use Ikoncept\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\Slug;
+use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
 
 class EloquentPageRepository implements PageRepositoryInterface
 {

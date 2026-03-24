@@ -1,24 +1,24 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Role;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\RoleData;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Role;
+use Spatie\LaravelData\DataCollection;
+use Symfony\Component\HttpFoundation\Response;
 
-class RoleController extends ApiController
+class RoleController extends Controller
 {
-    use ApiControllerTrait;
-
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
         $roles = Role::orderBy('display_name')
             ->notHidden()
             ->get();
 
-        return $this->respondWithCollection($roles, Fabriq::getTransformerFor('role'));
+        return RoleData::collect($roles, DataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 }

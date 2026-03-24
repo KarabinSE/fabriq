@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class AuthenticatedUserFeatureTest extends AdminUserTestCase
 {
@@ -10,7 +10,7 @@ class AuthenticatedUserFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory([
+        $user = \Karabin\Fabriq\Models\User::factory([
             'email_verified_at' => now()->subSeconds(30),
         ])->create();
 
@@ -32,7 +32,7 @@ class AuthenticatedUserFeatureTest extends AdminUserTestCase
         $this->markTestSkipped();
         // Arrange
         // $this->withoutExceptionHandling();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create([
+        $user = \Karabin\Fabriq\Models\User::factory()->create([
             'password' => bcrypt('secret'),
             'email_verified_at' => now()->subSeconds(30),
         ]);

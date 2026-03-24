@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
 
 class AddRoleToUserCommand extends Command

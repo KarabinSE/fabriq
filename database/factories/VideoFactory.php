@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Video;
+use Karabin\Fabriq\Models\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VideoFactory extends Factory

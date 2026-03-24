@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Mail;
+namespace Karabin\Fabriq\Mail;
 
-use Ikoncept\Fabriq\Models\Invitation;
+use Karabin\Fabriq\Models\Invitation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Repositories\Interfaces;
+namespace Karabin\Fabriq\Repositories\Interfaces;
 
 interface MenuRepositoryInterface
 {

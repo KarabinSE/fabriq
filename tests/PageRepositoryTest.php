@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Page;
-use Ikoncept\Fabriq\Repositories\EloquentPageRepository;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Repositories\EloquentPageRepository;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class PageRepositoryTest extends AdminUserTestCase
 {

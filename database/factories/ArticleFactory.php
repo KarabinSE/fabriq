@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Article;
+use Karabin\Fabriq\Models\Article;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ArticleFactory extends Factory

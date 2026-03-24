@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Traits;
+namespace Karabin\Fabriq\Traits;
 
-use Ikoncept\Fabriq\Models\Comment;
+use Karabin\Fabriq\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 

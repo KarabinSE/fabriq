@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\Comment;
+use Karabin\Fabriq\Models\Comment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommentFactory extends Factory

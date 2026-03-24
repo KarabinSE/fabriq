@@ -1,45 +1,53 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Http\Requests\CreateUserRequest;
-use Ikoncept\Fabriq\Http\Requests\UpdateUserRequest;
-use Ikoncept\Fabriq\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Data\UserData;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Http\Requests\CreateUserRequest;
+use Karabin\Fabriq\Http\Requests\UpdateUserRequest;
+use Karabin\Fabriq\Models\User;
+use Karabin\Fabriq\QueryBuilders\NoOpInclude;
+use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Response;
 
-class UserController extends ApiController
+class UserController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Returns an index of users.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
-        $eagerLoad = $this->getEagerLoad(User::RELATIONSHIPS);
+        $number = $request->integer('number', 100);
+        $allowedIncludes = [
+            ...User::RELATIONSHIPS,
+            AllowedInclude::custom('invitation', new NoOpInclude),
+            AllowedInclude::custom('image', new NoOpInclude),
+        ];
+
         $paginator = QueryBuilder::for(Fabriq::getFqnModel('user'))
             ->allowedSorts('name', 'email', 'id', 'updated_at')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
             ])
+            ->allowedIncludes(...$allowedIncludes)
             ->with('roles')
-            ->with($eagerLoad)
-            ->paginate($this->number);
+            ->paginate($number);
 
-        return $this->respondWithPaginator($paginator, Fabriq::getTransformerFor('user'));
+        return UserData::collect($paginator, PaginatedDataCollection::class)
+            ->wrap('data')
+            ->toResponse($request);
     }
 
-    public function store(CreateUserRequest $request): JsonResponse
+    public function store(CreateUserRequest $request): Response
     {
         $user = Fabriq::getModelClass('user');
         $user->name = $request->name;
@@ -48,33 +56,38 @@ class UserController extends ApiController
         $user->save();
         $user->syncRoles($request->role_list);
 
-        return $this->respondWithItem($user, Fabriq::getTransformerFor('user'), 201);
+        return UserData::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     /**
      * Show a single user.
-     *
-     * @param  Request  $request
-     * @param  int  $id
-     * @return JsonResponse
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(Request $request, int $id): Response
     {
-        $eagerLoad = $this->getEagerLoad(User::RELATIONSHIPS);
-        $user = Fabriq::getModelClass('user')->with($eagerLoad)
-            ->with('roles')
-            ->findOrFail($id);
+        $allowedIncludes = [
+            ...User::RELATIONSHIPS,
+            AllowedInclude::custom('invitation', new NoOpInclude),
+            AllowedInclude::custom('image', new NoOpInclude),
+        ];
 
-        return $this->respondWithItem($user, Fabriq::getTransformerFor('user'));
+        $user = QueryBuilder::for(Fabriq::getFqnModel('user'))
+            ->allowedIncludes(...$allowedIncludes)
+            ->with('roles')
+            ->where('id', $id)
+            ->firstOrFail();
+
+        /** @var User $user */
+
+        return UserData::fromModel($user)->wrap('data')->toResponse($request);
     }
 
-    public function update(UpdateUserRequest $request, int $id): JsonResponse
+    public function update(UpdateUserRequest $request, int $id): Response
     {
         $user = Fabriq::getModelClass('user')->findOrFail($id);
         $user->fill($request->validated());
         $user->save();
 
-        return $this->respondWithItem($user, Fabriq::getTransformerFor('user'));
+        return UserData::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -82,9 +95,25 @@ class UserController extends ApiController
         if ($id === $request->user()->id) {
             return $this->errorWrongArgs('Du kan inte radera dig själv');
         }
+
         $user = Fabriq::getModelClass('user')->findOrFail($id);
         $user->delete();
 
-        return $this->respondWithSuccess('The user has been deleted');
+        return response()->json([
+            'code' => ApiResponseCode::Success->value,
+            'http_code' => 200,
+            'message' => 'The user has been deleted',
+        ]);
+    }
+
+    private function errorWrongArgs(string $message): JsonResponse
+    {
+        return response()->json([
+            'error' => [
+                'code' => ApiResponseCode::WrongArgs->value,
+                'http_code' => 400,
+                'message' => $message,
+            ],
+        ], 400);
     }
 }

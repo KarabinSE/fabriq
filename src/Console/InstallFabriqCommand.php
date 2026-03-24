@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Console;
+namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
 
@@ -39,13 +39,13 @@ class InstallFabriqCommand extends Command
     {
         $this->info('Installing front end assets');
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-frontend-install-assets',
             '--force' => true,
         ]);
 
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-views',
             '--force' => true,
         ]);
@@ -54,7 +54,7 @@ class InstallFabriqCommand extends Command
 
         $this->info('Installing translations');
         $this->call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-translations',
         ]);
 

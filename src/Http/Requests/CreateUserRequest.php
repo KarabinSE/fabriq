@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Requests;
+namespace Karabin\Fabriq\Http\Requests;
 
-use Ikoncept\Fabriq\Models\User;
+use Karabin\Fabriq\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

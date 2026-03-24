@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class VideoFeatureTest extends AdminUserTestCase
 {
@@ -11,7 +11,7 @@ class VideoFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create();
+        $video = \Karabin\Fabriq\Models\Video::factory()->create();
 
         // Act
         $response = $this->json('GET', '/videos/'.$video->id);
@@ -30,7 +30,7 @@ class VideoFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $videos = \Ikoncept\Fabriq\Models\Video::factory()->count(5)->create();
+        $videos = \Karabin\Fabriq\Models\Video::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/videos');
@@ -44,7 +44,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_have_tags()
     {
         // Arrange
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create();
+        $video = \Karabin\Fabriq\Models\Video::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act
@@ -66,7 +66,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_update_a_video()
     {
         // Arrange
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create();
+        $video = \Karabin\Fabriq\Models\Video::factory()->create();
         $this->withoutExceptionHandling();
 
         // Act
@@ -93,7 +93,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_search_for_a_video()
     {
         // Arrange
-        $videos = \Ikoncept\Fabriq\Models\Video::factory()->count(5)->create();
+        $videos = \Karabin\Fabriq\Models\Video::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/videos?filter[search]='.$videos->first()->media->first()->name);
@@ -110,7 +110,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_video()
     {
         // Arrange
-        $video = \Ikoncept\Fabriq\Models\Video::factory()->create();
+        $video = \Karabin\Fabriq\Models\Video::factory()->create();
 
         // Act/Assert
         $this->json('DELETE', '/videos/'.$video->id)
@@ -130,7 +130,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_sort_an_index_of_videos()
     {
         // Arrange
-        $videos = \Ikoncept\Fabriq\Models\Video::factory()->count(5)->create();
+        $videos = \Karabin\Fabriq\Models\Video::factory()->count(5)->create();
 
         // Act
         $response = $this->json('GET', '/videos?sort=-id');
@@ -146,7 +146,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_can_sort_on_a_media_field()
     {
         // Arrange
-        $videos = \Ikoncept\Fabriq\Models\Video::factory()->count(2)->create();
+        $videos = \Karabin\Fabriq\Models\Video::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/videos?sort=-file_name');
@@ -160,7 +160,7 @@ class VideoFeatureTest extends AdminUserTestCase
     public function it_will_return_all_if_the_search_is_empty()
     {
         // Arrange
-        $videos = \Ikoncept\Fabriq\Models\Video::factory()->count(2)->create();
+        $videos = \Karabin\Fabriq\Models\Video::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/videos?filter[search]');

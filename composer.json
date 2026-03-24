@@ -1,17 +1,17 @@
 {
-    "name": "ikoncept/fabriq",
-    "description": "A CMS Framework by Ikoncept",
+    "name": "karabinse/fabriq",
+    "description": "A CMS Framework by Karabin",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Ikoncept\\Fabriq\\": "src/",
-            "Ikoncept\\Fabriq\\Database\\Factories\\": "database/factories",
-            "Ikoncept\\Fabriq\\Database\\Seeders\\": "database/seeders"
+            "Karabin\\Fabriq\\": "src/",
+            "Karabin\\Fabriq\\Database\\Factories\\": "database/factories",
+            "Karabin\\Fabriq\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Ikoncept\\Fabriq\\Tests\\": "tests"
+            "Karabin\\Fabriq\\Tests\\": "tests"
         }
     },
     "authors": [
@@ -24,10 +24,10 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.0",
-        "illuminate/database": "^8.56|^9.0|^10|^11|^12",
-        "illuminate/support": "^7.0.5|^8.0|^9.0|^10|^11|^12",
+        "illuminate/database": "^8.56|^9.0|^10|^11|^12|^13",
+        "illuminate/support": "^7.0.5|^8.0|^9.0|^10|^11|^12|^13",
+        "inertiajs/inertia-laravel": "^2.0",
         "spatie/laravel-permission": "^6.0",
-        "infab/core": "^2.1",
         "spatie/laravel-query-builder": "^3.5|^4.0|^5.0|^6.0",
         "spatie/laravel-medialibrary": "^8.2|^9.0|^10.0|^11.0",
         "doctrine/dbal": "^3.1|^4.0",
@@ -43,9 +43,12 @@
         "pusher/pusher-php-server": "^7.0",
         "aws/aws-sdk-php": "^3.219",
         "laravel/pint": "^1.2",
-        "spatie/laravel-webhook-server": "^3.8"
+        "spatie/laravel-webhook-server": "^3.8",
+        "spatie/laravel-data": "^4.20"
     },
     "require-dev": {
+        "larastan/larastan": "^2.9",
+        "phpstan/phpstan": "^1.12",
         "phpunit/phpunit": "^10.0",
         "orchestra/testbench": "^9.0",
         "nunomaduro/collision": "^5.1|^6.0|^8.0"
@@ -53,14 +56,17 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Ikoncept\\Fabriq\\FabriqCoreServiceProvider"
+                "Karabin\\Fabriq\\FabriqCoreServiceProvider"
             ]
         }
     },
     "scripts": {
+        "analyse": "php -d memory_limit=512M ./vendor/bin/phpstan analyse -c phpstan.neon",
+        "test:phpunit": "XDEBUG_MODE=off vendor/bin/phpunit",
+        "test:testdox": "XDEBUG_MODE=off vendor/bin/phpunit --testdox",
         "test": [
-            "php --version && php -d memory_limit=512M ./vendor/bin/phpstan analyse -c phpstan.neon",
-            "php --version && vendor/bin/phpunit --coverage-text --testdox"
+            "@analyse",
+            "@test:phpunit"
         ]
     },
     "repositories": {

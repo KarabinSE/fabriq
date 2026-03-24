@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +12,6 @@ class Fabriq
      * Binds the Fabriq routes into the controller.
      *
      * @param  callable|null  $callback
-     * @param  array  $options
      * @return void
      */
     public static function routes($callback = null, array $options = [])
@@ -34,7 +33,6 @@ class Fabriq
     /**
      * Return a new instance of a model.
      *
-     * @param  string  $key
      * @param  mixed  ...$arguments
      * @return mixed
      */
@@ -51,7 +49,6 @@ class Fabriq
     /**
      * Return the fully qualified model name.
      *
-     * @param  string  $key
      * @return mixed
      */
     public static function getFqnModel(string $key)
@@ -62,22 +59,5 @@ class Fabriq
         }
 
         return $class;
-    }
-
-    /**
-     * Return new transformer class.
-     *
-     * @param  string  $key
-     * @param  mixed  ...$arguments
-     * @return mixed
-     */
-    public static function getTransformerFor(string $key, ...$arguments)
-    {
-        $class = config('fabriq.transformers.'.$key);
-        if (! $class) {
-            throw new InvalidArgumentException('The transformer key was not found: '.$key);
-        }
-
-        return new $class($arguments);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Ikoncept\Fabriq\Models\User as FabriqUser;
+use Karabin\Fabriq\Models\User as FabriqUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use DOMDocument;
 use DOMXPath;
-use Ikoncept\Fabriq\Database\Factories\CommentFactory;
-use Ikoncept\Fabriq\Events\CommentDeleted;
-use Ikoncept\Fabriq\Events\CommentPosted;
-use Ikoncept\Fabriq\Events\UserMentionedInComment;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\Database\Factories\CommentFactory;
+use Karabin\Fabriq\Events\CommentDeleted;
+use Karabin\Fabriq\Events\CommentPosted;
+use Karabin\Fabriq\Events\UserMentionedInComment;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

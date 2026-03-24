@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq\Database\Factories;
+namespace Karabin\Fabriq\Database\Factories;
 
-use Ikoncept\Fabriq\Models\SmartBlock;
+use Karabin\Fabriq\Models\SmartBlock;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SmartBlockFactory extends Factory

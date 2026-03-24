@@ -1,9 +1,9 @@
 <?php
 
-namespace Ikoncept\Fabriq\Tests;
+namespace Karabin\Fabriq\Tests;
 
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\User;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -12,6 +12,8 @@ use Orchestra\Testbench\TestCase as Orchestra;
 abstract class AdminUserTestCase extends Orchestra
 {
     use LazilyRefreshDatabase;
+
+    private static bool $publishedPackageAssets = false;
 
     public $user;
 
@@ -32,17 +34,11 @@ abstract class AdminUserTestCase extends Orchestra
         ]);
 
         $this->setUpDatabase($this->app);
-
-        Artisan::call('fabriq:install');
-        Artisan::call('vendor:publish', [
-            '--provider' => 'Ikoncept\Fabriq\FabriqCoreServiceProvider',
-            '--tag' => 'fabriq-translations',
-        ]);
+        $this->publishPackageAssetsOnce();
 
         $user = User::factory()->create([
             'name' => 'Albin N',
             'email' => 'albin@infab.io',
-            'password' => bcrypt('secret'),
         ]);
 
         $this->user = $user;
@@ -62,8 +58,37 @@ abstract class AdminUserTestCase extends Orchestra
         $this->loadMigrationsFrom(realpath(__DIR__.'/../database/migrations'));
     }
 
+    private function publishPackageAssetsOnce(): void
+    {
+        if (self::$publishedPackageAssets) {
+            return;
+        }
+
+        Artisan::call('vendor:publish', [
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
+            '--tag' => 'fabriq-frontend-install-assets',
+            '--force' => true,
+        ]);
+
+        Artisan::call('vendor:publish', [
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
+            '--tag' => 'fabriq-views',
+            '--force' => true,
+        ]);
+
+        Artisan::call('vendor:publish', [
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
+            '--tag' => 'fabriq-translations',
+        ]);
+
+        self::$publishedPackageAssets = true;
+    }
+
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('cache.default', 'array');
+        $app['config']->set('queue.default', 'sync');
+        $app['config']->set('hashing.bcrypt.rounds', 4);
         $app['config']->set('fabriq.webhooks.enabled', false);
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
@@ -78,14 +103,14 @@ abstract class AdminUserTestCase extends Orchestra
             'visibility' => 'public',
         ]);
 
-        $app['config']->set('fabriq.models.user', \Ikoncept\Fabriq\Models\User::class);
+        $app['config']->set('fabriq.models.user', \Karabin\Fabriq\Models\User::class);
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            \Ikoncept\Fabriq\FabriqCoreServiceProvider::class,
-            \Ikoncept\Fabriq\FortifyServiceProvider::class,
+            \Karabin\Fabriq\FabriqCoreServiceProvider::class,
+            \Karabin\Fabriq\FortifyServiceProvider::class,
         ];
     }
 }

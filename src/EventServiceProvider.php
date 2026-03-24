@@ -1,12 +1,12 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
-use Ikoncept\Fabriq\Listeners\BustPageCacheListener;
-use Ikoncept\Fabriq\Listeners\CallCacheBustingWebhook;
-use Ikoncept\Fabriq\Listeners\FlushTagCacheListener;
-use Ikoncept\Fabriq\Listeners\UpdateSearchTerms;
-use Ikoncept\Fabriq\Listeners\UpdateSlugListener;
+use Karabin\Fabriq\Listeners\BustPageCacheListener;
+use Karabin\Fabriq\Listeners\CallCacheBustingWebhook;
+use Karabin\Fabriq\Listeners\FlushTagCacheListener;
+use Karabin\Fabriq\Listeners\UpdateSearchTerms;
+use Karabin\Fabriq\Listeners\UpdateSlugListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

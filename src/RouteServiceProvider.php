@@ -1,8 +1,8 @@
 <?php
 
-namespace Ikoncept\Fabriq;
+namespace Karabin\Fabriq;
 
-use Ikoncept\Fabriq\Http\Middleware\LocaleMiddleware;
+use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Middleware\RoleMiddleware;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\ContentGetters;
+namespace Karabin\Fabriq\ContentGetters;
 
 use Illuminate\Database\Eloquent\Builder;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\ContentGetters;
+namespace Karabin\Fabriq\ContentGetters;
 
 use Exception;
-use Ikoncept\Fabriq\Fabriq;
-use Ikoncept\Fabriq\Models\Image;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Image;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 
 class ImageGetter extends BaseGetter implements GetterInterface

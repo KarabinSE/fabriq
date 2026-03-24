@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Middleware;
+namespace Karabin\Fabriq\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

@@ -1,16 +1,14 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Controllers\Api\Fabriq;
+namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Ikoncept\Fabriq\Fabriq;
 use Illuminate\Http\JsonResponse;
-use Infab\Core\Http\Controllers\Api\ApiController;
-use Infab\Core\Traits\ApiControllerTrait;
+use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Http\Controllers\Controller;
 
-class ModelCountController extends ApiController
+class ModelCountController extends Controller
 {
-    use ApiControllerTrait;
-
     /**
      * Model map.
      *
@@ -26,14 +24,20 @@ class ModelCountController extends ApiController
     public function show(string $modelType): JsonResponse
     {
         if (! array_key_exists($modelType, $this->modelMap)) {
-            return $this->errorWrongArgs('This model type can\'t be counted ('.$modelType.')');
+            return response()->json([
+                'error' => [
+                    'code' => ApiResponseCode::WrongArgs->value,
+                    'http_code' => 400,
+                    'message' => 'This model type can\'t be counted ('.$modelType.')',
+                ],
+            ], 400);
         }
 
         $count = Fabriq::getModelClass($this->modelMap[$modelType])
             ->without('media')
             ->get()->count();
 
-        return $this->respondWithArray([
+        return response()->json([
             'data' => [
                 'count' => $count,
             ],

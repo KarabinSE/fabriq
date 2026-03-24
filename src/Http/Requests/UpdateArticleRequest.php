@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Http\Requests;
+namespace Karabin\Fabriq\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -28,8 +28,12 @@ class UpdateArticleRequest extends FormRequest
             'publishes_at' => 'date|nullable',
             'unpublishes_at' => 'date|nullable',
             'has_unpublished_time' => 'boolean',
-            'content.title' => 'required|max:255',
             'content' => 'array',
+            'content.title' => 'required|max:255',
+            'content.preamble' => 'nullable|string',
+            'content.body' => 'nullable|string',
+            'content.image' => 'nullable|array',
+            'content.image.id' => 'nullable|integer',
         ];
     }
 }

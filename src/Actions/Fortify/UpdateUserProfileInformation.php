@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Actions\Fortify;
+namespace Karabin\Fabriq\Actions\Fortify;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;

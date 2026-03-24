@@ -84,16 +84,15 @@
                         :to="{name: 'contacts.edit', params: { id: item.id }}"
                     >
                         <CircleUserIcon
-                            v-if="! item.content.data.image"
+                            v-if="! item.content.image"
                             thin
                             class="items-center w-6 h-6 mr-4"
                         />
                         <div v-else>
                             <UiImagePresenter
                                 class="object-cover w-6 h-6 mr-4 rounded-full"
-                                :image="item.content.data.image"
+                                :image="item.content.image"
                             />
-                            <!-- {{ item.image }} -->
                         </div>
                         {{ item.name }}
                     </RouterLink>
@@ -102,7 +101,7 @@
                         class="flex space-x-2"
                     >
                         <UiBadge
-                            v-for="(tag, index) in item.tags.data"
+                            v-for="(tag, index) in item.tags"
                             :key="index"
                         >{{ tag.name }}</UiBadge>
                     </span>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Services;
+namespace Karabin\Fabriq\Services;
 
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;

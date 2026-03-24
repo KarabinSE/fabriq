@@ -1,10 +1,10 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
-use Ikoncept\Fabriq\ContentGetters\FileGetter;
-use Ikoncept\Fabriq\Database\Factories\MenuItemFactory;
-use Ikoncept\Fabriq\Fabriq;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\Database\Factories\MenuItemFactory;
+use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,7 +51,7 @@ class MenuItem extends Model
     {
         static::deleting(function ($menuItem) {
             DB::table('slugs')->where('model_id', $menuItem->id)
-                ->where('model_type', 'Ikoncept\Fabriq\Models\MenuItem')
+                ->where('model_type', 'Karabin\Fabriq\Models\MenuItem')
                 ->delete();
         });
     }

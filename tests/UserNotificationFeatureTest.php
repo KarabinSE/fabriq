@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Ikoncept\Fabriq\Models\Notification;
-use Ikoncept\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Models\Notification;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class UserNotificationFeatureTest extends AdminUserTestCase
 {
@@ -12,8 +12,8 @@ class UserNotificationFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
         $comment = $page->commentAs($user, '<p>This is my special comment! <span data-mention="" class="mention" data-email="roger@pontare.se">@Roger Pontare</span> <span data-mention="" class="mention" data-email="'.$user->email.'">@'.$user->name.'</span><p>');
 
         // Act
@@ -36,8 +36,8 @@ class UserNotificationFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $page = \Ikoncept\Fabriq\Models\Page::factory()->create();
-        $user = \Ikoncept\Fabriq\Models\User::factory()->create();
+        $page = \Karabin\Fabriq\Models\Page::factory()->create();
+        $user = \Karabin\Fabriq\Models\User::factory()->create();
         $comment = $page->commentAs($user, '<p>This is my special comment! <span data-mention="" class="mention" data-email="roger@pontare.se">@Roger Pontare</span> <span data-mention="" class="mention" data-email="'.$user->email.'">@'.$user->name.'</span><p>');
         $notification = Notification::where('notifiable_id', $comment->id)->first();
 

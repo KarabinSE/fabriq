@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikoncept\Fabriq\Models;
+namespace Karabin\Fabriq\Models;
 
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryMedia;
 
