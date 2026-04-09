@@ -2,17 +2,23 @@
 
 namespace Karabin\Fabriq\Traits;
 
-use Karabin\Fabriq\Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Karabin\Fabriq\Database\Factories\UserFactory;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @phpstan-require-extends User
+ *
+ * @phpstan-ignore trait.unused
+ */
 trait FabriqUser
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * Guard name.
@@ -34,7 +40,6 @@ trait FabriqUser
     /**
      * Set roles according to an array.
      *
-     * @param  array  $value
      * @return void
      */
     public function setRoleListAttribute(array $value)
@@ -44,10 +49,6 @@ trait FabriqUser
 
     /**
      * Search for users.
-     *
-     * @param  Builder  $query
-     * @param  string  $search
-     * @return Builder
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {

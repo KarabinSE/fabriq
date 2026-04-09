@@ -41,7 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -53,7 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -79,6 +79,7 @@ class User extends Authenticatable implements MustVerifyEmail
         Fabriq::getModelClass('user')->find($this->id)->syncRoles($value);
     }
 
+    /** @return HasOne<Invitation, $this> */
     public function invitation(): HasOne
     {
         return $this->hasOne(Invitation::class)->latestOfMany();

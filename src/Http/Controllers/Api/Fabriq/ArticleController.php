@@ -37,12 +37,7 @@ class ArticleController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            ArticleData::class,
-            $articles->through(fn (Article $article) => ArticleData::fromModel($article)),
-        );
-
-        return $collection->wrap('data');
+        return ArticleData::collect($articles, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response

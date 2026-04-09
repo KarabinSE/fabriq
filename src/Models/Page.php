@@ -253,11 +253,4 @@ class Page extends Model implements HasMedia
             $this->updateContent($revisionContent->toArray(), (string) $locale);
         }
     }
-
-    /** @return HasMany<Page> */
-    public function children()
-    {
-        return $this->hasMany(get_class($this), $this->getParentIdName())
-            ->setModel($this);
-    }
 }

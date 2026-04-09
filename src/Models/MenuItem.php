@@ -73,6 +73,7 @@ class MenuItem extends Model
     /** @return BelongsTo<Page, $this> */
     public function page(): BelongsTo
     {
+        /** @var BelongsTo<Page, $this> */
         return $this->belongsTo(Fabriq::getFqnModel('page'));
     }
 
@@ -168,6 +169,7 @@ class MenuItem extends Model
     /** @return BelongsTo<Menu, $this> */
     public function menu(): BelongsTo
     {
+        /** @var BelongsTo<Menu, $this> */
         return $this->belongsTo(Fabriq::getFqnModel('menu'));
     }
 }

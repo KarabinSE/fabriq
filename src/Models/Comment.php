@@ -101,7 +101,7 @@ class Comment extends Model
         return $this->morphMany(Fabriq::getFqnModel('notification'), 'notifiable');
     }
 
-    /** @return HasMany<Comment> */
+    /** @return HasMany<Comment, $this> */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id', 'id')

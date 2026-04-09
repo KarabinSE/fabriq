@@ -45,7 +45,12 @@ class PageData extends Data
             localizedContent: Lazy::create(fn () => ['data' => self::buildLocalizedContent($page)]),
             template: Lazy::create(fn () => $page->template ? ['data' => self::buildTemplate($page)] : null)->defaultIncluded(),
             slugs: Lazy::create(fn () => ['data' => $page->slugs->toArray()]),
-            children: Lazy::create(fn () => ['data' => $page->children->map(fn (Page $child) => self::fromModel($child)->toArray())->values()->all()]),
+            children: Lazy::create(function () use ($page) {
+                /** @var \Illuminate\Database\Eloquent\Collection<int, Page> $children */
+                $children = $page->children;
+
+                return ['data' => $children->map(fn (Page $child) => self::fromModel($child)->toArray())->values()->all()];
+            }),
         );
     }
 

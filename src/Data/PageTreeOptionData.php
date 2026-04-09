@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Karabin\Fabriq\Models\Page;
 use Spatie\LaravelData\Data;
@@ -29,9 +30,11 @@ class PageTreeOptionData extends Data
             $result[] = array_merge(Arr::except($item->toArray(), ['children']), $option);
 
             if ($item->children->count() > 0) {
+                /** @var Collection<int, Page> $children */
+                $children = $item->children;
                 $result = [
                     ...$result,
-                    ...self::collectTree($item->children, $prefix.'-'),
+                    ...self::collectTree($children, $prefix.'-'),
                 ];
             }
         }
