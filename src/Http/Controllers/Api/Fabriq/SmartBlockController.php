@@ -22,7 +22,7 @@ class SmartBlockController extends Controller
     /**
      * Get index of the resource.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): PaginatedDataCollection
     {
         $number = $request->integer('number', 100);
         $allowedIncludes = [
@@ -30,7 +30,7 @@ class SmartBlockController extends Controller
             AllowedInclude::custom('content', new NoOpInclude),
         ];
 
-        $paginator = QueryBuilder::for(Fabriq::getFqnModel('smartBlock'))
+        $smartBlocks = QueryBuilder::for(Fabriq::getFqnModel('smartBlock'))
             ->allowedSorts('name', 'updated_at')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
@@ -38,12 +38,7 @@ class SmartBlockController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            SmartBlockData::class,
-            $paginator->through(fn (SmartBlock $smartBlock) => SmartBlockData::fromModel($smartBlock)),
-        );
-
-        return $collection->wrap('data')->toResponse($request);
+        return SmartBlockData::collect($smartBlocks, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response

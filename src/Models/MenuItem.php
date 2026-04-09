@@ -2,15 +2,15 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\Fabriq\ContentGetters\FileGetter;
-use Karabin\Fabriq\Database\Factories\MenuItemFactory;
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\Database\Factories\MenuItemFactory;
+use Karabin\Fabriq\Fabriq;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
 use Karabin\TranslatableRevisions\Traits\RevisionOptions;
@@ -70,6 +70,7 @@ class MenuItem extends Model
             ->registerCacheKeysToFlush(['fabriq_menu']);
     }
 
+    /** @return BelongsTo<Page, $this> */
     public function page(): BelongsTo
     {
         return $this->belongsTo(Fabriq::getFqnModel('page'));
@@ -164,6 +165,7 @@ class MenuItem extends Model
      */
     public function setPageAttribute($value): void {}
 
+    /** @return BelongsTo<Menu, $this> */
     public function menu(): BelongsTo
     {
         return $this->belongsTo(Fabriq::getFqnModel('menu'));

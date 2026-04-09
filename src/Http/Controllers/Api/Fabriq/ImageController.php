@@ -23,7 +23,7 @@ class ImageController extends Controller
     /**
      * Get index of the resource.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): PaginatedDataCollection
     {
         $number = $request->integer('number', 100);
 
@@ -42,12 +42,7 @@ class ImageController extends Controller
             ->has('mediaImages')
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            ImageData::class,
-            $images->through(fn (Image $image) => ImageData::fromModel($image)),
-        );
-
-        return $collection->wrap('data')->toResponse($request);
+        return ImageData::collect($images, PaginatedDataCollection::class);
     }
 
     /**

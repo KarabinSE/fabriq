@@ -23,7 +23,7 @@ class ContactController extends Controller
     /**
      * Returns an index of contacts.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): PaginatedDataCollection
     {
         $number = $request->integer('number', 100);
         $allowedIncludes = [
@@ -40,12 +40,7 @@ class ContactController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            ContactData::class,
-            $contacts->through(fn (Contact $contact) => ContactData::fromModel($contact)),
-        );
-
-        return $collection->wrap('data')->toResponse($request);
+        return ContactData::collect($contacts, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response

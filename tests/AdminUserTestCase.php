@@ -2,11 +2,13 @@
 
 namespace Karabin\Fabriq\Tests;
 
-use Karabin\Fabriq\Fabriq;
-use Karabin\Fabriq\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\FabriqCoreServiceProvider;
+use Karabin\Fabriq\FortifyServiceProvider;
+use Karabin\Fabriq\Models\User;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class AdminUserTestCase extends Orchestra
@@ -17,7 +19,7 @@ abstract class AdminUserTestCase extends Orchestra
 
     public $user;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -45,7 +47,7 @@ abstract class AdminUserTestCase extends Orchestra
         $this->actingAs($user);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $dir = storage_path('/app/public/__test');
         File::deleteDirectory($dir);
@@ -103,14 +105,14 @@ abstract class AdminUserTestCase extends Orchestra
             'visibility' => 'public',
         ]);
 
-        $app['config']->set('fabriq.models.user', \Karabin\Fabriq\Models\User::class);
+        $app['config']->set('fabriq.models.user', User::class);
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            \Karabin\Fabriq\FabriqCoreServiceProvider::class,
-            \Karabin\Fabriq\FortifyServiceProvider::class,
+            FabriqCoreServiceProvider::class,
+            FortifyServiceProvider::class,
         ];
     }
 }

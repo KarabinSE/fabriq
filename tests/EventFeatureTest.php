@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Carbon\CarbonImmutable;
+use Karabin\Fabriq\Models\Event;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
@@ -10,7 +11,7 @@ use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
 class EventFeatureTest extends AdminUserTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $template = RevisionTemplate::factory()->create([
@@ -90,15 +91,15 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_get_all_events()
     {
         // Arrange
-        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
+        $event0 = Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
         ], 'sv');
-        $event1 = \Karabin\Fabriq\Models\Event::factory()->create();
+        $event1 = Event::factory()->create();
         $event1->updateContent([
             'title' => 'Stängt hus',
         ], 'sv');
-        $event2 = \Karabin\Fabriq\Models\Event::factory()->create([
+        $event2 = Event::factory()->create([
             'start' => now()->startOfDay()->subYears(30)->toDateTimeString(),
         ]);
         $event2->updateContent([
@@ -126,7 +127,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_event()
     {
         // Arrange
-        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
+        $event0 = Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -147,7 +148,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_delete_an_event()
     {
         // Arrange
-        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
+        $event0 = Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -171,7 +172,7 @@ class EventFeatureTest extends AdminUserTestCase
     public function it_can_update_an_event()
     {
         // Arrange
-        $event0 = \Karabin\Fabriq\Models\Event::factory()->create();
+        $event0 = Event::factory()->create();
         $event0->updateContent([
             'title' => 'Öppet hus',
             'description' => 'Öppet hus hela dagen',
@@ -223,7 +224,7 @@ class EventFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $start = CarbonImmutable::make('1999-01-01')->startOfDay();
-        $event = \Karabin\Fabriq\Models\Event::factory()->create([
+        $event = Event::factory()->create([
             'start' => $start->addDays(5),
             'daily_interval' => 7,
         ]);

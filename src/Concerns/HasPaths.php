@@ -74,7 +74,7 @@ trait HasPaths
 
         $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
 
-        if ($this->menuItems !== null && $this->menuItems->count()) {
+        if ($this->menuItems->count()) {
             foreach ($supportedLocales as $locale => $item) {
                 $localizedSlugs = $this->menuItems->map(function ($item) use ($locale) {
                     if (! $item->ancestors->count()) {

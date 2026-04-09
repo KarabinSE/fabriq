@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): DataCollection
     {
         $number = $request->integer('number', 100);
 
@@ -39,9 +39,7 @@ class EventController extends Controller
             return EventData::fromModel(Event::make((array) $event));
         });
 
-        $collection = new DataCollection(EventData::class, $eventData);
-
-        return $collection->wrap('data')->toResponse($request);
+        return EventData::collect($eventData, DataCollection::class)->wrap('data');
     }
 
     public function show(Request $request, int $id): Response

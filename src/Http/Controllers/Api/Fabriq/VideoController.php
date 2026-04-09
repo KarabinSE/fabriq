@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): PaginatedDataCollection
     {
         $number = $request->integer('number', 100);
 
@@ -36,12 +36,7 @@ class VideoController extends Controller
             ->allowedIncludes(...Video::RELATIONSHIPS)
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            VideoData::class,
-            $videos->through(fn (Video $video) => VideoData::fromModel($video)),
-        );
-
-        return $collection->wrap('data')->toResponse($request);
+        return VideoData::collect($videos, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response

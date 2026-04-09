@@ -119,6 +119,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->whereNull('notified_at');
     }
 
+    /** @return BelongsTo<Image, $this> */
     public function image(): BelongsTo
     {
         return $this->belongsTo(Image::class);

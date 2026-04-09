@@ -42,7 +42,7 @@ class Comment extends Model
             $notification = new Notification;
             if ($filtered) {
                 foreach ($filtered as $filter) {
-                    $email = $filter->getAttribute('data-email');
+                    $email = $filter instanceof \DOMElement ? $filter->getAttribute('data-email') : null;
                     $user = Fabriq::getModelClass('user')->whereEmail($email)->first();
                     if ($user) {
                         $notification = $model->notifications()->create([
@@ -101,6 +101,7 @@ class Comment extends Model
         return $this->morphMany(Fabriq::getFqnModel('notification'), 'notifiable');
     }
 
+    /** @return HasMany<Comment> */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id', 'id')

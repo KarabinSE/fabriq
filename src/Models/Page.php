@@ -2,6 +2,15 @@
 
 namespace Karabin\Fabriq\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\DB;
+use Kalnoy\Nestedset\NodeTrait;
 use Karabin\Fabriq\Concerns\BroadcastsModelEvents;
 use Karabin\Fabriq\Concerns\HasPaths;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
@@ -14,15 +23,6 @@ use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\PageFactory;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Traits\Commentable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Support\Facades\DB;
-use Kalnoy\Nestedset\NodeTrait;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
 use Karabin\TranslatableRevisions\Traits\RevisionOptions;
@@ -252,5 +252,12 @@ class Page extends Model implements HasMedia
 
             $this->updateContent($revisionContent->toArray(), (string) $locale);
         }
+    }
+
+    /** @return HasMany<Page> */
+    public function children()
+    {
+        return $this->hasMany(get_class($this), $this->getParentIdName())
+            ->setModel($this);
     }
 }

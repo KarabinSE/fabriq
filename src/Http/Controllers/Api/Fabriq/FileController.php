@@ -22,7 +22,7 @@ class FileController extends Controller
     /**
      * Get index of the resource.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): PaginatedDataCollection
     {
         $number = $request->integer('number', 100);
 
@@ -39,12 +39,7 @@ class FileController extends Controller
             ->allowedIncludes(...File::RELATIONSHIPS)
             ->paginate($number);
 
-        $collection = new PaginatedDataCollection(
-            FileData::class,
-            $files->through(fn (File $file) => FileData::fromModel($file)),
-        );
-
-        return $collection->wrap('data')->toResponse($request);
+        return FileData::collect($files, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
