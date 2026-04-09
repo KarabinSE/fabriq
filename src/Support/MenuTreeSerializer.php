@@ -76,8 +76,9 @@ class MenuTreeSerializer
 
         if (array_key_exists('children', $includes)) {
             $childIncludes = self::recursiveIncludes($includes['children']);
-
-            $data['children'] = self::collection($menuItem->children, $childIncludes);
+            /** @var \Illuminate\Database\Eloquent\Collection<int, MenuItem> $children */
+            $children = $menuItem->children;
+            $data['children'] = self::collection($children, $childIncludes);
         }
 
         return $data;
@@ -98,8 +99,10 @@ class MenuTreeSerializer
         }
 
         if (array_key_exists('template', $includes)) {
+            /** @var RevisionTemplate|null $template */
+            $template = $page->template;
             $data['template'] = [
-                'data' => $page->template ? self::template($page->template, $includes['template']) : null,
+                'data' => $template ? self::template($template, $includes['template']) : null,
             ];
         }
 
@@ -116,8 +119,10 @@ class MenuTreeSerializer
         }
 
         if (array_key_exists('children', $includes)) {
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Page> $pageChildren */
+            $pageChildren = $page->children;
             $data['children'] = [
-                'data' => $page->children
+                'data' => $pageChildren
                     ->map(fn (Page $child) => self::page($child, self::recursiveIncludes($includes['children'])))
                     ->values()
                     ->all(),
