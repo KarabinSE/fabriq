@@ -54,7 +54,7 @@ class DownloadController extends Controller
             'X-FILENAME' => $filename,
         ];
 
-        return response()->download(storage_path('app/'.$path), $filename, $headers)
+        return response()->download(Storage::path($path), $filename, $headers)
             ->deleteFileAfterSend();
     }
 
