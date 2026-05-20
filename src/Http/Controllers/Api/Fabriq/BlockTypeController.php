@@ -54,11 +54,13 @@ class BlockTypeController extends Controller
         $blockType->fill($request->validated());
         $blockType->save();
 
-        if (request()->file('image')) {
+        if (request()->has('image')) {
             $blockType->clearMediaCollection('block_type');
 
-            $blockType->addMediaFromRequest('image')
-                ->toMediaCollection('block_type');
+            if (request()->file('image')) {
+                $blockType->addMediaFromRequest('image')
+                    ->toMediaCollection('block_type');
+            }
         }
 
         return BlockTypeData::fromModel($blockType)
