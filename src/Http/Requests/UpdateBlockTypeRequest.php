@@ -24,11 +24,12 @@ class UpdateBlockTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'max:255'],
-            'component_name' => ['required', 'max:255'],
-            'base_64_svg' => ['string', 'nullable'],
-            'has_children' => ['boolean'],
-            'options' => ['array'],
+            'name' => 'sometimes|required|max:255',
+            'component_name' => 'sometimes|required|max:255',
+            'base_64_svg' => 'sometimes|string|nullable',
+            'has_children' => 'sometimes|boolean',
+            'options' => 'sometimes|array',
+            'file' => 'sometimes|file|nullable',
         ];
     }
 }

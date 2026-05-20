@@ -19,12 +19,18 @@ class BlockTypeData extends Data
         public ?string $type,
         public ?bool $active,
         public ?array $options,
+
+        public ?string $preview_src,
+        public ?string $thumb_src,
+
         public ?string $created_at,
         public ?string $updated_at,
     ) {}
 
     public static function fromModel(BlockType $blockType): self
     {
+        $media = $blockType->getFirstMedia('block_type');
+
         return new self(
             id: (int) $blockType->id,
             name: (string) $blockType->name,
@@ -34,6 +40,10 @@ class BlockTypeData extends Data
             type: $blockType->type,
             active: $blockType->active !== null ? (bool) $blockType->active : null,
             options: $blockType->options,
+
+            preview_src: (string) $media?->getUrl('preview') ?? null,
+            thumb_src: (string) $media?->getUrl('thumb') ?? null,
+
             created_at: $blockType->created_at?->toISOString(),
             updated_at: $blockType->updated_at?->toISOString(),
         );

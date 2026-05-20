@@ -11,6 +11,7 @@ class RevisionTemplateData extends Data
     public function __construct(
         public int $id,
         public ?string $name,
+        public ?string $slug,
         public ?string $type,
         public ?bool $locked,
         public mixed $source_model_id,
@@ -30,6 +31,7 @@ class RevisionTemplateData extends Data
         return new self(
             id: (int) $template->id,
             name: $template->name,
+            slug: $template->slug,
             type: $template->type,
             locked: $template->locked !== null ? (bool) $template->locked : null,
             source_model_id: $template->source_model_id,

@@ -2,15 +2,21 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\Fabriq\Database\Factories\BlockTypeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Karabin\Fabriq\Database\Factories\BlockTypeFactory;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class BlockType extends Model
+class BlockType extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $guarded = [];
+
+    protected $with = ['media'];
 
     /**
      * Morph class.
@@ -31,4 +37,18 @@ class BlockType extends Model
         'has_children' => 'boolean',
         'options' => 'array',
     ];
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->nonQueued()
+            ->fit(Fit::Crop, 480, 320)
+            ->format(config('fabriq.enable_webp') ? 'webp' : 'jpg')
+            ->quality(80);
+
+        $this->addMediaConversion('preview')
+            ->format(config('fabriq.enable_webp') ? 'webp' : 'jpg')
+            ->fit(Fit::Max, 1200)
+            ->quality(85);
+    }
 }
