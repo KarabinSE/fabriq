@@ -3,7 +3,7 @@
         v-model="show"
         name="block-type-modal"
         :click-to-close="false"
-        overflow="overflow-y-auto"
+        overflow="overflow-y-visible"
         :width="! largeBlockPicker ? 'max-w-3xl' : 'max-w-6xl'"
         @before-open="fetchBlockTypes"
         @closed="resetCreateModal"
@@ -83,7 +83,7 @@
                             @click="selectBlock(blockType)"
                         >
                             <img
-                                :src="`data:image/svg+xml;base64,` + blockType.base_64_svg"
+                                :src="blockType.thumb_src ?? `data:image/svg+xml;base64,` + blockType.base_64_svg"
                                 class="w-full"
                                 alt=""
                             >
@@ -103,7 +103,7 @@
                             @click="selectBlock(blockType)"
                         >
                             <img
-                                :src="`data:image/svg+xml;base64,` + blockType.base_64_svg"
+                                :src="blockType.thumb_src ?? `data:image/svg+xml;base64,` + blockType.base_64_svg"
                                 class="w-full"
                                 alt=""
                             >

@@ -44,7 +44,7 @@
                 >
                     <li
                         v-for="(block, boxIndex) in localBlocks"
-                        :key="'alt' + boxIndex + activeLocale"
+                        :key="'alt' + block.id + boxIndex + activeLocale"
                         class="list-group-item"
                     >
                         <UiCard
@@ -64,11 +64,28 @@
                                             <div class="leading-none">
                                                 {{ block.name }}
                                             </div>
-                                            <span class="inline-flex text-sm font-semibold leading-none text-gray-400">{{ block.block_type.name }}</span>
+                                            <span class="relative inline-flex text-sm font-semibold leading-none text-gray-400">{{ block.block_type.name }}</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4">
                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
+                                        <VPopover
+                                            v-if="block.block_type.thumb_src"
+                                            trigger="hover"
+                                            class="flex"
+                                            placement="top"
+                                        >
+                                            <ImageIcon
+                                                thin
+                                                class="h-8"
+                                            />
+
+                                            <template #popover>
+                                                <div class="rounded-md border shadow overflow-hidden">
+                                                    <img :src="block.block_type.thumb_src">
+                                                </div>
+                                            </template>
+                                        </VPopover>
                                         <div v-if="lockedBlocks">
                                             <LockIcon
                                                 class="h-6"
@@ -140,11 +157,14 @@
 </template>
 
 <script>
+import ImageIcon from '@/icons/ImageIcon.vue';
+import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable'
 
 export default {
     components: {
         Draggable,
+        VPopover
     },
 
     props: {

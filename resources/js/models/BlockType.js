@@ -9,8 +9,8 @@ export default {
         return data
     },
 
-    async update (id, payload) {
-        const { data } = await axios.patch(this.endpoint + id, payload)
+    async update (id, payload, config = {}) {
+        const { data } = await axios.patch(this.endpoint + id, payload, config)
 
         return data
     },

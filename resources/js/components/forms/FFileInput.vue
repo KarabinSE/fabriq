@@ -19,12 +19,9 @@
             <div v-else>
                 <div class="flex items-center space-x-4 text-sm">
                     <div class="text-xs line-clamp-1">
-                        {{ localFile.name }} <span
-                            v-if="localFile.extension"
-                            class="font-mono text-[10px]"
-                        >(.{{ localFile.extension }})</span>
+                        {{ localFile.file_name }}
                     </div>
-                    <div class="flex justify-center space-x-2">
+                    <div class="flex justify-start space-x-2">
                         <button
                             class="font-semibold text-left focus:outline-none"
                             @click="$vfm.show('file-modal', {id: localFile.id})"
@@ -32,11 +29,10 @@
                             <PenToSquareIcon class="w-4 h-4" />
                         </button>
                         <button
-                            class="font-medium focus:outline-none text-xs leading-none"
+                            class="font-semibold focus:outline-none"
                             @click="clearFile"
                         >
-                            Rensa fil
-                            <!-- <XMarkIcon class="w-4 h-4" /> -->
+                            <XMarkIcon class="w-4 h-4" />
                         </button>
                     </div>
                 </div>
@@ -160,7 +156,6 @@ export default {
                 }
                 const { data } = await File.show(id, payload)
                 this.localFile = data
-                data._id = Math.random().toString(20).substring(2, 8)
                 this.$emit('input', data)
                 this.emitFileSelected()
                 this.pickerOpen = false
