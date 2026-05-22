@@ -70,7 +70,7 @@
                                     <div class="flex items-center space-x-4">
                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
                                         <VPopover
-                                            v-if="block.block_type.thumb_src"
+                                            v-if="block.block_type.thumb_src || block.block_type.base_64_svg"
                                             trigger="hover"
                                             class="flex"
                                             placement="top"
@@ -82,8 +82,8 @@
                                             />
 
                                             <template #popover>
-                                                <div class="rounded-md border shadow overflow-hidden">
-                                                    <img :src="block.block_type.thumb_src">
+                                                <div class="rounded-md border shadow overflow-hidden bg-white">
+                                                    <img :src="block.block_type.thumb_src || `data:image/svg+xml;base64,` + block.block_type.base_64_svg">
                                                 </div>
                                             </template>
                                         </VPopover>

@@ -83,7 +83,7 @@
                             @click="selectBlock(blockType)"
                         >
                             <img
-                                :src="blockType.thumb_src ?? `data:image/svg+xml;base64,` + blockType.base_64_svg"
+                                :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
                                 class="w-full"
                                 alt=""
                             >
@@ -103,7 +103,7 @@
                             @click="selectBlock(blockType)"
                         >
                             <img
-                                :src="blockType.thumb_src ?? `data:image/svg+xml;base64,` + blockType.base_64_svg"
+                                :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
                                 class="w-full"
                                 alt=""
                             >
