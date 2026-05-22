@@ -3,8 +3,8 @@
         v-model="show"
         name="block-type-modal"
         :click-to-close="false"
-        overflow="overflow-y-visible"
-        :width="! largeBlockPicker ? 'max-w-3xl' : 'max-w-6xl'"
+        :overflow="largeBlockPicker ? 'overflow-y-auto' : 'overflow-y-visible'"
+        :width="largeBlockPicker ? 'max-w-6xl' : 'max-w-3xl'"
         @before-open="fetchBlockTypes"
         @closed="resetCreateModal"
     >
