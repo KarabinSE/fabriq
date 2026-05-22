@@ -64,13 +64,13 @@
                                             <div class="leading-none">
                                                 {{ block.name }}
                                             </div>
-                                            <span class="relative inline-flex text-sm font-semibold leading-none text-gray-400">{{ block.block_type.name }}</span>
+                                            <span class="relative inline-flex text-sm font-semibold leading-none text-gray-400">{{ blockBlockType(block).name }}</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4">
                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
                                         <VPopover
-                                            v-if="block.block_type.thumb_src || block.block_type.base_64_svg"
+                                            v-if="blockBlockType(block).thumb_src || blockBlockType(block).base_64_svg"
                                             trigger="hover"
                                             class="flex"
                                             placement="top"
@@ -83,7 +83,7 @@
 
                                             <template #popover>
                                                 <div class="rounded-md border shadow overflow-hidden bg-white">
-                                                    <img :src="block.block_type.thumb_src || `data:image/svg+xml;base64,` + block.block_type.base_64_svg">
+                                                    <img :src="blockBlockType(block).thumb_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg">
                                                 </div>
                                             </template>
                                         </VPopover>
@@ -141,7 +141,7 @@
                             </template>
                             <KeepAlive>
                                 <Component
-                                    :is="block.block_type.component_name"
+                                    :is="blockBlockType(block).component_name"
                                     :content="block"
                                     :value="block"
                                     :index="boxIndex"
@@ -159,6 +159,7 @@
 
 <script>
 import ImageIcon from '@/icons/ImageIcon.vue';
+import BlockType from '@/models/BlockType';
 import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable'
 
@@ -192,6 +193,11 @@ export default {
 
     emits: ['input'],
 
+    data () {
+        return {
+            blockTypes: {}
+        }
+    },
 
     computed: {
 
@@ -240,6 +246,9 @@ export default {
 
     },
 
+    async beforeMount() {
+        await this.fetchBlockTypes()
+    },
 
     mounted() {
         this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
@@ -251,6 +260,14 @@ export default {
     },
 
     methods: {
+
+        blockBlockType (block) {
+            if(!this.blockTypes || !Array.isArray(this.blockTypes)) {
+                return block.block_type
+            }
+
+            return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
+        },
 
         copySuccess () {
             this.$toast.success({ title: 'Blockets ID har kopierats',
@@ -296,6 +313,16 @@ export default {
         blockEdited(value) {
             console.log('asd')
         },
+
+        async fetchBlockTypes () {
+            try {
+                const { data } = await BlockType.index()
+
+                this.blockTypes = data
+            } catch (error) {
+                console.error(error)
+            }
+        }
     },
 }
 </script>
