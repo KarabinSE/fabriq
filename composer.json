@@ -30,7 +30,7 @@
         "spatie/laravel-query-builder": "^3.5|^4.0|^5.0|^6.0",
         "spatie/laravel-medialibrary": "^8.2|^9.0|^10.0|^11.0",
         "doctrine/dbal": "^3.1|^4.0",
-        "kalnoy/nestedset": "^6.0",
+        "kalnoy/nestedset": "^7.0",
         "spatie/laravel-tags": "^3.1|^4.0",
         "spatie/laravel-sluggable": "^2.6|^3.0",
         "karabinse/translatable-revisions": "^2.0.0|dev-main",
