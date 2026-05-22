@@ -337,7 +337,10 @@ export default {
         },
         async updateBlockTypeData() {
             try {
-                await BlockType.update(this.activeItem.id, this.activeItem)
+                await BlockType.update(this.activeItem.id, {
+                    ...this.activeItem,
+                    image: undefined,
+                })
             } catch (error) {
                 console.error(error)
             }
