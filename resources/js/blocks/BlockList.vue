@@ -74,6 +74,7 @@
                                             trigger="hover"
                                             class="flex"
                                             placement="top"
+                                            :delay="{ show: 300, hide: 100 }"
                                         >
                                             <ImageIcon
                                                 thin
