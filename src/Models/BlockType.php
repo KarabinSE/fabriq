@@ -42,9 +42,9 @@ class BlockType extends Model implements HasMedia
     {
         $this->addMediaConversion('thumb')
             ->nonQueued()
-            ->fit(Fit::Crop, 480, 320)
+            ->fit(Fit::Max, 480, 320)
             ->format(config('fabriq.enable_webp') ? 'webp' : 'jpg')
-            ->quality(80);
+            ->quality(95);
 
         $this->addMediaConversion('preview')
             ->format(config('fabriq.enable_webp') ? 'webp' : 'jpg')
