@@ -107,12 +107,8 @@ export default {
             return this.selectedFilePreview
         },
     },
-    watch: {
-        previewSrc() {
-            this.selectedFilePreview = this.previewSrc
-        }
-    },
     mounted () {
+        this.selectedFilePreview = this.previewSrc
         // this.$refs[this.randomRef].addEventListener('dragover', this.handleDragOver)
         // this.$refs[this.randomRef].addEventListener('dragleave', this.handleDragLeave)
     },

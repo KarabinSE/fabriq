@@ -5,7 +5,10 @@
             name="blockTypeEditModal"
             @validated="updateBlockType"
         >
-            <div class="grid grid-cols-2 gap-6 my-6">
+            <div
+                v-if="activeItem"
+                class="grid grid-cols-2 gap-6 my-6"
+            >
                 <div class="space-y-6">
                     <FInput
                         ref="nameInput"
@@ -291,8 +294,11 @@ export default {
             this.fetchItems()
         },
         handleRowClick (item) {
-            this.activeItem = structuredClone(item)
-            this.openEditModal()
+            this.activeItem = null
+            this.$nextTick(() => {
+                this.activeItem = structuredClone(item)
+                this.openEditModal()
+            })
         },
         async openEditModal() {
             this.activeItem.options = {...defaultOptionsStructure, ...this.activeItem.options}
