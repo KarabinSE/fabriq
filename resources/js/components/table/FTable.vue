@@ -224,7 +224,7 @@ export default {
         this.descending = this.mergedOptions.sortDescending
         this.$eventBus.$on('clear-checked-rows', this.clearCheckedRows)
     },
-    beforeUnmount () {
+    beforeDestroy () {
         this.$eventBus.$off('clear-checked-rows', this.clearCheckedRows)
     },
     methods: {

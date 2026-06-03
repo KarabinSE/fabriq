@@ -763,7 +763,7 @@ export default {
         // })
         this.editor.commands.setContent(this.value)
     },
-    beforeUnmount () {
+    beforeDestroy () {
         this.editor.destroy()
     },
     methods: {

@@ -135,7 +135,7 @@ export default {
             document.addEventListener('paste', this.handlePaste)
         }
     },
-    beforeUnmount () {
+    beforeDestroy () {
         this.UploadDropzone.destroy()
         if (this.hasGlobalDrop) {
             console.log('detaching paste')
