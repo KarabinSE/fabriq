@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const vuexModules = import.meta.globEager('./modules/*.js')
+const vuexModules = import.meta.glob('./modules/*.js', { eager: true })
 
 // Load store modules dynamically.
 // const requireContext = require.context('./modules', false, /.*\.js$/)
