@@ -5,7 +5,7 @@
     >
         <div
             v-if="hasHeaderSlot"
-            :class="[{'px-6': padding }, {'cursor-pointer flex justify-between': collapsible }, collapsible && collapsedActive ? 'border-gray-200' : 'border-transparent', ! open && collapsible ? ' rounded-b' : 'bg-white ', cHeaderClasses, collapsible ? 'border-transparent' : 'border-gray-200']"
+            :class="[{'px-4 md:px-6': padding }, {'cursor-pointer flex justify-between': collapsible }, collapsible && collapsedActive ? 'border-gray-200' : 'border-transparent', ! open && collapsible ? ' rounded-b' : 'bg-white ', cHeaderClasses, collapsible ? 'border-transparent' : 'border-gray-200']"
             class="flex items-center leading-none transition-colors duration-500 bg-white border-b rounded-t"
             @click="toggleCollapsible"
         >
@@ -116,7 +116,7 @@ export default {
                 return this.headerClasses
             }
 
-            return 'py-4'
+            return 'py-3 md:py-4'
         },
 
         openCards() {

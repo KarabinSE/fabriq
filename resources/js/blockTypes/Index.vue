@@ -5,86 +5,66 @@
             name="blockTypeEditModal"
             @validated="updateBlockType"
         >
-            <div
-                v-if="activeItem"
-                class="grid grid-cols-2 gap-6 my-6"
-            >
-                <div class="space-y-6">
-                    <FInput
-                        ref="nameInput"
-                        v-model="activeItem.name"
-                        label="Namn"
-                        rules="required"
-                        name="name"
-                    />
-                    <FInput
-                        ref="nameInput"
-                        v-model="activeItem.component_name"
-                        label="Komponentnamn"
-                        rules="required"
-                        name="component_name"
-                    />
-                    <FSelect
-                        v-model="activeItem.options.hidden_for"
-                        label="Dold för"
-                        multiple
-                        :options="templates"
-                        option-label="name"
-                        :reduce-fn="item => item.slug"
-                        name="hidden_for"
-                    />
-                    <FSelect
-                        v-model="activeItem.options.recommended_for"
-                        label="Rekommenderad för"
-                        multiple
-                        :options="templates"
-                        option-label="name"
-                        :reduce-fn="item => item.slug"
-                        name="recommended_for"
-                    />
-                    <FSelect
-                        v-model="activeItem.options.visible_for"
-                        label="Synlig för"
-                        multiple
-                        :options="templates"
-                        option-label="name"
-                        :reduce-fn="item => item.slug"
-                        name="visible_for"
-                    />
-
-                    <FSwitch
-                        v-model="activeItem.has_children"
-                        label=""
-                        column-layout
-                        rules=""
-                    >
-                        Har barn
-                    </FSwitch>
-                </div>
-
-                <div class="space-y-6">
-                    <FBlockTypeImageInput
-                        v-model="activeItem.image"
-                        label="Bild"
-                        :preview-src="activeItem.preview_src"
-                    />
-
-                    <FInput
-                        v-model="activeItem.base_64_svg"
-                        label="Base 64 svg"
-                        rules=""
-                    />
-
-                    <div
+            <div class="grid grid-cols-2 gap-6 my-6">
+                <FInput
+                    ref="nameInput"
+                    v-model="activeItem.name"
+                    label="Namn"
+                    rules="required"
+                />
+                <FInput
+                    ref="nameInput"
+                    v-model="activeItem.component_name"
+                    label="Komponentnamn"
+                    rules="required"
+                />
+                <FSelect
+                    v-model="activeItem.options.hidden_for"
+                    label="Dold för"
+                    multiple
+                    :options="templates"
+                    option-label="name"
+                    :reduce-fn="item => item.slug"
+                    name="hidden_for"
+                />
+                <FSelect
+                    v-model="activeItem.options.recommended_for"
+                    label="Rekommenderad för"
+                    multiple
+                    :options="templates"
+                    option-label="name"
+                    :reduce-fn="item => item.slug"
+                    name="recommended_for"
+                />
+                <FSelect
+                    v-model="activeItem.options.visible_for"
+                    label="Synlig för"
+                    multiple
+                    :options="templates"
+                    option-label="name"
+                    :reduce-fn="item => item.slug"
+                    name="visible_for"
+                />
+                <FInput
+                    v-model="activeItem.base_64_svg"
+                    label="Base 64 svg"
+                    rules=""
+                />
+                <FSwitch
+                    v-model="activeItem.has_children"
+                    label=""
+                    column-layout
+                    rules=""
+                >
+                    Har barn
+                </FSwitch>
+                <div class="">
+                    <img
                         v-if="activeItem.base_64_svg"
-                        class="w-full !my-1"
+                        :src="`data:image/svg+xml;base64,` + activeItem.base_64_svg"
+                        class="w-4/5"
+                        alt=""
                     >
-                        <img
-                            :src="`data:image/svg+xml;base64,` + activeItem.base_64_svg"
-                            class="w-full p-2 text-gray-500 italic text-xs"
-                            alt="felaktig base_64 svg"
-                        >
-                    </div>
                 </div>
             </div>
         </EditModal>
@@ -132,7 +112,7 @@
             <template #tools>
                 <button
                     type="button"
-                    class="fabriq-btn ml-10  btn-royal py-2.5 px-4 inline-flex items-center"
+                    class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
                     @click="$vfm.show('createBlockTypeModal')"
                 >
                     Lägg till blocktyp
@@ -180,7 +160,6 @@
 </template>
 <script>
 import EditModal from '@/blockTypes/EditModal.vue'
-import FBlockTypeImageInput from '@/components/forms/FBlockTypeImageInput.vue'
 import BlockType from '@/models/BlockType'
 import Template from '@/models/Template'
 function defaultCreationObject () {
@@ -198,7 +177,7 @@ function defaultOptionsStructure () {
 }
 export default {
     name: 'BlockTypesIndex',
-    components: { EditModal, FBlockTypeImageInput },
+    components: { EditModal },
     data () {
         return {
             showEditModal: false,
@@ -240,7 +219,7 @@ export default {
                     tdClasses: 'text-right',
                     thClasses: 'text-right'
                 }
-            ],
+            ]
         }
     },
     activated () {
@@ -294,11 +273,8 @@ export default {
             this.fetchItems()
         },
         handleRowClick (item) {
-            this.activeItem = null
-            this.$nextTick(() => {
-                this.activeItem = structuredClone(item)
-                this.openEditModal()
-            })
+            this.activeItem = item
+            this.openEditModal()
         },
         async openEditModal() {
             this.activeItem.options = {...defaultOptionsStructure, ...this.activeItem.options}
@@ -320,43 +296,15 @@ export default {
         resetCreateModal () {
             this.newItem = { ...defaultCreationObject() }
         },
-        async updateBlockTypeImage() {
-            const formData = new FormData()
-
-            // the activeItem.image property is only added when updated or removed.
-            // The image is only updated on the backend if the property exists on activeItem
-            // image: null -> removes the image
-            // image: File -> replaces the image
-            if(this.activeItem.hasOwnProperty('image')) {
-                formData.append('image', this.activeItem.image)
-            }
-
-            try {
-                await BlockType.update(this.activeItem.id, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        async updateBlockTypeData() {
-            try {
-                await BlockType.update(this.activeItem.id, {
-                    ...this.activeItem,
-                    image: undefined,
-                })
-            } catch (error) {
-                console.error(error)
-            }
-        },
         async updateBlockType() {
-            await this.updateBlockTypeImage()
-            await this.updateBlockTypeData()
-            this.$toast.success({title: 'Blocktypen har uppdaterats!'})
-            this.$vfm.hide('blockTypeEditModal')
-            this.fetchItems()
+            try {
+                await BlockType.update(this.activeItem.id, this.activeItem)
+                this.$toast.success({title: 'Blocktypen har uppdaterats!'})
+                this.$vfm.hide('blockTypeEditModal')
+            } catch (error) {
+                console.error(error)
+            }
+            console.log(this.activeItem)
         }
     }
 }

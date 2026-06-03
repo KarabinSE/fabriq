@@ -74,7 +74,8 @@
                             >
                                 <Component
                                     :is="item.icon"
-                                    class="w-6 h-6 mr-4 text-gray-400 group-hover:text-gray-500"
+                                    :thin="true"
+                                    class="w-6 h-6 mr-4 text-gray-600"
                                 />
                                 {{ item.title }}
                             </RouterLink>

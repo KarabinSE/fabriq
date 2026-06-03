@@ -33,7 +33,7 @@
             </template>
             <template #tools>
                 <div :class="{'opacity-70 pointer-events-none': !currentUserIsFirstIn }">
-                    <div class="flex flex-wrap space-x-4 whitespace-nowrap">
+                    <div class="flex flex-wrap gap-x-4 gap-y-2 whitespace-nowrap">
                         <FButton
                             class="px-6 py-2.5 leading-none text-sm fabriq-btn btn-link"
                             back-button="pages.index"

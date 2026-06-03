@@ -1,36 +1,42 @@
 <template>
     <div
-        class="flex items-start w-full md:items-end"
+        ref="container"
+        class="flex flex-wrap gap-4 items-end justify-between mt-5"
     >
         <div
-            ref="container"
-            class="mr-4 text-xl font-light md:text-4xl"
-        >
-            <slot />
-        </div>
-        <div class="text-sm font-semibold text-gray-400 div-b">
-            <slot name="subtitle" />
-        </div>
-        <Transition
-            v-if="hasToolsSlot"
-            name="fade"
+            class="flex items-baseline"
         >
             <div
-                v-if="!showFixedTools"
-                key="fixedTools"
+                class="mr-4 font-light text-3xl md:text-4xl"
+            >
+                <slot />
+            </div>
+            <div class="text-sm font-semibold text-gray-400">
+                <slot name="subtitle" />
+            </div>
+        </div>
 
-                class="ml-auto div-c"
+        <div>
+            <TransitionGroup
+                v-if="hasToolsSlot"
+                name="fade"
             >
-                <slot name="tools" />
-            </div>
+                <div
+                    v-if="showFixedTools"
+                    key="nonfixedTools"
+                    class="fixed z-50 p-2.5 bg-white rounded shadow-md left-4 right-4 md:left-auto md:right-8 div-c fixed-tools top-20 lg:top-5"
+                >
+                    <slot name="tools" />
+                </div>
+            </TransitionGroup>
             <div
-                v-else
-                key="nonfixedTools"
-                class="fixed z-50 p-2.5 ml-auto bg-white rounded shadow-md right-8 div-c fixed-tools"
+                key="fixedTools"
+                class="ml-auto div-c w-auto"
+                :class="showFixedTools && 'invisible'"
             >
                 <slot name="tools" />
             </div>
-        </Transition>
+        </div>
     </div>
 </template>
 <script>
@@ -62,18 +68,13 @@ export default {
             }
         )
     },
-    beforeUnmount () {
+    beforeDestroy () {
         this.observer.disconnect()
     },
     methods: {
         onElementObserved (entries) {
             entries.forEach(({ target, isIntersecting }) => {
-                if (!isIntersecting) {
-                    this.showFixedTools = true
-                    return
-                }
-
-                this.showFixedTools = false
+                this.showFixedTools = !isIntersecting
             })
         }
     }

@@ -51,102 +51,105 @@
                 </div>
             </template>
 
-            <FTable
-                :columns="columns"
-                :options="{clickableRows: true, defaultSort: 'sortindex', sortDescending: false, shadow: false, search: true}"
-                :pagination="pagination"
-                :rows="contacts"
-                :search-query="searchQuery"
-                paginated
-                @search="setSearch"
-                @change-page="setPage"
-                @row-clicked="editContact"
-                @sort="setSort"
-            >
-                <template #search>
-                    <div class="px-6 border-b border-gray-100">
-                        <div class="flex items-center ">
-                            <SearchIcon class="w-6 h-6 mr-0 text-gray-300" />
-                            <FSearchInput
-                                v-model="queryParams['filter[search]']"
-                                placeholder="Sök…"
-                                class="flex-1 px-6 py-4 text-sm text-gray-600 appearance-none focus:outline-none"
-                                @perform-search="fetchContacts"
-                                @clear-search="resetSearch"
-                            />
+            <div class="max-w-full overflow-auto">
+                <FTable
+                    :columns="columns"
+                    :options="{clickableRows: true, defaultSort: 'sortindex', sortDescending: false, shadow: false, search: true}"
+                    :pagination="pagination"
+                    :rows="contacts"
+                    :search-query="searchQuery"
+                    paginated
+                    @search="setSearch"
+                    @change-page="setPage"
+                    @row-clicked="editContact"
+                    @sort="setSort"
+                >
+                    <template #search>
+                        <div class="px-6 border-b border-gray-100">
+                            <div class="flex items-center ">
+                                <SearchIcon class="w-6 h-6 mr-0 text-gray-300" />
+                                <FSearchInput
+                                    v-model="queryParams['filter[search]']"
+                                    placeholder="Sök…"
+                                    class="flex-1 px-6 py-4 text-sm text-gray-600 appearance-none focus:outline-none"
+                                    @perform-search="fetchContacts"
+                                    @clear-search="resetSearch"
+                                />
+                            </div>
                         </div>
-                    </div>
-                </template>
-                <template #default="{ row: item, prop }">
-                    <RouterLink
-                        v-if="prop == 'name'"
-                        class="flex items-center "
-                        :to="{name: 'contacts.edit', params: { id: item.id }}"
-                    >
-                        <CircleUserIcon
-                            v-if="! item.content.image"
-                            thin
-                            class="items-center w-6 h-6 mr-4"
-                        />
-                        <div v-else>
-                            <UiImagePresenter
-                                class="object-cover w-6 h-6 mr-4 rounded-full"
-                                :image="item.content.image"
-                            />
-                        </div>
-                        {{ item.name }}
-                    </RouterLink>
-                    <span
-                        v-else-if="prop == 'tags'"
-                        class="flex space-x-2"
-                    >
-                        <UiBadge
-                            v-for="(tag, index) in item.tags"
-                            :key="index"
-                        >{{ tag.name }}</UiBadge>
-                    </span>
-                    <span v-else-if="prop == 'sortindex'">
-                        <UiBadge>{{ item.sortindex }}</UiBadge>
-                    </span>
-                    <span
-                        v-else-if="prop == 'published'"
-                        class="flex justify-center"
-                    >
-                        <CircleCheckIcon
-                            v-if="item.published"
-                            class="w-5 text-green-500"
-                        />
-                        <XMarkIcon
-                            v-else
-                            class="w-3 text-red-400"
-                        />
-                    </span>
-
-                    <span
-                        v-else-if="prop == 'edit'"
-                        class="flex items-start justify-end space-x-5"
-                    >
+                    </template>
+                    <template #default="{ row: item, prop }">
                         <RouterLink
+                            v-if="prop == 'name'"
+                            class="flex items-center "
                             :to="{name: 'contacts.edit', params: { id: item.id }}"
-                            class="flex items-center justify-end link"
                         >
-                            <PenToSquareIcon
+                            <CircleUserIcon
+                                v-if="! item.content.data.image"
                                 thin
-                                class="w-6 h-6 text-gray-800"
+                                class="items-center w-6 h-6 mr-4"
                             />
+                            <div v-else>
+                                <UiImagePresenter
+                                    class="object-cover w-6 h-6 mr-4 rounded-full"
+                                    :image="item.content.data.image"
+                                />
+                            <!-- {{ item.image }} -->
+                            </div>
+                            {{ item.name }}
                         </RouterLink>
-                        <FConfirmDropdown
-                            confirm-question="Vill du ta bort kontakten?"
-                            @confirmed="deleteContact(item)"
+                        <span
+                            v-else-if="prop == 'tags'"
+                            class="flex space-x-2"
                         >
-                            <TrashIcon
-                                class="w-6 h-6 text-gray-800 hover:text-red-500"
-                                thin
+                            <UiBadge
+                                v-for="(tag, index) in item.tags.data"
+                                :key="index"
+                            >{{ tag.name }}</UiBadge>
+                        </span>
+                        <span v-else-if="prop == 'sortindex'">
+                            <UiBadge>{{ item.sortindex }}</UiBadge>
+                        </span>
+                        <span
+                            v-else-if="prop == 'published'"
+                            class="flex justify-center"
+                        >
+                            <CircleCheckIcon
+                                v-if="item.published"
+                                class="w-5 text-green-500"
                             />
-                        </FConfirmDropdown>
-                    </span>
-                </template>
-            </FTable>
+                            <XMarkIcon
+                                v-else
+                                class="w-3 text-red-400"
+                            />
+                        </span>
+
+                        <span
+                            v-else-if="prop == 'edit'"
+                            class="flex items-start justify-end space-x-5"
+                        >
+                            <RouterLink
+                                :to="{name: 'contacts.edit', params: { id: item.id }}"
+                                class="flex items-center justify-end link"
+                            >
+                                <PenToSquareIcon
+                                    thin
+                                    class="w-6 h-6 text-gray-800"
+                                />
+                            </RouterLink>
+                            <FConfirmDropdown
+                                confirm-question="Vill du ta bort kontakten?"
+                                @confirmed="deleteContact(item)"
+                            >
+                                <TrashIcon
+                                    class="w-6 h-6 text-gray-800 hover:text-red-500"
+                                    thin
+                                />
+                            </FConfirmDropdown>
+                        </span>
+                    </template>
+                </FTable>
+            </div>
         </UiCard>
     </div>
 </template>

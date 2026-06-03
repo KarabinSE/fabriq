@@ -24,7 +24,7 @@
             <template #tools>
                 <button
                     type="button"
-                    class="fabriq-btn ml-10  btn-royal py-2.5 px-4 inline-flex items-center"
+                    class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
                     @click="$vfm.show('createArticleModal')"
                 >
                     Lägg till nyhet

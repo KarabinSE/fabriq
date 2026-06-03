@@ -52,103 +52,152 @@
                             collapsible
                             :identifier="block.id"
                             :open-by-default="block.newlyAdded"
+                            :padding="false"
+                            header-classes="px-3 sm:px-4 py-3 sm:py-4"
                         >
                             <template #header>
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center flex-1 space-x-6">
+                                    <div class="flex items-center flex-1 gap-2 md:gap-6">
                                         <GripVerticalIcon
                                             v-if="!lockedBlocks"
-                                            class="block w-6 h-6 text-gray-300 cursor-move handle"
+                                            class="block w-4 h-4 md:w-6 md:h-6 text-gray-400 md:text-gray-300 cursor-move handle"
                                         />
-                                        <div class="flex items-end space-x-6">
-                                            <div class="leading-none">
+                                        <div class="flex flex-col md:flex-row md:items-end gap-1 md:gap-3">
+                                            <div class="leading-none text-base font-normal md:font-light md:text-xl">
                                                 {{ block.name }}
                                             </div>
-                                            <span class="relative inline-flex text-sm font-semibold leading-none text-gray-400">{{ blockBlockType(block).name }}</span>
+                                            <span class="inline-flex text-xs md:text-sm font-semibold leading-none text-gray-400">
+                                                {{ block.block_type.name }}
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4">
                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
-                                        <VPopover
-                                            v-if="blockBlockType(block).thumb_src || blockBlockType(block).base_64_svg"
-                                            trigger="hover"
-                                            class="flex"
-                                            placement="top"
-                                            :delay="{ show: 300, hide: 100 }"
-                                        >
-                                            <ImageIcon
-                                                thin
-                                                class="h-8"
-                                            />
-
-                                            <template #popover>
-                                                <div class="rounded-md border shadow overflow-hidden bg-white">
-                                                    <img :src="blockBlockType(block).thumb_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg">
-                                                </div>
-                                            </template>
-                                        </VPopover>
                                         <div v-if="lockedBlocks">
                                             <LockIcon
-                                                class="h-6"
+                                                class="h-5 md:h-6"
                                             />
                                         </div>
                                         <div
                                             v-if="lockedBlocks"
-                                            class="w-px h-8 mx-6 bg-gray-300"
+                                            class="w-px h-7 md:h-8 mx-6 bg-gray-300"
                                         />
-                                        <button
-                                            v-show="!lockedBlocks"
-                                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
-                                            class="focus:outline-none"
-                                            @click.stop="cloneBlock(block)"
+
+                                        <div
+                                            class="sm:hidden flex items-center gap-4"
                                         >
-                                            <CloneIcon
-                                                thin
-                                                class="h-6"
+                                            <UiDropdown
+                                                alignment="top-right"
+                                            >
+                                                <GearIcon
+                                                    class="h-5 !text-gray-300"
+                                                    thin
+                                                />
+                                                <template #dropdown>
+                                                    <button
+                                                        v-show="!lockedBlocks"
+                                                        class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                        @click.stop="cloneBlock(block)"
+                                                    >
+                                                        <CloneIcon
+                                                            thin
+                                                            class="h-5"
+                                                        />
+                                                        Klona block
+                                                    </button>
+                                                    <button
+                                                        v-clipboard="'#' + block.id"
+                                                        v-clipboard:success="copySuccess"
+                                                        class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                        type="button"
+                                                        @click.stop
+                                                    >
+                                                        <LinkIcon
+                                                            class="h-4"
+                                                            thin
+                                                        />
+                                                        Kopiera block-ID
+                                                    </button>
+
+                                                    <FConfirmDropdown
+                                                        v-show="!lockedBlocks"
+                                                        confirm-question="Vill du ta bort detta blocket?"
+                                                        class="relative"
+                                                        @confirmed="deleteBlock(boxIndex)"
+                                                    >
+                                                        <div class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44">
+                                                            <TrashIcon
+                                                                class="h-5"
+                                                                thin
+                                                            />
+                                                            Radera
+                                                        </div>
+                                                    </FConfirmDropdown>
+                                                </template>
+                                            </UiDropdown>
+
+                                            <FButtonSwitch
+                                                v-model="block.hidden"
+                                                class="self-center mb-1 [&_svg]:h-5"
                                             />
-                                        </button>
-                                        <button
-                                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                            v-clipboard="'#' + block.id"
-                                            v-clipboard:success="copySuccess"
-                                            class="focus:outline-none"
-                                            type="button"
-                                            @click.stop
-                                        >
-                                            <LinkIcon
-                                                class="h-6"
-                                                thin
+                                        </div>
+                                        <div class="hidden sm:flex items-center space-x-4">
+                                            <button
+                                                v-show="!lockedBlocks"
+                                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
+                                                class="focus:outline-none"
+                                                @click.stop="cloneBlock(block)"
+                                            >
+                                                <CloneIcon
+                                                    thin
+                                                    class="h-6"
+                                                />
+                                            </button>
+                                            <button
+                                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
+                                                v-clipboard="'#' + block.id"
+                                                v-clipboard:success="copySuccess"
+                                                class="focus:outline-none"
+                                                type="button"
+                                                @click.stop
+                                            >
+                                                <LinkIcon
+                                                    class="h-6"
+                                                    thin
+                                                />
+                                            </button>
+                                            <FButtonSwitch
+                                                v-model="block.hidden"
+                                                class="self-center mb-1 "
                                             />
-                                        </button>
-                                        <FButtonSwitch
-                                            v-model="block.hidden"
-                                            class="self-center mb-1 "
-                                        />
-                                        <FConfirmDropdown
-                                            v-show="!lockedBlocks"
-                                            confirm-question="Vill du ta bort detta blocket?"
-                                            class="relative w-6 h-6"
-                                            @confirmed="deleteBlock(boxIndex)"
-                                        >
-                                            <TrashIcon
-                                                class="h-6 transition-colors duration-150 hover:text-red-500"
-                                                thin
-                                            />
-                                        </FConfirmDropdown>
+                                            <FConfirmDropdown
+                                                v-show="!lockedBlocks"
+                                                confirm-question="Vill du ta bort detta blocket?"
+                                                class="relative w-6 h-6"
+                                                @confirmed="deleteBlock(boxIndex)"
+                                            >
+                                                <TrashIcon
+                                                    class="h-6 transition-colors duration-150 hover:text-red-500"
+                                                    thin
+                                                />
+                                            </FConfirmDropdown>
+                                        </div>
                                         <div class="w-px h-8 mx-6 bg-gray-300" />
                                     </div>
                                 </div>
                             </template>
-                            <KeepAlive>
-                                <Component
-                                    :is="blockBlockType(block).component_name"
-                                    :content="block"
-                                    :value="block"
-                                    :index="boxIndex"
-                                    @input="blockEdited"
-                                    @repeater-updated="refreshBlock"
-                                />
-                            </KeepAlive>
+                            <div class="px-3 sm:px-4 py-3 sm:py-4">
+                                <KeepAlive>
+                                    <Component
+                                        :is="block.block_type.component_name"
+                                        :content="block"
+                                        :value="block"
+                                        :index="boxIndex"
+                                        @input="blockEdited"
+                                        @repeater-updated="refreshBlock"
+                                    />
+                                </KeepAlive>
+                            </div>
                         </UiCard>
                     </li>
                 </TransitionGroup>
@@ -158,15 +207,11 @@
 </template>
 
 <script>
-import ImageIcon from '@/icons/ImageIcon.vue';
-import BlockType from '@/models/BlockType';
-import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable'
 
 export default {
     components: {
         Draggable,
-        VPopover
     },
 
     props: {
@@ -193,11 +238,6 @@ export default {
 
     emits: ['input'],
 
-    data () {
-        return {
-            blockTypes: {}
-        }
-    },
 
     computed: {
 
@@ -246,9 +286,6 @@ export default {
 
     },
 
-    async beforeMount() {
-        await this.fetchBlockTypes()
-    },
 
     mounted() {
         this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
@@ -260,14 +297,6 @@ export default {
     },
 
     methods: {
-
-        blockBlockType (block) {
-            if(!this.blockTypes || !Array.isArray(this.blockTypes)) {
-                return block.block_type
-            }
-
-            return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
-        },
 
         copySuccess () {
             this.$toast.success({ title: 'Blockets ID har kopierats',
@@ -313,16 +342,6 @@ export default {
         blockEdited(value) {
             console.log('asd')
         },
-
-        async fetchBlockTypes () {
-            try {
-                const { data } = await BlockType.index()
-
-                this.blockTypes = data
-            } catch (error) {
-                console.error(error)
-            }
-        }
     },
 }
 </script>
