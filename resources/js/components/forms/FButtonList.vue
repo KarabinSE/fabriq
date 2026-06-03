@@ -48,6 +48,8 @@
                 class="flex-1 col-span-12"
                 :placeholder="placeholder"
                 :pages="pages"
+                :color="color"
+                :arrow="arrow"
             />
             <div
                 v-if="mergedOptions.newTab"
@@ -103,6 +105,14 @@ export default {
             type: String,
             required: false,
             default: ''
+        },
+        color: {
+            type: Boolean,
+            default: false,
+        },
+        arrow: {
+            type: Boolean,
+            default: false,
         }
     },
     data () {

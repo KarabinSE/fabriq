@@ -90,7 +90,7 @@ export default {
     name: 'FSelect',
     props: {
         value: {
-            type: [String, Number, Object, Array],
+            type: [String, Number, Object, Array, Boolean],
             default: '',
         },
 

@@ -34,6 +34,10 @@ import UiDropdown from '@/components/ui/UiDropdown.vue'
 import UiImagePresenter from '@/components/ui/UiImagePresenter.vue'
 import UiSectionHeader from '@/components/ui/UiSectionHeader.vue'
 import UiStatsCard from '@/components/ui/UiStatsCard.vue'
+import FMediaInput from './forms/FMediaInput.vue'
+import FColorPicker from './forms/FColorPicker.vue'
+import FArrowPicker from './forms/FArrowPicker.vue'
+import FChildren from './forms/FChildren.vue'
 import Vue from 'vue'
 
 [
@@ -72,7 +76,13 @@ import Vue from 'vue'
     UiDashedBox,
     UiAvatar,
     PresenceInfo,
-    HelpText
+    HelpText,
+
+    FMediaInput,
+    FColorPicker,
+    FArrowPicker,
+    FChildren,
+
 ].forEach(Component => {
     Vue.component(Component.name, Component)
 })

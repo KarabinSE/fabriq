@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex "
-        :class="columnLayout ? 'flex-col space-y-4  p-2 border' : 'flex-row space-x-12'"
+        :class="columnLayout ? 'flex-col space-y-4  p-2 border' : 'flex-row space-x-6'"
     >
         <FInput
             v-model="localButton.text"
@@ -51,6 +51,17 @@
                 <!-- {{ option.page.name }} -->
             </template>
         </FSelect>
+        <FColorPicker
+            v-if="color && value.linkType !== 'file'"
+            v-model="localButton.color"
+            :disabled="disabled"
+        />
+        <FArrowPicker
+            v-if="arrow && value.linkType !== 'file'"
+            v-model="localButton.arrow"
+            :disabled="disabled"
+        />
+
         <FFileInput
             v-if="value.linkType === 'file'"
             v-model="localButton.file"
@@ -83,6 +94,14 @@ export default {
             }
         },
         disabled: {
+            type: Boolean,
+            default: false
+        },
+        color: {
+            type: Boolean,
+            default: false
+        },
+        arrow: {
             type: Boolean,
             default: false
         },
