@@ -10,7 +10,7 @@
         />
         <div class="col-span-8" />
         <FInput
-            v-model="localContent.header"
+            v-model="localContent.heading"
             name="header"
             class="col-span-12 lg:col-span-5"
             label="Rubriktext"

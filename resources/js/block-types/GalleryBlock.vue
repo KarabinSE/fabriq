@@ -24,7 +24,7 @@
         <hr class="w-full h-px my-6 ">
         <div class="grid grid-cols-12 mb-10 gap-x-6 gap-y-6">
             <FInput
-                v-model="localContent.header"
+                v-model="localContent.heading"
                 name="header"
                 class="col-span-4"
                 label="Rubriktext"
