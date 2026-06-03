@@ -197,6 +197,7 @@
                                 <CircleXMarkIcon class="w-4 text-red-500 h-w-4" />
                             </div>
                             <div class="truncate text-ellipsis max-w-64">
+
                                 {{ item.c_name }}
                             </div>
                         </span>
@@ -213,7 +214,7 @@
                             class="flex space-x-2"
                         >
                             <UiBadge
-                                v-for="(tag, index) in item.tags"
+                                v-for="(tag, index) in item.tags.data"
                                 :key="index"
                             >{{ tag.name }}</UiBadge>
                         </span>

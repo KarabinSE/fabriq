@@ -155,7 +155,7 @@ export default {
                 }
                 const { data } = await File.show(id, payload)
                 this.file = data
-                this.tags = [...data.tags]
+                this.tags = [...data.tags.data]
             } catch (error) {
                 console.error(error)
             }
