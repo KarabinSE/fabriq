@@ -5,16 +5,7 @@
         </template>
         <div class="text-4xl font-black text-center" />
         <template #value>
-            <!-- eslint-disable-next-line -->
-            <number
-                ref="number1"
-                :from="0"
-                :to="number"
-                :format="theFormat"
-                :duration="1.4"
-                :delay="delay"
-                easing="Power1.easeOut"
-            />
+            {{ number }}
         </template>
     </UiStatsCard>
 </template>
@@ -35,10 +26,5 @@ export default {
             default: ''
         }
     },
-    methods: {
-        theFormat (number) {
-            return number.toFixed(0)
-        }
-    }
 }
 </script>

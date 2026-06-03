@@ -209,6 +209,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js' => resource_path('js'),
             __DIR__.'/../resources/fonts' => public_path('fonts'),
             __DIR__.'/../vite.config.mjs' => 'vite.config.mjs',
+            __DIR__.'/../pnpm-workspace.yaml' => 'pnpm-workspace.yaml',
             __DIR__.'/../postcss.config.js' => 'postcss.config.js',
             __DIR__.'/../package.json' => 'package.json',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
