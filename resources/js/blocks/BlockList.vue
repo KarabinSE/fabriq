@@ -73,6 +73,24 @@
                                     </div>
                                     <div class="flex items-center space-x-4">
                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
+                                        <VPopover
+                                            v-if="blockBlockType(block).preview_src || blockBlockType(block).base_64_svg"
+                                            trigger="hover"
+                                            class="hidden sm:flex"
+                                            placement="top"
+                                            :delay="{ show: 300, hide: 100 }"
+                                        >
+                                            <ImageIcon
+                                                thin
+                                                class="h-8"
+                                            />
+
+                                            <template #popover>
+                                                <div class="rounded-md border shadow overflow-hidden bg-white max-w-md">
+                                                    <img :src="blockBlockType(block).preview_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg">
+                                                </div>
+                                            </template>
+                                        </VPopover>
                                         <div v-if="lockedBlocks">
                                             <LockIcon
                                                 class="h-5 md:h-6"
@@ -207,11 +225,15 @@
 </template>
 
 <script>
+import ImageIcon from '@/icons/ImageIcon.vue';
+import BlockType from '@/models/BlockType';
+import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable'
 
 export default {
     components: {
         Draggable,
+        VPopover
     },
 
     props: {
@@ -238,6 +260,11 @@ export default {
 
     emits: ['input'],
 
+    data () {
+        return {
+            blockTypes: {}
+        }
+    },
 
     computed: {
 
@@ -286,6 +313,9 @@ export default {
 
     },
 
+    async beforeMount() {
+        await this.fetchBlockTypes()
+    },
 
     mounted() {
         this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
@@ -297,6 +327,14 @@ export default {
     },
 
     methods: {
+
+        blockBlockType (block) {
+            if(!this.blockTypes || !Array.isArray(this.blockTypes)) {
+                return block.block_type
+            }
+
+            return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
+        },
 
         copySuccess () {
             this.$toast.success({ title: 'Blockets ID har kopierats',
@@ -342,6 +380,16 @@ export default {
         blockEdited(value) {
             console.log('asd')
         },
+
+        async fetchBlockTypes () {
+            try {
+                const { data } = await BlockType.index()
+
+                this.blockTypes = data
+            } catch (error) {
+                console.error(error)
+            }
+        }
     },
 }
 </script>
