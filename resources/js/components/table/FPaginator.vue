@@ -1,6 +1,6 @@
 <template>
     <div
-        v-show="pagination.total_pages > 1"
+        v-show="pagination.last_page > 1"
         class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6"
     >
         <div class="flex justify-between flex-1 sm:hidden">
@@ -20,24 +20,9 @@
             <div>
                 <p class="text-sm text-gray-700">
                     Visar
-                    <span
-                        v-if="currentPageIsFirst"
-                        class="font-medium"
-                    >1</span>
-                    <span
-                        v-else
-                        class="font-medium"
-                    >{{ ((pagination.current_page - 1) * pagination.per_page) + 1 }}</span>
+                    <span class="font-medium">{{ pagination.from }}</span>
                     till
-                    <span
-                        v-if="currentPageIsFirst"
-                        class="font-medium"
-                        v-text="pagination.per_page > pagination.total ? pagination.total : pagination.per_page"
-                    />
-                    <span
-                        v-else-if="! currentPageIsLast"
-                        class="font-medium"
-                    >{{ (pagination.current_page) * pagination.per_page }}</span>
+                    <span class="font-medium">{{ pagination.to }}</span>
                     av
                     <span class="font-medium">{{ pagination.total }}</span>
                 </p>
@@ -111,7 +96,7 @@ export default {
             required: true,
             default () {
                 return {
-                    total_pages: 1
+                    last_page: 1
                 }
             }
         },
@@ -129,13 +114,13 @@ export default {
     },
     computed: {
         numberBoxes () {
-            const range = Array(this.pagination.total_pages)
+            const range = Array(this.pagination.last_page)
                 .fill()
                 .map((_, index) => index + 1)
 
             return range.reduce((pages, page) => {
                 // allow adding of first and last pages
-                if (page === 1 || page === this.pagination.total_pages) {
+                if (page === 1 || page === this.pagination.last_page) {
                     return [...pages, page]
                 }
 
@@ -153,16 +138,10 @@ export default {
             }, [])
         },
         currentPageIsFirst () {
-            if (this.pagination.current_page === 1) {
-                return true
-            }
-            return false
+            return this.pagination.current_page === 1
         },
         currentPageIsLast () {
-            if (this.pagination.total_pages === this.pagination.current_page) {
-                return true
-            }
-            return false
+            return this.pagination.last_page === this.pagination.current_page
         }
     },
     methods: {
