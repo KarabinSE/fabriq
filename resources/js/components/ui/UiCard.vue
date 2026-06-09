@@ -124,7 +124,7 @@ export default {
         },
     },
 
-    beforeUnmount () {
+    beforeDestroy () {
         this.$eventBus.$off('open-all-cards', this.openCollapsible)
         this.$eventBus.$off('close-all-cards', this.closeCollapsible)
         this.$eventBus.$off('open-synced-groups', this.matchGroupAndOpen)

@@ -321,7 +321,7 @@ export default {
         this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
     },
 
-    beforeUnmount() {
+    beforeDestroy() {
         this.$eventBus.$off('block-type-added-' + this.locale, this.blockTypeAdded)
         // this.$eventBus.$off('block-type-added', this.blockTypeAdded)
     },
