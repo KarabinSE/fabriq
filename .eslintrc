@@ -6,7 +6,7 @@
         "sourceType": "module"
     },
     "extends": [
-        "plugin:vue/vue2-recommended"
+        "plugin:vue/recommended"
     ],
     "rules": {
         "vue/max-attributes-per-line": [

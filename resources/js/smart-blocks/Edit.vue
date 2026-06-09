@@ -149,7 +149,7 @@
                                             <KeepAlive>
                                                 <Component
                                                     :is="block.block_type.component_name"
-                                                    v-model:content="localizedContent[activeLocale].boxes[boxIndex]"
+                                                    v-model="localizedContent[activeLocale].boxes[boxIndex]"
                                                     :value="block"
                                                     :index="boxIndex"
                                                     @input="block = $event.target.value"
