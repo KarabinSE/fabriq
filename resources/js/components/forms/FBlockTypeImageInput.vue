@@ -112,7 +112,7 @@ export default {
         // this.$refs[this.randomRef].addEventListener('dragover', this.handleDragOver)
         // this.$refs[this.randomRef].addEventListener('dragleave', this.handleDragLeave)
     },
-    beforeUnmount () {
+    beforeDestroy () {
         // this.$refs[this.randomRef].removeEventListener('dragover', this.handleDragOver)
         // this.$refs[this.randomRef].removeEventListener('dragleave', this.handleDragLeave)
 
