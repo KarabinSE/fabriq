@@ -314,7 +314,7 @@ export default {
                 }
                 const { data, meta } = await File.index(payload)
                 this.files = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

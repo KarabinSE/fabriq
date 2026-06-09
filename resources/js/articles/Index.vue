@@ -183,7 +183,7 @@ export default {
                 const { data, meta } = await Article.index(payload)
 
                 this.articles = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

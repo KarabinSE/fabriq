@@ -362,7 +362,7 @@ export default {
                 }
                 const { data, meta } = await Image.index(payload)
                 this.images = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

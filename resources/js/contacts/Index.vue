@@ -234,7 +234,7 @@ export default {
                 }
                 const { data, meta } = await Contact.index(payload)
                 this.contacts = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

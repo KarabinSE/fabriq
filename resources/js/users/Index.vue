@@ -246,7 +246,7 @@ export default {
                 }
                 const { data, meta } = await User.index(payload)
                 this.users = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

@@ -307,7 +307,7 @@ export default {
                 }
                 const { data, meta } = await Video.index(payload)
                 this.videos = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

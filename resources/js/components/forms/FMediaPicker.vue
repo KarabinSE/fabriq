@@ -307,7 +307,7 @@ export default {
                 const { data, meta } = await Image.index(payload)
 
                 this.items = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
@@ -321,7 +321,7 @@ export default {
                 const { data, meta } = await Video.index(payload)
 
                 this.items = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
@@ -335,7 +335,7 @@ export default {
                 const { data, meta } = await File.index(payload)
 
                 this.items = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

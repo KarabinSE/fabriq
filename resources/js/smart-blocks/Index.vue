@@ -130,7 +130,7 @@ export default {
                 }
                 const { data, meta } = await SmartBlock.index(payload)
                 this.blocks = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.error(error)
             }

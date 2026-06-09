@@ -285,7 +285,7 @@ export default {
                 }
                 const { data, meta } = await Page.index(payload)
                 this.pages = data
-                this.pagination = meta.pagination
+                this.pagination = meta
             } catch (error) {
                 console.log(error)
             }
