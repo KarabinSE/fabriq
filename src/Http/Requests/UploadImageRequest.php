@@ -25,7 +25,7 @@ class UploadImageRequest extends FormRequest
     {
         return [
             'url' => 'required_without:image',
-            'image' => 'required_without:url|image|dimensions:max_width=5000',
+            'image' => 'required_without:url|image:allow_svg|dimensions:max_width=5000',
         ];
     }
 
