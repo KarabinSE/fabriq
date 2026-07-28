@@ -53,7 +53,6 @@
             </div>
             <div
                 v-show="mItem.type === 'internal'"
-                class="mt-4 mb-6"
             >
                 <ValidationObserver ref="internalObserver">
                     <FSelect
@@ -103,7 +102,10 @@
                                 :rules="!isCreating ? 'required' : ''"
                                 type="url"
                             />
-                            <div class="col-span-2">
+                            <div
+                                v-if="mItem.type === 'file'"
+                                class="col-span-2"
+                            >
                                 <FFileInput v-model="content.file" />
                             </div>
                         </div>
