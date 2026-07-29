@@ -64,7 +64,8 @@ function beforeEach (to, from, next) {
             next,
             router,
             to,
-            store
+            store,
+            vm: router.app
         }
         const nextMiddleware = nextFactory(context, middleware, 1)
 
