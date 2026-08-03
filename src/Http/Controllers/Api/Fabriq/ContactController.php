@@ -36,6 +36,7 @@ class ContactController extends Controller
             ->allowedSorts('name', 'email', 'updated_at', 'sortindex', 'published')
             ->allowedFilters([
                 AllowedFilter::scope('search'),
+                AllowedFilter::scope('with_any_tags', 'withTags'),
             ])
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
