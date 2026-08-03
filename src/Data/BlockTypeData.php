@@ -41,8 +41,8 @@ class BlockTypeData extends Data
             active: $blockType->active !== null ? (bool) $blockType->active : null,
             options: $blockType->options,
 
-            preview_src: (string) $media?->getUrl('preview') ?? null,
-            thumb_src: (string) $media?->getUrl('thumb') ?? null,
+            preview_src: isset($media) ? ((string) $media->getUrl('preview')) : null,
+            thumb_src: isset($media) ? ((string) $media->getUrl('thumb')) : null,
 
             created_at: $blockType->created_at?->toISOString(),
             updated_at: $blockType->updated_at?->toISOString(),

@@ -137,6 +137,6 @@ class Contact extends Model
 
     public function scopeWithTags(Builder $query, mixed ...$tags): Builder
     {
-        return $query->withAnyTags($tags, 'contacts');
+        return self::scopeWithAnyTags($query, $tags, 'contacts');
     }
 }
