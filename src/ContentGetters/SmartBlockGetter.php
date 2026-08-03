@@ -22,7 +22,7 @@ class SmartBlockGetter
         }
 
         $smartBlock = Fabriq::getModelClass('smartBlock')
-            ->whereIn('id', (array) $meta->meta_value)->first();
+            ->where('id', (array) $meta->meta_value['id'])->first();
 
         if (! $smartBlock) {
             return null;
