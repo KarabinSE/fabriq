@@ -34,6 +34,12 @@ module.exports = {
         },
         extend: {
             colors: {
+                'primary': 'oklch(92% 0.006 75)',
+                'secondary': 'oklch(75% 0.025 250)',
+                'tertiary': 'oklch(45% 0.03 228)',
+                'btn-primary': 'oklch(53% 0.006 75)',
+                'btn-secondary': 'oklch(75% 0.025 250)',
+                'btn-tertiary': 'oklch(55% 0.03 228)',
                 goldOld: {
                     100: '#fefbf6',
                     200: '#f7e9cf',

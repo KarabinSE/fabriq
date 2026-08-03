@@ -25,7 +25,6 @@ import FTabs from '@/components/forms/tabs/FTabs.vue'
 import UiLogo from '@/components/Logo.vue'
 import CreateModal from '@/components/modals/CreateModal.vue'
 import FTable from '@/components/table/FTable.vue'
-import PresenceInfo from '@/components/ui/PresenceInfo.vue'
 import UiAvatar from '@/components/ui/UiAvatar.vue'
 import UiBadge from '@/components/ui/UiBadge.vue'
 import UiCard from '@/components/ui/UiCard.vue'
@@ -75,7 +74,6 @@ import Vue from 'vue'
     CreateModal,
     UiDashedBox,
     UiAvatar,
-    PresenceInfo,
     HelpText,
 
     FMediaInput,

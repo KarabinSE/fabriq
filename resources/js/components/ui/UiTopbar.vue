@@ -109,11 +109,21 @@
     </div>
 </template>
 <script>
-import * as types from '@/store/mutation-types'
+import { useUserStore, useUiStore } from '@/stores';
 import LogoutForm from '@/components/LogoutForm.vue'
 export default {
     name: 'UiTopbar',
     components: { LogoutForm },
+    setup () {
+        const userStore = useUserStore();
+
+        const uiStore = useUiStore();
+
+        return {
+            userStore,
+            uiStore
+        }
+    },
     data () {
         return {
             csrfToken: '',
@@ -122,10 +132,10 @@ export default {
     },
     computed: {
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         },
         menuOpen () {
-            return this.$store.getters['ui/menuOpen']
+            return this.uiStore.menuOpen;
         }
 
     },
@@ -135,13 +145,13 @@ export default {
             this.showDropdown = false
         },
         closeMenu () {
-            this.$store.commit('ui/' + types.CLOSE_MENU)
+            this.uiStore.closeMenu();
         },
         openMenu () {
-            this.$store.commit('ui/' + types.OPEN_MENU)
+            this.uiStore.openMenu();
         },
         toggleMenu () {
-            this.$store.commit('ui/' + types.TOGGLE_MENU)
+            this.uiStore.toggleMenu();
         }
     }
 }

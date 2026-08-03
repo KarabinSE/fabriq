@@ -101,33 +101,50 @@
 import UiLogo from '@/components/Logo.vue'
 import LogoutForm from '@/components/LogoutForm.vue'
 import Developer from '@/models/Developer.js'
-import * as types from '@/store/mutation-types'
+import { useConfigStore, useUserStore, useRouteHistoryStore, useMenuStore } from '@/stores';
+
 export default {
     name: 'UiDesktopSidebar',
     components: { UiLogo, LogoutForm },
+    setup() {
+        const configStore = useConfigStore();
+
+        const userStore = useUserStore();
+
+        const menuStore = useMenuStore();
+
+        const routeHistoryStore = useRouteHistoryStore();
+
+        return { 
+            configStore, 
+            userStore, 
+            menuStore, 
+            routeHistoryStore 
+        }
+    },
     computed: {
         devMode: {
             get () {
-                return this.$store.getters['config/devMode']
+                return this.configStore.devMode;
             },
             set (value) {
-                this.$store.commit('config/' + types.SET_DEV_MODE, value)
+                this.configStore.setDevMode(value);
             }
         },
         isDev () {
-            return this.$store.getters['user/isDev']
+            return this.userStore.isDev;
         },
         lastRoute () {
-            return this.$store.getters['routeHistory/lastRoute']
+            return this.routeHistoryStore.lastRoute;
         },
         menuItems () {
-            return this.$store.getters['menu/menuItems']
+            return this.menuStore.fullMenuItems;
         },
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         },
         notifications () {
-            return this.$store.getters['user/notifications']
+            return this.userStore.notifications
         }
     },
     methods: {

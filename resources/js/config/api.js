@@ -1,9 +1,17 @@
 import axios from 'axios'
+import { useConfigStore, useUserStore } from '@/stores'
 
 export default function setup (vm) {
     axios.interceptors.request.use(request => {
-        request.headers['X-LOCALE'] = vm.$store.getters['config/activeLocale']
-        request.headers['X-TIMEZONE'] = vm.$store.getters['user/timezone']
+
+        const configStore = useConfigStore();
+
+        const userStore = useUserStore();
+
+        request.headers['X-LOCALE'] = configStore.activeLocale;
+
+        request.headers['X-TIMEZONE'] = userStore.timezone;
+
         // Important: request interceptors **must** return the request.
         return request
     })

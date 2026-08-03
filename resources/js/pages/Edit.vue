@@ -32,7 +32,7 @@
                 </div>
             </template>
             <template #tools>
-                <div :class="{'opacity-70 pointer-events-none': !currentUserIsFirstIn }">
+                <div>
                     <div class="flex flex-wrap gap-x-4 gap-y-2 whitespace-nowrap">
                         <FButton
                             class="px-6 py-2.5 leading-none text-sm fabriq-btn btn-link"
@@ -66,7 +66,6 @@
         </UiSectionHeader>
         <div class="flex justify-end">
             <div class="absolute mt-2">
-                <PresenceInfo />
             </div>
         </div>
         <FTabs
@@ -242,7 +241,7 @@ import BlockList from '@/blocks/BlockList.vue'
 import RefreshObjectModal from '@/components/modals/RefreshObjectModal.vue'
 import Page from '@/models/Page.js'
 import PagePaths from '@/pages/PagePaths.vue'
-import * as types from '@/store/mutation-types'
+import { usePageStore, useConfigStore, useUiStore } from '@/stores'
 
 export default {
     name: 'PagesEdit',
@@ -260,6 +259,20 @@ export default {
         next()
     },
 
+    setup () {
+        const pageStore = usePageStore();
+
+        const configStore = useConfigStore();
+
+        const uiStore = useUiStore();
+
+        return {
+            pageStore,
+            configStore,
+            uiStore
+        }
+    },
+  
     data () {
         return {
             active: false,
@@ -284,40 +297,36 @@ export default {
     computed: {
         page: {
             set(value) {
-                this.$store.commit('page/SET_PAGE', value)
+                this.pageStore.setPage(value);
             },
             get() {
-                return this.$store.getters['page/page']
+                return this.pageStore.page;
             }
         },
         openCards() {
-            return this.$store.getters['ui/openCards']
+            return this.uiStore.openCards;
         },
 
         config () {
-            return this.$store.getters['config/config']
+            return this.configStore.config;
         },
 
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         },
 
         activeLocale: {
             get () {
-                return this.$store.getters['config/activeLocale']
+                return this.configStore.activeLocale
             },
 
             set (value) {
-                this.$store.commit(`config/${types.SET_ACTIVE_LOCALE}`, value)
+                this.configStore.setActiveLocale(value);
             },
         },
 
-        currentUserIsFirstIn() {
-            return this.$store.getters['echo/currentUserIsFirstIn']
-        },
-
         devMode () {
-            return this.$store.getters['config/devMode']
+            return this.configStore.devMode;
         },
 
         lockedBlocks() {

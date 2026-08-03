@@ -17,8 +17,15 @@
 </template>
 
 <script>
+import { useConfigStore } from '@/stores';
+
 export default {
     name: 'FLabel',
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
+    },
     props: {
         label: {
             type: String,
@@ -48,7 +55,7 @@ export default {
 
     computed: {
         devMode () {
-            return this.$store.getters['config/devMode']
+            return this.configStore.devMode;
         },
 
         showOptional () {

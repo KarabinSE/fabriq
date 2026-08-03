@@ -26,7 +26,6 @@
             <template #header>
                 <div class="flex justify-between">
                     <span>Generell information</span>
-                    <PresenceInfo />
                 </div>
             </template>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
@@ -138,7 +137,6 @@ export default {
             queryParams: {
                 include: 'content,template'
             },
-            usersIdle: []
         }
     },
     activated () {

@@ -119,8 +119,15 @@
 </template>
 <script>
 import { format } from 'date-fns'
+import { useUserStore } from '@/stores';
+
 export default {
     name: 'FDatePicker',
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
+    },
     props: {
         value: {
             required: true,
@@ -200,7 +207,7 @@ export default {
             return this.rules.includes('required')
         },
         timezone () {
-            return this.$store.getters['user/timezone']
+            return this.userStore.timezone;
         }
     },
     mounted () {

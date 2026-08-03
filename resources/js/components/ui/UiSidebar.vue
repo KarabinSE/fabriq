@@ -94,26 +94,37 @@
 </template>
 
 <script>
-import * as types from '@/store/mutation-types'
+import { useUiStore, useMenuStore } from '@/stores';
+
 export default {
     name: 'UiSidebar',
+    setup() {
+        const uiStore = useUiStore();
+
+        const menuStore = useMenuStore();
+
+        return { 
+            uiStore, 
+            menuStore 
+        }
+    },
     computed: {
         menuOpen () {
-            return this.$store.getters['ui/menuOpen']
+            return this.uiStore.menuOpen;
         },
         menuItems () {
-            return this.$store.getters['menu/menuItems']
+            return this.menuStore.fullMenuItems;
         }
     },
     methods: {
         closeMenu () {
-            this.$store.commit('ui/' + types.CLOSE_MENU)
+            this.uiStore.closeMenu();
         },
         openMenu () {
-            this.$store.commit('ui/' + types.OPEN_MENU)
+            this.uiStore.openMenu();
         },
         toggleMenu () {
-            this.$store.commit('ui/' + types.TOGGLE_MENU)
+            this.uiStore.toggleMenu();
         }
     }
 }

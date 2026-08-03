@@ -85,7 +85,7 @@
                             :to="{name: 'contacts.edit', params: { id: item.id }}"
                         >
                             <CircleUserIcon
-                                v-if="! item.content.data.image"
+                                v-if="!item.content?.data?.image"
                                 thin
                                 class="items-center w-6 h-6 mr-4"
                             />

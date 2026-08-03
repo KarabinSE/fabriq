@@ -25,8 +25,15 @@
     </button>
 </template>
 <script>
+import { useRouteHistoryStore } from '@/stores';
+
 export default {
     name: 'FButton',
+    setup () {
+        const routeHistoryStore = useRouteHistoryStore();
+
+        return { routeHistoryStore }
+    },
     props: {
         click: {
             required: false,
@@ -72,7 +79,7 @@ export default {
     },
     computed: {
         lastRoute () {
-            return this.$store.getters['routeHistory/lastRoute']
+            return this.routeHistoryStore.lastRoute;
         }
     },
     methods: {

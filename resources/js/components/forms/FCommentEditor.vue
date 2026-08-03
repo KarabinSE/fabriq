@@ -19,6 +19,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Mention from '@tiptap/extension-mention'
 import MentionList from '@/components/forms/extensions/MentionList.vue'
+import { useUserStore } from '@/stores'
 
 const CustomMention = Mention.extend({
     addAttributes () {
@@ -37,6 +38,11 @@ export default {
     name: 'FCommentEditor',
     components: {
         EditorContent
+    },
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
     },
     props: {
         label: {
@@ -81,7 +87,7 @@ export default {
     },
     computed: {
         users () {
-            return this.$store.getters['user/users']
+            return this.userStore.users;
         },
         userNames () {
             return this.users.map(item => {

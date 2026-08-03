@@ -170,6 +170,8 @@
 <script>
 import SmartBlock from '@/models/SmartBlock.js'
 import Draggable from 'vuedraggable'
+import { useConfigStore } from '@/stores';
+
 export default {
     name: 'SmartBlocksEdit',
     components: { Draggable },
@@ -178,6 +180,11 @@ export default {
         this.$eventBus.$off('block-type-added', this.blockTypeAdded)
         this.$destroy()
         next()
+    },
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
     },
     data () {
         return {
@@ -206,7 +213,7 @@ export default {
     },
     computed: {
         config () {
-            return this.$store.getters['config/config']
+            return this.configStore.config;
         },
         dragOptions () {
             return {
@@ -217,7 +224,7 @@ export default {
             }
         },
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         }
     },
     activated () {

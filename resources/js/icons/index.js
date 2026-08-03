@@ -1,9 +1,5 @@
 import Vue from 'vue'
 
-// import Vue from 'vue'
-// import Vuex from 'vuex'
-// Vue.use(Vuex)
-
 // const globContext = import.meta.glob('./modules/*.js')
 // // const requireContext = require.context('./modules', false, /.*\.js$/)
 
@@ -20,12 +16,8 @@ import Vue from 'vue'
 //         return { ...modules, [name]: module }
 //     }, {})
 
-// export default new Vuex.Store({
-//     modules
-// })
-
 // Auto import everything in this folder
-const request = import.meta.glob('./*.vue', { eager: true })
+const request = import.meta.globEager('./*.vue')
 Object.keys(request).map(key => {
     const name = key.match(/\w+/)[0]
     return Vue.component(name, request[key].default)

@@ -139,6 +139,8 @@
 </template>
 <script>
 import Event from '@/models/Event.js'
+import { useConfigStore } from '@/stores';
+
 function defaultCreationObject () {
     return {
         title: '',
@@ -156,6 +158,11 @@ function defaultMainCreationObject () {
 }
 export default {
     name: 'EventModal',
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
+    },
     props: {
         show: {
             type: Boolean,
@@ -188,7 +195,7 @@ export default {
     },
     computed: {
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         }
     },
     methods: {

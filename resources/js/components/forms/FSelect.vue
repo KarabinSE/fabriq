@@ -199,16 +199,8 @@ export default {
             return this.rules.includes('required')
         },
 
-        currentUserIsFirstIn() {
-            return this.$store.getters['echo/currentUserIsFirstIn']
-        },
-
         inputDisabled() {
             if(this.disabled) {
-                return true
-            }
-
-            if(! this.currentUserIsFirstIn) {
                 return true
             }
 

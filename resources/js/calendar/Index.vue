@@ -128,9 +128,16 @@
 import EventModal from '@/calendar/EventModal.vue'
 import Event from '@/models/Event.js'
 import { endOfMonth, format, startOfMonth } from 'date-fns'
+import { useConfigStore } from '@/stores';
+
 export default {
     name: 'CalendarIndex',
     components: { EventModal },
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
+    },
     data () {
         return {
             calendarItems: [],
@@ -156,7 +163,7 @@ export default {
     },
     computed: {
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         },
         events () {
             // Attributes for todos

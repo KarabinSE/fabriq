@@ -288,15 +288,7 @@ export default {
                 return true
             }
 
-            if(! this.currentUserIsFirstIn) {
-                return true
-            }
-
             return false
-        },
-
-        currentUserIsFirstIn() {
-            return this.$store.getters['echo/currentUserIsFirstIn']
         },
 
         hasIcon () {

@@ -1,7 +1,7 @@
+import { pinia } from '@/plugins/pinia'
 import routes from '@/routes/fabriq-routes'
 import userRoutes from '@/routes/routes'
-import store from '@/store'
-import * as types from '@/store/mutation-types'
+import { useUiStore, useRouteHistoryStore } from '@/stores'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -28,7 +28,10 @@ function createRouter () {
 }
 
 function afterEach (to, from) {
-    store.commit('ui/CLOSE_MENU')
+    const uiStore = useUiStore();
+
+    uiStore.closeMenu();
+
     const Echo = router.app.$echo
     if (Echo) {
 
@@ -37,7 +40,6 @@ function afterEach (to, from) {
         const identifier = roomName + '.' + id
         const wsPrefix = window.fabriqCms.pusher.ws_prefix
         Echo.leave(wsPrefix + '.presence.' + identifier)
-        store.commit('echo/USER_LEAVING', { identifier: identifier, user: store.getters['user/user'] })
 
         if (from.meta.broadcastName) {
             const broadcastName = from.meta.broadcastName
@@ -55,7 +57,10 @@ function afterEach (to, from) {
 }
 
 function beforeEach (to, from, next) {
-    store.commit('routeHistory/' + types.SET_FROM_ROUTE, from.name)
+    const routeHistoryStore = useRouteHistoryStore();
+
+    routeHistoryStore.setFromRoute(from.name);
+
     if (to.meta.middleware) {
         const middleware = Array.isArray(to.meta.middleware) ? to.meta.middleware : [to.meta.middleware]
 
@@ -64,8 +69,6 @@ function beforeEach (to, from, next) {
             next,
             router,
             to,
-            store,
-            vm: router.app
         }
         const nextMiddleware = nextFactory(context, middleware, 1)
 

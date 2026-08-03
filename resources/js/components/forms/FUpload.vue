@@ -136,7 +136,12 @@ export default {
         }
     },
     beforeDestroy () {
-        this.UploadDropzone.destroy()
+        if (this.UploadDropzone) {
+            this.UploadDropzone.destroy();
+
+            this.UploadDropzone = null;
+        }
+
         if (this.hasGlobalDrop) {
             console.log('detaching paste')
             document.removeEventListener('paste', this.handlePaste)
@@ -144,6 +149,12 @@ export default {
     },
     methods: {
         initDropzone () {
+            const dropzoneExisting = Dropzone.instances.find(instance => instance.element === this.dropElement);
+
+            if (dropzoneExisting) {
+                dropzoneExisting.destroy();
+            }
+
             this.UploadDropzone = new Dropzone(this.dropElement, {
                 paramName: this.uploadName,
                 maxFilesize: 6000,

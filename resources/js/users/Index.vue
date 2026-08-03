@@ -115,7 +115,7 @@
                             </div>
                             <div v-else>
                                 <FButton
-                                    v-if="!item.invitation.data.is_valid"
+                                    v-if="!item.invitation || !item.invitation.data.is_valid"
                                     :click="() => sendActivation(item.id)"
                                     class="px-2 py-1 text-xs leading-none cursor-pointer link fabriq-button btn-royal whitespace-nowrap"
                                 >Skicka aktivering</FButton>
@@ -133,7 +133,8 @@
                                             :click="() => cancelActivation(item.id)"
                                             class="px-2 py-1 text-xs leading-none border border-red-500 cursor-pointer link fabriq-button btn-outline-red whitespace-nowrap"
                                             spinner-color="text-red-400"
-                                        >Avbryt<FButton /></fbutton></div>
+                                        >Avbryt</FButton>
+                                    </div>
                                     <div class="mt-1 text-xs text-neutral-500">Skickad {{ item.invitation.data.created_at | localTime }}</div>
                                 </div>
                             </div>

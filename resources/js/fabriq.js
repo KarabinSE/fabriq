@@ -1,9 +1,8 @@
 import Vue from 'vue'
-
+import { pinia } from '@/plugins/pinia'
 import axiosSetup from '@/config/api.js'
 
 import router from '@/routes/router.js'
-import store from '@/store'
 
 import '@/../css/fabriq.css'
 import App from '@/App.vue'
@@ -18,7 +17,7 @@ Vue.prototype.$eventBus = new Vue()
 
 const app = new Vue({
     router,
-    store,
+    pinia,
     render: h => h(App)
 }).$mount('#app')
 

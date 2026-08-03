@@ -149,6 +149,8 @@
 <script>
 import Contact from '@/models/Contact.js'
 import Tag from '@/models/Tag.js'
+import { useConfigStore } from '@/stores';
+
 export default {
     name: 'ContactsEdit',
     beforeRouteLeave (from, to, next) {
@@ -156,6 +158,11 @@ export default {
             this.contact.id = 0
         }, 300)
         next()
+    },
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
     },
     data () {
         return {
@@ -172,7 +179,7 @@ export default {
     },
     computed: {
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         },
         localesOptions() {
             return Object.keys(this.locales).map((key) => {

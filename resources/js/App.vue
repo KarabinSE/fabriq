@@ -45,7 +45,8 @@ import FileModal from '@/files/FileModal.vue'
 import BlockTypeModal from '@/pages/BlockTypeModal.vue'
 import VideoModal from '@/videos/VideoModal.vue'
 import CommentSection from '@/comments/CommentSection.vue'
-import * as types from '@/store/mutation-types'
+import { useConfigStore, useUserStore } from '@/stores'
+
 export default {
     name: 'App',
     components: {
@@ -58,6 +59,13 @@ export default {
         VideoModal,
         CommentSection
     },
+    setup () {
+        const userStore = useUserStore();
+
+        const configStore = useConfigStore();
+
+        return { userStore, configStore }
+    },
     data () {
         return {
             pollingNotifications: null,
@@ -67,27 +75,27 @@ export default {
     },
     computed: {
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         },
         userRoles () {
-            return this.$store.getters['user/userRoles']
+            return this.userStore.roles;
         },
         activeLocale: {
             get () {
-                return this.$store.getters['config/activeLocale']
+                return this.configStore.activeLocale;
             },
 
             set (value) {
                 console.warn(value)
-                this.$store.commit(`config/${types.SET_ACTIVE_LOCALE}`, value)
+                this.configStore.setActiveLocale(value);
             },
         },
     },
     async created () {
         this.activeLocale = 'sv'
-        await this.$store.dispatch('user/index')
-        this.$store.dispatch('config/index')
-        this.$store.dispatch('user/notifications')
+        await this.userStore.index();
+        this.configStore.index();
+        this.userStore.fetchNotifications();
         this.startPoll()
     },
     methods: {
@@ -99,31 +107,31 @@ export default {
                 return
             }
             this.pollingNotifications = setInterval(() => {
-                this.$store.dispatch('user/notifications')
+                this.userStore.fetchNotifications();
             }, 1000 * 15)
         },
         listenToEchoEvents() {
             const wsPrefix = window.fabriqCms.pusher.ws_prefix
             this.$echo.channel(`${wsPrefix}.comments`)
                 .listen(`.comment.posted`, (event) => {
-                    if (this.$store.getters['user/user'].id !== event.comment.user_id) {
+                    if (this.userStore.user.id !== event.comment.user_id) {
                         this.$eventBus.$emit('comment-posted-echo', event)
                     }
                 })
                 .listen(`.comment.deleted`, (event) => {
-                    if (this.$store.getters['user/user'].id !== event.comment.user_id) {
+                    if (this.userStore.user.id !== event.comment.user_id) {
                         this.$eventBus.$emit('comment-posted-echo', event)
                     }
                 })
 
-            this.$echo.private(`${wsPrefix}.user.${this.$store.getters['user/user'].id}`)
+            this.$echo.private(`${wsPrefix}.user.${this.userStore.user.id}`)
                 .listen(`.comment.user-mentioned`, (event) => {
                     this.$eventBus.$emit('user-mentioned-echo', event)
-                    this.$store.dispatch('user/notifications')
+                    this.userStore.fetchNotifications();
                 })
                 .listen(`.notification.deleted`, (event) => {
                     this.$eventBus.$emit('user-mentioned-echo', event)
-                    this.$store.dispatch('user/notifications')
+                    this.userStore.fetchNotifications();
                 })
                 .notification((notification) => {
                     // broadcast.ask-to-leave

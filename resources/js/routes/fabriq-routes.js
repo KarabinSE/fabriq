@@ -12,7 +12,6 @@ import ImagesIndex from '@/images/Index.vue'
 import MenusEdit from '@/menus/Edit.vue'
 import MenusIndex from '@/menus/Index.vue'
 import BroadcastMiddleware from '@/middleware/broadcast-middleware'
-import PresenceMiddleware from '@/middleware/presence-middleware'
 import RolesMiddleware from '@/middleware/roles-middleware.js'
 import NotificationIndex from '@/notifications/Index.vue'
 import PagesEdit from '@/pages/Edit.vue'
@@ -74,7 +73,7 @@ export default [
         name: 'pages.edit',
         component: PagesEdit,
         meta: {
-            middleware: [RolesMiddleware, PresenceMiddleware, BroadcastMiddleware],
+            middleware: [RolesMiddleware, BroadcastMiddleware],
             roles: ['admin'],
             commentable: true,
             broadcastName: 'page'
@@ -148,7 +147,7 @@ export default [
         name: 'articles.edit',
         component: ArticlesEdit,
         meta: {
-            middleware: [RolesMiddleware, PresenceMiddleware],
+            middleware: [RolesMiddleware],
             roles: ['admin']
         }
     },

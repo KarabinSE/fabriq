@@ -1,3 +1,5 @@
+import { useUserStore } from "@/stores";
+
 export default function BroadcastMiddleware ({ next, to, router, store }) {
     // Check if Echo is enabled
     if (!router.app.$echo) {
@@ -10,10 +12,12 @@ export default function BroadcastMiddleware ({ next, to, router, store }) {
     const broadcastName = to.meta.broadcastName
     const capitalizedBroadcastName = broadcastName[0].toUpperCase() + broadcastName.slice(1)
 
+    const userStore = useUserStore();
+
     // Listen to model events
     Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
         .listen(`.${capitalizedBroadcastName}Updated`, (event) => {
-            if (store.getters['user/user'].id !== event.model.updated_by) {
+            if (userStore.user.id !== event.model.updated_by) {
                 router.app.$eventBus.$emit(`${broadcastName}-updated-echo`, event)
             }
         })

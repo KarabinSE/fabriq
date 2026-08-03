@@ -71,9 +71,16 @@
 import CommentItem from '@/comments/CommentItem.vue'
 import Comment from '@/models/Comment.js'
 import User from '@/models/User.js'
+import { useUserStore } from '@/stores';
+
 export default {
     name: 'CommentSection',
     components: { CommentItem },
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
+    },
     data () {
         return {
             commentSectionOpen: false,
@@ -83,7 +90,7 @@ export default {
     },
     computed: {
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         }
     },
     mounted () {
@@ -101,7 +108,8 @@ export default {
         async fetchUsers () {
             try {
                 const { data } = await User.index()
-                this.$store.commit('user/SET_USERS', data)
+                
+                this.userStore.setUsers(data);
                 // this.users = data
             } catch (error) {
                 console.log(error)

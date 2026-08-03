@@ -18,19 +18,25 @@
     </div>
 </template>
 <script>
-import * as types from '@/store/mutation-types'
+import { useConfigStore } from '@/stores';
+
 export default {
     name: 'FLocaleSelect',
+    setup() {
+        const configStore = useConfigStore();
+
+        return { configStore }
+    },
     computed: {
         locales () {
-            return this.$store.getters['config/supportedLocales']
+            return this.configStore.supportedLocales;
         },
         activeLocale: {
             get () {
-                return this.$store.getters['config/activeLocale']
+                return this.configStore.activeLocale;
             },
             set (value) {
-                this.$store.commit(`config/${types.SET_ACTIVE_LOCALE}`, value)
+                this.configStore.setActiveLocale(value);
             }
         }
     }

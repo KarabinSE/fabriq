@@ -85,6 +85,8 @@
 <script>
 import Notification from '@/models/Notification.js'
 import PageComment from '@/notifications/PageComment.vue'
+import { useUserStore } from '@/stores/user'
+
 export default {
     name: 'NotificationsIndex',
     components: {
@@ -93,6 +95,11 @@ export default {
     beforeRouteLeave(from, to, next) {
         this.$eventBus.$off('user-mentioned-echo', this.fetchItems)
         next()
+    },
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
     },
     data () {
         return {
@@ -183,7 +190,9 @@ export default {
                 await Notification.update(id, {
                     clear: true
                 })
-                this.$store.dispatch('user/notifications')
+
+                this.userStore.fetchNotifications();
+
                 if (refresh) {
                     this.fetchItems()
                 }

@@ -127,12 +127,19 @@
 </template>
 <script>
 import AuthenticatedUser from '@/models/AuthenticatedUser.js'
+import { useUserStore } from '@/stores';
 
 export default {
     name: 'ProfileSettings',
     beforeRouteLeave (from, to, next) {
         this.$destroy()
         next()
+    },
+
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
     },
 
     data () {
@@ -154,7 +161,7 @@ export default {
     },
     computed: {
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         },
         imageUrl () {
             return this.localUser.image.data.thumb_src
@@ -170,9 +177,11 @@ export default {
         },
         async fetchUser () {
             try {
-                const { data } = await AuthenticatedUser.index()
-                this.localUser = data
-                this.$store.commit('user/SET_USER', this.localUser)
+                const { data } = await AuthenticatedUser.index();
+                
+                this.localUser = data;
+
+                this.userStore.setUser(data);
             } catch (error) {
                 console.error(error)
             }

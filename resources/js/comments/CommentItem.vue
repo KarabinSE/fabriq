@@ -107,8 +107,15 @@
 </template>
 <script>
 import Comment from '@/models/Comment.js'
+import { useUserStore } from '@/stores';
+
 export default {
     name: 'CommentItem',
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
+    },
     props: {
         isLast: {
             type: Boolean,
@@ -145,7 +152,7 @@ export default {
             return this.user.email === this.comment.user.email
         },
         user () {
-            return this.$store.getters['user/user']
+            return this.userStore.user;
         }
     },
     methods: {

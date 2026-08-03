@@ -125,6 +125,7 @@
 
 <script>
 import Page from '@/models/BlockType.js'
+import { useConfigStore, usePageStore, useUiStore } from '@/stores';
 
 function defaultCreationObject () {
     return {
@@ -145,6 +146,16 @@ export default {
             default: () => {},
         },
 
+    },
+
+    setup () {
+        const configStore = useConfigStore();
+
+        const pageStore = usePageStore();
+
+        const uiStore = useUiStore();
+
+        return { configStore, pageStore, uiStore }
     },
 
     data () {
@@ -208,7 +219,7 @@ export default {
         },
 
         config() {
-            return this.$store.getters['config/config']
+            return this.configStore.config;
         },
 
         blockNames() {
@@ -218,10 +229,10 @@ export default {
         },
 
         activeLocale() {
-            return this.$store.getters['config/activeLocale']
+            return this.configStore.activeLocale;
         },
         page() {
-            return this.$store.getters['page/page']
+            return this.pageStore.page;
         }
     },
 
@@ -260,7 +271,7 @@ export default {
             this.$eventBus.$emit(emitName, this.chosenBlock)
 
             setTimeout(() => {
-                this.$store.commit('ui/toggleOpenCard', this.chosenBlock.id)
+                this.uiStore.toggleOpenCard(this.chosenBlock.id);
             }, 150);
 
             this.show = false

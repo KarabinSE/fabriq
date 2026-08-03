@@ -228,12 +228,19 @@
 import ImageIcon from '@/icons/ImageIcon.vue';
 import BlockType from '@/models/BlockType';
 import { VPopover } from 'v-tooltip';
-import Draggable from 'vuedraggable'
+import Draggable from 'vuedraggable';
+import { useConfigStore } from '@/stores';
 
 export default {
     components: {
         Draggable,
         VPopover
+    },
+
+    setup () {
+        const configStore = useConfigStore();
+
+        return { configStore }
     },
 
     props: {
@@ -279,7 +286,7 @@ export default {
         },
 
         config () {
-            return this.$store.getters['config/config']
+            return this.configStore.config;
         },
 
         dragOptions () {
@@ -300,15 +307,11 @@ export default {
         },
 
         devMode () {
-            return this.$store.getters['config/devMode']
-        },
-
-        currentUserIsFirstIn() {
-            return this.$store.getters['echo/currentUserIsFirstIn']
+            return this.configStore.devMode;
         },
 
         activeLocale() {
-            return this.$store.getters['config/activeLocale']
+            return this.configStore.activeLocale;
         },
 
     },

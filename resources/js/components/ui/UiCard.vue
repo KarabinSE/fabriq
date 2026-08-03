@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import { useUiStore } from '@/stores';
+
 export default {
     name: 'UiCard',
     props: {
@@ -93,6 +95,11 @@ export default {
             default: '',
         },
     },
+    setup () {
+        const uiStore = useUiStore();
+
+        return { uiStore }
+    },
 
     data () {
         return {
@@ -120,7 +127,7 @@ export default {
         },
 
         openCards() {
-            return this.$store.getters['ui/openCards']
+            return this.uiStore.openCards;
         },
     },
 
@@ -205,7 +212,7 @@ export default {
 
         toggleCollapsible () {
             if (this.identifier) {
-                this.$store.commit('ui/toggleOpenCard', this.identifier)
+                this.uiStore.toggleOpenCard(this.identifier);
             }
 
             if (this.open) {
