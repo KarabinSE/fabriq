@@ -182,16 +182,16 @@ class ContactsFeatureTest extends AdminUserTestCase
         ]);
     }
 
-    public function test_it_can_filter_published_contacts_on_with_tags()
+    public function test_it_can_filter_contacts_on_with_tags()
     {
         // Arrange
-        Contact::factory()->create(['published' => true]);
-        $contact = Contact::factory()->create(['published' => true]);
-        $contact->syncTagsWithType(['Test'], 'contacts');
+        Contact::factory()->create();
+        $contact = Contact::factory()->create();
+        $contact->contactTags = ['Test'];
 
         // Act
-        $response = $this->getJson(route('published-contacts.index', [
-            'filter[with_tags]' => 'Test',
+        $response = $this->getJson(route('contacts.index', [
+            'filter[with_any_tags]' => 'Test',
         ]));
 
         // Assert

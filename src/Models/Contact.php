@@ -135,7 +135,7 @@ class Contact extends Model
         return [new Channel($prefix.'-contact'), new Channel('contact.'.$this->id)];
     }
 
-    public function scopeWithTags(Builder $query, ...$tags): Builder
+    public function scopeWithTags(Builder $query, mixed ...$tags): Builder
     {
         return $query->withAnyTags($tags, 'contacts');
     }
