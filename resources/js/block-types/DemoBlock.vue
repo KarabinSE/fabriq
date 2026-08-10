@@ -89,11 +89,9 @@
                             </button>
                             <button
                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                v-clipboard="'#' + child.id"
-                                v-clipboard:success="copySuccess"
                                 class="focus:outline-none"
                                 type="button"
-                                @click.stop
+                                @click.stop="copyBlockId(child.id)"
                             >
                                 <LinkIcon
                                     class="h-6"
@@ -117,9 +115,7 @@
                         </div>
                     </div>
                 </template>
-                <div
-                    class="grid grid-cols-3 gap-x-6 gap-y-6"
-                >
+                <div class="grid grid-cols-3 gap-x-6 gap-y-6">
                     <FInput
                         v-model="child.name"
                         label="Namn"
@@ -132,9 +128,7 @@
                             Bild
                         </FSwitch>
                         <div v-if="child.hasImage">
-                            <FImageInput
-                                v-model="child.image"
-                            />
+                            <FImageInput v-model="child.image" />
                         </div>
                     </div>
                     <div class="flex flex-col space-y-6">
@@ -145,9 +139,7 @@
                             Video
                         </FSwitch>
                         <div v-if="child.hasVideo">
-                            <FVideoInput
-                                v-model="child.video"
-                            />
+                            <FVideoInput v-model="child.video" />
                         </div>
                     </div>
                     <hr class="col-span-3 my-6">
@@ -214,7 +206,7 @@
             </div>
             <FButtonItem
                 v-model="localContent.button"
-                :disabled="! localContent.hasButton"
+                :disabled="!localContent.hasButton"
                 class="col-span-12 lg:col-span-8"
             />
         </div>
@@ -222,6 +214,7 @@
 </template>
 <script>
 import Draggable from 'vuedraggable'
+import { useClipboard } from '@vueuse/core';
 export default {
     name: 'CardBlock',
     components: { Draggable },
@@ -248,12 +241,16 @@ export default {
                     headerType: {
                         name: ''
                     }
-                    // repeaters: []
                 }
             }
         }
     },
-    data () {
+    setup() {
+        const { copy } = useClipboard({ legacy: true });
+
+        return { copy }
+    },
+    data() {
         return {
             headerTypes: [
                 {
@@ -274,7 +271,7 @@ export default {
         }
     },
     computed: {
-        dragOptions () {
+        dragOptions() {
             return {
                 animation: 200,
                 group: 'description',
@@ -283,11 +280,11 @@ export default {
             }
         }
     },
-    mounted () {
+    mounted() {
         this.$set(this.localContent, 'button', { text: '', linkType: 'internal', page_id: null })
     },
     methods: {
-        addCard (item) {
+        addCard(item) {
             let newItem = {}
             if (!item.name) {
                 newItem = {
@@ -306,12 +303,17 @@ export default {
                 newItem.newlyAdded = false
             })
         },
-        deleteChild (index) {
+        deleteChild(index) {
             this.localContent.children.splice(index, 1)
         },
-        copySuccess () {
+        copySuccess() {
             this.$toast.success({ title: 'Kortets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
-        }
+        },
+        async copyBlockId(id) {
+            await this.copy('#' + id);
+
+            this.copySuccess()
+        },
     }
 }
 </script>
