@@ -1,10 +1,13 @@
-import Vue from 'vue'
+const blockTypes = import.meta.globEager("./*.vue");
 
-// Auto import everything in this folder
+export default {
+    install(app) {
+        Object.entries(blockTypes).forEach((block) => {
+            const [path, module] = block;
 
+            const name = path.split("/").pop().replace(".vue", "");
 
-const request = import.meta.globEager('./*.vue')
-Object.keys(request).map(key => {
-    const name = key.match(/\w+/)[0]
-    return Vue.component(name, request[key].default)
-})
+            app.component(name, module.default);
+        });
+    },
+};
