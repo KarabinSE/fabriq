@@ -89,7 +89,7 @@
 import { removeElement } from './helpers.js'
 import Timer from './timer.js'
 import Positions from './positions.js'
-import eventBus from './bus.js'
+import eventBus from './toast-emitter.js'
 import config from '@/config/config.js'
 import './themes/toast.css'
 
@@ -217,10 +217,10 @@ export default {
     mounted () {
         this.showNotice()
 
-        eventBus.$on('toast-clear', this.close)
+        eventBus.on('toast-clear', this.close)
     },
     beforeDestroy () {
-        eventBus.$off('toast-clear', this.close)
+        eventBus.off('toast-clear', this.close)
     },
     methods: {
         setupContainer () {

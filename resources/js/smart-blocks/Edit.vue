@@ -117,11 +117,9 @@
                                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
                                                         <button
                                                             v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                                            v-clipboard="'#' + block.id"
-                                                            v-clipboard:success="copySuccess"
                                                             class="focus:outline-none"
                                                             type="button"
-                                                            @click.stop
+                                                            @click.stop="copyBlockId(block.id)"
                                                         >
                                                             <LinkIcon
                                                                 class="h-6 mr-4"
@@ -171,20 +169,23 @@
 import SmartBlock from '@/models/SmartBlock.js'
 import Draggable from 'vuedraggable'
 import { useConfigStore } from '@/stores';
+import { useClipboard } from '@vueuse/core';
 
 export default {
     name: 'SmartBlocksEdit',
     components: { Draggable },
     beforeRouteLeave (from, to, next) {
         this.$vfm.hide('block-type-modal')
-        this.$eventBus.$off('block-type-added', this.blockTypeAdded)
+        this.$eventBus.off('block-type-added', this.blockTypeAdded)
         this.$destroy()
         next()
     },
     setup () {
         const configStore = useConfigStore();
 
-        return { configStore }
+        const { copy } = useClipboard({ legacy: true });
+
+        return { configStore, copy }
     },
     data () {
         return {
@@ -229,12 +230,12 @@ export default {
     },
     activated () {
         this.id = this.$route.params.id
-        this.$eventBus.$on('block-type-added', this.blockTypeAdded)
+        this.$eventBus.on('block-type-added', this.blockTypeAdded)
         this.fetchSmartBlock()
     },
     methods: {
         openAllCards () {
-            this.$eventBus.$emit('open-all-cards')
+            this.$eventBus.emit('open-all-cards')
         },
         async updateContent () {
             try {
@@ -273,7 +274,7 @@ export default {
         },
         setLanguage (key) {
             this.activeLocale = key
-            this.$eventBus.$emit('relayout-cards')
+            this.$eventBus.emit('relayout-cards')
         },
         showBlockTypeModal () {
             this.$vfm.show('block-type-modal')
@@ -297,6 +298,11 @@ export default {
         },
         copySuccess () {
             this.$toast.success({ title: 'Blockets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+        },
+        async copyBlockId(id) {
+            await this.copy('#' + id);
+
+            this.copySuccess()
         }
     }
 }

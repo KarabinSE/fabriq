@@ -39,11 +39,6 @@ export default {
     components: {
         EditorContent
     },
-    setup () {
-        const userStore = useUserStore();
-
-        return { userStore }
-    },
     props: {
         label: {
             type: String,
@@ -78,6 +73,11 @@ export default {
             default: 3
         }
     },
+    setup() {
+        const userStore = useUserStore();
+
+        return { userStore }
+    },
     data () {
         return {
             editor: null,
@@ -107,13 +107,13 @@ export default {
         }
     },
     mounted () {
-        this.$eventBus.$on('comment-posted', this.clearContent)
+        this.$eventBus.on('comment-posted', this.clearContent)
         setTimeout(() => {
             this.initEditor()
         }, 100)
     },
     beforeDestroy () {
-        this.$eventBus.$off('comment-posted', this.clearContent)
+        this.$eventBus.off('comment-posted', this.clearContent)
         this.editor.destroy()
     },
     methods: {

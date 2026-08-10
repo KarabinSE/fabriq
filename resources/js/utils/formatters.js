@@ -60,3 +60,4 @@ export function formatCurrency(value, options = {}) {
         ...mergedOptions,
     }).format(numberValue)
 }
+

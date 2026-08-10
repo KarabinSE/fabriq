@@ -225,7 +225,7 @@ import Tag from '@/models/Tag.js'
 export default {
     name: 'FilesIndex',
     beforeRouteLeave (from, to, next) {
-        this.$eventBus.$off('file-updated', this.fetchFiles)
+        this.$eventBus.off('file-updated', this.fetchFiles)
         this.uploadInit = false
         next()
     },
@@ -297,7 +297,7 @@ export default {
     activated () {
         this.fetchFiles()
         this.uploadInit = true
-        this.$eventBus.$on('file-updated', this.fetchFiles)
+        this.$eventBus.on('file-updated', this.fetchFiles)
     },
 
     methods: {
@@ -406,7 +406,7 @@ export default {
                 })
             )
             this.suppressToast = false
-            this.$eventBus.$emit('clear-checked-rows')
+            this.$eventBus.emit('clear-checked-rows')
             this.$toast.success({ title: 'Filerna har tagits bort' })
             this.fetchFiles()
         }

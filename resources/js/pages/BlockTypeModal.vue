@@ -147,7 +147,7 @@ export default {
         },
 
     },
-
+    
     setup () {
         const configStore = useConfigStore();
 
@@ -268,7 +268,7 @@ export default {
             const emitName = 'block-type-added-' + this.activeLocale
 
 
-            this.$eventBus.$emit(emitName, this.chosenBlock)
+            this.$eventBus.emit(emitName, this.chosenBlock)
 
             setTimeout(() => {
                 this.uiStore.toggleOpenCard(this.chosenBlock.id);

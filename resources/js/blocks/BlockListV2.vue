@@ -92,11 +92,9 @@
                                         </button>
                                         <button
                                             v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                            v-clipboard="'#block_' + block.id"
-                                            v-clipboard:success="copySuccess"
                                             class="focus:outline-none"
                                             type="button"
-                                            @click.stop
+                                            @click.stop="copyBlockId(block.id)"
                                         >
                                             <LinkIcon
                                                 class="h-6"
@@ -143,16 +141,11 @@
 import axios from 'axios'
 import Draggable from 'vuedraggable'
 import { useConfigStore } from '@/stores';
+import { useClipboard } from '@vueuse/core';
 
 export default {
     components: {
         Draggable,
-    },
-
-    setup () {
-        const configStore = useConfigStore();
-
-        return { configStore }
     },
 
     props: {
@@ -178,6 +171,14 @@ export default {
     },
 
     emits: ['input'],
+
+    setup() {
+        const configStore = useConfigStore();
+
+        const { copy } = useClipboard({ legacy: true });
+
+        return { configStore, copy }
+    },
 
 
     computed: {
@@ -227,12 +228,12 @@ export default {
 
 
     mounted() {
-        this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
+        this.$eventBus.on('block-type-added-' + this.locale, this.blockTypeAdded)
     },
 
     beforeDestroy() {
-        this.$eventBus.$off('block-type-added-' + this.locale, this.blockTypeAdded)
-        // this.$eventBus.$off('block-type-added', this.blockTypeAdded)
+        this.$eventBus.off('block-type-added-' + this.locale, this.blockTypeAdded)
+        // this.$eventBus.off('block-type-added', this.blockTypeAdded)
     },
 
     methods: {
@@ -278,6 +279,12 @@ export default {
 
             this.blockTypeAdded({ ...clonedBlock })
         },
+
+        async copyBlockId(id) {
+            await this.copy('#block_' + id);
+
+            this.copySuccess()
+        }
 
     },
 }

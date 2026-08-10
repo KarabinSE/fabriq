@@ -91,9 +91,13 @@ export default {
     name: 'NotificationsIndex',
     components: {
         PageComment
+    },  
+    beforeRouteLeave(from, to, next) {
+        this.$eventBus.off('user-mentioned-echo', this.fetchItems)
+        next()
     },
     beforeRouteLeave(from, to, next) {
-        this.$eventBus.$off('user-mentioned-echo', this.fetchItems)
+        this.$eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
     },
     setup () {
@@ -125,12 +129,12 @@ export default {
                     title: 'Nya notiser',
                     key: 'commentInfo',
                     tdClasses: 'w-full ',
-                    thClasses: 'w-full bg-royal-500 rounded-tl text-gold-200'
+                    thClasses: 'w-full bg-royal-500 rounded-tl text-neutral-100'
                 },
                 {
                     title: '',
                     key: 'controls',
-                    thClasses: 'w-full bg-royal-500  text-gold-300 rounded-tr'
+                    thClasses: 'w-full bg-royal-500 text-neutral-100 rounded-tr'
                 }
             ],
             seenNotificationColumns: [
@@ -138,13 +142,13 @@ export default {
                     title: 'Hanterade notiser',
                     key: 'commentInfo',
                     tdClasses: 'w-full',
-                    thClasses: 'w-full bg-royal-500 rounded-t text-gold-200'
+                    thClasses: 'w-full bg-royal-500 rounded-t text-neutral-100'
                 }
             ]
         }
     },
     mounted() {
-        this.$eventBus.$on('user-mentioned-echo', this.fetchItems)
+        this.$eventBus.on('user-mentioned-echo', this.fetchItems)
     },
     activated () {
         this.fetchUnseenItems()

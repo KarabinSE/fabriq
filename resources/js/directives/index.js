@@ -1,2 +1,1 @@
-import './click-outside'
-import './copy-to-clipboard'
+import "./click-outside";

@@ -117,7 +117,7 @@ export default {
 
         // Listen on other group events
         if (this.group) {
-            this.$eventBus.$on('file-selected', this.setFile)
+            this.$eventBus.on('file-selected', this.setFile)
         }
     },
     methods: {
@@ -177,7 +177,7 @@ export default {
             // all other inputs in the same group. Useful when having multiple
             // inputs for a bunch of langugages and the input is not translated
             if (this.group) {
-                this.$eventBus.$emit('file-selected', {
+                this.$eventBus.emit('file-selected', {
                     group: this.group,
                     data: { ...this.localFile },
                     randomRef: this.randomRef

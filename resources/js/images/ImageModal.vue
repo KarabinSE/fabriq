@@ -231,7 +231,7 @@ export default {
             }
         },
         async initModal (parameters) {
-            this.$eventBus.$on('media-finished-processing', this.evaluateNewStatus)
+            this.$eventBus.on('media-finished-processing', this.evaluateNewStatus)
             try {
                 const promises = [
                     this.fetchImage(parameters),
@@ -263,7 +263,7 @@ export default {
             }
         },
         resetImage () {
-            this.$eventBus.$off('media-finished-processing', this.evaluateNewStatus)
+            this.$eventBus.off('media-finished-processing', this.evaluateNewStatus)
             this.image = {
                 id: 0,
                 size: 0
@@ -276,7 +276,7 @@ export default {
                 console.log(object)
                 // return
                 await Image.update(this.image.id, object)
-                this.$eventBus.$emit('image-updated')
+                this.$eventBus.emit('image-updated')
                 this.$toast.success({ title: 'Bilden har uppdaterats!' })
                 this.show = false
             } catch (error) {
@@ -286,7 +286,7 @@ export default {
         async deleteImage () {
             try {
                 await Image.destroy(this.image.id)
-                this.$eventBus.$emit('image-updated')
+                this.$eventBus.emit('image-updated')
                 this.$toast.success({ title: 'Bilden har raderats' })
                 this.show = false
             } catch (error) {

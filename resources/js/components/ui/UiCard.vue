@@ -132,22 +132,22 @@ export default {
     },
 
     beforeDestroy () {
-        this.$eventBus.$off('open-all-cards', this.openCollapsible)
-        this.$eventBus.$off('close-all-cards', this.closeCollapsible)
-        this.$eventBus.$off('open-synced-groups', this.matchGroupAndOpen)
-        this.$eventBus.$off('close-synced-groups', this.matchGroupAndClose)
+        this.$eventBus.off('open-all-cards', this.openCollapsible)
+        this.$eventBus.off('close-all-cards', this.closeCollapsible)
+        this.$eventBus.off('open-synced-groups', this.matchGroupAndOpen)
+        this.$eventBus.off('close-synced-groups', this.matchGroupAndClose)
     },
 
     mounted () {
         if (!this.isChild) {
-            this.$eventBus.$on('open-all-cards', this.openCollapsible)
-            this.$eventBus.$on('close-all-cards', this.closeCollapsible)
-            this.$eventBus.$on('relayout-cards', this.relayoutCard)
+            this.$eventBus.on('open-all-cards', this.openCollapsible)
+            this.$eventBus.on('close-all-cards', this.closeCollapsible)
+            this.$eventBus.on('relayout-cards', this.relayoutCard)
         }
 
         if (this.syncGroups) {
-            this.$eventBus.$on('open-synced-groups', this.matchGroupAndOpen)
-            this.$eventBus.$on('close-synced-groups', this.matchGroupAndClose)
+            this.$eventBus.on('open-synced-groups', this.matchGroupAndOpen)
+            this.$eventBus.on('close-synced-groups', this.matchGroupAndClose)
         }
 
         if (this.collapsible && this.openByDefault) {
@@ -191,7 +191,7 @@ export default {
 
             if (this.syncGroups) {
                 if (emit) {
-                    this.$eventBus.$emit('open-synced-groups', this.group)
+                    this.$eventBus.emit('open-synced-groups', this.group)
                 }
             }
 
@@ -203,7 +203,7 @@ export default {
 
             if (this.syncGroups) {
                 if (emit) {
-                    this.$eventBus.$emit('close-synced-groups', this.group)
+                    this.$eventBus.emit('close-synced-groups', this.group)
                 }
             }
 

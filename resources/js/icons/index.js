@@ -1,24 +1,13 @@
-import Vue from 'vue'
+const icons = import.meta.globEager("./*.vue");
 
-// const globContext = import.meta.glob('./modules/*.js')
-// // const requireContext = require.context('./modules', false, /.*\.js$/)
+export default {
+    install(app) {
+        Object.entries(icons).forEach((icon) => {
+            const [path, module] = icon;
 
+            const name = path.split("/").pop().replace(".vue", "");
 
-// // const modules = requireContext.keys()
-// const modules = Object.keys(globContext).map(file =>
-//     [file.replace(/(^.\/)|(\.js$)/g, ''), globContext[file]]
-// )
-//     .reduce((modules, [name, module]) => {
-//         if (module.namespaced === undefined) {
-//             module.namespaced = true
-//         }
-
-//         return { ...modules, [name]: module }
-//     }, {})
-
-// Auto import everything in this folder
-const request = import.meta.globEager('./*.vue')
-Object.keys(request).map(key => {
-    const name = key.match(/\w+/)[0]
-    return Vue.component(name, request[key].default)
-})
+            app.component(name, module.default);
+        });
+    },
+};

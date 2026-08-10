@@ -36,10 +36,9 @@ import UiStatsCard from '@/components/ui/UiStatsCard.vue'
 import FMediaInput from './forms/FMediaInput.vue'
 import FColorPicker from './forms/FColorPicker.vue'
 import FArrowPicker from './forms/FArrowPicker.vue'
-import FChildren from './forms/FChildren.vue'
-import Vue from 'vue'
+import FChildren from "./forms/FChildren.vue";
 
-[
+const commonComponents = [
     UiLogo,
     UiCard,
     UiStatsCard,
@@ -80,7 +79,12 @@ import Vue from 'vue'
     FColorPicker,
     FArrowPicker,
     FChildren,
+];
 
-].forEach(Component => {
-    Vue.component(Component.name, Component)
-})
+export default {
+    install: (app) => {
+        commonComponents.map((component) => {
+            app.component(component.name, component);
+        });
+    },
+};

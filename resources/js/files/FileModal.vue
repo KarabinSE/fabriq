@@ -195,7 +195,7 @@ export default {
                 const object = { ...this.file }
                 object.tags = [...this.nameTags]
                 await File.update(this.file.id, object)
-                this.$eventBus.$emit('file-updated')
+                this.$eventBus.emit('file-updated')
                 this.$toast.success({ title: 'Filen har uppdaterats!' })
                 this.show = false
             } catch (error) {
@@ -205,7 +205,7 @@ export default {
         async deleteFile () {
             try {
                 await File.destroy(this.file.id)
-                this.$eventBus.$emit('file-updated')
+                this.$eventBus.emit('file-updated')
                 this.$toast.success({ title: 'Filen har raderats' })
                 this.show = false
             } catch (error) {

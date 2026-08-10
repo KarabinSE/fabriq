@@ -220,7 +220,7 @@ import Video from '@/models/Video.js'
 export default {
     name: 'VideosIndex',
     beforeRouteLeave (from, to, next) {
-        this.$eventBus.$off('file-updated', this.fetchVideos)
+        this.$eventBus.off('file-updated', this.fetchVideos)
         this.uploadInit = false
         next()
     },
@@ -290,7 +290,7 @@ export default {
     activated () {
         this.fetchVideos()
         this.uploadInit = true
-        this.$eventBus.$on('video-updated', this.fetchVideos)
+        this.$eventBus.on('video-updated', this.fetchVideos)
     },
 
     methods: {
@@ -399,7 +399,7 @@ export default {
                 })
             )
             this.suppressToast = false
-            this.$eventBus.$emit('clear-checked-rows')
+            this.$eventBus.emit('clear-checked-rows')
             this.$toast.success({ title: 'Videorna har tagits bort' })
             this.fetchVideos()
         }

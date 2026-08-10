@@ -201,7 +201,7 @@ export default {
                 const object = { ...this.video }
                 object.tags = [...this.nameTags]
                 await Video.update(this.video.id, object)
-                this.$eventBus.$emit('video-updated')
+                this.$eventBus.emit('video-updated')
                 this.$toast.success({ title: 'Videon har uppdaterats!' })
                 this.show = false
             } catch (error) {
@@ -211,7 +211,7 @@ export default {
         async deleteVideo () {
             try {
                 await Video.destroy(this.video.id)
-                this.$eventBus.$emit('video-updated')
+                this.$eventBus.emit('video-updated')
                 this.$toast.success({ title: 'Videon har raderats' })
                 this.show = false
             } catch (error) {

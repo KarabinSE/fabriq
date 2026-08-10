@@ -783,7 +783,7 @@ export default {
             this.linkType = attributes.download ? 'file' : 'link'
             this.attachedFileName = attributes['data-filename']
             this.linkMenuIsActive = true
-            this.$eventBus.$emit('set-active-tab', {
+            this.$eventBus.emit('set-active-tab', {
                 identifier: this.tabIdentifier,
                 index: this.linkType === 'link' ? 0 : 1
             })

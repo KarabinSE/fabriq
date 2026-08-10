@@ -65,8 +65,7 @@
             </template>
         </UiSectionHeader>
         <div class="flex justify-end">
-            <div class="absolute mt-2">
-            </div>
+            <div class="absolute mt-2" />
         </div>
         <FTabs
             v-if="Object.keys(locales).length > 0"
@@ -253,8 +252,8 @@ export default {
 
     beforeRouteLeave (from, to, next) {
         this.$vfm.hide('block-type-modal')
-        this.$eventBus.$off('block-type-added', this.blockTypeAdded)
-        this.$eventBus.$off('page-updated-echo', this.askToUpdatePage)
+        this.$eventBus.off('block-type-added', this.blockTypeAdded)
+        this.$eventBus.off('page-updated-echo', this.askToUpdatePage)
         this.$destroy()
         next()
     },
@@ -346,12 +345,12 @@ export default {
 
     activated () {
         this.id = this.$route.params.id
-        this.$eventBus.$on('block-type-added', this.blockTypeAdded)
-        this.$eventBus.$on('page-updated-echo', this.askToUpdatePage)
+        this.$eventBus.on('block-type-added', this.blockTypeAdded)
+        this.$eventBus.on('page-updated-echo', this.askToUpdatePage)
         this.fetchPage()
         this.$nextTick(() => {
             if (this.$route.query.openComments) {
-                this.$eventBus.$emit('open-comment-section')
+                this.$eventBus.emit('open-comment-section')
             }
         })
     },
@@ -362,7 +361,7 @@ export default {
         },
 
         openAllCards () {
-            this.$eventBus.$emit('open-all-cards')
+            this.$eventBus.emit('open-all-cards')
         },
 
         checkBoxesArray() {
@@ -385,7 +384,7 @@ export default {
 
                 await Page.update(this.id, payload)
                 this.$toast.success({ title: 'Utkastet har sparats' })
-                this.$eventBus.$emit('page-updated')
+                this.$eventBus.emit('page-updated')
             } catch (error) {
                 console.error(error)
             }
@@ -426,9 +425,9 @@ export default {
 
         setLanguage (key) {
             this.activeLocale = key
-            this.$eventBus.$emit('relayout-cards')
+            this.$eventBus.emit('relayout-cards')
             this.$nextTick(() => {
-                this.$eventBus.$emit('page-updated')
+                this.$eventBus.emit('page-updated')
             })
         },
 

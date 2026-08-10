@@ -64,11 +64,9 @@
                             <button
                                 v-if="canCopy"
                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera ID' }"
-                                v-clipboard="'#' + child.id"
-                                v-clipboard:success="copySuccess"
                                 class="focus:outline-none"
                                 type="button"
-                                @click.stop
+                                @click.stop="copyChildId(child.id)"
                             >
                                 <LinkIcon
                                     class="h-6"
@@ -124,6 +122,7 @@
 
 <script>
 import Draggable from 'vuedraggable';
+import { useClipboard } from '@vueuse/core';
 
 export default {
     name: 'FChildren',
@@ -171,6 +170,11 @@ export default {
                 ghostClass: 'ghost'
             })
         }
+    },
+    setup() {
+        const { copy } = useClipboard({ legacy: true });
+
+        return { copy }
     },
     data() {
         return  {
@@ -220,6 +224,11 @@ export default {
         },
         copySuccess () {
             this.$toast.success({ title: `${this.labels.title}-ID har kopierats`, message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+        },
+        async copyChildId(id) {
+            await this.copy('#' + id);
+
+            this.copySuccess()
         }
     }
 }

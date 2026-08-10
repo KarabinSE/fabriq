@@ -5,7 +5,7 @@ import { ref, computed } from 'vue'
 export const useMenuStore = defineStore('menu', () => {
 
     const menuItems = ref([]);
-
+    
     const fullMenuItems = computed(() => [...menuItems.value, ...SidebarItems()]);
 
     function setSidebarItems (data) {
@@ -26,9 +26,9 @@ export const useMenuStore = defineStore('menu', () => {
         });
     }
 
-    return {
-        menuItems,
-        fullMenuItems,
-        setSidebarItems
+    return { 
+        menuItems, 
+        fullMenuItems, 
+        setSidebarItems 
     }
 });

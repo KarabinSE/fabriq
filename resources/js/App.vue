@@ -115,37 +115,37 @@ export default {
             this.$echo.channel(`${wsPrefix}.comments`)
                 .listen(`.comment.posted`, (event) => {
                     if (this.userStore.user.id !== event.comment.user_id) {
-                        this.$eventBus.$emit('comment-posted-echo', event)
+                        this.$eventBus.emit('comment-posted-echo', event)
                     }
                 })
                 .listen(`.comment.deleted`, (event) => {
                     if (this.userStore.user.id !== event.comment.user_id) {
-                        this.$eventBus.$emit('comment-posted-echo', event)
+                        this.$eventBus.emit('comment-posted-echo', event)
                     }
                 })
 
             this.$echo.private(`${wsPrefix}.user.${this.userStore.user.id}`)
                 .listen(`.comment.user-mentioned`, (event) => {
-                    this.$eventBus.$emit('user-mentioned-echo', event)
+                    this.$eventBus.emit('user-mentioned-echo', event)
                     this.userStore.fetchNotifications();
                 })
                 .listen(`.notification.deleted`, (event) => {
-                    this.$eventBus.$emit('user-mentioned-echo', event)
+                    this.$eventBus.emit('user-mentioned-echo', event)
                     this.userStore.fetchNotifications();
                 })
                 .notification((notification) => {
                     // broadcast.ask-to-leave
                     if(notification.type === 'broadcast.ask-to-leave') {
-                        this.$eventBus.$emit('user-asked-to-leave-echo', notification)
+                        this.$eventBus.emit('user-asked-to-leave-echo', notification)
                     }
                     if(notification.type === 'broadcast.leave-declined') {
-                        this.$eventBus.$emit('user-declined-to-leave-echo', notification)
+                        this.$eventBus.emit('user-declined-to-leave-echo', notification)
                     }
                 })
             this.$echo.channel(`${wsPrefix}.media`)
                 .listen(`.media-finished-processing`, (event) => {
                     console.log(event)
-                    this.$eventBus.$emit('media-finished-processing', event)
+                    this.$eventBus.emit('media-finished-processing', event)
                 })
         }
     }

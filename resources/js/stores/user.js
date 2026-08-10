@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import AuthenticatedUser from '@/models/AuthenticatedUser.js'
 import Notification from '@/models/Notification.js'
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore('user', () => { 
     const user = ref({
         id: 0,
         email: '',
@@ -22,13 +22,13 @@ export const useUserStore = defineStore('user', () => {
 
     const roles = computed(() => user.value.role_list);
 
-    const isDevelopment = computed(() => user.value.role_list.includes('dev'));
+    const isDev = computed(() => user.value.role_list.includes('dev'));
 
     const timezone = computed(() => user.value.timezone);
 
     async function index () {
         const { data } = await AuthenticatedUser.index();
-
+        
         user.value = data;
     }
 
@@ -54,7 +54,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = data;
     }
 
-    function setUsers ( data ) {
+    function setUsers ( data ) { 
         users.value = data;
     }
 
@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', () => {
         notifications,
         users,
         roles,
-        isDev: isDevelopment,
+        isDev,
         timezone,
         index,
         fetchNotifications,

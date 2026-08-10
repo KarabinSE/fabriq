@@ -96,12 +96,12 @@ export default {
     mounted () {
         this.fetchComments()
         this.fetchUsers()
-        this.$eventBus.$on('open-comment-section', this.openCommentSection)
-        this.$eventBus.$on('comment-posted-echo', this.fetchComments)
+        this.$eventBus.on('open-comment-section', this.openCommentSection)
+        this.$eventBus.on('comment-posted-echo', this.fetchComments)
     },
     beforeDestroy () {
-        this.$eventBus.$off('open-comment-section', this.openCommentSection)
-        this.$eventBus.$off('comment-posted-echo', this.fetchComments)
+        this.$eventBus.off('open-comment-section', this.openCommentSection)
+        this.$eventBus.off('comment-posted-echo', this.fetchComments)
         this.$refs.comments.removeEventListener('keydown', this.listenForMetaPlusEnter)
     },
     methods: {
@@ -159,7 +159,7 @@ export default {
                 await Comment.store('pages', this.$route.params.id, payload)
                 this.newComment = ''
                 this.fetchComments()
-                this.$eventBus.$emit('comment-posted')
+                this.$eventBus.emit('comment-posted')
                 setTimeout(() => {
                     this.scrollToLatestComment()
                 }, 300)

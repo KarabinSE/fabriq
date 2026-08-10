@@ -6,19 +6,28 @@ import router from '@/routes/router.js'
 
 import '@/../css/fabriq.css'
 import App from '@/App.vue'
-import '@/block-types/index.js'
-import '@/components/common-components.js'
+import blockTypes from "@/block-types/index.js";
+import commonComponents from "@/components/common-components.js";
 import '@/directives/index.js'
 import '@/filters/index.js'
-import '@/icons/index.js'
+import icons from "@/icons/index.js";
 import '@/plugins/index.js'
 
-Vue.prototype.$eventBus = new Vue()
+import eventBus from "@/services/eventBus";
+
+Vue.prototype.$eventBus = eventBus;
+
+Vue.use(blockTypes);
+
+Vue.use(commonComponents);
+
+Vue.use(icons);
+
+Vue.use(pinia);
 
 const app = new Vue({
     router,
-    pinia,
-    render: h => h(App)
-}).$mount('#app')
+    render: (h) => h(App),
+}).$mount("#app");
 
-axiosSetup(app)
+axiosSetup(app);

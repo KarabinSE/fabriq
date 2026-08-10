@@ -222,10 +222,10 @@ export default {
         this.currentSortable = this.mergedOptions.defaultSort
         this.currentDirection = this.mergedOptions.sortDescending
         this.descending = this.mergedOptions.sortDescending
-        this.$eventBus.$on('clear-checked-rows', this.clearCheckedRows)
+        this.$eventBus.on('clear-checked-rows', this.clearCheckedRows)
     },
     beforeDestroy () {
-        this.$eventBus.$off('clear-checked-rows', this.clearCheckedRows)
+        this.$eventBus.off('clear-checked-rows', this.clearCheckedRows)
     },
     methods: {
         emitChangePage (pageNumber) {

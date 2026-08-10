@@ -66,7 +66,9 @@
                                             <div class="leading-none text-base font-normal md:font-light md:text-xl">
                                                 {{ block.name }}
                                             </div>
-                                            <span class="inline-flex text-xs md:text-sm font-semibold leading-none text-gray-400">
+                                            <span
+                                                class="inline-flex text-xs md:text-sm font-semibold leading-none text-gray-400"
+                                            >
                                                 {{ block.block_type.name }}
                                             </span>
                                         </div>
@@ -87,26 +89,22 @@
 
                                             <template #popover>
                                                 <div class="rounded-md border shadow overflow-hidden bg-white max-w-md">
-                                                    <img :src="blockBlockType(block).preview_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg">
+                                                    <img
+                                                        :src="blockBlockType(block).preview_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg"
+                                                    >
                                                 </div>
                                             </template>
                                         </VPopover>
                                         <div v-if="lockedBlocks">
-                                            <LockIcon
-                                                class="h-5 md:h-6"
-                                            />
+                                            <LockIcon class="h-5 md:h-6" />
                                         </div>
                                         <div
                                             v-if="lockedBlocks"
                                             class="w-px h-7 md:h-8 mx-6 bg-gray-300"
                                         />
 
-                                        <div
-                                            class="sm:hidden flex items-center gap-4"
-                                        >
-                                            <UiDropdown
-                                                alignment="top-right"
-                                            >
+                                        <div class="sm:hidden flex items-center gap-4">
+                                            <UiDropdown alignment="top-right">
                                                 <GearIcon
                                                     class="h-5 !text-gray-300"
                                                     thin
@@ -124,17 +122,15 @@
                                                         Klona block
                                                     </button>
                                                     <button
-                                                        v-clipboard="'#' + block.id"
-                                                        v-clipboard:success="copySuccess"
                                                         class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
                                                         type="button"
-                                                        @click.stop
+                                                        @click.stop="copyBlockId(block.id)"
                                                     >
                                                         <LinkIcon
                                                             class="h-4"
                                                             thin
                                                         />
-                                                        Kopiera block-ID
+                                                        Kopiera block-IDxx
                                                     </button>
 
                                                     <FConfirmDropdown
@@ -143,7 +139,9 @@
                                                         class="relative"
                                                         @confirmed="deleteBlock(boxIndex)"
                                                     >
-                                                        <div class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44">
+                                                        <div
+                                                            class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                        >
                                                             <TrashIcon
                                                                 class="h-5"
                                                                 thin
@@ -173,11 +171,9 @@
                                             </button>
                                             <button
                                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                                v-clipboard="'#' + block.id"
-                                                v-clipboard:success="copySuccess"
                                                 class="focus:outline-none"
                                                 type="button"
-                                                @click.stop
+                                                @click.stop="copyBlockId(block.id)"
                                             >
                                                 <LinkIcon
                                                     class="h-6"
@@ -230,17 +226,12 @@ import BlockType from '@/models/BlockType';
 import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable';
 import { useConfigStore } from '@/stores';
+import { useClipboard } from '@vueuse/core';
 
 export default {
     components: {
         Draggable,
         VPopover
-    },
-
-    setup () {
-        const configStore = useConfigStore();
-
-        return { configStore }
     },
 
     props: {
@@ -267,7 +258,15 @@ export default {
 
     emits: ['input'],
 
-    data () {
+    setup() {
+        const configStore = useConfigStore();
+
+        const { copy } = useClipboard({ legacy: true });
+
+        return { configStore, copy }
+    },
+
+    data() {
         return {
             blockTypes: {}
         }
@@ -285,11 +284,11 @@ export default {
             },
         },
 
-        config () {
+        config() {
             return this.configStore.config;
         },
 
-        dragOptions () {
+        dragOptions() {
             return {
                 animation: 200,
                 group: 'description',
@@ -299,14 +298,14 @@ export default {
         },
 
         lockedBlocks() {
-            if(this.devMode) {
+            if (this.devMode) {
                 return false
             }
 
             return this.page.locked
         },
 
-        devMode () {
+        devMode() {
             return this.configStore.devMode;
         },
 
@@ -321,42 +320,44 @@ export default {
     },
 
     mounted() {
-        this.$eventBus.$on('block-type-added-' + this.locale, this.blockTypeAdded)
+        this.$eventBus.on('block-type-added-' + this.locale, this.blockTypeAdded)
     },
 
     beforeDestroy() {
-        this.$eventBus.$off('block-type-added-' + this.locale, this.blockTypeAdded)
-        // this.$eventBus.$off('block-type-added', this.blockTypeAdded)
+        this.$eventBus.off('block-type-added-' + this.locale, this.blockTypeAdded)
+        // this.$eventBus.off('block-type-added', this.blockTypeAdded)
     },
 
     methods: {
 
-        blockBlockType (block) {
-            if(!this.blockTypes || !Array.isArray(this.blockTypes)) {
+        blockBlockType(block) {
+            if (!this.blockTypes || !Array.isArray(this.blockTypes)) {
                 return block.block_type
             }
 
             return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
         },
 
-        copySuccess () {
-            this.$toast.success({ title: 'Blockets ID har kopierats',
-                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+        copySuccess() {
+            this.$toast.success({
+                title: 'Blockets ID har kopierats',
+                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.'
+            })
         },
 
-        refreshBlock (payload) {
+        refreshBlock(payload) {
             this.$emit('input', this.localBlocks)
         },
 
-        showBlockTypeModal () {
+        showBlockTypeModal() {
             this.$vfm.show('block-type-modal')
         },
 
-        deleteBlock (index) {
+        deleteBlock(index) {
             this.localBlocks.splice(index, 1)
         },
 
-        blockTypeAdded (item) {
+        blockTypeAdded(item) {
             console.warn('adding new block', item)
 
             if (this.localBlocks.length === 0) {
@@ -372,7 +373,7 @@ export default {
             }, 2);
         },
 
-        cloneBlock (block) {
+        cloneBlock(block) {
             const clonedBlock = JSON.parse(JSON.stringify(block))
 
             clonedBlock.id = 'i' + Math.random().toString(20).substr(2, 6)
@@ -384,7 +385,7 @@ export default {
             console.log('asd')
         },
 
-        async fetchBlockTypes () {
+        async fetchBlockTypes() {
             try {
                 const { data } = await BlockType.index()
 
@@ -392,33 +393,45 @@ export default {
             } catch (error) {
                 console.error(error)
             }
+        },
+
+        async copyBlockId(id) {
+            await this.copy('#' + id);
+
+            this.copySuccess()
         }
     },
 }
 </script>
 
 <style>
-.flip-list-move {
-  transition: transform 0.5s;
-}
-.no-move {
-  transition: transform 0s;
-}
-.ghost {
-  opacity: 0.5;
-  /* background: #c8ebfb; */
-}
-.flip-list-move {
-    transition: transform 0.5s;
-}
-.no-move {
-    transition: transform 0s;
-}
-.ghost,
-.sortable-ghost {
-    opacity: 0.5;
-}
-.list-group-item i {
-    cursor: pointer;
-}
+    .flip-list-move {
+        transition: transform 0.5s;
+    }
+
+    .no-move {
+        transition: transform 0s;
+    }
+
+    .ghost {
+        opacity: 0.5;
+        /* background: #c8ebfb; */
+    }
+
+    .flip-list-move {
+        transition: transform 0.5s;
+    }
+
+    .no-move {
+        transition: transform 0s;
+    }
+
+    .ghost,
+    .sortable-ghost {
+        opacity: 0.5;
+    }
+
+    .list-group-item i {
+        cursor: pointer;
+    }
 </style>

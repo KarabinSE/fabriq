@@ -260,7 +260,7 @@ export default {
     name: 'ImagesIndex',
     components: { AddImageFromUrlModal },
     beforeRouteLeave (from, to, next) {
-        this.$eventBus.$off('image-updated', this.fetchImages)
+        this.$eventBus.off('image-updated', this.fetchImages)
         this.uploadInit = false
         next()
     },
@@ -345,8 +345,8 @@ export default {
     activated () {
         this.fetchImages()
         this.uploadInit = true
-        this.$eventBus.$on('image-updated', this.fetchImages)
-        this.$eventBus.$on('media-finished-processing', this.fetchImages)
+        this.$eventBus.on('image-updated', this.fetchImages)
+        this.$eventBus.on('media-finished-processing', this.fetchImages)
     },
     methods: {
         resetSearch () {
@@ -408,7 +408,7 @@ export default {
                 })
             )
             this.suppressToast = false
-            this.$eventBus.$emit('clear-checked-rows')
+            this.$eventBus.emit('clear-checked-rows')
             this.$toast.success({ title: 'Bilderna har tagits bort' })
             this.fetchImages()
         },

@@ -18,7 +18,10 @@ export default function BroadcastMiddleware ({ next, to, router, store }) {
     Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
         .listen(`.${capitalizedBroadcastName}Updated`, (event) => {
             if (userStore.user.id !== event.model.updated_by) {
-                router.app.$eventBus.$emit(`${broadcastName}-updated-echo`, event)
+                router.app.$eventBus.emit(
+                    `${broadcastName}-updated-echo`,
+                    event,
+                );
             }
         })
 
