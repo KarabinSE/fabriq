@@ -1,4 +1,4 @@
-const blockTypes = import.meta.globEager("./*.vue");
+const blockTypes = import.meta.glob("./*.vue", { eager: true });
 
 export default {
     install(app) {

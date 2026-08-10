@@ -1,4 +1,4 @@
-const icons = import.meta.globEager("./*.vue");
+const icons = import.meta.glob("./*.vue", { eager: true });
 
 export default {
     install(app) {
