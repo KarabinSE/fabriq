@@ -29,9 +29,12 @@ class EloquentPageRepository implements PageRepositoryInterface
      */
     public function findBySlug(string $slug)
     {
-        $model = $this->model->whereHas('slugs', function ($query) use ($slug) {
-            $query->where('slug', $slug);
-        })->firstOrFail();
+        $model = $this->model->query()
+            ->whereHas('slugs', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })
+            ->where('published', true)
+            ->firstOrFail();
 
         // Decorate with content
         $model->content = $model->getSimpleFieldContent($model->published_version, app()->getLocale());

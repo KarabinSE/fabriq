@@ -37,6 +37,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ModelCountController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\NotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePathController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSignedUrlController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
@@ -167,12 +168,14 @@ class RouteRegistrar
         $this->forVideos();
         $this->forPagePaths();
         $this->forInvitations();
+        $this->forPreviews();
     }
 
     public function forPublicApi()
     {
         $this->forPageSlugs();
         $this->forImageSrcSet();
+        Route::get('previews/{uuid}', [PagePreviewController::class, 'show'])->name('previews.show');
         // Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
     }
 
@@ -291,6 +294,13 @@ class RouteRegistrar
         // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
         Route::post('invitations/{userId}', [InvitationController::class, 'store'])->name('invitations.store');
         Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
+    }
+
+    public function forPreviews(): void
+    {
+        // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
+        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store');
+        // Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
     }
 
     public function forPageSlugs()

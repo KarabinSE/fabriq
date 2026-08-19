@@ -21,14 +21,14 @@ class Locale extends Model
         return $query->where('enabled', 1);
     }
 
-    public function cachedLocales(): mixed
+    public function cachedLocales()
     {
-        return Cache::rememberForever('locales', function () {
-            return self::enabled()->orderBy('sort_index')
-                ->get()
-                ->mapWithKeys(function ($item) {
-                    return [$item->iso_code => $item];
-                });
-        });
+        $cachedLoclaes = $this->enabled()->orderBy('sort_index')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->iso_code => $item];
+            });
+
+        return $cachedLoclaes;
     }
 }

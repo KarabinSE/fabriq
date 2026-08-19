@@ -93,6 +93,7 @@ class PageController extends Controller
 
         /** @var Page $page */
         $page->name = $request->name;
+        $page->published = $request->published;
         $page->touch();
         $page->localizedContent = $request->localizedContent;
         $page->updated_by = $request->user()->id;
