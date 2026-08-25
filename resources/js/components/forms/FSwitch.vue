@@ -28,7 +28,7 @@
                 :class="{'bg-royal-500': computedValue, 'bg-gray-200': !computedValue}"
                 :aria-labelledby="name"
                 aria-pressed="false"
-                class="relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-royal-200"
+                class="relative inline-flex shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-royal-200"
                 type="button"
                 @click="toggleSwitch"
             >

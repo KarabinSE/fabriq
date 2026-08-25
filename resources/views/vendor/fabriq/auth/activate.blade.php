@@ -10,7 +10,7 @@
                 </div>
             @endif
 
-            <div class="flex flex-col w-full break-words">
+            <div class="flex flex-col w-full wrap-break-word">
                 <div class="text-xl font-semibold text-gray-100 uppercase sr-only">
                     {{ __('Activate account') }}
                 </div>

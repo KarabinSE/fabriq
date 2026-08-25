@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    --color-primary: oklch(92% 0.006 75);
+    --color-secondary: oklch(75% 0.025 250);
+    --color-tertiary: oklch(45% 0.03 228);
+    --color-btn-primary: oklch(53% 0.006 75);
+    --color-btn-secondary: oklch(75% 0.025 250);
+    --color-btn-tertiary: oklch(55% 0.03 228);
+
+    --color-gold-100: #fdfdfb;
+    --color-gold-200: #f3eee7;
+    --color-gold-300: #e2d3bb;
+    --color-gold-400: #d1ba94;
+    --color-gold-500: #bd9b66;
+    --color-gold-600: #b38e51;
+    --color-gold-700: #a07d46;
+    --color-gold-800: #876a3b;
+    --color-gold-900: #6e5630;
+
+    --color-gold-old-100: #fefbf6;
+    --color-gold-old-200: #f7e9cf;
+    --color-gold-old-300: #f0d39e;
+    --color-gold-old-400: #e6b760;
+    --color-gold-old-500: #d89822;
+    --color-gold-old-600: #c68c1f;
+    --color-gold-old-700: #b07c1c;
+    --color-gold-old-800: #966a18;
+    --color-gold-old-900: #775413;
+
+    --color-royal-50: #f3f5f7;
+    --color-royal-100: #ced8de;
+    --color-royal-200: #9db1bd;
+    --color-royal-300: #6d899d;
+    --color-royal-400: #3c627c;
+    --color-royal-500: #0b3b5b;
+    --color-royal-600: #092f49;
+    --color-royal-700: #072337;
+    --color-royal-800: #041824;
+    --color-royal-900: #020c12;
+
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+
+    --text-color-royal: var(--color-royal-500);
+
+    --font-sans: "Inter var", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-serif: "Inter var", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-mono: "Jetbrains Mono", Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+    --font-pop: "Press Start 2P";
+
+    --container-8xl: 90rem;
+    --container-10xl: 100rem;
+
+    --animate-fade-in: fade-in 0.4s ease-out forwards;
+
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+            transform: translateY(2rem);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}

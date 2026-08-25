@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex "
-        :class="columnLayout ? 'flex-col space-y-4  p-2 border' : 'flex-row space-x-6'"
+        :class="columnLayout ? 'flex-col space-y-4  p-2  border-gray-200' : 'flex-row space-x-6'"
     >
         <FInput
             v-model="localButton.text"

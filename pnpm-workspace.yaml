@@ -1,4 +1,4 @@
 allowBuilds:
-  core-js: true
-  esbuild: true
-  lefthook: set this to true or false
+  core-js: set this to true or false
+  esbuild: set this to true or false
+  vue-demi: true

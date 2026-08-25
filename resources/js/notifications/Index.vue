@@ -18,7 +18,7 @@
             <template #default="{ row: item, prop }">
                 <span v-if="prop == 'commentInfo'">
                     <div class="flex items-start ">
-                        <div class="flex-shrink-0 w-2 h-2 mt-1 mr-4 bg-red-400 rounded-full" />
+                        <div class="shrink-0 w-2 h-2 mt-1 mr-4 bg-red-400 rounded-full" />
                         <div v-if="item.notifiable.data.commentable_type && item.notifiable.data.commentable_type.includes('Page')">
                             <PageComment
                                 :item="item"
@@ -57,7 +57,7 @@
             <template #default="{ row: item, prop }">
                 <span v-if="prop == 'commentInfo'">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-2 h-2 mt-1 mr-4 bg-gray-400 rounded-full" />
+                        <div class="shrink-0 w-2 h-2 mt-1 mr-4 bg-gray-400 rounded-full" />
                         <div
                             v-if="item.notifiable.data.commentable_type && item.notifiable.data.commentable_type.includes('Page')"
                             class="opacity-80"

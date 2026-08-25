@@ -4,7 +4,7 @@
             <FInput
                 v-model="localContent.name"
                 name="name"
-                class="basis-[30rem]"
+                class="basis-120"
                 label="Namn"
                 rules="required"
                 help-text="Visas endast internt"

@@ -7,7 +7,7 @@
         <span class="flex items-center justify-center">
             <span
                 :class="{'opacity-0': loading}"
-                class="inline-flex items-center transition-opacity duration-200 opacity-1"
+                class="inline-flex items-center transition-opacity duration-200"
             >
                 <slot />
             </span>
@@ -29,11 +29,6 @@ import { useRouteHistoryStore } from '@/stores';
 
 export default {
     name: 'FButton',
-    setup () {
-        const routeHistoryStore = useRouteHistoryStore();
-
-        return { routeHistoryStore }
-    },
     props: {
         click: {
             required: false,
@@ -71,6 +66,11 @@ export default {
             type: String,
             default: 'text-white'
         }
+    },
+    setup () {
+        const routeHistoryStore = useRouteHistoryStore();
+
+        return { routeHistoryStore }
     },
     data () {
         return {

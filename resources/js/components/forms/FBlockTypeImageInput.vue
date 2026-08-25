@@ -10,7 +10,7 @@
 
         <div
             :ref="randomRef"
-            class="relative flex items-center justify-center transition-colors duration-150 border-dashed rounded-md aspect-w-16 aspect-h-9 ring-inset ring-2 ring-royal-500"
+            class="relative flex items-center justify-center transition-colors duration-150 border-dashed rounded-md aspect-video ring-inset ring-2 ring-royal-500"
             :class="[
                 isDraggingOver ? 'bg-royal-100' : 'bg-royal-50'
             ]"

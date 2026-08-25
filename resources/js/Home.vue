@@ -1,6 +1,6 @@
 <template>
     <div class="mt-16">
-        <div class="grid flex-grow grid-cols-4 gap-8">
+        <div class="grid grow grid-cols-4 gap-8">
             <StatsBox
                 :delay="0"
                 :number="pageCount"

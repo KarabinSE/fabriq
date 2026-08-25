@@ -88,7 +88,7 @@
                                             />
 
                                             <template #popover>
-                                                <div class="rounded-md border shadow overflow-hidden bg-white max-w-md">
+                                                <div class="rounded-md border border-gray-200 shadow overflow-hidden bg-white max-w-md">
                                                     <img
                                                         :src="blockBlockType(block).preview_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg"
                                                     >
@@ -106,7 +106,7 @@
                                         <div class="sm:hidden flex items-center gap-4">
                                             <UiDropdown alignment="top-right">
                                                 <GearIcon
-                                                    class="h-5 !text-gray-300"
+                                                    class="h-5 text-gray-300!"
                                                     thin
                                                 />
                                                 <template #dropdown>

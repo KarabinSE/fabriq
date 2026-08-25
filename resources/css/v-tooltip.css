@@ -1,4 +1,4 @@
-@config "./fabriq.tailwind.config.js";
+@import "./theme.css";
 
 .fade-enter-active,
 .fade-leave-active {
@@ -16,8 +16,8 @@
 }
 
 .tooltip .tooltip-inner {
-    background: theme('colors.royal.800');
-    color: theme('colors.white');
+    background: var(--color-royal-800);
+    color: var(--color-white);
     border-radius: 4px;
     @apply px-2 py-1.5 text-xs;
     /* padding: 5px 10px 4px; */
@@ -30,7 +30,7 @@
     border-style: solid;
     position: absolute;
     margin: 5px;
-    border-color: theme('colors.royal.800');
+    border-color: var(--color-royal-800);
     z-index: 1;
 }
 
@@ -101,10 +101,10 @@
 .tooltip.popover .popover-inner {
     @apply p-0 bg-transparent;
     /* background: #f9f9f9;
-  color: theme('colors.royal.800');
-  padding: 24px;
-  border-radius: 5px;
-  box-shadow: 0 5px 30px rgba(theme('colors.royal.800'), .1); */
+    color: var(--color-royal-800);
+    padding: 24px;
+    border-radius: 5px;
+    box-shadow: 0 5px 30px rgba(var(--color-royal-800), .1); */
 }
 
 .tooltip.popover .popover-arrow {

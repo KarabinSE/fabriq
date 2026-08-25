@@ -23,7 +23,7 @@ export default Node.create({
     },
 
     renderHTML ({ HTMLAttributes }) {
-        const videoClasses = HTMLAttributes.src.includes('youtube') ? 'aspect-w-16 aspect-h-9' : ''
+        const videoClasses = HTMLAttributes.src.includes('youtube') ? 'aspect-video' : ''
         return [
             'div',
             {

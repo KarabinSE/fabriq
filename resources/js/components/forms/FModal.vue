@@ -11,7 +11,7 @@
         v-on="$listeners"
     >
         <template #default="{ params }">
-            <span class="py-6 border-b">
+            <span class="py-6 border-b border-gray-200">
                 <div class="flex items-center justify-between px-6">
                     <span class="flex-1 text-xl font-light">
                         <slot

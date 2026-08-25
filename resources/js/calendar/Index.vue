@@ -46,7 +46,7 @@
                                 @show="fetchEvent(attr.customData.data.id)"
                             >
                                 <template #popover>
-                                    <div class="text-gray-800 bg-white border rounded-md shadow-lg w-96">
+                                    <div class="text-gray-800 bg-white border border-gray-200 rounded-md shadow-lg w-96">
                                         <div class="">
                                             <div class="mb-4 border-b header">
                                                 <div class="flex items-center justify-between px-6 py-5 font-bold">
@@ -105,7 +105,7 @@
                                         </div>
                                     </div>
                                 </template>
-                                <div class="flex flex-wrap w-full p-2 space-x-2 text-xs leading-tight text-white transition-colors duration-150 border rounded-md cursor-pointer bg-royal-500 hover:bg-royal-700">
+                                <div class="flex flex-wrap w-full p-2 space-x-2 text-xs leading-tight text-white transition-colors duration-150 border border-gray-200 rounded-md cursor-pointer bg-royal-500 hover:bg-royal-700">
                                     <div
                                         v-if="attr.customData.data.start_time "
                                         class="mr-2 time"

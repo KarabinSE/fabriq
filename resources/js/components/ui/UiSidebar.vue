@@ -57,7 +57,7 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="flex items-center flex-shrink-0 px-4">
+                    <div class="flex items-center shrink-0 px-4">
                         <img
                             alt="Fabriq CMS Logotyp"
                             class="w-full px-12"
@@ -85,7 +85,7 @@
             </Transition>
             <div
                 aria-hidden="true"
-                class="flex-shrink-0 w-14"
+                class="shrink-0 w-14"
             >
                 <!-- Dummy element to force sidebar to shrink to fit close icon -->
             </div>

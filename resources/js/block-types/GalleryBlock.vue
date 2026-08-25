@@ -21,7 +21,7 @@
                 :options="[{ text: 'Large', value: 'grid-cols-1'}, { text: 'Medium', value: 'grid-cols-2' }, { text: 'Small', value: 'grid-cols-4' }, { text: 'Extra Small', value: 'grid-cols-6' }]"
             />
         </div>
-        <hr class="w-full h-px my-6 ">
+        <hr class="w-full h-px my-6 text-gray-200">
         <div class="grid grid-cols-12 mb-10 gap-x-6 gap-y-6">
             <FInput
                 v-model="localContent.heading"

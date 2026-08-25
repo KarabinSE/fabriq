@@ -4,7 +4,7 @@
             Du blev omnämnd i en kommentar av <span class="font-semibold">{{ item.notifiable.data.user.data.name }}</span> <span class="text-xs font-bold">för {{ item.created_at | localTime(null, true) }}</span>
         </div>
         <blockquote
-            class="py-1 pl-2 pr-4 mb-4 text-xs leading-loose whitespace-pre-wrap border-l-4 line-clamp-1"
+            class="py-1 pl-2 pr-4 mb-4 text-xs leading-loose whitespace-pre-wrap border-l-4 border-gray-200 line-clamp-1"
             v-html="item.notifiable.data.comment"
         />
         <div class="mb-1 text-xs">

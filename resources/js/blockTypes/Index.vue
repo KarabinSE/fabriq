@@ -77,7 +77,7 @@
 
                     <div
                         v-if="activeItem.base_64_svg"
-                        class="w-full !my-1"
+                        class="w-full my-1!"
                     >
                         <img
                             :src="`data:image/svg+xml;base64,` + activeItem.base_64_svg"

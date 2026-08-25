@@ -5,16 +5,16 @@
             name="name"
             label="Namn"
             rules="required"
-            class="max-w-[30rem]"
+            class="max-w-120"
             help-text="Visas endast internt"
         />
-        <hr class="w-full h-px my-6 ">
+        <hr class="w-full h-px my-6 text-gray-200">
 
         <div class="flex mb-10 gap-x-6 gap-y-6 flex-wrap">
             <FInput
                 v-model="localContent.heading"
                 name="header"
-                class="basis-[30rem]"
+                class="basis-120"
                 label="Rubriktext"
             />
         </div>
@@ -27,7 +27,7 @@
             />
 
             <UiDashedBox
-                class="basis-[40rem] pt-3"
+                class="basis-160 pt-3"
                 size="min-h-full"
             >
                 <template #header>

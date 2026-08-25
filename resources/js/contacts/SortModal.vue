@@ -29,7 +29,7 @@
                 <li
                     v-for="contact in contacts"
                     :key="contact.id"
-                    class="flex  h-12 text-sm items-center gap-x-2 border-b border-r border-l first-of-type:border-t"
+                    class="flex  h-12 text-sm items-center gap-x-2 border-b border-r border-l first-of-type:border-t border-gray-200"
                 >
                     <GripVerticalIcon
                         class="block w-6 h-6 text-gray-300 cursor-move handle"

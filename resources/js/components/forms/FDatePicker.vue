@@ -39,7 +39,7 @@
                     </button>
                 </div>
                 <div class="flex flex-col items-center justify-start sm:flex-row">
-                    <div class="relative flex-grow">
+                    <div class="relative grow">
                         <FInput
                             :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
                             :value="inputValue.start"
@@ -51,13 +51,13 @@
                             </template>
                         </FInput>
                     </div>
-                    <span class="flex-shrink-0 m-2">
+                    <span class="shrink-0 m-2">
                         <MinusIcon
                             thin
                             class="w-6 h-6 text-gray-800"
                         />
                     </span>
-                    <div class="relative flex-grow">
+                    <div class="relative grow">
                         <FInput
                             :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
                             :value="inputValue.end"
