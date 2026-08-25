@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute z-20 flex justify-between w-full h-16 bg-white border shadow lg:hidden">
+    <div class="absolute z-20 flex justify-between w-full h-16 bg-white border border-gray-200 shadow lg:hidden">
         <button
             class="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold-500 lg:hidden"
             @click="openMenu"

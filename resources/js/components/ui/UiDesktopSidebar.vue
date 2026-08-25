@@ -1,19 +1,19 @@
 <template>
     <!-- Static sidebar for desktop -->
-    <div class="hidden lg:flex md:flex-shrink-0">
+    <div class="hidden lg:flex md:shrink-0">
         <div class="flex flex-col w-64">
             <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div
-                class="flex flex-col flex-grow pt-5 pb-0 overflow-y-auto bg-white border-r border-gray-200"
+                class="flex flex-col grow pt-5 pb-0 overflow-y-auto bg-white border-r border-gray-200"
             >
-                <div class="flex items-center flex-shrink-0 px-4">
+                <div class="flex items-center shrink-0 px-4">
                     <img
                         alt="Fabriq CMS Logotyp"
                         class="h-12 px-2"
                         src="@/../fabriq/images/fabriq-cms-logo.svg"
                     >
                 </div>
-                <div class="flex flex-col flex-grow mt-5">
+                <div class="flex flex-col grow mt-5">
                     <!-- <pre>{{ isDev }}</pre> -->
                     <nav class="flex-1 px-2 space-y-1 bg-white">
                         <RouterLink
@@ -46,7 +46,7 @@
                             Dev mode?
                         </FSwitch>
                     </div>
-                    <div class="flex items-center justify-between flex-shrink-0 p-4 border-t border-gray-200 bg-gray-50">
+                    <div class="flex items-center justify-between shrink-0 p-4 border-t border-gray-200 bg-gray-50">
                         <RouterLink
                             :to="{name: 'profile.settings'}"
                             class="flex"
@@ -73,7 +73,7 @@
                             <LogoutForm />
                         </div>
                     </div>
-                    <!-- <a class="flex-shrink-0 block w-full group" href="#">
+                    <!-- <a class="shrink-0 block w-full group" href="#">
                             <div class="flex items-center">
                                 <div>
                                     <img

@@ -5,16 +5,16 @@
             name="name"
             label="Namn"
             rules="required"
-            class="max-w-[30rem]"
+            class="max-w-120"
             help-text="Visas endast internt"
         />
-        <hr class="w-full h-px my-6 ">
+        <hr class="w-full h-px my-6 text-gray-200">
 
         <div class="flex flex-col gap-6">
             <FInput
                 v-model="localContent.heading"
                 name="header"
-                class="max-w-[30rem]"
+                class="max-w-120"
                 label="Rubriktext"
             />
 

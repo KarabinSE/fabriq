@@ -17,7 +17,7 @@
                 :options="[{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }]"
             />
         </div>
-        <hr class="w-full h-px my-6 ">
+        <hr class="w-full h-px my-6 text-gray-200">
         <div class="grid grid-cols-12 mb-10 gap-x-6 gap-y-6">
             <FInput
                 v-model="localContent.heading"

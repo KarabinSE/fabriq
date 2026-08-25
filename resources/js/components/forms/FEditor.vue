@@ -8,7 +8,7 @@
         </FLabel>
 
         <div
-            class="py-2 bg-gray-100 border rounded-t"
+            class="py-2 bg-gray-100 border border-gray-200 rounded-t"
         >
             <div class="text-gray-800 f-menu-bar focus:outline-none ring-gray-300 focus:ring-gray-800">
                 <div
@@ -871,7 +871,7 @@ export default {
             let classes = ''
 
             if (iframeElement.getAttribute('src').includes('youtube')) {
-                classes = 'aspect-w-16 aspect-h-9'
+                classes = 'aspect-video'
             }
 
             const data = {

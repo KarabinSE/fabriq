@@ -5,7 +5,7 @@
         @include('vendor.fabriq._partials.logo')
         <div class="flex flex-wrap justify-center p-8 bg-white border rounded-lg shadow-lg">
             <div class="w-full">
-                <div class="flex flex-col break-words">
+                <div class="flex flex-col wrap-break-word">
                     <form class="w-full" method="POST" action="{{ route('login') }}">
                         @csrf
                         @if (session('status'))

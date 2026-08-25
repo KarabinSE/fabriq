@@ -1,12 +1,12 @@
 <template>
     <div
         class="mt-4 bg-white rounded card"
-        :class="noShadow ? 'border' : 'shadow-md'"
+        :class="noShadow ? 'border border-gray-200' : 'shadow-md'"
     >
         <div
             v-if="hasHeaderSlot"
             :class="[{'px-4 md:px-6': padding }, {'cursor-pointer flex justify-between': collapsible }, collapsible && collapsedActive ? 'border-gray-200' : 'border-transparent', ! open && collapsible ? ' rounded-b' : 'bg-white ', cHeaderClasses, collapsible ? 'border-transparent' : 'border-gray-200']"
-            class="flex items-center leading-none transition-colors duration-500 bg-white border-b rounded-t"
+            class="flex items-center leading-none transition-colors duration-500 bg-white border-b border-gray-200 rounded-t"
             @click="toggleCollapsible"
         >
             <span class="flex-1 text-xl font-light text-gray-700">

@@ -1,13 +1,13 @@
 import vue from '@vitejs/plugin-vue2'
 import laravel from 'laravel-vite-plugin'
-import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+import { defineConfig, splitVendorChunkPlugin } from 'vite'
 
 export default defineConfig({
     plugins: [
-        laravel([
-            // 'resources/css/app.css',
-            'resources/js/fabriq.js',
-        ]),
+        laravel(
+            ['/resources/css/fabriq.css', 'resources/js/fabriq.js'],
+        ),
 
         vue({
             template: {
@@ -17,6 +17,7 @@ export default defineConfig({
                 },
             },
         }),
+        tailwindcss(),
     ],
     build: {
         rollupOptions: {
@@ -27,7 +28,7 @@ export default defineConfig({
                     }
 
                     // Keep chunking simple: only isolate the heaviest vendor groups.
-                    if (id.includes('/vue/') || id.includes('/vuex/') || id.includes('/vue-router/')) {
+                    if (id.includes('/vue/') || id.includes('/pinia/') || id.includes('/vue-router/')) {
                         return 'vendor-vue'
                     }
 
@@ -35,15 +36,15 @@ export default defineConfig({
                         return 'vendor-editor'
                     }
 
-                    if (id.includes('/v-calendar/') || id.includes('/dropzone/') || id.includes('/font') || id.includes('/sortablejs')) {
+                    if (id.includes('/dropzone/') || id.includes('/font') || id.includes('/sortablejs')) {
                         return 'vendor-ui'
                     }
 
-                    if (id.includes('/date-fns/') || id.includes('/axios/') || id.includes('/vee-validate')) {
+                    if (id.includes('/date-fns/') || id.includes('/axios/') || id.includes('/vee-validate') || id.includes('/v-calendar/')) {
                         return 'vendor-utilities'
                     }
                 },
             },
         },
-    },
+    }
 })

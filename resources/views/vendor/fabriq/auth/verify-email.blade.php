@@ -10,7 +10,7 @@
                 </div>
             @endif
 
-            <div class="flex flex-col w-full break-words">
+            <div class="flex flex-col w-full wrap-break-word">
                 <div class="mb-2 text-xl font-semibold text-gray-600 sr-only">
                     {{ __('Reset Password') }}
                 </div>

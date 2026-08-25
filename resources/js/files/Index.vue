@@ -169,7 +169,7 @@
                                 class="border cursor-pointer min-w-16"
                             />
                             <div v-else>
-                                <span class=" items-center justify-center h-8 px-1 font-semibold font-mono text-xs rounded-full min-w-[2rem] bg-royal-500 text-gold-300 inline-flex">
+                                <span class=" items-center justify-center h-8 px-1 font-semibold font-mono text-xs rounded-full min-w-8 bg-royal-500 text-gold-300 inline-flex">
                                     {{ item.extension }}
                                 </span>
                             </div>

@@ -216,6 +216,8 @@ export default {
 }
 </script>
 <style>
+@reference 'tailwindcss';
+
 .f-comment-editor > div {
     @apply w-full px-4 pt-2 pb-2 transition duration-200 ease-out bg-white border border-gray-300 rounded focus:outline-none focus:ring-1 ring-inset ring-gray-800;
 }
@@ -223,16 +225,15 @@ export default {
     @apply flex flex-col;
 }
 .mention {
-    color: theme("colors.purple.600");
-    font-weight: theme('fontWeight.medium');
-    background: theme("colors.transparent");
+    color: var(--color-purple-600);
+    @apply font-medium bg-transparent;
 }
 .items {
     position: relative;
     border-radius: 0.25rem;
     background: white;
     overflow: hidden;
-    @apply shadow text-sm text-neutral-600;
+    @apply shadow-xs text-sm text-neutral-600;
 }
 .item {
     display: block;

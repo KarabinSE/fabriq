@@ -4,7 +4,7 @@
             <FInput
                 v-model="localContent.name"
                 name="name"
-                class="basis-[30rem]"
+                class="basis-120"
                 label="Namn"
                 rules="required"
                 help-text="Visas endast internt"
@@ -40,12 +40,12 @@
         <hr class="w-full">
 
         <div class="flex gap-x-12 gap-y-6 flex-wrap">
-            <div class="flex flex-col gap-6 flex-1 basis-[30rem]">
+            <div class="flex flex-col gap-6 flex-1 basis-120">
                 <FInput
                     v-model="localContent.heading"
                     name="header"
                     label="Rubriktext"
-                    class="max-w-[30rem]"
+                    class="max-w-120"
                 />
                 <FEditor
                     v-model="localContent.body"

@@ -8,7 +8,7 @@
             <div
                 :ref="randomRef"
 
-                class="relative flex items-center justify-center transition-colors duration-150 border-dashed rounded-md aspect-w-16 aspect-h-9"
+                class="relative flex items-center justify-center transition-colors duration-150 border-dashed rounded-md aspect-video"
                 :class="[hasVideo ? 'border-transparent ring-2 ring-inset' : 'ring-royal-500  ring-2 ring-inset', isDraggingOver ? 'bg-royal-100' : 'bg-royal-50']"
             >
                 <div

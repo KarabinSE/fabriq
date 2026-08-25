@@ -1,20 +1,23 @@
-@config "./fabriq.tailwind.config.js";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "./theme.css";
+@import "./vue-select.css";
+@import "./v-tooltip.css";
 
 @layer components {
     body {
         @apply antialiased text-gray-800;
     }
 
+    hr {
+        @apply text-gray-300;
+    }
+
     a,
     .link {
-        @apply font-semibold transition-colors duration-200 rounded text-royal-500 hover:text-royal-700 focus:outline-none;
+        @apply font-semibold transition-colors duration-200 rounded-sm text-royal-500 hover:text-royal-700 focus:outline-none;
     }
 
     .fabriq-input {
-        @apply relative flex-1 block w-full px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out rounded appearance-none ring-1 ring-gray-300;
+        @apply relative flex-1 block w-full px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out rounded-sm appearance-none ring-1 ring-gray-300;
     }
 
     .fabriq-input:disabled {
@@ -41,16 +44,16 @@
     }
 
     .is-invalid .fabriq-input:focus,
-    .is-invalid .fabriq-input:focus {
+    .is-invalid.fabriq-input:focus {
         @apply ring-2 ring-red-300;
     }
 
     .fabriq-btn:disabled {
-        @apply bg-gray-200 text-white cursor-not-allowed border-gray-200 !important;
+        @apply bg-gray-200! text-white! cursor-not-allowed! border-gray-200!;
     }
 
     .fabriq-btn {
-        @apply text-sm font-semibold leading-none transition-colors duration-300 border-2 rounded focus:outline-none focus:ring-2;
+        @apply text-sm font-semibold leading-none transition-colors duration-300 border-2 rounded-sm focus:outline-none focus:ring-2;
     }
 
     .btn-outline-royal {
@@ -96,11 +99,15 @@
     }
 
     pre {
-        @apply p-4 overflow-x-auto font-mono text-sm subpixel-antialiased font-semibold text-left rounded bg-royal-700 text-gold-400 !important;
+        @apply p-4! overflow-x-auto! font-mono! text-sm! subpixel-antialiased! font-semibold! text-left! rounded-sm! bg-royal-700! text-gold-400!;
     }
 
     code {
-        @apply px-1.5 py-0.5 mx-1 font-mono subpixel-antialiased font-semibold text-sm rounded bg-royal-700 text-gold-400 !important;
+        @apply px-1.5! py-0.5! mx-1! font-mono! subpixel-antialiased! font-semibold! text-sm! rounded-sm! bg-royal-700! text-gold-400!;
+    }
+
+    button {
+        @apply cursor-pointer;
     }
 
     .sidebar-item {
@@ -142,7 +149,6 @@
     }
 
     .form-checkbox:checked {
-
         background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%230b3b5b' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
         border-color: #d1d5db;
         background-color: #fff;
@@ -165,7 +171,7 @@
         color-adjust: exact;
         user-select: none;
         flex-shrink: 0;
-        @apply border border-gray-400 rounded-sm;
+        @apply border border-gray-400 rounded-xs;
         border-width: 1px;
         background-origin: border-box;
         background-size: 50% 50%;
@@ -225,20 +231,25 @@
     }
 
     .f-editor>div {
-        @apply w-full px-4 pt-4 pb-4 transition duration-200 ease-out bg-white border border-t-0 border-gray-300 rounded-b focus:outline-none focus:ring-1 ring-inset ring-gray-800;
+        @apply w-full px-4 pt-4 pb-4 transition duration-200 ease-out bg-white border border-t-0 border-gray-300 rounded-b-sm focus:outline-none focus:ring-1 ring-inset ring-gray-800;
     }
 
     .f-editor.prose,
     .f-editor.prose-sm {
-        @apply max-w-full rounded-b !important;
+        @apply max-w-full! rounded-b-sm!;
     }
 
     .f-menu-bar .is-active {
-        @apply bg-gray-300 rounded;
+        @apply bg-gray-300 rounded-sm;
     }
 
     .f-menu-bar button {
         @apply px-2 py-2 text-gray-800 transition-colors duration-150;
+    }
+
+    .ProseMirror p {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 
     .ProseMirror {
@@ -253,9 +264,8 @@
         right: 0;
         top: 0;
         bottom: 0;
-        /* background: theme('colors.royal.100'); */
         pointer-events: none;
-        @apply bg-royal-100 bg-opacity-40;
+        @apply bg-royal-100/40;
     }
 
     .ProseMirror table .column-resize-handle {
@@ -265,28 +275,16 @@
         bottom: 0;
         width: 4px;
         z-index: 20;
-        background-color: theme('colors.gold.300');
+        background-color: var(--color-gold-300);
         pointer-events: none;
     }
 
-    /* .column-resize-handle {
-        position: absolute;
-        right: -2px; top: 0; bottom: 0;
-        width: 4px;
-        z-index: 20;
-        background-color: #adf;
-        pointer-events: none;
-      } */
-
-    /* .lg-cal .vc-header {
-    @apply w-96;
-} */
     .lg-cal .vc-header {
         padding: 0 !important;
     }
 
     .lg-cal .vc-title {
-        @apply capitalize font-light text-gray-800 text-3xl py-6 !important;
+        @apply capitalize! font-light! text-gray-800! text-3xl! py-6!;
     }
 
     .lg-cal.vc-container {
@@ -294,7 +292,7 @@
     }
 
     .lg-cal .vc-weeks .vc-weekday:first-child {
-        @apply border-l-0 !important;
+        @apply border-l-0!;
     }
 
     .lg-cal .is-today .day-label {
@@ -302,11 +300,11 @@
     }
 
     .lg-cal .vc-weeks .vc-weekday:nth-child(7n+7) {
-        @apply border-r-0 !important;
+        @apply border-r-0!;
     }
 
     .lg-cal .weekday-1 {
-        @apply border-r-0 !important;
+        @apply border-r-0!;
     }
 
     .lg-cal .vc-weeks {
@@ -318,20 +316,14 @@
     }
 
     .lg-cal .vc-weekday {
-        @apply border text-gray-400 py-2 font-bold !important;
-        /* border-bottom: 1px solid red;
-    border-top: 1px solid red; */
+        @apply border! text-gray-400! py-2! font-bold!;
     }
 
     .lg-cal .vc-day {
-        /* padding: 0 5px 3px 5px; */
         text-align: left;
-        /* height: var(--day-height);
-    min-width: var(--day-width); */
         min-width: 6rem;
         @apply h-36 p-3;
         background-color: white;
-        /* border: 1px solid purple; */
     }
 
     .lg-cal .vc-day.in-prev-month {

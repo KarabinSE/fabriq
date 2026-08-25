@@ -1,4 +1,4 @@
-@config "./fabriq.tailwind.config.js";
+@import "./theme.css";
 
 .vs__selected button {
     height: 1rem;

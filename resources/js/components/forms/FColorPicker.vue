@@ -14,7 +14,7 @@
     >
         <template #fop="option">
             <div
-                class="w-5 h-5 mr-4 border rounded-full"
+                class="w-5 h-5 mr-4 border-gray-200 rounded-full"
                 :class="option.color"
             />
             <span>
@@ -24,7 +24,7 @@
         <template #prefix="option">
             <div>
                 <div
-                    class="w-5 h-5 mr-4 border rounded-full"
+                    class="w-5 h-5 mr-4 border border-gray-200 rounded-full"
                     :class="option.color"
                 />
             </div>

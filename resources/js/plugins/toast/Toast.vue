@@ -35,7 +35,7 @@
                 >
                     <div class="p-4">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0">
+                            <div class="shrink-0">
                                 <span class="text-2xl">{{ emoji }}</span>
                             </div>
                             <div class="ml-3 w-0 flex-1 pt-0.5">
@@ -69,7 +69,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="flex flex-shrink-0 ml-4">
+                            <div class="flex shrink-0 ml-4">
                                 <button
                                     class="inline-flex text-lg text-gray-200 transition duration-150 ease-in-out focus:outline-none focus:text-gray-500"
                                     @click="close"

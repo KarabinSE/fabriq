@@ -360,6 +360,7 @@ export default {
 </script>
 
 <style scoped>
+@reference 'tailwindcss';
 
 .form-radio:disabled {
     @apply  opacity-30 cursor-not-allowed ;

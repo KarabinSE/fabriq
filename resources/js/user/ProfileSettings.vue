@@ -69,7 +69,7 @@
                             v-if="imageUrl"
                             :src="imageUrl"
                             alt=""
-                            class="inline-block object-cover ml-4 border rounded-lg h-9 w-9"
+                            class="inline-block object-cover ml-4 border border-gray-200 rounded-lg h-9 w-9"
                         >
 
                         <button
@@ -178,7 +178,7 @@ export default {
         async fetchUser () {
             try {
                 const { data } = await AuthenticatedUser.index();
-                
+
                 this.localUser = data;
 
                 this.userStore.setUser(data);

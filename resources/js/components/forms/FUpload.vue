@@ -138,7 +138,7 @@ export default {
     beforeDestroy () {
         if (this.UploadDropzone) {
             this.UploadDropzone.destroy();
-
+            
             this.UploadDropzone = null;
         }
 
