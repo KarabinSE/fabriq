@@ -4,7 +4,6 @@ namespace Karabin\Fabriq;
 
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Contracts\Routing\Registrar as Router;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
@@ -38,7 +37,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ModelCountController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\NotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePathController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSignedUrlController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageTreeController;
@@ -53,6 +52,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoUploadController;
 use Karabin\Fabriq\Http\Controllers\PermalinksRedirectController;
 use Karabin\Fabriq\Http\Controllers\SpaController;
+use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 class RouteRegistrar
@@ -107,8 +107,8 @@ class RouteRegistrar
                 return 'ok';
             })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-            Route::get('/', [SpaController::class, 'index'])->middleware('auth')->name("admin.index");
-            Route::get('/{any}', [SpaController::class, 'index'])->where('any', '.*')->middleware('auth')->name("admin.any.index");
+            Route::get('/', [SpaController::class, 'index'])->middleware('auth')->name('admin.index');
+            Route::get('/{any}', [SpaController::class, 'index'])->where('any', '.*')->middleware('auth')->name('admin.any.index');
         });
     }
 
@@ -168,18 +168,19 @@ class RouteRegistrar
         $this->forVideos();
         $this->forPagePaths();
         $this->forInvitations();
+        $this->forPreviews();
     }
 
     public function forPublicApi()
     {
         $this->forPageSlugs();
         $this->forImageSrcSet();
-        // Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
+        Route::get('previews/{uuid}', [PagePreviewController::class, 'show'])->name('previews.show');
     }
 
     public function forDevProtected()
     {
-        Route::post('bust-cache', [BustCacheController::class, 'store'])->name("bust-cache.store");
+        Route::post('bust-cache', [BustCacheController::class, 'store'])->name('bust-cache.store');
     }
 
     public function forArticles(): void
@@ -282,7 +283,6 @@ class RouteRegistrar
         Route::delete('pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
         Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])->name('pages.clone.store');
         Route::post('pages/{id}/publish', [PublishPageController::class, 'store'])->name('pages.publish.store');
-        Route::get('pages/{id}/signed-url', [PageSignedUrlController::class, 'show'])->name('pages.signed-url.show');
     }
 
     public function forInvitations(): void
@@ -290,6 +290,15 @@ class RouteRegistrar
         // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
         Route::post('invitations/{userId}', [InvitationController::class, 'store'])->name('invitations.store');
         Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
+    }
+
+    public function forPreviews(): void
+    {
+        // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
+        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store')
+            ->middleware(LocaleMiddleware::class);
+        Route::patch('previews/{id}', [PagePreviewController::class, 'update'])->name('previews.update');
+        // Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
     }
 
     public function forPageSlugs()

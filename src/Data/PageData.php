@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
+use Illuminate\Database\Eloquent\Collection;
 use Karabin\Fabriq\Models\Page;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
 use Spatie\LaravelData\Data;
@@ -16,6 +17,7 @@ class PageData extends Data
         public ?int $parent_id,
         public ?int $revision,
         public ?int $published_version,
+        public bool $published,
         public ?string $created_at,
         public ?string $updated_at,
         public Lazy|array $content,
@@ -39,6 +41,7 @@ class PageData extends Data
             parent_id: $page->parent_id ? (int) $page->parent_id : null,
             revision: $page->revision ? (int) $page->revision : null,
             published_version: $page->published_version ? (int) $page->published_version : null,
+            published: (bool) $page->published,
             created_at: $page->created_at?->toISOString(),
             updated_at: $page->updated_at?->toISOString(),
             content: Lazy::create(fn () => ['data' => $page->getSimpleFieldContent($page->revision)->toArray()]),
@@ -46,7 +49,7 @@ class PageData extends Data
             template: Lazy::create(fn () => $page->template ? ['data' => self::buildTemplate($page)] : null)->defaultIncluded(),
             slugs: Lazy::create(fn () => ['data' => $page->slugs->toArray()]),
             children: Lazy::create(function () use ($page) {
-                /** @var \Illuminate\Database\Eloquent\Collection<int, Page> $children */
+                /** @var Collection<int, Page> $children */
                 $children = $page->children;
 
                 return ['data' => $children->map(fn (Page $child) => self::fromModel($child)->toArray())->values()->all()];

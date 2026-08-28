@@ -34,7 +34,7 @@ class LivePageData extends Data
             name: (string) $page->name,
             slug: (string) $page->slug,
             template_id: $page->template_id ? (int) $page->template_id : null,
-            updated_at: $page->updated_at?->toJSON(),
+            updated_at: $page->updated_at,
             content: ['data' => $content],
         );
     }
