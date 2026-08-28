@@ -43,7 +43,8 @@
         "aws/aws-sdk-php": "^3.219",
         "laravel/pint": "^1.2",
         "spatie/laravel-webhook-server": "^3.8",
-        "spatie/laravel-data": "^4.20"
+        "spatie/laravel-data": "^4.20",
+        "spatie/laravel-typescript-transformer": "^3.3"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

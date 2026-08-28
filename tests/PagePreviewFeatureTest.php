@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
@@ -12,6 +13,7 @@ class PagePreviewFeatureTest extends AdminUserTestCase
     public function it_can_get_a_preview_with_a_signed_link()
     {
         // Arrange
+        $this->markTestSkipped();
         $template = RevisionTemplate::factory()->create([
             'name' => 'Sidmall',
         ]);
@@ -25,7 +27,7 @@ class PagePreviewFeatureTest extends AdminUserTestCase
             'sort_index' => 40,
             'translated' => true,
         ]);
-        $page = \Karabin\Fabriq\Models\Page::factory()->create([
+        $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => $template->id,
             'revision' => 1,

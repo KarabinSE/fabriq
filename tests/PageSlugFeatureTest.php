@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Models\Slug;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
@@ -12,8 +13,8 @@ class PageSlugFeatureTest extends AdminUserTestCase
     {
         // Arrange
         // $this->withoutExceptionHandling();
-        $page = \Karabin\Fabriq\Models\Page::factory()->create();
-        $otherPage = \Karabin\Fabriq\Models\Page::factory()->create();
+        $page = Page::factory()->create(['published' => true]);
+        $otherPage = Page::factory()->create();
         $slug = Slug::create([
             'model_type' => 'fabriq_page',
             'model_id' => $page->id,
@@ -32,7 +33,7 @@ class PageSlugFeatureTest extends AdminUserTestCase
         ]);
 
         // Act
-        $response = $this->json('GET', '/pages/'.$slug->slug.'/live');
+        $response = $this->json('GET', route('pages.live.show', $slug->slug));
 
         // Assert
         $response->assertOk();

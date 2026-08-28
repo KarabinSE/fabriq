@@ -119,6 +119,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
         $this->app->register(MacroServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(FortifyServiceProvider::class);
+        $this->app->register(TypeScriptTransformerServiceProvider::class);
 
         $this->app->get('config')->set(
             'media-library',
