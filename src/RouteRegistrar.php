@@ -107,8 +107,8 @@ class RouteRegistrar
                 return 'ok';
             })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-            Route::get('/', [SpaController::class, 'index'])->middleware('auth');
-            Route::get('/{any}', [SpaController::class, 'index'])->where('any', '.*')->middleware('auth');
+            Route::get('/', [SpaController::class, 'index'])->middleware('auth')->name('admin.index');
+            Route::get('/{any}', [SpaController::class, 'index'])->where('any', '.*')->middleware('auth')->name('admin.any.index');
         });
     }
 
@@ -180,7 +180,7 @@ class RouteRegistrar
 
     public function forDevProtected()
     {
-        Route::post('bust-cache', [BustCacheController::class, 'store']);
+        Route::post('bust-cache', [BustCacheController::class, 'store'])->name('bust-cache.store');
     }
 
     public function forArticles(): void
@@ -190,8 +190,7 @@ class RouteRegistrar
 
     public function forContacts(): void
     {
-        Route::post('contacts/sort-contacts', ContactSortController::class)
-            ->name('contacts.sort');
+        Route::post('contacts/sort-contacts', ContactSortController::class)->name('contacts.sort');
         Route::resource('contacts', ContactController::class);
     }
 
@@ -202,15 +201,15 @@ class RouteRegistrar
 
     public function forComments(): void
     {
-        Route::get('{model}/{id}/comments', [CommentableController::class, 'index']);
-        Route::post('{model}/{id}/comments', [CommentableController::class, 'store']);
-        Route::patch('comments/{id}', [CommentController::class, 'update']);
-        Route::delete('comments/{id}', [CommentController::class, 'destroy']);
+        Route::get('{model}/{id}/comments', [CommentableController::class, 'index'])->name('comments.commentable.index');
+        Route::post('{model}/{id}/comments', [CommentableController::class, 'store'])->name('comments.commentable.store');
+        Route::patch('comments/{id}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
     }
 
     public function forConfig(): void
     {
-        Route::get('config', [ConfigController::class, 'index']);
+        Route::get('config', [ConfigController::class, 'index'])->name('config.index');
     }
 
     public function forEvents(): void
@@ -220,71 +219,71 @@ class RouteRegistrar
 
     public function forFiles(): void
     {
-        Route::get('files', [FileController::class, 'index']);
-        Route::get('files/{id}', [FileController::class, 'show']);
-        Route::patch('files/{id}', [FileController::class, 'update']);
-        Route::delete('files/{id}', [FileController::class, 'destroy']);
+        Route::get('files', [FileController::class, 'index'])->name('files.index');
+        Route::get('files/{id}', [FileController::class, 'show'])->name('files.show');
+        Route::patch('files/{id}', [FileController::class, 'update'])->name('files.update');
+        Route::delete('files/{id}', [FileController::class, 'destroy'])->name('files.destroy');
     }
 
     public function forImages(): void
     {
-        Route::get('images/{id}/src-set', [ImageSourceSetController::class, 'show']);
-        Route::get('/{model}/{id}/images', [ImageableController::class, 'index']);
-        Route::post('/images/{id}/{model}', [ImageableController::class, 'store']);
-        Route::get('images', [ImageController::class, 'index']);
-        Route::get('images/{id}', [ImageController::class, 'show']);
-        Route::patch('images/{id}', [ImageController::class, 'update']);
-        Route::delete('images/{id}', [ImageController::class, 'destroy']);
+        Route::get('images/{id}/src-set', [ImageSourceSetController::class, 'show'])->name('images.src-set.show');
+        Route::get('/{model}/{id}/images', [ImageableController::class, 'index'])->name('images.imageable.index');
+        Route::post('/images/{id}/{model}', [ImageableController::class, 'store'])->name('images.imageable.store');
+        Route::get('images', [ImageController::class, 'index'])->name('images.index');
+        Route::get('images/{id}', [ImageController::class, 'show'])->name('images.show');
+        Route::patch('images/{id}', [ImageController::class, 'update'])->name('images.update');
+        Route::delete('images/{id}', [ImageController::class, 'destroy'])->name('images.destroy');
     }
 
     public function forDownloads(): void
     {
-        Route::get('media/downloads/{uuid}', [MediaDownloadController::class, 'show']);
-        Route::get('downloads', [DownloadController::class, 'index']);
-        Route::get('downloads/{id}', [DownloadController::class, 'show']);
+        Route::get('media/downloads/{uuid}', [MediaDownloadController::class, 'show'])->name('media.downloads.show');
+        Route::get('downloads', [DownloadController::class, 'index'])->name('downloads.index');
+        Route::get('downloads/{id}', [DownloadController::class, 'show'])->name('downloads.show');
     }
 
     public function forMiscRoutes(): void
     {
-        Route::get('templates', [RevisionTemplateController::class, 'index']);
-        Route::get('menus/{slug}/public', [MenuItemTreeController::class, 'show']);
-        Route::get('{model}/count', [ModelCountController::class, 'show']);
+        Route::get('templates', [RevisionTemplateController::class, 'index'])->name('templates.index');
+        Route::get('menus/{slug}/public', [MenuItemTreeController::class, 'show'])->name('menus.public.show');
+        Route::get('{model}/count', [ModelCountController::class, 'show'])->name('model.count.show');
 
         // Uploads
-        Route::post('uploads/images', [ImageUploadController::class, 'store']);
-        Route::post('uploads/files', [FileUploadController::class, 'store']);
-        Route::post('uploads/videos', [VideoUploadController::class, 'store']);
+        Route::post('uploads/images', [ImageUploadController::class, 'store'])->name('uploads.images.store');
+        Route::post('uploads/files', [FileUploadController::class, 'store'])->name('uploads.files.store');
+        Route::post('uploads/videos', [VideoUploadController::class, 'store'])->name('uploads.videos.store');
     }
 
     public function forMenus(): void
     {
-        Route::get('menus', [MenuController::class, 'index']);
-        Route::post('menus', [MenuController::class, 'store']);
-        Route::get('menus/{id}', [MenuController::class, 'show']);
-        Route::patch('menus/{id}', [MenuController::class, 'update']);
-        Route::delete('menus/{id}', [MenuController::class, 'destroy']);
-        Route::get('menus/{id}/items/tree', [MenuItemTreeController::class, 'index']);
-        Route::patch('menus/{id}/items/tree', [MenuItemTreeController::class, 'update']);
-        Route::post('/menus/{id}/items', [MenuItemController::class, 'store']);
+        Route::get('menus', [MenuController::class, 'index'])->name('menus.index');
+        Route::post('menus', [MenuController::class, 'store'])->name('menus.store');
+        Route::get('menus/{id}', [MenuController::class, 'show'])->name('menus.show');
+        Route::patch('menus/{id}', [MenuController::class, 'update'])->name('menus.update');
+        Route::delete('menus/{id}', [MenuController::class, 'destroy'])->name('menus.destroy');
+        Route::get('menus/{id}/items/tree', [MenuItemTreeController::class, 'index'])->name('menus.items.tree.index');
+        Route::patch('menus/{id}/items/tree', [MenuItemTreeController::class, 'update'])->name('menus.items.tree.update');
+        Route::post('/menus/{id}/items', [MenuItemController::class, 'store'])->name('menus.items.store');
 
-        Route::get('menu-items/{id}', [MenuItemController::class, 'show']);
-        Route::patch('menu-items/{id}', [MenuItemController::class, 'update']);
-        Route::delete('menu-items/{id}', [MenuItemController::class, 'destroy']);
+        Route::get('menu-items/{id}', [MenuItemController::class, 'show'])->name('menu-items.show');
+        Route::patch('menu-items/{id}', [MenuItemController::class, 'update'])->name('menu-items.update');
+        Route::delete('menu-items/{id}', [MenuItemController::class, 'destroy'])->name('menu-items.destroy');
     }
 
     public function forPages(): void
     {
-        Route::get('pages-tree', [PageTreeController::class, 'index']);
-        Route::patch('pages-tree', [PageTreeController::class, 'update']);
-        Route::get('pages/{slug}/live', [PageSlugsController::class, 'show']);
-        Route::get('pages', [PageController::class, 'index']);
-        Route::post('pages', [PageController::class, 'store']);
-        Route::get('pages/{id}', [PageController::class, 'show']);
-        Route::patch('pages/{id}', [PageController::class, 'update']);
-        Route::delete('pages/{id}', [PageController::class, 'destroy']);
-        Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])
-            ->name('pages.clone.store');
-        Route::post('pages/{id}/publish', [PublishPageController::class, 'store']);
+        Route::get('pages-tree', [PageTreeController::class, 'index'])->name('pages-tree.index');
+        Route::patch('pages-tree', [PageTreeController::class, 'update'])->name('pages-tree.update');
+        Route::get('pages/{slug}/live', [PageSlugsController::class, 'show'])->name('pages.live.show');
+        Route::get('pages', [PageController::class, 'index'])->name('pages.index');
+        Route::post('pages', [PageController::class, 'store'])->name('pages.store');
+        Route::get('pages/{id}', [PageController::class, 'show'])->name('pages.show');
+        Route::patch('pages/{id}', [PageController::class, 'update'])->name('pages.update');
+        Route::delete('pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
+        Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])->name('pages.clone.store');
+        Route::post('pages/{id}/publish', [PublishPageController::class, 'store'])->name('pages.publish.store');
+        Route::get('pages/{id}/signed-url', [PageSignedUrlController::class, 'show'])->name('pages.signed-url.show');
     }
 
     public function forInvitations(): void
@@ -310,7 +309,7 @@ class RouteRegistrar
 
     public function forRoles(): void
     {
-        Route::get('roles', [RoleController::class, 'index']);
+        Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
     }
 
     public function forSmartBlocks(): void
@@ -320,18 +319,18 @@ class RouteRegistrar
 
     public function forTags(): void
     {
-        Route::get('tags', [TagController::class, 'index']);
-        Route::post('tags', [TagController::class, 'store']);
+        Route::get('tags', [TagController::class, 'index'])->name('tags.index');
+        Route::post('tags', [TagController::class, 'store'])->name('tags.store');
     }
 
     public function forAuthenticatedUsers(): void
     {
-        Route::get('user', [AuthenticatedUserController::class, 'index']);
-        Route::patch('user', [AuthenticatedUserController::class, 'update']);
+        Route::get('user', [AuthenticatedUserController::class, 'index'])->name('user.index');
+        Route::patch('user', [AuthenticatedUserController::class, 'update'])->name('user.update');
         Route::post('user/image', [UserImageController::class, 'store'])->name('user.image.store');
         Route::delete('user/image', [UserImageController::class, 'destroy'])->name('user.image.destroy');
-        Route::patch('user/self', [AuthenticatedUserController::class, 'update']);
-        Route::post('user/send-email-verification', [EmailVerificationController::class, 'store']);
+        Route::patch('user/self', [AuthenticatedUserController::class, 'update'])->name('user.self');
+        Route::post('user/send-email-verification', [EmailVerificationController::class, 'store'])->name('user.send-email-verification.store');
     }
 
     public function forUsers()
@@ -341,25 +340,23 @@ class RouteRegistrar
 
     public function forNotifications()
     {
-        Route::post('/notifications/ask-to-leave/{userId}', AskToLeaveNotificationController::class)
-            ->name('notifications.ask-to-leave');
-        Route::post('/notifications/decline-to-leave/{userId}', DeclineToLeaveNotificationController::class)
-            ->name('notifications.decline-to-leave');
-        Route::get('/user/notifications', [NotificationController::class, 'index']);
-        Route::patch('/user/notifications/{id}', [NotificationController::class, 'update']);
+        Route::post('/notifications/ask-to-leave/{userId}', AskToLeaveNotificationController::class)->name('notifications.ask-to-leave');
+        Route::post('/notifications/decline-to-leave/{userId}', DeclineToLeaveNotificationController::class)->name('notifications.decline-to-leave');
+        Route::get('/user/notifications', [NotificationController::class, 'index'])->name('user.notifications.index');
+        Route::patch('/user/notifications/{id}', [NotificationController::class, 'update'])->name('user.notifications.update');
     }
 
     public function forVideos(): void
     {
-        Route::get('videos', [VideoController::class, 'index']);
-        Route::get('videos/{id}', [VideoController::class, 'show']);
-        Route::patch('videos/{id}', [VideoController::class, 'update']);
-        Route::delete('videos/{id}', [VideoController::class, 'destroy']);
+        Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
+        Route::get('videos/{id}', [VideoController::class, 'show'])->name('videos.show');
+        Route::patch('videos/{id}', [VideoController::class, 'update'])->name('videos.update');
+        Route::delete('videos/{id}', [VideoController::class, 'destroy'])->name('videos.destroy');
     }
 
     public function forImageSrcSet(): void
     {
-        Route::get('images/{id}/src-set', [ImageSourceSetController::class, 'show']);
+        Route::get('images/{id}/src-set', [ImageSourceSetController::class, 'show'])->name('images.show.src-set');
     }
 
     public function forPagePaths(): void
