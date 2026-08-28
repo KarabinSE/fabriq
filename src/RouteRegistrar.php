@@ -283,7 +283,6 @@ class RouteRegistrar
         Route::delete('pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
         Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])->name('pages.clone.store');
         Route::post('pages/{id}/publish', [PublishPageController::class, 'store'])->name('pages.publish.store');
-        Route::get('pages/{id}/signed-url', [PageSignedUrlController::class, 'show'])->name('pages.signed-url.show');
     }
 
     public function forInvitations(): void
