@@ -48,7 +48,6 @@
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
-        "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.0",
         "orchestra/testbench": "^10.0",
         "nunomaduro/collision": "^5.1|^6.0|^8.0"

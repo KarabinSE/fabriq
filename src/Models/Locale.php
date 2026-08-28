@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Locale extends Model
@@ -21,7 +22,7 @@ class Locale extends Model
         return $query->where('enabled', 1);
     }
 
-    public function cachedLocales()
+    public function cachedLocales(): Collection
     {
         $cachedLoclaes = $this->enabled()->orderBy('sort_index')
             ->get()

@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Karabin\Fabriq\Data\LivePageData;
@@ -11,7 +12,7 @@ use Karabin\Fabriq\Models\Preview;
 
 class PagePreviewController
 {
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $page = Fabriq::getModelClass('page')->findOrFail($request->id);
 
@@ -29,7 +30,7 @@ class PagePreviewController
         ]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
         $preview = Preview::updateOrCreate(
             [
