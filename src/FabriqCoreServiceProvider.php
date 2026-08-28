@@ -213,7 +213,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../pnpm-workspace.yaml' => 'pnpm-workspace.yaml',
             __DIR__.'/../postcss.config.js' => 'postcss.config.js',
             __DIR__.'/../package.json' => 'package.json',
-            __DIR__.'/../lefthook.stub' => 'lefthook.toml',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
             __DIR__.'/../.eslintrc' => '.eslintrc',
             __DIR__.'/../.babelrc' => '.babelrc',

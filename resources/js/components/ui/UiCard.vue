@@ -1,20 +1,31 @@
 <template>
     <div
-        class="mt-4 bg-white rounded card"
+        class="mt-4 bg-white rounded card @container/card"
         :class="noShadow ? 'border border-gray-200' : 'shadow-md'"
     >
         <div
             v-if="hasHeaderSlot"
-            :class="[{'px-4 md:px-6': padding }, {'cursor-pointer flex justify-between': collapsible }, collapsible && collapsedActive ? 'border-gray-200' : 'border-transparent', ! open && collapsible ? ' rounded-b' : 'bg-white ', cHeaderClasses, collapsible ? 'border-transparent' : 'border-gray-200']"
-            class="flex items-center leading-none transition-colors duration-500 bg-white border-b border-gray-200 rounded-t"
+            :class="[
+                padding && 'px-4 md:px-6',
+                collapsible ? [
+                    'cursor-pointer flex justify-between border-transparent',
+                    collapsedActive ? 'border-gray-200' : 'border-transparent',
+                    open ? 'bg-white' : 'rounded-b',
+                ] : 'border-gray-200',
+                cHeaderClasses,
+            ]"
+            class="flex items-center leading-none transition-colors duration-500 bg-white border-b border-gray-200 rounded-t justify-between"
             @click="toggleCollapsible"
         >
-            <span class="flex-1 text-xl font-light text-gray-700">
+            <div class="text-xl font-light text-gray-700 w-full min-w-0">
                 <slot name="header" />
-            </span>
-            <div v-if="collapsible">
+            </div>
+            <div
+                v-if="collapsible"
+                class="shrink-0 pl-4"
+            >
                 <AngleDownIcon
-                    class="block w-6 h-6 ml-4 text-gray-800 transition-all duration-300 transform "
+                    class="block size-5 @xl/card:size-6 text-gray-800 transition-[colors,rotate] duration-300"
                     :class="open ? '-rotate-180' : 'rotate-0'"
                 />
             </div>

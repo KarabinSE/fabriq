@@ -93,7 +93,6 @@
         @apply text-gray-800 border-transparent border-none hover:text-royal-700 focus:bg-gray-200 focus:ring-gray-400 focus:ring-0;
     }
 
-
     .btn-outline-white {
         @apply text-white border-white hover:text-gray-50 hover:border-gray-50 focus:ring-royal-300 focus:ring-2;
     }
@@ -115,7 +114,7 @@
     }
 
     .sidebar-item:hover {
-        @apply text-gray-900 bg-gray-50
+        @apply text-gray-900 bg-gray-50;
     }
 
     .sidebar-item.router-link-active {
@@ -134,11 +133,9 @@
         @apply hidden;
     }
 
-
     .fabriq-input.v-select.vs--open {
         /* @apply ring-gray-800 ring-1 rounded-b-none !important; */
     }
-
 
     .f-menu-bar button {
         @apply focus:outline-none;
@@ -175,23 +172,23 @@
         border-width: 1px;
         background-origin: border-box;
         background-size: 50% 50%;
-        transition: background-size .08s ease;
+        transition: background-size 0.08s ease;
     }
 
     .bg-checkered-sm {
-        background-image: url('@/../fabriq/images/checkered.svg');
+        background-image: url("@/../fabriq/images/checkered.svg");
         background-size: 30px 23px;
         background-position: top top;
     }
 
     .bg-checkered-lg {
-        background-image: url('@/../fabriq/images/checkered.svg');
+        background-image: url("@/../fabriq/images/checkered.svg");
         background-size: 4rem 3rem;
         background-position: top top;
     }
 
     img .ProseMirror-selectednode {
-        outline: 3px solid #68CEF8;
+        outline: 3px solid #68cef8;
     }
 
     .f-editor table {
@@ -230,7 +227,7 @@
         @apply pl-4;
     }
 
-    .f-editor>div {
+    .f-editor > div {
         @apply w-full px-4 pt-4 pb-4 transition duration-200 ease-out bg-white border border-t-0 border-gray-300 rounded-b-sm focus:outline-none focus:ring-1 ring-inset ring-gray-800;
     }
 
@@ -299,7 +296,7 @@
         @apply bg-gold-400 text-gray-800 flex rounded-full py-2.5 justify-center items-center leading-none w-7 h-7;
     }
 
-    .lg-cal .vc-weeks .vc-weekday:nth-child(7n+7) {
+    .lg-cal .vc-weeks .vc-weekday:nth-child(7n + 7) {
         @apply border-r-0!;
     }
 

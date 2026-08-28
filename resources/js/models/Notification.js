@@ -1,18 +1,16 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
-    endpoint: '/api/user/notifications/',
-
     async index (payload) {
-        const { data } = await axios.get(this.endpoint, payload)
+        const { data } = await axios.get(route('user.notifications.index'), payload)
 
         return data
     },
 
     async update (id, payload) {
-        const { data } = await axios.patch(this.endpoint + id, payload)
+        const { data } = await axios.patch(route('user.notifications.update', { id }), payload)
 
         return data
     }
-
 }

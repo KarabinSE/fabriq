@@ -20,7 +20,7 @@
         >
             <div
                 v-show="show"
-                class="absolute z-50 bg-white rounded shadow-lg ring-1 ring-gray-800 ring-opacity-30"
+                class="absolute z-50 bg-white rounded shadow-lg ring-1 ring-gray-100 ring-opacity-30"
                 :class="[{'top-full -left-px': alignment == 'top-left', ' right-0 top-full': alignment == 'top-right'}, marginClasses]"
             >
                 <slot name="dropdown" />

@@ -1,19 +1,21 @@
 <template>
-    <div>
-        <div class="flex items-center justify-between mt-12 mb-4">
-            <h4 class="text-3xl font-light text-gray-700">
-                Block
-            </h4>
-            <button
-                v-show="!lockedBlocks"
-                class="flex items-center text-sm link"
-                @click="showBlockTypeModal"
-            >
-                <PlusIcon class="w-5 h-5 mr-2" />Lägg till block
-            </button>
-        </div>
+    <div class="mt-12 mb-4">
+        <slot name="header">
+            <div class="flex items-baseline justify-between">
+                <h4 class="text-3xl font-light text-gray-700">
+                    Block
+                </h4>
+                <button
+                    v-show="!lockedBlocks"
+                    class="flex items-center text-sm link"
+                    @click="showBlockTypeModal"
+                    >
+                    <PlusIcon class="w-5 h-5 mr-2" />Lägg till block
+                </button>
+            </div>
+        </slot>
         <div>
-            <div v-if="localBlocks.length === 0">
+            <div v-if="pageStore.blocks.index.length === 0">
                 <div class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
                     <div class="flex flex-col items-center">
                         <div class="mb-4 text-xl font-light">
@@ -30,7 +32,7 @@
             </div>
 
             <Draggable
-                v-model="localBlocks"
+                v-model="pageStore.blocks.index"
                 handle=".handle"
                 tag="ul"
                 v-bind="dragOptions"
@@ -43,8 +45,8 @@
                     :name="'flip-list-move'"
                 >
                     <li
-                        v-for="(block, boxIndex) in localBlocks"
-                        :key="'alt' + block.id + boxIndex + activeLocale"
+                        v-for="(block, boxIndex) in pageStore.blocks.index"
+                        :key="'block-' + block.id"
                         class="list-group-item"
                     >
                         <UiCard
@@ -53,24 +55,26 @@
                             :identifier="block.id"
                             :open-by-default="block.newlyAdded"
                             :padding="false"
-                            header-classes="px-3 sm:px-4 py-3 sm:py-4"
+                            header-classes="px-3 @sm/card:px-4 py-3 @sm/card:py-4"
                         >
                             <template #header>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center flex-1 gap-2 md:gap-6">
+                                <div class="flex items-center justify-between ">
+                                    <div class="flex items-center flex-1 min-w-0 gap-2 @2xl:gap-6">
                                         <GripVerticalIcon
                                             v-if="!lockedBlocks"
-                                            class="block w-4 h-4 md:w-6 md:h-6 text-gray-400 md:text-gray-300 cursor-move handle"
+                                            class="block size-4 @2xl:size-6 text-gray-400 @2xl:text-gray-300 cursor-move handle"
                                         />
-                                        <div class="flex flex-col md:flex-row md:items-end gap-1 md:gap-3">
-                                            <div class="leading-none text-base font-normal md:font-light md:text-xl">
-                                                {{ block.name }}
+                                        <div class="w-full min-w-0 overflow-hidden">
+                                            <div class="flex min-w-0 flex-col gap-1">
+                                                <div
+                                                    class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
+                                                >
+                                                    {{ block.block_type.name }}
+                                                </div>
+                                                <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
+                                                    {{ block.name }}
+                                                </div>
                                             </div>
-                                            <span
-                                                class="inline-flex text-xs md:text-sm font-semibold leading-none text-gray-400"
-                                            >
-                                                {{ block.block_type.name }}
-                                            </span>
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4">
@@ -78,7 +82,7 @@
                                         <VPopover
                                             v-if="blockBlockType(block).preview_src || blockBlockType(block).base_64_svg"
                                             trigger="hover"
-                                            class="hidden sm:flex"
+                                            class="hidden @xl:flex"
                                             placement="top"
                                             :delay="{ show: 300, hide: 100 }"
                                         >
@@ -103,7 +107,7 @@
                                             class="w-px h-7 md:h-8 mx-6 bg-gray-300"
                                         />
 
-                                        <div class="sm:hidden flex items-center gap-4">
+                                        <div class="@xl:hidden flex items-center gap-4">
                                             <UiDropdown alignment="top-right">
                                                 <GearIcon
                                                     class="h-5 text-gray-300!"
@@ -130,7 +134,7 @@
                                                             class="h-4"
                                                             thin
                                                         />
-                                                        Kopiera block-IDxx
+                                                        Kopiera block-ID
                                                     </button>
 
                                                     <FConfirmDropdown
@@ -157,7 +161,7 @@
                                                 class="self-center mb-1 [&_svg]:h-5"
                                             />
                                         </div>
-                                        <div class="hidden sm:flex items-center space-x-4">
+                                        <div class="hidden @xl:flex items-center space-x-4">
                                             <button
                                                 v-show="!lockedBlocks"
                                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
@@ -196,7 +200,15 @@
                                                 />
                                             </FConfirmDropdown>
                                         </div>
-                                        <div class="w-px h-8 mx-6 bg-gray-300" />
+                                        <div class="w-px h-8 mx-3 bg-gray-300" />
+                                        <button
+                                            v-if="withPreviewBlockLocator"
+                                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skrolla till block' }"
+                                            @click.stop="scrollToBlock(block.id)"
+                                            class="focus:outline-none"
+                                        >
+                                            <CrosshairsIcon class="size-6 text-gray-500" thin />
+                                        </button>
                                     </div>
                                 </div>
                             </template>
@@ -207,7 +219,6 @@
                                         :content="block"
                                         :value="block"
                                         :index="boxIndex"
-                                        @input="blockEdited"
                                         @repeater-updated="refreshBlock"
                                     />
                                 </KeepAlive>
@@ -225,8 +236,9 @@ import ImageIcon from '@/icons/ImageIcon.vue';
 import BlockType from '@/models/BlockType';
 import { VPopover } from 'v-tooltip';
 import Draggable from 'vuedraggable';
-import { useConfigStore } from '@/stores';
+import { useConfigStore, usePageStore, usePreviewStore } from '@/stores';
 import { useClipboard } from '@vueuse/core';
+import CrosshairsIcon from '@/icons/CrosshairsIcon.vue';
 
 export default {
     components: {
@@ -239,31 +251,29 @@ export default {
             type: [Array],
             default: () => [],
         },
-
-        page: {
-            type: Object,
-            default: () => {
-                return {
-                    locked: false,
-                }
-            },
-        },
-
-        locale: {
-            type: String,
-            required: true,
-            default: 'sv',
-        },
+        withPreviewBlockLocator: {
+            type: Boolean,
+            default: false
+        }
     },
 
     emits: ['input'],
 
     setup() {
         const configStore = useConfigStore();
+        const pageStore = usePageStore()
+        const previewStore = usePreviewStore()
+        const config = useConfigStore()
 
         const { copy } = useClipboard({ legacy: true });
 
-        return { configStore, copy }
+        return {
+            configStore,
+            pageStore,
+            previewStore,
+            config,
+            copy,
+        }
     },
 
     data() {
@@ -284,8 +294,12 @@ export default {
             },
         },
 
-        config() {
+        page() {
             return this.configStore.config;
+        },
+
+        locale() {
+            return this.configStore.activeLocale;
         },
 
         dragOptions() {
@@ -319,16 +333,11 @@ export default {
         await this.fetchBlockTypes()
     },
 
-    mounted() {
-        this.$eventBus.on('block-type-added-' + this.locale, this.blockTypeAdded)
-    },
-
-    beforeDestroy() {
-        this.$eventBus.off('block-type-added-' + this.locale, this.blockTypeAdded)
-        // this.$eventBus.off('block-type-added', this.blockTypeAdded)
-    },
-
     methods: {
+
+        scrollToBlock(blockId) {
+            this.previewStore.locateBlock(blockId)
+        },
 
         blockBlockType(block) {
             if (!this.blockTypes || !Array.isArray(this.blockTypes)) {
@@ -341,7 +350,7 @@ export default {
         copySuccess() {
             this.$toast.success({
                 title: 'Blockets ID har kopierats',
-                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.'
+                message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.'
             })
         },
 
@@ -354,35 +363,14 @@ export default {
         },
 
         deleteBlock(index) {
-            this.localBlocks.splice(index, 1)
-        },
-
-        blockTypeAdded(item) {
-            console.warn('adding new block', item)
-
-            if (this.localBlocks.length === 0) {
-                this.localBlocks = []
-            }
-
-            this.$nextTick(() => {
-                this.localBlocks.push(JSON.parse(JSON.stringify(item)))
-            });
-
-            setTimeout(() => {
-                this.localBlocks[this.localBlocks.length - 1].newlyAdded = false
-            }, 2);
+            this.pageStore.blocks.remove(index)
         },
 
         cloneBlock(block) {
-            const clonedBlock = JSON.parse(JSON.stringify(block))
+            const clonedBlock = structuredClone(block)
 
-            clonedBlock.id = 'i' + Math.random().toString(20).substr(2, 6)
             clonedBlock.name = 'Kopia av ' + block.name
-            this.blockTypeAdded({ ...clonedBlock })
-        },
-
-        blockEdited(value) {
-            console.log('asd')
+            this.pageStore.blocks.add(clonedBlock)
         },
 
         async fetchBlockTypes() {

@@ -1,16 +1,15 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
-    endpoint: '/api/admin/tags/',
-
     async index (payload) {
-        const { data } = await axios.get(this.endpoint, payload)
+        const { data } = await axios.get(route('tags.index'), payload)
 
         return data
     },
 
     async store (payload) {
-        const { data } = await axios.post(this.endpoint, payload)
+        const { data } = await axios.post(route('tags.store'), payload)
 
         return data
     }

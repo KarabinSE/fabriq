@@ -1,16 +1,15 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
-    endpoint: '/api/admin/pages-tree/',
-
     async index (payload) {
-        const { data } = await axios.get(this.endpoint, payload)
+        const { data } = await axios.get(route('pages-tree.index'), payload)
 
         return data
     },
 
     async update (payload) {
-        const { data } = await axios.patch(this.endpoint, payload)
+        const { data } = await axios.patch(route('pages-tree.update'), payload)
 
         return data
     }

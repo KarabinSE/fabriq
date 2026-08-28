@@ -24,6 +24,7 @@
 <script>
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import { route } from '@/generated/helpers/route';
 export default {
     name: 'LogoutForm',
     data () {
@@ -41,7 +42,7 @@ export default {
                     'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN')
                 }
             }
-            await axios.post('/logout', payload)
+            await axios.post(route('logout'), payload)
             window.location.reload()
         }
     }

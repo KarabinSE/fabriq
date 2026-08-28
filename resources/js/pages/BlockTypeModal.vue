@@ -263,18 +263,13 @@ export default {
                 this.chosenBlock.children = []
             }
 
-            this.chosenBlock.newlyAdded = true
-            this.chosenBlock.id = 'i' + Math.random().toString(20).substr(2, 6)
-            const emitName = 'block-type-added-' + this.activeLocale
-
-
-            this.$eventBus.emit(emitName, this.chosenBlock)
-
             setTimeout(() => {
                 this.uiStore.toggleOpenCard(this.chosenBlock.id);
             }, 150);
 
             this.show = false
+
+            this.pageStore.blocks.add(this.chosenBlock)
         },
 
         resetCreateModal () {

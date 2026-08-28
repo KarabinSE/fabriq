@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { route } from '@/generated/helpers/route';
 import Contact from '@/models/Contact'
 import axios from 'axios'
 import Draggable from 'vuedraggable'
@@ -94,7 +95,7 @@ export default {
                 item.sortindex = (index + 1) * 10
             })
             try {
-                await axios.post('/api/admin/contacts/sort-contacts', { contacts: this.contacts })
+                await axios.post(route('contacts.sort'), { contacts: this.contacts })
                 this.$emit('updated')
                 this.$toast.success({
                     title: 'Kontakterna har sorterats!',

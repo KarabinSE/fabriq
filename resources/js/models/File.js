@@ -1,34 +1,35 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
     endpoint: '/api/admin/files/',
 
     async show (id, payload) {
-        const { data } = await axios.get(this.endpoint + id, payload)
+        const { data } = await axios.get(route('files.show', { id }), payload)
 
         return data
     },
 
     async index (payload) {
-        const { data } = await axios.get(this.endpoint, payload)
+        const { data } = await axios.get(route('files.index'), payload)
 
         return data
     },
 
     async count (payload) {
-        const { data } = await axios.get(this.endpoint + 'count', payload)
+        const { data } = await axios.get(route('model.count.show', { model: 'files' }), payload)
 
         return data
     },
 
     async update (id, payload) {
-        const { data } = await axios.patch(this.endpoint + id, payload)
+        const { data } = await axios.patch(route('files.update', { id }), payload)
 
         return data
     },
 
     async destroy (id) {
-        const { data } = await axios.delete(this.endpoint + id)
+        const { data } = await axios.delete(route('files.destroy', { id }))
 
         return data
     },

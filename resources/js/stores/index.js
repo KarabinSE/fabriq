@@ -4,3 +4,4 @@ export { usePageStore } from "./page";
 export { useRouteHistoryStore } from "./routeHistory";
 export { useUiStore } from "./ui";
 export { useUserStore } from "./user";
+export { usePreviewStore } from "./preview";

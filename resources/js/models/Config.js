@@ -2,8 +2,8 @@ import axios from 'axios'
 import { route } from "@/generated/helpers/route"
 
 export default {
-    async bustCache (payload) {
-        const { data } = await axios.post(route('bust-cache.store'), payload)
+    async index () {
+        const { data } = await axios.get(route('config.index'))
 
         return data
     }

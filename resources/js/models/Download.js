@@ -1,15 +1,14 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
-    endpoint: '/api/admin/downloads/',
-
     async index (payload) {
         const localPayload = {
             responseType: 'blob',
             ...payload
         }
 
-        return await axios.get(this.endpoint, localPayload)
+        return await axios.get(route('downloads.index'), localPayload)
     },
 
     async show (id, payload) {
@@ -17,7 +16,7 @@ export default {
             responseType: 'blob',
             ...payload
         }
-        const response = await axios.get(this.endpoint + id, localPayload)
+        const response = await axios.get(route('downloads.show', { id }), localPayload)
 
         return response
     },

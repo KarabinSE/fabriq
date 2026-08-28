@@ -80,6 +80,10 @@
                             >
                                 <GripVerticalIcon class="w-4 h-4 ml-1 mr-2 text-gray-300" />
                             </VueNestableHandle>
+                            <div
+                                :class="item.published ? 'bg-green-400' : 'bg-gray-300'"
+                                class="w-2 h-2 rounded-full mr-2"
+                            />
                             <RouterLink :to="{ name: 'pages.edit', params: {id: item.id } }">
                                 {{ item.name }}
                             </RouterLink>

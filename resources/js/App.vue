@@ -9,7 +9,7 @@
 
         <div class="flex flex-col flex-1 w-0 mt-12 overflow-hidden lg:mt-0">
             <main
-                class="relative flex-1 overflow-y-auto focus:outline-none"
+                class="relative flex-1 overflow-y-auto focus:outline-none scrollbar-gutter-stable"
                 tabindex="0"
             >
                 <BlockTypeModal />

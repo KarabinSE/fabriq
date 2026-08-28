@@ -1,28 +1,27 @@
 import axios from 'axios'
+import { route } from "@/generated/helpers/route"
 
 export default {
-    endpoint: '/api/admin/menu-items/',
-
     async show (id, object) {
-        const { data } = await axios.get(this.endpoint + id, object)
+        const { data } = await axios.get(route('menu-items.show', { id }), object)
 
         return data
     },
 
     async update (id, object) {
-        const { data } = await axios.patch(this.endpoint + id, object)
+        const { data } = await axios.patch(route('menu-items.update', { id }), object)
 
         return data
     },
 
     async store (id, object) {
-        const { data } = await axios.post('/api/admin/menus/' + id + '/items', object)
+        const { data } = await axios.post(route('menus.items.store', { id }), object)
 
         return data
     },
 
     async destroy (id) {
-        const { data } = await axios.delete('/api/admin/menu-items/' + id)
+        const { data } = await axios.delete(route('menu-items.destroy', { id }))
 
         return data
     }

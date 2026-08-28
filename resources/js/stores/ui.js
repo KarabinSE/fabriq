@@ -2,8 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useUiStore = defineStore('ui', () => {
-    const menuOpen = ref('false');
-
+    const menuOpen = ref(false);
     const openCards = ref([]);
 
     function toggleMenu () {

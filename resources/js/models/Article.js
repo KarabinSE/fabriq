@@ -1,37 +1,39 @@
 import axios from 'axios'
+import { route } from '@/generated/helpers/route'
 
 export default {
-    endpoint: '/api/admin/articles/',
-
     async index (payload) {
-        const { data } = await axios.get(this.endpoint, payload)
+        const { data } = await axios.get(route('articles.index'), payload)
+
+        return data
+    },
+
+    async store (payload) {
+        const { data } = await axios.post(route('articles.store'), payload)
 
         return data
     },
 
     async count (payload) {
-        const { data } = await axios.get(this.endpoint + 'count', payload)
+        const { data } = await axios.get(route('model.count.show', { model: 'articles' }), payload)
 
         return data
     },
 
     async show (id, payload) {
-        const { data } = await axios.get(this.endpoint + id, payload)
+        const { data } = await axios.get(route('articles.show', { article: id }), payload)
 
         return data
     },
+
     async update (id, object) {
-        const { data } = await axios.patch(this.endpoint + id, object)
+        const { data } = await axios.patch(route('articles.update', { article: id }), object)
 
         return data
     },
-    async store (payload) {
-        const { data } = await axios.post(this.endpoint, payload)
 
-        return data
-    },
     async destroy (id) {
-        const { data } = await axios.delete(this.endpoint + id)
+        const { data } = await axios.delete(route('articles.destroy', { article: id }))
 
         return data
     }
