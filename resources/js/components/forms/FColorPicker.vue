@@ -32,6 +32,22 @@
     </FSelect>
 </template>
 <script>
+export const colors = {
+    buttonColors: [
+        { label: 'Primär', color: 'bg-btn-primary border-btn-primary', value: 'primary' },
+        { label: 'Primär kontur', color: 'border-btn-primary', value: 'primary-outline' },
+        { label: 'Sekundär', color: 'bg-btn-secondary border-btn-secondary', value: 'secondary' },
+        { label: 'Sekundär kontur', color: 'border-btn-secondary', value: 'secondary-outline' },
+        { label: 'Tertiär', color: 'bg-btn-tertiary border-btn-tertiary', value: 'tertiary' },
+        { label: 'Tertiär kontur', color: 'border-btn-tertiary', value: 'tertiary-outline' },
+    ],
+    backgroundColors: [
+        { label: 'Primär', color: 'bg-primary', value: 'primary' },
+        { label: 'Sekundär', color: 'bg-secondary', value: 'secondary' },
+        { label: 'Tertiär', color: 'bg-tertiary', value: 'tertiary' },
+    ]
+}
+
 export default {
     name: 'FColorPicker',
     props: {
@@ -59,19 +75,6 @@ export default {
     data () {
         return {
             color: 'primary',
-            buttonColors: [
-                { label: 'Primär', color: 'bg-btn-primary border-btn-primary', value: 'primary' },
-                { label: 'Primär kontur', color: 'border-btn-primary', value: 'primary-outline' },
-                { label: 'Sekundär', color: 'bg-btn-secondary border-btn-secondary', value: 'secondary' },
-                { label: 'Sekundär kontur', color: 'border-btn-secondary', value: 'secondary-outline' },
-                { label: 'Tertiär', color: 'bg-btn-tertiary border-btn-tertiary', value: 'tertiary' },
-                { label: 'Tertiär kontur', color: 'border-btn-tertiary', value: 'tertiary-outline' },
-            ],
-            backgroundColors: [
-                { label: 'Primär', color: 'bg-primary', value: 'primary' },
-                { label: 'Sekundär', color: 'bg-secondary', value: 'secondary' },
-                { label: 'Tertiär', color: 'bg-tertiary', value: 'tertiary' },
-            ]
         }
     },
     mounted () {
@@ -91,10 +94,10 @@ export default {
                 console.error(`expected buttons|backgrounds got:${this.collection}`)
             }
             if(this.collection === 'backgrounds'){
-                return this.backgroundColors
+                return colors.backgroundColors
             }
 
-            return this.buttonColors
+            return colors.buttonColors
         }
     }
 }

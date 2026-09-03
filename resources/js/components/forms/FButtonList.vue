@@ -7,37 +7,45 @@
             <button
                 :disabled="addLocked"
                 :class="{'cursor-not-allowed text-neutral-400': addLocked}"
-                class="flex items-center text-sm font-semibold focus:outline-none"
+                class="text-sm font-semibold focus:outline-none"
                 type="button"
                 @click="addButton"
             >
                 <span
                     v-if="maxItems && maxItems <= buttons.length"
                     class="mr-4 text-xs italic font-normal text-neutral-400"
-                >Du har nått det maximala antalet knappar </span><PlusIcon class="w-5 h-5 mr-2 " />Lägg till knapp
+                >
+                    Du har nått det maximala antalet knappar
+                </span>
+                <div v-else
+                     class="flex gap-2 items-center">
+                    <PlusIcon class="size-5" />Lägg till knapp
+                </div>
             </button>
         </div>
-        <div v-if="noButtons">
-            <UiDashedBox size="min-h-24">
-                <template #header>
-                    <div class="text-base">
-                        Ingen knapp har lagts till ännu
-                    </div>
-                </template>
-                <template #link>
-                    <div class="flex justify-center">
-                        <button
-                            v-if="noButtons"
-                            class="flex items-center text-sm font-semibold focus:outline-none"
-                            type="button"
-                            @click="addButton"
-                        >
-                            <PlusIcon class="w-5 h-5 mr-2 " />Lägg till knapp
-                        </button>
-                    </div>
-                </template>
-            </UiDashedBox>
-        </div>
+
+        <UiDashedBox
+            v-if="noButtons"
+            size="min-h-24"
+        >
+            <template #header>
+                <div class="text-base">
+                    Ingen knapp har lagts till ännu
+                </div>
+            </template>
+            <template #link>
+                <div class="flex justify-center">
+                    <button
+                        class="flex gap-2 items-center text-sm font-semibold focus:outline-none"
+                        type="button"
+                        @click="addButton"
+                    >
+                        <PlusIcon class="size-5" />Lägg till knapp
+                    </button>
+                </div>
+            </template>
+        </UiDashedBox>
+
         <div
             v-for="(button, index) in buttons"
             :key="index"
@@ -50,15 +58,17 @@
                 :pages="pages"
                 :color="color"
                 :arrow="arrow"
+                can-delete
+                @delete="spliceButton(index)"
             />
+
             <div
                 v-if="mergedOptions.newTab"
                 class="col-span-2"
             >
                 <FLabel>
                     <span class="flex items-center">
-
-                        Öppna i ny flik? <ExternalLinkIcon class="w-4 h-4 ml-2" />
+                        Öppna i ny flik? <ExternalLinkIcon class="size-4 ml-2" />
                     </span>
                 </FLabel>
                 <div class="flex items-center mt-3">
@@ -69,18 +79,10 @@
                     />
                 </div>
             </div>
-            <div class="flex items-end col-span-1 spliceButton">
-                <button
-                    type="button"
-                    class="p-4 -m-4 transition-colors duration-200 transform focus:outline-none hover:text-red-600"
-                    @click="spliceButton(index)"
-                >
-                    <MinusIcon class="w-8 h-8 mb-2" />
-                </button>
-            </div>
         </div>
     </div>
 </template>
+
 <script>
 import PageTree from '@/models/PageTree.js'
 import Menu from '@/models/Menu.js'
@@ -179,7 +181,7 @@ export default {
             this.buttons.push({
                 type: 'link',
                 linkType: 'internal',
-                text: '',
+                text: 'Ny knapp',
                 url: '',
                 newTab: false,
                 file: {

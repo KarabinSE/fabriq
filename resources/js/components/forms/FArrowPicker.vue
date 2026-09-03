@@ -13,36 +13,31 @@
         @input="emitValue"
     >
         <template #fop="option">
-            <ArrowRightLongIcon
-                v-if="option.value !== 'none'"
-                class="w-5 h-5"
-                :class="[
-                    option.value === 'down' && 'rotate-90'
-                ]"
-            />
-            <span v-else>
+            <ArrowPresenter :arrow="option" />
+            <span v-if="option.value === 'none'">
                 {{ option.label }}
             </span>
         </template>
         <template #prefix="option">
             <div class="w-8">
-                <ArrowRightLongIcon
-                    v-if="option.value !== 'none'"
-                    class="w-5 h-5"
-                    :class="[
-                        option.value === 'down' && 'rotate-90'
-                    ]"
-                />
+                <ArrowPresenter :arrow="option" />
             </div>
         </template>
     </FSelect>
 </template>
 <script>
-import ArrowRightLongIcon from '@/icons/ArrowRightLongIcon.vue'
+import ArrowPresenter from '@/components/forms/ArrowPresenter.vue'
+
+export const buttonArrows = [
+    { label: 'Ingen', value: 'none' },
+    { label: 'Ner', value: 'down' },
+    { label: 'Höger', value: 'right' },
+]
+
 export default {
     name: 'FArrowPicker',
     components: {
-        ArrowRightLongIcon,
+        ArrowPresenter,
     },
     props: {
         value: {
@@ -65,11 +60,6 @@ export default {
     data () {
         return {
             arrow: 'none',
-            buttonArrows: [
-                { label: 'Ingen', value: 'none' },
-                { label: 'Ner', value: 'down' },
-                { label: 'Höger', value: 'right' },
-            ],
         }
     },
     mounted () {
@@ -85,7 +75,7 @@ export default {
             this.$emit('input', value)
         },
         getArrowOptions() {
-            return this.buttonArrows
+            return buttonArrows
         }
     }
 }

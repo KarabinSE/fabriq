@@ -1,51 +1,58 @@
 <template>
-    <span>
+    <div>
         <FLabel
             v-if="label"
             :padding="false"
-        >{{ label }}</FLabel>
+        >
+            {{ label }}
+        </FLabel>
         <div class="flex items-center space-x-4">
 
             <button
-                class="px-3 py-1 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
+                class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
                 type="button"
                 @click="pickerOpen = true"
             >
                 Välj fil
             </button>
-            <div v-if="! hasFile">
-                <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
-            </div>
-            <div v-else>
-                <div class="flex items-center space-x-4 text-sm">
-                    <div class="text-xs line-clamp-1">
-                        {{ localFile.file_name }}
-                    </div>
-                    <div class="flex justify-start space-x-2">
-                        <button
-                            class="font-semibold text-left focus:outline-none"
-                            @click="$vfm.show('file-modal', {id: localFile.id})"
-                        >
-                            <PenToSquareIcon class="w-4 h-4" />
-                        </button>
-                        <button
-                            class="font-semibold focus:outline-none"
-                            @click="clearFile"
-                        >
-                            <XMarkIcon class="w-4 h-4" />
-                        </button>
-                    </div>
+
+            <div
+                v-if="hasFile"
+                class="flex items-center space-x-4 text-sm"
+            >
+                <div class="text-xs line-clamp-1">
+                    {{ localFile.file_name }}
+                </div>
+                <div class="flex justify-start space-x-2">
+                    <button
+                        class="font-semibold text-left focus:outline-none"
+                        @click="$vfm.show('file-modal', {id: localFile.id})"
+                    >
+                        <PenToSquareIcon class="w-4 h-4" />
+                    </button>
+                    <button
+                        class="font-semibold focus:outline-none"
+                        @click="clearFile"
+                    >
+                        <XMarkIcon class="w-4 h-4" />
+                    </button>
                 </div>
             </div>
+
+            <div v-else>
+                <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
+            </div>
         </div>
+
         <FMediaPicker
             :open="pickerOpen"
             media-type="file"
             @close="pickerOpen = false"
             @item-picked="pickFile"
         />
-    </span>
+    </div>
 </template>
+
 <script>
 import File from '@/models/File.js'
 export default {

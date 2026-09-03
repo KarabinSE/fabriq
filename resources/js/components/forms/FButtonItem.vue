@@ -1,80 +1,76 @@
 <template>
-    <div
-        class="flex "
-        :class="columnLayout ? 'flex-col space-y-4  p-2  border-gray-200' : 'flex-row space-x-6'"
-    >
-        <FInput
-            v-model="localButton.text"
-            :class="{'w-80' : ! columnLayout}"
-            :disabled="disabled"
-            :placeholder="placeholder"
-            label="Knapptext"
-        />
-        <FInput
-            v-model="localButton.linkType"
-            input-type="radio"
-            class="col-span-4 xl:col-span-3"
-            :disabled="disabled"
-            name="linkType"
-            :options="[{ label: 'Intern', value: 'internal' }, { label: 'Extern', value: 'external' }, { label: 'Fil', value: 'file'}]"
-            label="Länktyp"
-        />
-        <FInput
-            v-if="value.linkType === 'external'"
-            v-model="localButton.url"
-            class="flex-1"
-            :disabled="disabled"
-            label="Länk"
-            placeholder="https://exempel.se eller /min-sida"
-        />
-        <FSelect
-            v-if="value.linkType === 'internal'"
-            v-model="localButton.page_id"
-            class="flex-1"
-            value-key="id"
-            :reduce-fn="page => page.id"
-            label="Sida"
-            :options="localPages"
-            option-label="name"
-            :disabled="disabled"
-            name="internal_page"
-            @search-focus="checkForPages"
-            @open="checkForPages"
-        >
-            <template #prefix="option">
+    <div class="space-y-1 w-full">
+        <div class="flex justify-between items-baseline gap-5">
+            <div class="flex gap-4 items-center">
                 <div
-                    v-for="pageIndex in option.depth"
-                    :key="pageIndex"
-                >
-                    <div class="mr-3" />
-                </div>
-                <!-- {{ option.page.name }} -->
-            </template>
-        </FSelect>
-        <FColorPicker
-            v-if="color && value.linkType !== 'file'"
-            v-model="localButton.color"
-            :disabled="disabled"
-        />
-        <FArrowPicker
-            v-if="arrow && value.linkType !== 'file'"
-            v-model="localButton.arrow"
-            :disabled="disabled"
-        />
+                    class="rounded-full size-4 aspect-square"
+                    :class="[
+                        buttonColor ? buttonColor : 'border border-gray-300'
+                    ]"
+                />
+                {{ localButton.text }}
 
-        <FFileInput
-            v-if="value.linkType === 'file'"
-            v-model="localButton.file"
-            class="flex-1"
-            :disabled="disabled"
-            label="Fil"
+                <ArrowPresenter :arrow="buttonArrow" />
+            </div>
+
+            <div class="flex gap-3">
+                <button
+                    type="button"
+                    @click="showModal"
+                >
+                    <PenToSquareIcon class="size-5 text-gray-500 hover:text-gray-700" />
+                </button>
+                <button
+                    type="button"
+                    @click="$emit('delete')"
+                    class=""
+                >
+                    <TrashIcon class="size-5 text-gray-500 hover:text-red-800" />
+                </button>
+            </div>
+
+        </div>
+
+        <div class="flex items-baseline text-sm text-gray-500">
+            <div class="text-xs pr-3 font-semibold border-r border-gray-300 text-gray-400 leading-tight">{{ buttonType }}</div>
+            <div class="pl-3">
+                {{ buttonTarget}}
+                <span
+                    v-if="!buttonTarget"
+                    class="text-italic text-xs"
+                >
+                    ej angivet
+                </span>
+            </div>
+        </div>
+
+        <ButtonModal
+            :id="modalId"
+            arrow
+            color
+            :value="value"
+            @saved="onButtonSaved"
         />
     </div>
 </template>
+
 <script>
 import PageTree from '@/models/PageTree.js'
+import { colors } from '@/components/forms/FColorPicker.vue'
+import { buttonArrows } from '@/components/forms/FArrowPicker.vue'
+import PenToSquareIcon from '@/icons/PenToSquareIcon.vue'
+import ArrowPresenter from '@/components/forms/ArrowPresenter.vue'
+import ButtonModal from '@/components/modals/ButtonModal.vue'
+
+export const linkTypeOptions = [
+    { label: 'Intern', value: 'internal' },
+    { label: 'Extern', value: 'external' },
+    { label: 'Fil', value: 'file'}
+]
+
 export default {
     name: 'FButtonItem',
+    components: { ArrowPresenter, ButtonModal },
     props: {
         pages: {
             type: Array,
@@ -112,12 +108,20 @@ export default {
         placeholder: {
             type: String,
             default: ''
+        },
+        canDelete: {
+            type: Boolean,
+            default: false
         }
     },
     data () {
         return {
+            modalId: `button-modal-${Math.random().toString(20).substring(2,6)}`,
             localButton: this.value,
-            localPages: this.pages
+            localPages: this.pages,
+            colors: colors['buttonColors'],
+            arrows: buttonArrows,
+            linkTypeOptions: linkTypeOptions,
         }
     },
     mounted () {
@@ -127,6 +131,29 @@ export default {
         setTimeout(() => {
             this.$emit('input', this.localButton)
         }, 10)
+    },
+    computed: {
+        buttonType() {
+            if(!this.localButton) return ''
+            return this.linkTypeOptions.find(opt => opt.value === this.localButton.linkType)?.label ?? ''
+        },
+        buttonTarget() {
+            if(!this.localButton) return ''
+
+            return {
+                'internal': this.localPages.find(page => page.id === this.localButton.page_id)?.name ?? '',
+                'external': this.localButton.url ?? '',
+                'file': this.localButton.file.file_name ?? '',
+            }[this.localButton.linkType] ?? ''
+        },
+        buttonColor() {
+            if(!this.localButton || !this.colors || this.localButton.linkType === 'file') return ''
+            return this.colors.find(color => color.value === this.localButton.color)?.color ?? ''
+        },
+        buttonArrow() {
+            if(!this.localButton || !this.arrows) return
+            return this.arrows.find(arrow => arrow.value === this.localButton.arrow)
+        },
     },
     methods: {
         async fetchPages () {
@@ -148,7 +175,14 @@ export default {
         checkForPages () {
             this.fetchPages()
         },
-        emitupdate () {
+
+        showModal () {
+            this.$vfm.show(this.modalId)
+        },
+
+        onButtonSaved(button) {
+            this.localButton = button
+            this.$emit('input', button)
         }
     }
 }
