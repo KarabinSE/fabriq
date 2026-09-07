@@ -11,7 +11,7 @@
             />
             <div class="flex flex-1 basis-[20rem] max-w-md gap-5">
                 <FSelect
-                    v-model="localContent.bgType"
+                    v-model="localContent.bg_type"
                     label="Bakgrundstyp"
                     name="backgroundType"
                     v-bind="$attrs"
@@ -29,7 +29,7 @@
                     ]"
                 />
                 <FColorPicker
-                    v-model="localContent.bgColor"
+                    v-model="localContent.bg_color"
                     label="Bakgrundsfärg"
                     class="flex-1"
                     collection="backgrounds"
@@ -113,8 +113,8 @@ export default {
             video: null,
             placement: 'right'
         })
-        this.$set(this.localContent, 'bgColor', this.content.bgColor ?? 'primary')
-        this.$set(this.localContent, 'bgType', this.content.bgType ?? 'fullscreen')
+        this.$set(this.localContent, 'bg_color', this.content.bg_color ?? 'primary')
+        this.$set(this.localContent, 'bg_type', this.content.bg_type ?? 'fullscreen')
     }
 }
 </script>

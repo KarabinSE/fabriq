@@ -11,7 +11,7 @@
             />
 
             <FColorPicker
-                v-model="localContent.bgColor"
+                v-model="localContent.bg_color"
                 label="Bakgrundsfärg"
                 collection="backgrounds"
             />
