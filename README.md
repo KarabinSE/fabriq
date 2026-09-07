@@ -4,7 +4,7 @@
 [![PHPStanLevel6](https://github.com/KarabinSE/fabriq/actions/workflows/phpstan.yml/badge.svg)](https://github.com/KarabinSE/fabriq/actions/workflows/phpstan.yml)
 
 
-![Fabriq CMS logo](https://media.fabriq-cms.se/public/fabriq-og-image-1200.jpg)
+![Fabriq CMS logo](https://media.fabriq-cms.se/public/fabriq-og.webp)
 
 # Fabriq CMS
 
