@@ -13,7 +13,7 @@
         <div class="flex flex-col gap-6">
             <FInput
                 v-model="localContent.heading"
-                name="header"
+                name="heading"
                 class="max-w-120"
                 label="Rubriktext"
             />

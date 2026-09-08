@@ -13,7 +13,7 @@
         <div class="flex mb-10 gap-x-6 gap-y-6 flex-wrap">
             <FInput
                 v-model="localContent.heading"
-                name="header"
+                name="heading"
                 class="basis-120"
                 label="Rubriktext"
             />

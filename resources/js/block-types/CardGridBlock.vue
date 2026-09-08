@@ -107,7 +107,7 @@
                             v-model="child.heading"
                             label="Rubriktext"
                             help-text="Obs, denna rubrik syns utåt"
-                            name="header"
+                            name="heading"
                         />
                         <FEditor
                             v-model="child.body"

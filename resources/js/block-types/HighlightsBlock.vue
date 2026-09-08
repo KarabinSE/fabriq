@@ -37,7 +37,7 @@
                 <div class="flex flex-col gap-6 flex-1 basis-120">
                     <FInput
                         v-model="child.heading"
-                        name="header"
+                        name="heading"
                         label="Rubriktext"
                         class="max-w-120"
                     />

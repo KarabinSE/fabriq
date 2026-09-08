@@ -11,14 +11,14 @@
         <div class="col-span-8" />
         <FInput
             v-model="localContent.heading"
-            name="header"
+            name="heading"
             class="col-span-12 lg:col-span-5"
             label="Rubriktext"
         />
         <FInput
             v-model="localContent.subheader"
             class="col-span-12 lg:col-span-4"
-            name="header"
+            name="heading"
             label="Underrubrik"
         />
         <FSelect

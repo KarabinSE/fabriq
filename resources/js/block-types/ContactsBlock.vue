@@ -12,7 +12,7 @@
         <div class="grid grid-cols-12 mb-10 gap-x-6 gap-y-6">
             <FInput
                 v-model="localContent.heading"
-                name="header"
+                name="heading"
                 class="col-span-4"
                 label="Rubriktext"
             />

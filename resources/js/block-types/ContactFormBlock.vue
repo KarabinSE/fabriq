@@ -11,7 +11,7 @@
         <hr class="col-span-12">
         <FInput
             v-model="localContent.heading"
-            name="header"
+            name="heading"
             rules="required"
             class="col-span-12 lg:col-span-5"
             label="Rubriktext"
