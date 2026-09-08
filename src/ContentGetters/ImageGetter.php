@@ -20,7 +20,7 @@ class ImageGetter extends BaseGetter implements GetterInterface
             ];
         }
 
-        if ($meta->meta_value === null) {
+        if ($meta->meta_value === null || empty($meta->meta_value)) {
             return null;
         }
 
