@@ -241,15 +241,19 @@ export default {
         },
 
         startResize() {
-            document.body.classList.add('cursor-ew-resize', 'pointer-events-none')
-            this.$refs.resizeHandle.classList.add('bg-gray-400!', 'select-none')
+            document.body.classList.add('cursor-ew-resize')
+            document.body.classList.add('pointer-events-none')
+            document.body.classList.add('select-none')
+            this.$refs.resizeHandle.classList.add('bg-gray-400!')
             window.addEventListener('mousemove', this.calcResize)
             window.addEventListener('mouseup', this.stopResize)
         },
 
         stopResize () {
-            document.body.classList.remove('cursor-ew-resize', 'pointer-events-none')
-            this.$refs.resizeHandle.classList.remove('bg-gray-400!', 'select-none')
+            document.body.classList.remove('cursor-ew-resize')
+            document.body.classList.remove('pointer-events-none')
+            document.body.classList.remove('select-none')
+            this.$refs.resizeHandle.classList.remove('bg-gray-400!')
             window.removeEventListener('mousemove', this.calcResize)
             window.removeEventListener('mouseup', this.stopResize)
         },
