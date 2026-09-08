@@ -19,14 +19,16 @@
                                 :class="page.published ? 'bg-green-400' : 'bg-gray-300'"
                                 class="size-2 aspect-square rounded-full transition-colors"
                             />
-                            <h1 class="text-xl @xl:text-3xl whitespace-nowrap overflow-hidden text-ellipsis">{{ page.name }}</h1>
+                            <h1 class="text-xl @xl:text-3xl whitespace-nowrap overflow-hidden text-ellipsis">
+                                {{ page.name }}
+                            </h1>
                         </div>
 
                         <div class="flex gap-4">
                             <button
-                                @click="closePreview"
                                 spinner-color="text-royal-500"
                                 class="flex-1 px-6 py-2.5 leading-none text-sm fabriq-btn btn-outline-royal"
+                                @click="closePreview"
                             >
                                 Stäng
                             </button>
@@ -42,8 +44,7 @@
                 </Transition>
 
                 <div class="px-5 pt-12 flex-1 min-h-0">
-                    <div class="size-full flex flex-col @4xl/preview:flex-row gap-x-2" >
-
+                    <div class="size-full flex flex-col @4xl/preview:flex-row gap-x-2">
                         <Transition
                             appear
                             name="slide-left"
@@ -68,7 +69,9 @@
                                         with-preview-block-locator
                                         class="-mt-4! pb-10"
                                     >
-                                        <template #header ><span /></template>
+                                        <template #header>
+                                            <span />
+                                        </template>
                                     </BlockList>
                                 </div>
                             </div>
@@ -81,11 +84,13 @@
                             <div class="flex preview-panel-right relative @4xl/preview:min-w-sm">
                                 <!-- resize handle -->
                                 <div
-                                    @mousedown="startResize"
                                     class="hidden @4xl/preview:flex items-center cursor-ew-resize pr-1.5 group"
+                                    @mousedown="startResize"
                                 >
-                                    <div class="h-10 w-1.5 rounded-md bg-gray-200 group-hover:bg-gray-300 transition-colors"
-                                         ref="resizeHandle" />
+                                    <div
+                                        ref="resizeHandle"
+                                        class="h-10 w-1.5 rounded-md bg-gray-200 group-hover:bg-gray-300 transition-colors"
+                                    />
                                 </div>
 
                                 <div
@@ -170,7 +175,7 @@ export default {
             dragging: false
         }
     },
-    
+
     computed: {
         page() {
             return this.pageStore.page;
@@ -236,17 +241,15 @@ export default {
         },
 
         startResize() {
-            document.body.classList.add('cursor-ew-resize')
-            this.$refs.resizeHandle.classList.add('bg-gray-400!')
-            this.$refs.resizeHandle.classList.add('select-none')
+            document.body.classList.add('cursor-ew-resize', 'pointer-events-none')
+            this.$refs.resizeHandle.classList.add('bg-gray-400!', 'select-none')
             window.addEventListener('mousemove', this.calcResize)
             window.addEventListener('mouseup', this.stopResize)
         },
-        
+
         stopResize () {
-            document.body.classList.remove('cursor-ew-resize')
-            this.$refs.resizeHandle.classList.remove('bg-gray-400!')
-            this.$refs.resizeHandle.classList.remove('select-none')
+            document.body.classList.remove('cursor-ew-resize', 'pointer-events-none')
+            this.$refs.resizeHandle.classList.remove('bg-gray-400!', 'select-none')
             window.removeEventListener('mousemove', this.calcResize)
             window.removeEventListener('mouseup', this.stopResize)
         },
