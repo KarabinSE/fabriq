@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\SearchTerm;
 use Karabin\Fabriq\Models\Slug;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 use Karabin\TranslatableRevisions\Models\I18nTerm;
 
 return new class extends Migration
@@ -16,20 +16,20 @@ return new class extends Migration
     public function up(): void
     {
         $media = Fabriq::getModelClass('media')->where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($item) {
-            $model = new $item->model_type;
+            $model = new (self::resolveClassName($item->model_type));
             $morphName = $model->getMorphClass();
             $item->model_type = $morphName;
             $item->save();
         });
         $searchTerms = SearchTerm::where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($item) {
-            $model = new $item->model_type;
+            $model = new (self::resolveClassName($item->model_type));
             $morphName = $model->getMorphClass();
             $item->model_type = $morphName;
             $item->save();
         });
 
         $taggables = DB::table('taggables')->where('taggable_type', 'LIKE', 'Ikoncept%')->get()->each(function ($item) {
-            $model = new $item->taggable_type;
+            $model = new (self::resolveClassName($item->taggable_type));
             $morphName = $model->getMorphClass();
             DB::table('taggables')
                 ->where('tag_id', $item->tag_id)
@@ -38,7 +38,7 @@ return new class extends Migration
         });
 
         $comments = Comment::where('commentable_type', 'LIKE', 'Ikoncept%')->get()->each(function ($item) {
-            $model = new $item->commentable_type;
+            $model = new (self::resolveClassName($item->commentable_type));
             $morphName = $model->getMorphClass();
             $item->commentable_type = $morphName;
             $item->save();
@@ -48,7 +48,7 @@ return new class extends Migration
             ->where('model_type', 'LIKE', 'App%')
             ->orWhere('model_type', 'LIKE', 'Ikoncept%')
             ->get()->each(function ($item) {
-                $model = new $item->model_type;
+                $model = new (self::resolveClassName($item->model_type));
                 $morphName = $model->getMorphClass();
                 DB::table('model_has_roles')
                     ->where('role_id', $item->role_id)
@@ -57,19 +57,30 @@ return new class extends Migration
             });
 
         $slugs = Slug::where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($item) {
-            $model = new $item->model_type;
+            $model = new (self::resolveClassName($item->model_type));
             $morphName = $model->getMorphClass();
             $item->model_type = $morphName;
             $item->save();
         });
 
         $terms = I18nTerm::where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($term) {
-            $model = new $term->model_type;
+            $model = new (self::resolveClassName($term->model_type));
             $morphName = $model->getMorphClass();
             $term->model_type = $morphName;
             $term->save();
-        });
+        });       //
+    }
 
+    /**
+     * Map legacy Ikoncept\* class names stored in the database to their current Karabin\* equivalents.
+     */
+    private static function resolveClassName(string $class): string
+    {
+        if (! class_exists($class) && str_starts_with($class, 'Ikoncept\\')) {
+            $class = 'Karabin\\'.substr($class, strlen('Ikoncept\\'));
+        }
+
+        return $class;
     }
 
     /**
