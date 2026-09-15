@@ -5,7 +5,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\Request;
 use Karabin\Fabriq\Actions\Fortify\UpdateUserPassword;
 use Karabin\Fabriq\Actions\Fortify\UpdateUserProfileInformation;
-use Karabin\Fabriq\Data\UserData;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\User;
@@ -36,7 +35,7 @@ class AuthenticatedUserController extends Controller
 
         /** @var User $user */
 
-        return UserData::fromModel($user)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function update(Request $request): Response
@@ -67,6 +66,6 @@ class AuthenticatedUserController extends Controller
 
         /** @var User $refreshedUser */
 
-        return UserData::fromModel($refreshedUser)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($refreshedUser)->wrap('data')->toResponse($request);
     }
 }

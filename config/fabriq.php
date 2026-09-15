@@ -9,6 +9,7 @@ use Karabin\Fabriq\Data\ContactData;
 use Karabin\Fabriq\Data\EventData;
 use Karabin\Fabriq\Data\FileData;
 use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Data\LivePageData;
 use Karabin\Fabriq\Data\MenuData;
 use Karabin\Fabriq\Data\MenuItemData;
 use Karabin\Fabriq\Data\NotificationData;
@@ -180,6 +181,7 @@ return [
         'tag' => TagData::class,
         'user' => UserData::class,
         'video' => VideoData::class,
+        'live_page' => LivePageData::class,
     ],
     'media-library' => [
         'max_file_size' => 1024 * 1024 * 500, // 500 MB,

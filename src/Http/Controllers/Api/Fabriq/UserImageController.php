@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\UserData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -43,7 +42,7 @@ class UserImageController extends Controller
 
         $user = Fabriq::getModelClass('user')::with('roles')->findOrFail($user->id);
 
-        return UserData::fromModel($user)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request): JsonResponse

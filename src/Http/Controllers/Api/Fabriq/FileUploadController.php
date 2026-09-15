@@ -3,7 +3,6 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\FileData;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +20,7 @@ class FileUploadController extends Controller
             throw $exception;
         }
 
-        return FileData::fromModel($file)
+        return Fabriq::getDto('file')::fromModel($file)
             ->toResponse($request)
             ->setStatusCode(200);
     }

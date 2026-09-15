@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Karabin\Fabriq\Data\ImageData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -36,7 +35,7 @@ class ImageableController extends Controller
 
         $relatedModel = $relatedModelClass::findOrFail($modelId);
 
-        return ImageData::collect($relatedModel->images, DataCollection::class)
+        return Fabriq::getDto('image')::collect($relatedModel->images, DataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -66,7 +65,7 @@ class ImageableController extends Controller
             return $this->errorWrongArgs('Image has no relation to '.$model);
         }
 
-        return ImageData::fromModel($image)
+        return Fabriq::getDto('image')::fromModel($image)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);

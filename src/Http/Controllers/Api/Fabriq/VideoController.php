@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\VideoData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -36,7 +35,7 @@ class VideoController extends Controller
             ->allowedIncludes(...Video::RELATIONSHIPS)
             ->paginate($number);
 
-        return VideoData::collect($videos, PaginatedDataCollection::class);
+        return Fabriq::getDto('video')::collect($videos, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
@@ -48,7 +47,7 @@ class VideoController extends Controller
 
         /** @var Video $video */
 
-        return VideoData::fromModel($video)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('video')::fromModel($video)->wrap('data')->toResponse($request);
     }
 
     public function update(Request $request, int $id): Response
@@ -65,7 +64,7 @@ class VideoController extends Controller
 
         $video->save();
 
-        return VideoData::fromModel($video)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('video')::fromModel($video)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse

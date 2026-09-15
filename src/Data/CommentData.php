@@ -32,7 +32,7 @@ class CommentData extends Data
             created_at: (string) $comment->created_at?->toIsoString(),
             anonmyzed_at: $comment->anonymized_at ? (string) $comment->anonymized_at : null,
             user_id: $comment->user_id ? (int) $comment->user_id : null,
-            user: Lazy::create(fn () => $comment->user instanceof User ? UserData::fromModel($comment->user)->toArray() : []),
+            user: Lazy::create(fn () => $comment->user instanceof User ? Fabriq::getDto('user')::fromModel($comment->user)->toArray() : []),
             children: Lazy::create(fn () => $comment->children->map(fn (Comment $child) => self::fromModel($child)->toArray())->values()->all()),
         );
     }

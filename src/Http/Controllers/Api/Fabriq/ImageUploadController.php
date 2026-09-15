@@ -2,7 +2,6 @@
 
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
-use Karabin\Fabriq\Data\ImageData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -30,7 +29,7 @@ class ImageUploadController extends Controller
             ], 500);
         }
 
-        return ImageData::fromModel($image)
+        return Fabriq::getDto('image')::fromModel($image)
             ->toResponse($request)
             ->setStatusCode(200);
     }

@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\User;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
@@ -32,7 +33,7 @@ class UserData extends Data
     public static function fromModel(User $user): self
     {
         $roles = $user->roles
-            ->map(fn ($role) => RoleData::fromModel($role)->toArray())
+            ->map(fn ($role) => Fabriq::getDto('role')::fromModel($role)->toArray())
             ->values()
             ->all();
 

@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\ArticleData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -37,7 +36,7 @@ class ArticleController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return ArticleData::collect($articles, PaginatedDataCollection::class);
+        return Fabriq::getDto('article')::collect($articles, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
@@ -54,7 +53,7 @@ class ArticleController extends Controller
 
         /** @var Article $article */
 
-        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('article')::fromModel($article)->wrap('data')->toResponse($request);
     }
 
     public function store(CreateArticleRequest $request): Response
@@ -64,7 +63,7 @@ class ArticleController extends Controller
         $article->template_id = 2;
         $article->save();
 
-        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('article')::fromModel($article)->wrap('data')->toResponse($request);
     }
 
     public function update(UpdateArticleRequest $request, int $id): Response
@@ -74,7 +73,7 @@ class ArticleController extends Controller
         $article->updateContent($request->content);
         $article->save();
 
-        return ArticleData::fromModel($article)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('article')::fromModel($article)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse

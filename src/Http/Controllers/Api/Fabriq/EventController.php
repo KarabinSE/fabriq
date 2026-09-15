@@ -5,7 +5,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\EventData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -33,20 +32,20 @@ class EventController extends Controller
         $mergedEvents = $events->toBase()->merge($computedEvents);
         $eventData = $mergedEvents->map(function ($event) {
             if ($event instanceof Event) {
-                return EventData::fromModel($event);
+                return Fabriq::getDto('event')::fromModel($event);
             }
 
-            return EventData::fromModel(Event::make((array) $event));
+            return Fabriq::getDto('event')::fromModel(Event::make((array) $event));
         });
 
-        return EventData::collect($eventData, DataCollection::class)->wrap('data');
+        return Fabriq::getDto('event')::collect($eventData, DataCollection::class)->wrap('data');
     }
 
     public function show(Request $request, int $id): Response
     {
         $event = Event::where('id', $id)->firstOrFail();
 
-        return EventData::fromModel($event)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
     }
 
     public function store(CreateEventRequest $request): Response
@@ -59,7 +58,7 @@ class EventController extends Controller
             $event->updateContent($content, $locale);
         }
 
-        return EventData::fromModel($event)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
     }
 
     public function update(CreateEventRequest $request, int $id): Response
@@ -72,7 +71,7 @@ class EventController extends Controller
             $event->updateContent($content, $locale);
         }
 
-        return EventData::fromModel($event)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse

@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
 use Karabin\Fabriq\Actions\ClonePage;
-use Karabin\Fabriq\Data\PageData;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\Page;
@@ -28,7 +27,7 @@ class ClonePageController extends Controller
 
         /** @var Page $page */
 
-        return PageData::fromModel($page)
+        return Fabriq::getDto('page')::fromModel($page)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);

@@ -54,6 +54,6 @@ class PagePreviewController
             ->firstOrFail();
         $page->content = $preview['content'][$locale];
 
-        return LivePageData::from($page)->wrap('data');
+        return Fabriq::getDto('live_page')::from($page)->wrap('data');
     }
 }

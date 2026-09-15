@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\MenuData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -23,7 +22,7 @@ class MenuController extends Controller
 
         $paginator = Fabriq::getFqnModel('menu')::paginate($number);
 
-        return MenuData::collect($paginator, PaginatedDataCollection::class)
+        return Fabriq::getDto('menu')::collect($paginator, PaginatedDataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -38,7 +37,7 @@ class MenuController extends Controller
 
         /** @var Menu $menu */
 
-        return MenuData::fromModel($menu)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('menu')::fromModel($menu)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -54,7 +53,7 @@ class MenuController extends Controller
             'menu_id' => $menu->id,
         ]);
 
-        return MenuData::fromModel($menu)
+        return Fabriq::getDto('menu')::fromModel($menu)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);
@@ -72,7 +71,7 @@ class MenuController extends Controller
 
         /** @var Menu $menu */
 
-        return MenuData::fromModel($menu)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('menu')::fromModel($menu)->wrap('data')->toResponse($request);
     }
 
     /**

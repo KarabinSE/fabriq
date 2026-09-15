@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\RoleData;
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\Role;
 use Spatie\LaravelData\DataCollection;
@@ -17,7 +17,7 @@ class RoleController extends Controller
             ->notHidden()
             ->get();
 
-        return RoleData::collect($roles, DataCollection::class)
+        return Fabriq::getDto('role')::collect($roles, DataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }

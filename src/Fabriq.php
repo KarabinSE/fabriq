@@ -5,6 +5,7 @@ namespace Karabin\Fabriq;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
+use Spatie\LaravelData\Data;
 
 class Fabriq
 {
@@ -56,6 +57,23 @@ class Fabriq
         $class = config('fabriq.models.'.$key);
         if (! $class) {
             throw new InvalidArgumentException('The model key was not found: '.$key);
+        }
+
+        return $class;
+    }
+
+    /**
+     * Return the data transfer object for the specific model.
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function getDto(string $key): string
+    {
+        $class = config('fabriq.data_transfer_objects.'.$key);
+        if (! $class) {
+            throw new InvalidArgumentException('The model key was not found: '.$key.'. Add it to config/fabriq.php');
         }
 
         return $class;

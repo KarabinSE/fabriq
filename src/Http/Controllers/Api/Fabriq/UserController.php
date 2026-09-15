@@ -5,7 +5,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Karabin\Fabriq\Data\UserData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -42,7 +41,7 @@ class UserController extends Controller
             ->with('roles')
             ->paginate($number);
 
-        return UserData::collect($paginator, PaginatedDataCollection::class)
+        return Fabriq::getDto('user')::collect($paginator, PaginatedDataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -56,7 +55,7 @@ class UserController extends Controller
         $user->save();
         $user->syncRoles($request->role_list);
 
-        return UserData::fromModel($user)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -78,7 +77,7 @@ class UserController extends Controller
 
         /** @var User $user */
 
-        return UserData::fromModel($user)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function update(UpdateUserRequest $request, int $id): Response
@@ -87,7 +86,7 @@ class UserController extends Controller
         $user->fill($request->validated());
         $user->save();
 
-        return UserData::fromModel($user)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('user')::fromModel($user)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request, int $id): JsonResponse

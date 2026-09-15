@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\ContactData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -41,7 +40,7 @@ class ContactController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return ContactData::collect($contacts, PaginatedDataCollection::class);
+        return Fabriq::getDto('contact')::collect($contacts, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
@@ -59,7 +58,7 @@ class ContactController extends Controller
 
         /** @var Contact $contact */
 
-        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('contact')::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
     public function store(CreateContactRequest $request): Response
@@ -68,7 +67,7 @@ class ContactController extends Controller
         $contact->name = $request->name;
         $contact->save();
 
-        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('contact')::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
     public function update(UpdateContactRequest $request, int $id): Response
@@ -88,7 +87,7 @@ class ContactController extends Controller
 
         $contact->saveQuietly();
 
-        return ContactData::fromModel($contact)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('contact')::fromModel($contact)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse

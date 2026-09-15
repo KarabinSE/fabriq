@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\PageData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -43,7 +42,7 @@ class PageController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return PageData::collect($pages, PaginatedDataCollection::class)
+        return Fabriq::getDto('page')::collect($pages, PaginatedDataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -69,7 +68,7 @@ class PageController extends Controller
 
         /** @var Page $page */
 
-        return PageData::fromModel($page)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -100,7 +99,7 @@ class PageController extends Controller
 
         $page->save();
 
-        return PageData::fromModel($page)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -119,7 +118,7 @@ class PageController extends Controller
         $page->updated_by = $request->user()->id;
         $page->save();
 
-        return PageData::fromModel($page)
+        return Fabriq::getDto('page')::fromModel($page)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);

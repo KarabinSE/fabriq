@@ -3,8 +3,8 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
-use Karabin\Fabriq\Data\CommentData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Http\Requests\DeleteCommentRequest;
 use Karabin\Fabriq\Http\Requests\UpdateCommentRequest;
@@ -20,7 +20,7 @@ class CommentController extends Controller
         $comment->edited_at = now();
         $comment->save();
 
-        return CommentData::fromModel($comment)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('comment')::fromModel($comment)->wrap('data')->toResponse($request);
     }
 
     public function destroy(DeleteCommentRequest $request, int $id): JsonResponse

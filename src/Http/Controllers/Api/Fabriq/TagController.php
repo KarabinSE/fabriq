@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\TagData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -31,7 +30,7 @@ class TagController extends Controller
             ])
             ->get();
 
-        return TagData::collect($tags, DataCollection::class)
+        return Fabriq::getDto('tag')::collect($tags, DataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }

@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\ImageData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -42,7 +41,7 @@ class ImageController extends Controller
             ->has('mediaImages')
             ->paginate($number);
 
-        return ImageData::collect($images, PaginatedDataCollection::class);
+        return Fabriq::getDto('image')::collect($images, PaginatedDataCollection::class);
     }
 
     /**
@@ -59,7 +58,7 @@ class ImageController extends Controller
 
         /** @var Image $image */
 
-        return ImageData::fromModel($image)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('image')::fromModel($image)->wrap('data')->toResponse($request);
     }
 
     public function update(UpdateImageRequest $request, int $id): Response
@@ -72,7 +71,7 @@ class ImageController extends Controller
         $media->save();
         $image->save();
 
-        return ImageData::fromModel($image)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('image')::fromModel($image)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request, int $id): JsonResponse

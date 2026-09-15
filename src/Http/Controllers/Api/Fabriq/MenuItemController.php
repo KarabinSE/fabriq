@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\MenuItemData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -35,7 +34,7 @@ class MenuItemController extends Controller
 
         /** @var MenuItem $item */
 
-        return MenuItemData::fromModel($item)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -70,7 +69,7 @@ class MenuItemController extends Controller
         }
         $item->save();
 
-        return MenuItemData::fromModel($item)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request);
     }
 
     /**
@@ -95,7 +94,7 @@ class MenuItemController extends Controller
 
         $menuItem->updateMetaContent($content);
 
-        return MenuItemData::fromModel($menuItem)
+        return Fabriq::getDto('menuItem')::fromModel($menuItem)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);

@@ -3,7 +3,6 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\NotificationData;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Http\Requests\ClearNotificationRequest;
@@ -35,7 +34,7 @@ class NotificationController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($number);
 
-        return NotificationData::collect($notifications, PaginatedDataCollection::class)
+        return Fabriq::getDto('notification')::collect($notifications, PaginatedDataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -47,7 +46,7 @@ class NotificationController extends Controller
 
         $notification->save();
 
-        return NotificationData::fromModel($notification)
+        return Fabriq::getDto('notification')::fromModel($notification)
             ->wrap('data')
             ->toResponse($request);
     }

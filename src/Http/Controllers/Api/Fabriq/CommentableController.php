@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\CommentData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -34,7 +33,7 @@ class CommentableController extends Controller
             ->with('comments', 'comments.user', 'comments.user.roles', 'comments.children', 'comments.children.user')
             ->firstOrFail();
 
-        return CommentData::collect($model->comments, DataCollection::class)
+        return Fabriq::getDto('comment')::collect($model->comments, DataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -50,7 +49,7 @@ class CommentableController extends Controller
             ->firstOrFail();
         $comment = $model->commentAs($request->user(), $request->comment, $request->parent_id ?? null);
 
-        return CommentData::fromModel($comment)
+        return Fabriq::getDto('comment')::fromModel($comment)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);

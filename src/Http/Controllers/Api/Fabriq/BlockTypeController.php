@@ -4,8 +4,8 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\BlockTypeData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Http\Requests\CreateBlockTypeRequest;
 use Karabin\Fabriq\Http\Requests\UpdateBlockTypeRequest;
@@ -23,7 +23,7 @@ class BlockTypeController extends Controller
             ->defaultSort('name')
             ->get();
 
-        return BlockTypeData::collect($blockTypes, DataCollection::class)
+        return Fabriq::getDto('blockType')::collect($blockTypes, DataCollection::class)
             ->wrap('data')
             ->toResponse($request);
     }
@@ -42,7 +42,7 @@ class BlockTypeController extends Controller
 
         $blockType->save();
 
-        return BlockTypeData::fromModel($blockType)
+        return Fabriq::getDto('blockType')::fromModel($blockType)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);
@@ -63,7 +63,7 @@ class BlockTypeController extends Controller
             }
         }
 
-        return BlockTypeData::fromModel($blockType)
+        return Fabriq::getDto('blockType')::fromModel($blockType)
             ->wrap('data')
             ->toResponse($request);
     }

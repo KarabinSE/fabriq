@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\FileData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -39,7 +38,7 @@ class FileController extends Controller
             ->allowedIncludes(...File::RELATIONSHIPS)
             ->paginate($number);
 
-        return FileData::collect($files, PaginatedDataCollection::class);
+        return Fabriq::getDto('file')::collect($files, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
@@ -51,7 +50,7 @@ class FileController extends Controller
 
         /** @var File $file */
 
-        return FileData::fromModel($file)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('file')::fromModel($file)->wrap('data')->toResponse($request);
     }
 
     public function update(Request $request, int $id): Response
@@ -66,7 +65,7 @@ class FileController extends Controller
         $media->save();
         $file->save();
 
-        return FileData::fromModel($file)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('file')::fromModel($file)->wrap('data')->toResponse($request);
     }
 
     public function destroy(Request $request, int $id): JsonResponse

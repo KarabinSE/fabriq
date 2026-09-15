@@ -4,7 +4,6 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\SmartBlockData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -38,7 +37,7 @@ class SmartBlockController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return SmartBlockData::collect($smartBlocks, PaginatedDataCollection::class);
+        return Fabriq::getDto('smartBlock')::collect($smartBlocks, PaginatedDataCollection::class);
     }
 
     public function show(Request $request, int $id): Response
@@ -55,7 +54,7 @@ class SmartBlockController extends Controller
 
         /** @var SmartBlock $smartBlock */
 
-        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('smartBlock')::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
     public function store(CreateSmartBlockRequest $request): Response
@@ -64,7 +63,7 @@ class SmartBlockController extends Controller
         $smartBlock->name = $request->name;
         $smartBlock->save();
 
-        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('smartBlock')::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
     public function update(Request $request, int $id): Response
@@ -75,7 +74,7 @@ class SmartBlockController extends Controller
         $smartBlock->touch();
         $smartBlock->save();
 
-        return SmartBlockData::fromModel($smartBlock)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('smartBlock')::fromModel($smartBlock)->wrap('data')->toResponse($request);
     }
 
     public function destroy(int $id): JsonResponse

@@ -3,7 +3,6 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
-use Karabin\Fabriq\Data\VideoData;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,7 @@ class VideoUploadController extends Controller
             throw $exception;
         }
 
-        return VideoData::fromModel($video)
+        return Fabriq::getDto('video')::fromModel($video)
             ->toResponse($request)
             ->setStatusCode(200);
     }

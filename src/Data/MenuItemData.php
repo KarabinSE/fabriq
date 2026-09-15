@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
 use Karabin\TranslatableRevisions\Models\I18nLocale;
@@ -44,7 +45,7 @@ class MenuItemData extends Data
             updated_at: $menuItem->updated_at ? (string) $menuItem->updated_at : null,
             content: Lazy::create(fn () => ['data' => $menuItem->getFieldContent()->toArray()]),
             page: Lazy::create(fn () => $menuItem->page instanceof Page
-                ? ['data' => PageData::fromModel($menuItem->page)->toArray()]
+                ? ['data' => Fabriq::getDto('page')::fromModel($menuItem->page)->toArray()]
                 : null),
             localizedContent: Lazy::create(fn () => ['data' => self::buildLocalizedContent($menuItem)]),
         );
