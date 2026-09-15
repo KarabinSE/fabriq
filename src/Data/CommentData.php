@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\User;
 use Spatie\LaravelData\Data;

@@ -65,7 +65,6 @@ class Fabriq
     /**
      * Return the data transfer object for the specific model.
      *
-     * @return mixed
      *
      * @throws InvalidArgumentException
      */
