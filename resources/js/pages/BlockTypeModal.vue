@@ -92,7 +92,9 @@
                             </div>
                         </div>
                         <div class="col-span-4 -mb-4">
-                            <FLabel v-text="recommendedBlockTypes.length > 0 ? 'Övriga' : 'Välj blocktyp'" />
+                            <FLabel>
+                                {{ recommendedBlockTypes.length > 0 ? 'Övriga' : 'Välj blocktyp' }}
+                            </FLabel>
                         </div>
                         <!-- <pre>{{ recommendedBlockTypes }}</pre> -->
                         <div
@@ -147,7 +149,7 @@ export default {
         },
 
     },
-    
+
     setup () {
         const configStore = useConfigStore();
 

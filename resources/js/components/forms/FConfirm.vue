@@ -14,8 +14,8 @@
             <div class="flex items-center justify-between">
                 <h2
                     class="text-xl font-semibold text-gray-500"
-                    v-text="header"
-                >Ta bort menypunkt</h2>
+                    v-text="header ?? 'Ta bort menypunkt'"
+                />
                 <button
                     class
                     @click="$emit('input', false)"
