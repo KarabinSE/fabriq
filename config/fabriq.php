@@ -2,6 +2,22 @@
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use Karabin\Fabriq\Data\ArticleData;
+use Karabin\Fabriq\Data\BlockTypeData;
+use Karabin\Fabriq\Data\CommentData;
+use Karabin\Fabriq\Data\ContactData;
+use Karabin\Fabriq\Data\EventData;
+use Karabin\Fabriq\Data\FileData;
+use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Data\MenuData;
+use Karabin\Fabriq\Data\MenuItemData;
+use Karabin\Fabriq\Data\NotificationData;
+use Karabin\Fabriq\Data\PageData;
+use Karabin\Fabriq\Data\RoleData;
+use Karabin\Fabriq\Data\SmartBlockData;
+use Karabin\Fabriq\Data\TagData;
+use Karabin\Fabriq\Data\UserData;
+use Karabin\Fabriq\Data\VideoData;
 use Karabin\Fabriq\Jobs\GenerateResponsiveImagesJob;
 use Karabin\Fabriq\Models\Article;
 use Karabin\Fabriq\Models\BlockType;
@@ -146,6 +162,24 @@ return [
         'tag' => Tag::class,
         'user' => User::class,
         'video' => Video::class,
+    ],
+    'data_transfer_objects' => [
+        'article' => ArticleData::class,
+        'blockType' => BlockTypeData::class,
+        'comment' => CommentData::class,
+        'contact' => ContactData::class,
+        'event' => EventData::class,
+        'file' => FileData::class,
+        'image' => ImageData::class,
+        'menu' => MenuData::class,
+        'menuItem' => MenuItemData::class,
+        'notification' => NotificationData::class,
+        'page' => PageData::class,
+        'role' => RoleData::class,
+        'smartBlock' => SmartBlockData::class,
+        'tag' => TagData::class,
+        'user' => UserData::class,
+        'video' => VideoData::class,
     ],
     'media-library' => [
         'max_file_size' => 1024 * 1024 * 500, // 500 MB,
