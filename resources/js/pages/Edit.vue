@@ -64,9 +64,9 @@
                             <template #header>
                                 Sidinställningar
                             </template>
-                            <div 
-                                class="grid grid-cols-3 gap-6"
+                            <div
                                 v-if="Object.keys(pageStore.activeLocaleContent).length > 0"
+                                class="grid grid-cols-3 gap-6"
                             >
                                 <FInput
                                     v-model="page.name"
@@ -198,7 +198,10 @@
                                     </div>
                                 </UiCard>
 
-                                <BlockList v-else />
+                                <BlockList
+                                    v-else
+                                    :key="'blocks-' + configStore.activeLocale"
+                                />
                             </div>
                         </div>
                     </div>
@@ -223,7 +226,7 @@
                                 </div>
 
                                 <hr class="my-5">
-                            
+
                                 <FSwitch
                                     v-model="page.published"
                                 >
@@ -246,12 +249,11 @@
             </div>
         </div>
 
-        <PagePreview 
+        <PagePreview
             @publish="publishPage"
             @save="updateContent"
         />
     </div>
-
 </template>
 
 <script>
@@ -307,7 +309,7 @@ export default {
 
     computed: {
         page() {
-            return this.pageStore.page;  
+            return this.pageStore.page;
         },
 
         openCards() {
@@ -378,10 +380,6 @@ export default {
             this.$nextTick(() => {
                 this.$eventBus.emit('page-updated')
             })
-        },
-
-        async updatePreview () {
-            await this.previewStore.updatePreview()
         },
 
         async openPreviewWindow() {

@@ -2,10 +2,9 @@
     <Transition
         name="preview-shell"
         :duration="{ enter: 600, leave: 500 }"
-        @after-enter="setPreviewIframe"
     >
         <div
-            v-if="previewUrl && previewVisible"
+            v-if="showModal"
             class="fixed inset-0 bg-gray-50 z-50 transition-colors duration-500 @container/preview overflow-y-auto"
         >
             <div class="flex flex-col size-full">
@@ -66,6 +65,7 @@
                                 </div>
                                 <div class="overflow-y-auto flex-1 scrollbar-gutter-stable pr-2">
                                     <BlockList
+                                        :key="'preview-blocks-' + configStore.activeLocale"
                                         with-preview-block-locator
                                         class="-mt-4! pb-10"
                                     >
@@ -117,6 +117,7 @@
                                             :src="previewUrl"
                                             class="size-full"
                                             title="Preview"
+                                            @load="setPreviewIframe"
                                         />
                                     </div>
                                 </div>
@@ -133,7 +134,6 @@ import { useConfigStore, usePageStore, usePreviewStore, useUiStore } from '@/sto
 import { getCurrentInstance } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import BlockList from '@/blocks/BlockList.vue';
-import ExternalLinkIcon from '@/icons/ExternalLinkIcon.vue';
 import { useStorage } from '@vueuse/core';
 
 export default {
@@ -202,12 +202,15 @@ export default {
             return this.configStore.devMode;
         },
 
+        showModal() {
+            return this.previewUrl && this.previewVisible
+        }
     },
 
     watch: {
         localizedContent: {
             deep: true,
-            immediate: false,
+            immediate: true,
             handler(_, from ) {
                 if(this.previewVisible){
                     this.debouncedUpdatePreview()
@@ -281,7 +284,9 @@ export default {
 
         async updatePreview () {
             await this.previewStore.updatePreview()
-            this.previewStore.postToIframe()
+            if(this.previewStore.iFrameLoaded) {
+                this.previewStore.postToIframe()
+            }
         },
     }
 }

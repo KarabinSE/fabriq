@@ -9,14 +9,14 @@
                     v-show="!lockedBlocks"
                     class="flex items-center text-sm link"
                     @click="showBlockTypeModal"
-                    >
+                >
                     <PlusIcon class="w-5 h-5 mr-2" />Lägg till block
                 </button>
             </div>
         </slot>
         <div>
             <div v-if="pageStore.blocks.index.length === 0">
-                <div class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
+                <div class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
                     <div class="flex flex-col items-center">
                         <div class="mb-4 text-xl font-light">
                             Inga block har lagts till ännu
@@ -32,6 +32,7 @@
             </div>
 
             <Draggable
+                v-else
                 v-model="pageStore.blocks.index"
                 handle=".handle"
                 tag="ul"
@@ -204,10 +205,13 @@
                                         <button
                                             v-if="withPreviewBlockLocator"
                                             v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skrolla till block' }"
-                                            @click.stop="scrollToBlock(block.id)"
                                             class="focus:outline-none"
+                                            @click.stop="scrollToBlock(block.id)"
                                         >
-                                            <CrosshairsIcon class="size-6 text-gray-500" thin />
+                                            <CrosshairsIcon
+                                                class="size-6 text-gray-500"
+                                                thin
+                                            />
                                         </button>
                                     </div>
                                 </div>
