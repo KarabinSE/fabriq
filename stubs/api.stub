@@ -1,28 +1,20 @@
 <?php
 
-use Karabin\Fabriq\Fabriq;
+use Illuminate\Support\Facades\Route;
+use Karabin\FabriqPlugin\Http\Controllers\MenuController;
+use Karabin\FabriqPlugin\Http\Controllers\NewsController;
+use Karabin\FabriqPlugin\Http\Controllers\PageController;
 
-Fabriq::routes(function ($router) {
-    $router->forDevProtected();
-}, [
-    'middleware' => ['auth:sanctum', 'role:dev', 'verified'],
-    'prefix' => 'dev'
-]);
+/**
+ * Here you can register routes that should be accessible from the frontend
+ */
 
-Fabriq::routes(function ($router) {
-    $router->forApiAdminProtected();
-}, [
-    'middleware' => ['auth:sanctum', 'role:admin', 'verified'],
-    'prefix' => 'admin'
-]);
+// Pages
+Route::get('pages/{slug}', [PageController::class, 'show']);
 
-Fabriq::routes(function ($router) {
-    $router->forApiProtected();
-}, [
-    'middleware' => ['auth:sanctum']
-]);
+// Menus
+Route::get('menus/{slug}', [MenuController::class, 'show']);
 
-Fabriq::routes(function ($router) {
-    $router->forPublicApi();
-});
-
+// news
+Route::get('news', [NewsController::class, 'index']);
+Route::get('news/{slug}', [NewsController::class, 'show']);

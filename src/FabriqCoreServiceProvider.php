@@ -123,7 +123,10 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
         $this->app->get('config')->set(
             'media-library',
-            array_merge($this->app->get('config')->get('media-library'), $this->app->get('config')->get('fabriq.media-library'))
+            array_merge(
+                $this->app->get('config')->get('media-library'),
+                $this->app->get('config')->get('fabriq.media-library')
+            ),
         );
 
         $this->commands([
@@ -165,8 +168,8 @@ class FabriqCoreServiceProvider extends ServiceProvider
         [$updatePaths, $installPaths] = $this->resourceDirectories();
 
         $merged = array_merge($updatePaths->toArray(), [
-            __DIR__.'/../resources/js/routes/fabriq-routes.js' => resource_path('js/routes/fabriq-routes.js'),
-            __DIR__.'/../resources/js/routes/router.js' => resource_path('js/routes/router.js'),
+            __DIR__.'/../resources/js/routes/fabriq-routes.js' => resource_path('js/fabriq/routes/fabriq-routes.js'),
+            __DIR__.'/../resources/js/routes/router.js' => resource_path('js/fabriq/routes/router.js'),
         ]);
 
         return array_merge($merged, $this->standardPaths());
@@ -176,7 +179,12 @@ class FabriqCoreServiceProvider extends ServiceProvider
     {
         [$updatePaths, $installPaths] = $this->resourceDirectories();
 
-        $merged = array_merge($updatePaths->toArray(), $installPaths->toArray());
+        $merged = array_merge($updatePaths->toArray(), $installPaths->toArray(), [
+            __DIR__.'/../stubs/api.stub' => base_path('routes/api.php'),
+            __DIR__.'/../stubs/web.stub' => base_path('routes/web.php'),
+
+            __DIR__.'/../resources/front-end-assets' => resource_path(),
+        ]);
 
         return array_merge($merged, $this->standardPaths());
     }
@@ -201,7 +209,8 @@ class FabriqCoreServiceProvider extends ServiceProvider
     {
         return [
             __DIR__.'/../stubs/models_user.stub' => base_path('app/models/User.php'),
-            __DIR__.'/../stubs/api.stub' => base_path('routes/api.php'),
+            __DIR__.'/../stubs/fabriqApi.stub' => base_path('routes/fabriq/api.php'),
+            __DIR__.'/../stubs/fabriqWeb.stub' => base_path('routes/fabriq/web.php'),
             __DIR__.'/../stubs/bootstrap_app.stub' => base_path('bootstrap/app.php'),
             __DIR__.'/../stubs/web.stub' => base_path('routes/web.php'),
             __DIR__.'/../resources/css' => resource_path('css'),

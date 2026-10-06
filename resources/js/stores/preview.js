@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, readonly, ref, watch } from "vue";
 import { usePageStore } from "./page";
 import axios from "axios";
-import router from "@/routes/router";
+import { route } from '@fabriq/generated/helpers/route'
 
 class MissingIFrameError extends Error {
     constructor(message) {
@@ -30,7 +30,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
 
     /**
-     * whenever we enter a new page, update the preview url. 
+     * whenever we enter a new page, update the preview url.
      * If there is no preview generated for the page, generate one
      * and update the url again.
      */
@@ -38,12 +38,12 @@ export const usePreviewStore = defineStore('preview', () => {
         if(page.value.id) {
             let newUrl = await getPreviewUrl()
             const hasPreview = !!(new URL(newUrl)).searchParams.get('preview')
-            
+
             if(!hasPreview) {
                 await updatePreview()
                 newUrl = await getPreviewUrl()
             }
-            
+
             previewUrl.value = newUrl
         }
     })
@@ -51,10 +51,10 @@ export const usePreviewStore = defineStore('preview', () => {
 
     async function getPreviewUrl() {
         try {
-            const { data } = await axios.post('/api/admin/previews', previewPayload.value)
+            const { data } = await axios.post(route('previews.store'), previewPayload.value)
 
             return data.preview_url
-                
+
         } catch (error) {
             console.error(error)
         }
@@ -62,7 +62,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
     async function updatePreview () {
         try {
-            await axios.patch('/api/admin/previews/' + pageStore.page.id, previewPayload.value)
+            await axios.patch(route('previews.update', pageStore.page.id), previewPayload.value)
 
             postToIframe(iframeReference.value)
         } catch (error) {
@@ -74,17 +74,17 @@ export const usePreviewStore = defineStore('preview', () => {
         if(!iframeReference.value) {
             throw new MissingIFrameError()
         }
-        
+
         const targetOrigin = new URL(previewUrl.value).origin
-        
+
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-preview-ready', url: previewUrl.value }, targetOrigin)
     }
-    
+
     function locateBlock(blockId) {
         if(!iframeReference.value) {
             throw new MissingIFrameError()
         }
-        
+
         const targetOrigin = new URL(previewUrl.value).origin
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-locate-block', url: previewUrl.value, block: blockId }, targetOrigin)
     }
