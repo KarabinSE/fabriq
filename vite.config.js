@@ -1,13 +1,13 @@
 import vue from '@vitejs/plugin-vue2'
 import laravel from 'laravel-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig, splitVendorChunkPlugin } from 'vite'
+import { defineConfig } from 'vite'
+import path from 'path'
 
+/** @type {import('vite').UserConfig} */
 export default defineConfig({
     plugins: [
-        laravel(
-            ['/resources/css/fabriq.css', 'resources/js/fabriq.js'],
-        ),
+        laravel(['resources/css/app.css', 'resources/js/app.js']),
 
         vue({
             template: {
@@ -19,6 +19,12 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './resources/js'),
+            '@fabriq': path.resolve(__dirname, './resources/fabriq/js'),
+        }
+    },
     build: {
         rollupOptions: {
             output: {

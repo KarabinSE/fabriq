@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+@import "../fabriq/css/fabriq.css";
+
+@source "../../views/**/*.blade.php";
+@source "../js/**/*.js";
+
+@theme {
+    --primary: oklch(92% 0.006 75),
+    --secondary: oklch(75% 0.025 250),
+    --tertiary: oklch(45% 0.03 228),
+
+    --btn-primary: oklch(53% 0.006 75),
+    --btn-secondary: oklch(75% 0.025 250),
+    --btn-tertiary: oklch(55% 0.03 228),
+}
+
+@theme inline {
+    --color-primary: var(--primary);
+    --color-secondary: var(--secondary);
+    --color-tertiary: var(--tertiary);
+
+    --color-btn-primary: var(--btn-primary);
+    --color-btn-secondary: var(--btn-secondary);
+    --color-btn-tertiary: var(--btn-tertiary);
+}
