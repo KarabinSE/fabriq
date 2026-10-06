@@ -75,7 +75,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             $this->loadMigrationsFrom([realpath(__DIR__.'/../database/migrations')]);
 
             $this->publishes([
-                __DIR__.'/../resources/lang' => resource_path('lang'),
+                __DIR__.'/../resources/fabriq/lang' => resource_path('lang'),
             ], 'fabriq-translations');
 
             $this->publishes([
@@ -89,7 +89,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             $this->publishes($this->installPaths(), 'fabriq-frontend-install-assets');
 
             $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views'),
+                __DIR__.'/../resources/fabriq/views' => resource_path('views'),
             ], 'fabriq-views');
             $this->publishes([
                 __DIR__.'/../resources/fabriq/images' => resource_path('fabriq/images'),
@@ -165,11 +165,13 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
     protected function updatePaths(): array
     {
+        return $this->standardPaths();
+
         [$updatePaths, $installPaths] = $this->resourceDirectories();
 
         $merged = array_merge($updatePaths->toArray(), [
-            __DIR__.'/../resources/js/routes/fabriq-routes.js' => resource_path('js/fabriq/routes/fabriq-routes.js'),
-            __DIR__.'/../resources/js/routes/router.js' => resource_path('js/fabriq/routes/router.js'),
+            __DIR__.'/../resources/fabriq/js/routes/fabriq-routes.js' => resource_path('fabriq/js/routes/fabriq-routes.js'),
+            __DIR__.'/../resources/fabriq/js/routes/router.js' => resource_path('fabriq/js/routes/router.js'),
         ]);
 
         return array_merge($merged, $this->standardPaths());
@@ -183,7 +185,8 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../stubs/api.stub' => base_path('routes/api.php'),
             __DIR__.'/../stubs/web.stub' => base_path('routes/web.php'),
 
-            __DIR__.'/../resources/front-end-assets' => resource_path(),
+            __DIR__.'/../resources/js' => resource_path('js'),
+            __DIR__.'/../resources/css' => resource_path('css'),
         ]);
 
         return array_merge($merged, $this->standardPaths());
@@ -191,12 +194,12 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
     protected function resourceDirectories(): array
     {
-        $resourceDirectories = (array) glob(__DIR__.'/../resources/js/*');
+        $resourceDirectories = (array) glob(__DIR__.'/../resources/fabriq/js/*');
 
         [$updateFolders, $installFolders] = collect($resourceDirectories)->mapWithKeys(function ($item) {
             $path = pathinfo((string) $item, PATHINFO_BASENAME);
 
-            return [__DIR__.'/../resources/js/'.$path => resource_path('js/'.$path)];
+            return [__DIR__.'/../resources/fabriq/js/'.$path => resource_path('fabriq/js/'.$path)];
         })
             ->partition(function ($item, $key) {
                 return ! Str::contains((string) $key, 'routes');
@@ -208,22 +211,25 @@ class FabriqCoreServiceProvider extends ServiceProvider
     protected function standardPaths(): array
     {
         return [
-            __DIR__.'/../stubs/models_user.stub' => base_path('app/models/User.php'),
+            // backend stuff
             __DIR__.'/../stubs/fabriqApi.stub' => base_path('routes/fabriq/api.php'),
             __DIR__.'/../stubs/fabriqWeb.stub' => base_path('routes/fabriq/web.php'),
             __DIR__.'/../stubs/bootstrap_app.stub' => base_path('bootstrap/app.php'),
-            __DIR__.'/../stubs/web.stub' => base_path('routes/web.php'),
-            __DIR__.'/../resources/css' => resource_path('css'),
-            __DIR__.'/../resources/fabriq/images' => resource_path('fabriq/images/'),
-            __DIR__.'/../resources/fabriq/images/' => public_path('fabriq/images/'),
-            __DIR__.'/../resources/js' => resource_path('js'),
-            __DIR__.'/../resources/fonts' => public_path('fonts'),
-            __DIR__.'/../vite.config.mjs' => 'vite.config.mjs',
+            __DIR__.'/../stubs/models_user.stub' => base_path('app/models/User.php'),
+
+            // front end assets
+            __DIR__.'/../resources/fabriq/css' => resource_path('fabriq/css'),
+            __DIR__.'/../resources/fabriq/js' => resource_path('fabriq/js'),
+            __DIR__.'/../resources/fabriq/js/routes' => resource_path('fabriq/js/routes'),
+            __DIR__.'/../resources/fabriq/fonts' => public_path('fabriq/fonts'),
+            __DIR__.'/../resources/fabriq/images' => public_path('fabriq/images'),
+
+            // configs and stuff
+            __DIR__.'/../vite.config.js' => 'vite.config.js',
             __DIR__.'/../pnpm-workspace.yaml' => 'pnpm-workspace.yaml',
-            __DIR__.'/../postcss.config.js' => 'postcss.config.js',
             __DIR__.'/../package.json' => 'package.json',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
-            __DIR__.'/../.eslintrc' => '.eslintrc',
+            // __DIR__.'/../.eslintrc' => '.eslintrc',
             __DIR__.'/../.babelrc' => '.babelrc',
             __DIR__.'/../.styleci.yml' => '.styleci.yml',
             __DIR__.'/../pnpm-lock.yaml' => 'pnpm-lock.yaml',
