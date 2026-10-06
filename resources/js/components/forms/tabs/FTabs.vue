@@ -9,8 +9,8 @@
                 :key="tab.title"
                 class="px-1 py-4 text-sm font-medium transition-colors duration-200 border-b-2 cursor-pointer whitespace-nowrap"
                 :class="[
-                    index === selectedIndex 
-                        ? 'border-royal-400 text-gray-800' 
+                    index === selectedIndex
+                        ? 'border-royal-400 text-gray-800'
                         : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300'
                 ]"
                 @click="selectTab(index)"
@@ -18,7 +18,7 @@
                 <div class="flex items-center">
                     <CircleExclamationIcon
                         v-if="tab.hasError"
-                        class="w-5 h-5 mr-2 text-red-500"
+                        class="size-5 mr-2 text-red-500"
                     />
                     {{ tab.title }}
                 </div>

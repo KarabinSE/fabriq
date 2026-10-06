@@ -7,7 +7,7 @@
             type="checkbox"
             :disabled="disabled"
             :value="checkboxValue"
-            class="w-5 h-5 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
+            class="size-5 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
         >
         <label
             :for="'chk' + _uid"

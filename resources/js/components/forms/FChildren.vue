@@ -18,7 +18,7 @@
                 >
                     <PlusIcon
                         v-if="children.length < max"
-                        class="w-5 h-5 mr-2 "
+                        class="size-5 mr-2 "
                     />
                     {{ children.length < max ? labels.add : labels.max }}
                 </button>
@@ -112,7 +112,7 @@
                         type="button"
                         @click="addChild"
                     >
-                        <PlusIcon class="w-5 h-5 mr-2 " />{{ labels.add }}
+                        <PlusIcon class="size-5 mr-2 " />{{ labels.add }}
                     </button>
                 </div>
             </template>

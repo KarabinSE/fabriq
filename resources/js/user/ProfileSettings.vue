@@ -91,7 +91,7 @@
                         class="font-sans text-xs text-red-500"
                     >
                         <span class="inline-flex items-center mt-2 leading-none">
-                            <CircleExclamationIcon class="w-5 h-5 mr-2" />
+                            <CircleExclamationIcon class="size-5 mr-2" />
                             {{ imageUploadError }}
                         </span>
                     </span>

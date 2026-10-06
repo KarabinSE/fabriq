@@ -37,7 +37,7 @@
                 <span
                     :class="{'translate-x-5': computedValue, 'translate-x-0':! computedValue}"
                     aria-hidden="true"
-                    class="absolute top-0 left-0 inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full shadow ring-0"
+                    class="absolute top-0 left-0 inline-block size-5 aspect-square transition duration-200 ease-in-out transform bg-white rounded-full shadow ring-0"
                 />
             </button>
             <Transition

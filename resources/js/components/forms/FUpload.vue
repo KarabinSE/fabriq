@@ -16,7 +16,7 @@
                 </div>
                 <span class="inline-block w-12 ml-1">({{ progressPercentage }}%)</span>
                 <span class="inline-flex mx-4 animate-spin">
-                    <SpinIcon class="w-5 h-5 text-royal-500" />
+                    <SpinIcon class="size-5 text-royal-500" />
                 </span>
             </div>
         </Transition>
@@ -138,7 +138,7 @@ export default {
     beforeDestroy () {
         if (this.UploadDropzone) {
             this.UploadDropzone.destroy();
-            
+
             this.UploadDropzone = null;
         }
 

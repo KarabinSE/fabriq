@@ -66,7 +66,7 @@
                                 class="flex items-center text-sm link"
                                 @click="$vfm.show('createPageModal')"
                             >
-                                <PlusIcon class="w-5 h-5 mr-2" />Lägg till sida
+                                <PlusIcon class="size-5 mr-2" />Lägg till sida
                             </button>
                         </div>
                     </div>

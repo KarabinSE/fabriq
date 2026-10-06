@@ -95,7 +95,7 @@
                                 :click="postComment"
                                 class="absolute bottom-0 right-0 pb-1.5 pr-2 mb-1"
                             ><PaperPlaneTopIcon
-                                class="block w-5 h-5 "
+                                class="block size-5 "
                                 :solid="replyHasFocus"
                             /></FButton>
                         </div>

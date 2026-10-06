@@ -15,7 +15,7 @@
                     v-if="maxItems && maxItems <= files.length"
                     class="mr-4 text-xs italic font-normal text-neutral-400"
                 >Du har nått det maximala antalet filer </span>
-                <PlusIcon class="w-5 h-5 mr-2 " />Lägg till fil
+                <PlusIcon class="size-5 mr-2 " />Lägg till fil
             </button>
         </div>
         <div v-if="noFiles">
@@ -33,7 +33,7 @@
                             type="button"
                             @click="addFile"
                         >
-                            <PlusIcon class="w-5 h-5 mr-2 " />Lägg till fil
+                            <PlusIcon class="size-5 mr-2 " />Lägg till fil
                         </button>
                     </div>
                 </template>

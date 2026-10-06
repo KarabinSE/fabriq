@@ -47,7 +47,7 @@
                     class="flex items-center text-sm link"
                     @click="addCard"
                 >
-                    <PlusIcon class="w-5 h-5 mr-2 " />Lägg till kort
+                    <PlusIcon class="size-5 mr-2 " />Lägg till kort
                 </button>
             </div>
         </div>
@@ -183,7 +183,7 @@
                         type="button"
                         @click="addCard"
                     >
-                        <PlusIcon class="w-5 h-5 mr-2 " />Lägg till kort
+                        <PlusIcon class="size-5 mr-2 " />Lägg till kort
                     </button>
                 </div>
             </template>

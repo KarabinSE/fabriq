@@ -95,7 +95,7 @@
                                     name="location"
                                 >
                                     <template #icon>
-                                        <LocationIcon class="w-5 h-5 text-gray-400" />
+                                        <LocationIcon class="size-5 text-gray-400" />
                                     </template>
                                 </FInput>
 

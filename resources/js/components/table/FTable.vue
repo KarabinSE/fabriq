@@ -16,7 +16,7 @@
                                 <!-- <input
                                     v-model="allRowsChecked"
                                     type="checkbox"
-                                    class="w-5 h-5 mt-1 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
+                                    class="size-5 mt-1 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
                                     :indeterminate.prop="checkedRows.length > 0 && !allRowsChecked"
                                     @change="toggleAllRows"
                                 > -->
@@ -65,7 +65,7 @@
                                 <input
                                     v-model="checkedRows"
                                     type="checkbox"
-                                    class="w-5 h-5 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
+                                    class="size-5 fabriq-checkbox form-checkbox focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
                                     :value="row[mergedOptions.rowKey]"
                                     @change="$emit('check-row', checkedRows)"
                                     @click.stop

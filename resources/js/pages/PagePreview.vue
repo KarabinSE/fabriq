@@ -60,7 +60,7 @@
                                         class="flex items-center text-sm link"
                                         @click="showBlockTypeModal"
                                     >
-                                        <PlusIcon class="w-5 h-5 mr-2" />Lägg till block
+                                        <PlusIcon class="size-5 mr-2" />Lägg till block
                                     </button>
                                 </div>
                                 <div class="overflow-y-auto flex-1 scrollbar-gutter-stable pr-2">

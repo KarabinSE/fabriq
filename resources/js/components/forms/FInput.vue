@@ -39,7 +39,7 @@
                             :checked="radioOption.value == value"
                             :class="inputClasses"
                             :disabled="inputDisabled"
-                            class="w-5 h-5 fabriq-radio form-radio focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
+                            class="size-5 fabriq-radio form-radio focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
                             @input="updateValue(radioOption.value)"
                         >
                         <label
@@ -64,7 +64,7 @@
                     :placeholder="placeholder"
                     :readonly="readOnly"
                     :value="value"
-                    class=" flex-1 block w-full rounded px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out appearance-none leadning-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
+                    class=" flex-1 block w-full rounded px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
                     :rows="rows"
                     v-on="inputListeners"
                     @input="updateValue($event.target.value)"
@@ -95,7 +95,7 @@
                         :readonly="readOnly"
                         :type="type"
                         :value="value"
-                        class="relative flex-1 block w-full px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leadning-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
+                        class="relative flex-1 block w-full px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
                         @input="updateValue($event.target.value)"
                         v-on="inputListeners"
                     >
@@ -116,7 +116,7 @@
                 >
                     <span class="inline-flex items-center mt-2 leading-none">
 
-                        <CircleExclamationIcon class="w-5 h-5 mr-2" />
+                        <CircleExclamationIcon class="size-5 mr-2" />
                         {{ convertErrorMessage(errors[0]) }}</span>
                 </span>
             </span>

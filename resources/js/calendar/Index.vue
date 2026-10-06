@@ -94,7 +94,7 @@
                                                     v-if="eventData.content.data.location"
                                                     class="flex items-center"
                                                 >
-                                                    <LocationIcon class="inline-flex w-5 h-5 mr-1 text-gray-500" />
+                                                    <LocationIcon class="inline-flex size-5 mr-1 text-gray-500" />
                                                     {{ eventData.content.data.location }}
                                                 </p>
                                                 <p

@@ -38,7 +38,7 @@
                         class="flex items-center focus:outline-none"
                         @click.stop="clearNotification(item.id, true)"
                     >
-                        <XMarkIcon class="w-5 h-5" />
+                        <XMarkIcon class="size-5" />
                     </button>
                 </span>
             </template>
@@ -91,7 +91,7 @@ export default {
     name: 'NotificationsIndex',
     components: {
         PageComment
-    },  
+    },
     beforeRouteLeave(from, to, next) {
         this.$eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
