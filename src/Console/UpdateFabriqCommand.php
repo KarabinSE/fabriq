@@ -107,6 +107,13 @@ class UpdateFabriqCommand extends Command
             throw new RuntimeException('Unable to copy Fabriq images to the public directory.');
         }
 
+        if (File::exists('postcss.config.js')) {
+            $this->info('Removing deprecated postcss.config.js');
+            if (! File::delete('postcss.config.js')) {
+                $this->warn('failed to remove postcss.config.js');
+            }
+        }
+
         $this->info('Front end assets has been installed');
 
         $this->info('Migrating...');
