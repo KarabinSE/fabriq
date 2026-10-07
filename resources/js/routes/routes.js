@@ -1,7 +1,7 @@
 //
-// import BroadcastMiddleware from '@/middleware/broadcast-middleware'
-// import PresenceMiddleware from '@/middleware/presence-middleware'
-// import RolesMiddleware from '@/middleware/roles-middleware.js'
+// import BroadcastMiddleware from '@fabriq/middleware/broadcast-middleware'
+// import PresenceMiddleware from '@fabriq/middleware/presence-middleware'
+// import RolesMiddleware from '@fabriq/middleware/roles-middleware.js'
 
 const routes = [
     // Example

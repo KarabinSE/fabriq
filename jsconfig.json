@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "baseUrl": "./resources",
+        "target": "ESNext",
         "paths": {
-            "@/*": [
-                "./js/*"
-            ]
+            "@/*": ["./resources/js/*"],
+            "@fabriq/*": ["./resources/fabriq/js/*"]
         }
     },
     "exclude": [

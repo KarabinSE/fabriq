@@ -1,0 +1,28 @@
+<?php
+
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\RouteRegistrar;
+
+Fabriq::routes(function ($router) {
+    $router->forDevProtected();
+}, [
+    'middleware' => ['auth:sanctum', 'role:dev', 'verified'],
+    'prefix' => 'dev',
+]);
+
+Fabriq::routes(function (RouteRegistrar $router) {
+    $router->forApiAdminProtected();
+}, [
+    'middleware' => ['auth:sanctum', 'role:admin', 'verified'],
+    'prefix' => 'admin',
+]);
+
+Fabriq::routes(function (RouteRegistrar $router) {
+    $router->forApiProtected();
+}, [
+    'middleware' => ['auth:sanctum'],
+]);
+
+Fabriq::routes(function (RouteRegistrar $router) {
+    $router->forPublicApi();
+});

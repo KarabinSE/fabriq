@@ -1,0 +1,9 @@
+<?php
+
+use Karabin\Fabriq\Fabriq;
+
+Fabriq::routes(
+    function ($router) {
+        $router->allWeb();
+    }
+);

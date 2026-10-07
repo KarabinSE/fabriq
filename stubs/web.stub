@@ -1,9 +1,5 @@
 <?php
 
-use Karabin\Fabriq\Fabriq;
-
-Fabriq::routes(
-    function ($router) {
-        $router->allWeb();
-    }
-);
+/**
+ * Here you can register custom admin web routes
+ */

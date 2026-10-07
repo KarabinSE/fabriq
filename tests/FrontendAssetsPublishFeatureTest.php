@@ -9,7 +9,7 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
 {
     public function test_frontend_install_assets_publish_the_api_spa_runtime(): void
     {
-        File::deleteDirectory(resource_path('js'));
+        File::deleteDirectory(resource_path('fabriq/js'));
 
         Artisan::call('vendor:publish', [
             '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
@@ -17,16 +17,16 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
             '--force' => true,
         ]);
 
-        $this->assertFileExists(resource_path('js/fabriq.js'));
-        $this->assertDirectoryExists(resource_path('js/routes'));
-        $this->assertDirectoryExists(resource_path('js/icons'));
-        $this->assertDirectoryExists(resource_path('js/store'));
+        $this->assertFileExists(resource_path('fabriq/js/fabriq.js'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/routes'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/icons'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/stores'));
 
     }
 
     public function test_frontend_update_assets_publish_the_api_spa_runtime(): void
     {
-        File::deleteDirectory(resource_path('js'));
+        File::deleteDirectory(resource_path('fabriq/js'));
 
         Artisan::call('vendor:publish', [
             '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
@@ -34,9 +34,9 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
             '--force' => true,
         ]);
 
-        $this->assertFileExists(resource_path('js/fabriq.js'));
-        $this->assertDirectoryExists(resource_path('js/icons'));
-        $this->assertDirectoryExists(resource_path('js/store'));
+        $this->assertFileExists(resource_path('fabriq/js/fabriq.js'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/icons'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/stores'));
 
     }
 }
