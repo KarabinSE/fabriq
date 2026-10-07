@@ -20,7 +20,9 @@ The resource structure has changed to mitigate any overwrites during future upda
 * An alias `@fabriq` as been added to reference fabriq components. (if you have components that reference fabriq components you can probably do a search-and-replace inside the `blocks` folder for `@/` and replace with `@fabriq/)
 * a new register-blocks plugin have been added to app.js, so `index.js` inside `block-types` can be removed.
 * default fabriq routes lives in `routes/fabriq/web,api`, you can remove any duplicated routes from `routes/web,api`
-* dont forget to update the .env to make the preview work
+* dont forget to update the .env to make the preview workg
+
+look over the routes, blocks, copy any custom blocks from the resources_backup, add any custom routes to the new routes.js, any custom css to app.css.
 
 ## Quick guide
 
