@@ -6,7 +6,6 @@
             :rules="rules"
         >
             <span :class="classes">
-                banana
                 <div class="flex justify-between">
 
                     <FLabel
