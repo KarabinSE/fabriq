@@ -12,6 +12,16 @@ This guide covers upgrading an existing Fabriq v3 installation to v4. The upgrad
 | CSS and Tailwind         | Fabriq uses Tailwind CSS 4 and its stylesheet is under`resources/fabriq/css`. | Merge the v4 CSS setup into your app stylesheet and keep custom styles there.                    |
 | Routes and public assets | Fabriq routes and public assets use dedicated Fabriq paths.                     | Keep custom routes in the app route files and update any old asset URLs.                         |
 
+## In short
+
+The resource structure has changed to mitigate any overwrites during future updates.
+
+* All fabriq-owned stuff now lives in `resources/fabriq`
+* An alias `@fabriq` as been added to reference fabriq components. (if you have components that reference fabriq components you can probably do a search-and-replace inside the `blocks` folder for `@/` and replace with `@fabriq/)
+* a new register-blocks plugin have been added to app.js, so `index.js` inside `block-types` can be removed.
+* default fabriq routes lives in `routes/fabriq/web,api`, you can remove any duplicated routes from `routes/web,api`
+* dont forget to update the .env to make the preview work
+
 ## Quick guide
 
 For a v3-to-v4 upgrade, the short version is:

@@ -54,7 +54,7 @@ class UpdateFabriqCommand extends Command
 
         if (! File::exists(resource_path('fabriq/js/fabriq.js'))) {
             $ok = $this->confirm(
-                'Fabriq v3 structure detected. Migrate to v4? The current resources directory will be moved to resources_backup.',
+                "Fabriq v3 structure detected. Migrate to v4?\n The current resources directory will be moved to resources_backup.",
                 false
             );
             if (! $ok) {
@@ -143,6 +143,11 @@ class UpdateFabriqCommand extends Command
 
         if (File::exists($backupPath)) {
             $this->info("Existing resources were preserved in {$backupPath}.");
+        }
+
+        File::ensureDirectoryExists(dirname("$resourcesPath/js/blocks"));
+        if (! File::copyDirectory("$backupPath/js/block-types", "$resourcesPath/js/block-types")) {
+            $this->error('Failed to copy block-types folder');
         }
 
         return true;

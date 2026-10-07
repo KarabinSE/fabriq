@@ -82,10 +82,10 @@ class FabriqCoreServiceProvider extends ServiceProvider
                 __DIR__.'/../stubs' => base_path('stubs'),
             ], 'fabriq-stubs');
 
-            // Used for updates, exludes user routes files
+            // Used for updates
             $this->publishes($this->updatePaths(), 'fabriq-frontend-assets');
 
-            // Used for fresh installs
+            // Used for fresh installs, adds app.js, app.css, routes/routes.js, routes/sidebar-items.js
             $this->publishes($this->installPaths(), 'fabriq-frontend-install-assets');
 
             $this->publishes([

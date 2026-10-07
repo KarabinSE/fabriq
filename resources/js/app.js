@@ -3,7 +3,7 @@ import { createFabriqApp } from '@fabriq/fabriq'
 import customRoutes from '@/routes/routes'
 
 import '@/../css/app.css'
-import blockTypes from '@/block-types/index.js'
+import blockTypes from '@fabriq/plugins/register-blocks'
 
 createFabriqApp()
     .withRoutes(customRoutes)
