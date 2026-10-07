@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Http\UploadedFile;
 use Karabin\Fabriq\Database\Factories\ImageFactory;
 use Karabin\Fabriq\Fabriq;
 use Spatie\Image\Enums\Fit;
@@ -99,7 +100,7 @@ class Image extends Model implements HasMedia
     public function saveMedia(bool $fromUrl = false, string $collection = 'images', string $url = '', ?string $name = null): void
     {
         if ($fromUrl) {
-            [$width, $height] = getimagesize(request()->input('url', $url));
+            [$width, $height] = $this->getImageDimensions(request()->input('url', $url));
             $this->addMediaFromUrl(request()->input('url', $url))
                 ->withResponsiveImages()
                 ->withCustomProperties(['width' => $width, 'height' => $height, 'processing' => true, 'processing_failed' => false])
@@ -108,7 +109,7 @@ class Image extends Model implements HasMedia
 
             return;
         }
-        [$width, $height] = getimagesize(request()->file('image'));
+        [$width, $height] = $this->getImageDimensions(request()->file('image'));
         $this->addMediaFromRequest('image')
             ->withResponsiveImages()
             ->withCustomProperties([
@@ -117,5 +118,15 @@ class Image extends Model implements HasMedia
                 'processing' => ($width) ? true : false, 'processing_failed' => false,
             ])
             ->toMediaCollection($collection);
+    }
+
+    public function getImageDimensions(string|UploadedFile $image): array
+    {
+        $dimensions = getimagesize($image);
+        if (! $dimensions) {
+            return [null, null];
+        }
+
+        return $dimensions;
     }
 }
