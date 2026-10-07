@@ -17,10 +17,10 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
             '--force' => true,
         ]);
 
-        $this->assertFileExists(resource_path('js/fabriq.js'));
-        $this->assertDirectoryExists(resource_path('js/routes'));
-        $this->assertDirectoryExists(resource_path('js/icons'));
-        $this->assertDirectoryExists(resource_path('js/store'));
+        $this->assertFileExists(resource_path('fabriq/js/fabriq.js'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/routes'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/icons'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/store'));
 
     }
 
@@ -34,9 +34,9 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
             '--force' => true,
         ]);
 
-        $this->assertFileExists(resource_path('js/fabriq.js'));
-        $this->assertDirectoryExists(resource_path('js/icons'));
-        $this->assertDirectoryExists(resource_path('js/store'));
+        $this->assertFileExists(resource_path('fabriq/js/fabriq.js'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/icons'));
+        $this->assertDirectoryExists(resource_path('fabriq/js/store'));
 
     }
 }
