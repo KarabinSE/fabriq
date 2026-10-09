@@ -1,16 +1,24 @@
 <template>
-    <div class="space-y-1 w-full">
-        <div class="flex justify-between items-baseline gap-5">
+    <div class="space-y-1 w-full border p-2 border-gray-200 rounded">
+        <div class="flex justify-between items-center gap-5">
             <div class="flex gap-4 items-center">
                 <div
+                    v-if="color"
                     class="rounded-full size-4 aspect-square"
                     :class="[
                         buttonColor ? buttonColor : 'border border-gray-300'
                     ]"
                 />
                 {{ localButton.text }}
+                <span
+                    v-if="!localButton.text"
+                    class="italic text-gray-500"
+                >&lt;Knapptext&gt;</span>
 
-                <ArrowPresenter :arrow="buttonArrow" />
+                <ArrowPresenter
+                    v-if="arrow"
+                    :arrow="buttonArrow"
+                />
             </div>
 
             <div class="flex gap-3">
@@ -47,8 +55,8 @@
 
         <ButtonModal
             :id="modalId"
-            arrow
-            color
+            :arrow="arrow"
+            :color="color"
             :value="value"
             @saved="onButtonSaved"
         />
@@ -56,12 +64,12 @@
 </template>
 
 <script>
-import PageTree from '@fabriq/models/PageTree.js'
-import { colors } from '@fabriq/components/forms/FColorPicker.vue'
-import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
-import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
-import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
-import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
+import PageTree from '@/models/PageTree.js'
+import { colors } from '@/components/forms/FColorPicker.vue'
+import { buttonArrows } from '@/components/forms/FArrowPicker.vue'
+import PenToSquareIcon from '@/icons/PenToSquareIcon.vue'
+import ArrowPresenter from '@/components/forms/ArrowPresenter.vue'
+import ButtonModal from '@/components/modals/ButtonModal.vue'
 
 export const linkTypeOptions = [
     { label: 'Intern', value: 'internal' },
