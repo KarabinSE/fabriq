@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
-import { computed, ref, toRaw } from "vue";
+import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
 import Page from "@fabriq/models/Page";
 
-const queryParams = {
+const queryParameters = {
     include: 'template,template.groupedFields,slugs,localizedContent',
     locale: 'all',
     append: 'paths',
@@ -89,7 +89,7 @@ export const usePageStore = defineStore('page', () => {
 
     async function fetchPage (pageId) {
         const payload = {
-            params: queryParams,
+            params: queryParameters,
         }
 
         try {
@@ -99,11 +99,17 @@ export const usePageStore = defineStore('page', () => {
             page.value = data
             wasInitiallyPublished.value = data.published
 
-            let temp = {}
+            let temporary = {}
             Object.entries(data.localizedContent.data).forEach(([locale, value]) => {
-                temp[locale] = value.content.boxes ? value.content: {...value.content, boxes: []}
+                temporary[locale] = {
+                    ...value.content,
+                    boxes: value.content.boxes?.map(box => {
+                        delete box.newlyAdded
+                        return box
+                    }) ?? []
+                }
             })
-            localizedContent.value = temp
+            localizedContent.value = temporary
         } catch (error) {
             throw new PageFetchError(error)
         }
@@ -153,8 +159,8 @@ export const usePageStore = defineStore('page', () => {
         get() {
             return activeLocaleContent.value?.boxes ?? []
         },
-        set(val) {
-            activeLocaleContent.value.boxes = val
+        set(value) {
+            activeLocaleContent.value.boxes = value
         }
     })
 
