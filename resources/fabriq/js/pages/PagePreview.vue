@@ -51,28 +51,12 @@
                             <div
                                 class="preview-panel-left flex flex-col @4xl/preview:flex-1 @4xl/preview:min-w-sm"
                             >
-                                <div class="flex items-baseline justify-between pr-5 pb-4">
-                                    <h4 class="text-3xl font-light text-gray-700">
-                                        Block
-                                    </h4>
-                                    <button
-                                        v-show="!lockedBlocks"
-                                        class="flex items-center text-sm link"
-                                        @click="showBlockTypeModal"
-                                    >
-                                        <PlusIcon class="size-5 mr-2" />Lägg till block
-                                    </button>
-                                </div>
-                                <div class="overflow-y-auto flex-1 scrollbar-gutter-stable pr-2">
+                                <div class="overflow-y-auto flex-1 scrollbar-gutter-stable pr-2 pt-4">
                                     <BlockList
                                         :key="'preview-blocks-' + configStore.activeLocale"
                                         with-preview-block-locator
                                         class="-mt-4! pb-10"
-                                    >
-                                        <template #header>
-                                            <span />
-                                        </template>
-                                    </BlockList>
+                                    />
                                 </div>
                             </div>
                         </Transition>
@@ -101,12 +85,6 @@
                                         <h4 class="text-3xl font-light text-gray-700">
                                             Förhandsgranskning
                                         </h4>
-                                    <!-- <button
-                                        class="flex items-center text-sm link"
-                                        @click="createPopout"
-                                    >
-                                        <ExternalLinkIcon class="size-4.5 mr-2" />Öppna i separat fönster
-                                    </button> -->
                                     </div>
 
                                     <div
@@ -177,9 +155,6 @@ export default {
     },
 
     computed: {
-        page() {
-            return this.pageStore.page;
-        },
         previewUrl() {
             return this.previewStore.url
         },
@@ -190,13 +165,6 @@ export default {
             return this.pageStore.localizedContent
         },
 
-        lockedBlocks() {
-            if (this.devMode) {
-                return false
-            }
-
-            return this.page.locked
-        },
 
         devMode() {
             return this.configStore.devMode;

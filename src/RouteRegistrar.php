@@ -287,18 +287,15 @@ class RouteRegistrar
 
     public function forInvitations(): void
     {
-        // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
         Route::post('invitations/{userId}', [InvitationController::class, 'store'])->name('invitations.store');
         Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
     }
 
     public function forPreviews(): void
     {
-        // Route::get('/invitations/accept/{token}', [Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController::class, 'show'])->name('invitation.accept');
         Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store')
             ->middleware(LocaleMiddleware::class);
-        Route::patch('previews/{id}', [PagePreviewController::class, 'update'])->name('previews.update');
-        // Route::delete('invitations/{userId}', [InvitationController::class, 'destroy'])->name('invitations.destroy');
+        Route::put('previews/{id}', [PagePreviewController::class, 'update'])->name('previews.update');
     }
 
     public function forPageSlugs()

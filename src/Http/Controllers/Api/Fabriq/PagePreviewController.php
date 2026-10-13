@@ -30,7 +30,7 @@ class PagePreviewController
         ]);
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
         $preview = Preview::updateOrCreate(
             [
