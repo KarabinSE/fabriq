@@ -119,6 +119,10 @@ class UpdateFabriqCommand extends Command
         $this->info('Migrating...');
         $this->call('migrate');
 
+        $this->info('Generating typescript transforms');
+        $this->call('typescript:transform');
+        $this->info('Typescript transforms done');
+
         $this->info('Fabriq has been updated');
 
         return 0;
@@ -157,6 +161,11 @@ class UpdateFabriqCommand extends Command
             $this->error('Failed to copy block-types folder');
         }
 
+        // File::ensureDirectoryExists(dirname("$resourcesPath/js/generated"));
+        // if (! File::copyDirectory("$backupPath/js/generated", "$resourcesPath/js/generated")) {
+        //     $this->error('Failed to copy ts generated folder');
+        // }
+
         return true;
     }
 
@@ -167,6 +176,7 @@ class UpdateFabriqCommand extends Command
             __DIR__.'/../../resources/js/routes/routes.js' => resource_path('js/routes/routes.js'),
             __DIR__.'/../../resources/js/routes/sidebar-items.js' => resource_path('js/routes/sidebar-items.js'),
             __DIR__.'/../../resources/css/app.css' => resource_path('css/app.css'),
+            __DIR__.'/../../resources/js/generated/.gitignore' => resource_path('js/generated/.gitignore'),
         ];
 
         foreach ($entrypoints as $source => $destination) {
