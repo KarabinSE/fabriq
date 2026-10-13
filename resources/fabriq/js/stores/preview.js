@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, readonly, ref, watch } from "vue";
 import { usePageStore } from "./page";
 import axios from "axios";
-import { route } from '@fabriq/generated/helpers/route'
+import { route } from '@/generated/helpers/route'
 
 class MissingIFrameError extends Error {
     constructor(message) {
