@@ -166,15 +166,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
     protected function updatePaths(): array
     {
         return $this->standardPaths();
-
-        [$updatePaths, $installPaths] = $this->resourceDirectories();
-
-        $merged = array_merge($updatePaths->toArray(), [
-            __DIR__.'/../resources/fabriq/js/routes/fabriq-routes.js' => resource_path('fabriq/js/routes/fabriq-routes.js'),
-            __DIR__.'/../resources/fabriq/js/routes/router.js' => resource_path('fabriq/js/routes/router.js'),
-        ]);
-
-        return array_merge($merged, $this->standardPaths());
     }
 
     protected function installPaths(): array
