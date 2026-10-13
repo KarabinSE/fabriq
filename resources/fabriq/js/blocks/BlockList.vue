@@ -298,10 +298,6 @@ export default {
             },
         },
 
-        page() {
-            return this.configStore.config;
-        },
-
         locale() {
             return this.configStore.activeLocale;
         },
@@ -320,7 +316,7 @@ export default {
                 return false
             }
 
-            return this.page.locked
+            return this.pageStore?.page?.template?.data?.locked ?? false
         },
 
         devMode() {
