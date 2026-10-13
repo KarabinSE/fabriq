@@ -45,7 +45,7 @@ class CreatePageRootCommand extends Command
         }
 
         if (Fabriq::getModelClass('page')->whereName($name)->first()) {
-            $this->info('Root already exists');
+            $this->info("Root with name \"{$name}\" already exists");
 
             return 0;
         }

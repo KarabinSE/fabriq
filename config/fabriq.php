@@ -92,13 +92,6 @@ return [
             'roles' => ['admin'],
         ],
         [
-            'title' => 'Användare',
-            'route' => 'users.index',
-            'enabled' => env('FABRIQ_USERS', true),
-            'icon' => 'UsersGearIcon',
-            'roles' => ['admin'],
-        ],
-        [
             'title' => 'Menyer',
             'route' => 'menus.index',
             'enabled' => env('FABRIQ_MENUS', true),
@@ -124,6 +117,13 @@ return [
             'route' => 'files.index',
             'enabled' => env('FABRIQ_FILES', true),
             'icon' => 'FilesIcon',
+            'roles' => ['admin'],
+        ],
+        [
+            'title' => 'Användare',
+            'route' => 'users.index',
+            'enabled' => env('FABRIQ_USERS', true),
+            'icon' => 'UsersGearIcon',
             'roles' => ['admin'],
         ],
     ],
