@@ -155,6 +155,9 @@ export default {
     },
 
     computed: {
+        page() {
+            return this.pageStore.page;
+        },
         previewUrl() {
             return this.previewStore.url
         },
@@ -164,8 +167,6 @@ export default {
         localizedContent() {
             return this.pageStore.localizedContent
         },
-
-
         devMode() {
             return this.configStore.devMode;
         },
