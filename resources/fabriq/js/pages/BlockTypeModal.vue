@@ -45,7 +45,7 @@
                         :clearable="false"
                         name="block_type"
                         rules="required"
-                        :options="blockTypes"
+                        :options="computedBlockTypes"
                         :reduce-fn="block_type => block_type"
                         option-label="name"
                         @input="selectBlock"
@@ -182,24 +182,28 @@ export default {
                     return true
                 }
 
+                const hiddenFor = item.options.hidden_for || []
+                const visibleFor = item.options.visible_for || []
+                const recommendedFor = item.options.recommended_for || []
+
                 if (
-                    item.options.hidden_for.length === 0 &&
-                    item.options.visible_for.length === 0 &&
-                    item.options.recommended_for.length === 0
+                    hiddenFor.length === 0 &&
+                    visibleFor.length === 0 &&
+                    recommendedFor.length === 0
                 ) {
                     return true
                 }
 
                 // If visible_for is defined and template slug is not present
-                if (item.options.visible_for.length > 0 && !item.options.visible_for.includes(this.page.template.data.slug)) {
+                if (visibleFor.length > 0 && !visibleFor.includes(this.page.template.data.slug)) {
                     return false
                 }
 
-                if (item.options.hidden_for.includes(this.page.template.data.slug)) {
+                if (hiddenFor.includes(this.page.template.data.slug)) {
                     return false
                 }
 
-                if (item.options.recommended_for.includes(this.page.template.data.slug)) {
+                if (recommendedFor.includes(this.page.template.data.slug)) {
                     return false
                 }
                 return true
@@ -209,7 +213,8 @@ export default {
         },
         recommendedBlockTypes() {
             return this.blockTypes.filter(item => {
-                return item.options.recommended_for.includes(this.page.template.data.slug)
+                const recommendedFor = item.options?.recommended_for || []
+                return recommendedFor.includes(this.page.template.data.slug)
             })
         },
         largeBlockPicker() {
