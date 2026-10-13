@@ -2,8 +2,8 @@
 
 namespace Karabin\Fabriq\Console;
 
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
+use Karabin\Fabriq\Fabriq;
 use Symfony\Component\Console\Input\InputOption;
 
 class CreatePageRootCommand extends Command
@@ -44,7 +44,7 @@ class CreatePageRootCommand extends Command
             $name = $this->ask('Provide a name for the page root', 'root');
         }
 
-        if (Fabriq::getModelClass('page')->whereName('root')->first()) {
+        if (Fabriq::getModelClass('page')->whereName($name)->first()) {
             $this->info('Root already exists');
 
             return 0;
