@@ -64,12 +64,12 @@
 </template>
 
 <script>
-import PageTree from '@/models/PageTree.js'
-import { colors } from '@/components/forms/FColorPicker.vue'
-import { buttonArrows } from '@/components/forms/FArrowPicker.vue'
-import PenToSquareIcon from '@/icons/PenToSquareIcon.vue'
-import ArrowPresenter from '@/components/forms/ArrowPresenter.vue'
-import ButtonModal from '@/components/modals/ButtonModal.vue'
+import PageTree from '@fabriq/models/PageTree.js'
+import { colors } from '@fabriq/components/forms/FColorPicker.vue'
+import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
+import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
+import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
+import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
 
 export const linkTypeOptions = [
     { label: 'Intern', value: 'internal' },
