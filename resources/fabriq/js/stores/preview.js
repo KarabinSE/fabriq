@@ -62,7 +62,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
     async function updatePreview () {
         try {
-            await axios.patch(route('previews.update', pageStore.page.id), previewPayload.value)
+            await axios.put(route('previews.update', pageStore.page.id), previewPayload.value)
 
             postToIframe(iframeReference.value)
         } catch (error) {
