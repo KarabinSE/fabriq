@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { route } from '@fabriq/generated/helpers/route';
+import { route } from '@/generated/helpers/route';
 import Contact from '@fabriq/models/Contact'
 import axios from 'axios'
 import Draggable from 'vuedraggable'

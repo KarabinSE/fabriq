@@ -24,7 +24,7 @@
 <script>
 import Cookies from 'js-cookie'
 import axios from 'axios'
-import { route } from '@fabriq/generated/helpers/route';
+import { route } from '@/generated/helpers/route';
 export default {
     name: 'LogoutForm',
     data () {
