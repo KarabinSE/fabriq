@@ -144,7 +144,7 @@ export default {
             return {
                 'internal': this.localPages.find(page => page.id === this.localButton.page_id)?.name ?? '',
                 'external': this.localButton.url ?? '',
-                'file': this.localButton.file.file_name ?? '',
+                'file': this.localButton.file?.file_name ?? '',
             }[this.localButton.linkType] ?? ''
         },
         buttonColor() {
