@@ -14,10 +14,18 @@ use Karabin\Fabriq\Fabriq;
 use Karabin\TranslatableRevisions\Models\RevisionMeta;
 use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
 use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Spatie\Translatable\Attributes\Translatable;
+use Spatie\Translatable\HasTranslations;
 
+#[Translatable('path')]
 class MenuItem extends Model
 {
-    use HasFactory, HasTranslatedRevisions, NodeTrait;
+    use HasFactory, HasTranslatedRevisions, HasTranslations, NodeTrait {
+        HasTranslatedRevisions::setLocale insteadof HasTranslations;
+        HasTranslations::setLocale as setTranslationsLocale;
+        HasTranslatedRevisions::getLocale insteadof HasTranslations;
+        HasTranslations::getLocale as getTranslationsLocale;
+    }
 
     public const RELATIONSHIPS = ['page'];
 
