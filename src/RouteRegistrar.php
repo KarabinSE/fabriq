@@ -10,6 +10,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ArticleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AskToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AuthenticatedUserController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockTypeController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BustCacheController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ClonePageController;
@@ -35,6 +36,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\MenuItemController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\MenuItemTreeController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ModelCountController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\NotificationController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageBlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePathController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
@@ -139,6 +141,8 @@ class RouteRegistrar
         $this->forPageSlugs();
         $this->forPagePaths();
         $this->forInvitations();
+        $this->forPageBlocks();
+        $this->forBlocks();
     }
 
     public function forApiProtected()
@@ -169,6 +173,8 @@ class RouteRegistrar
         $this->forPagePaths();
         $this->forInvitations();
         $this->forPreviews();
+        $this->forPageBlocks();
+        $this->forBlocks();
     }
 
     public function forPublicApi()
@@ -192,6 +198,20 @@ class RouteRegistrar
     {
         Route::post('contacts/sort-contacts', ContactSortController::class)->name('contacts.sort');
         Route::resource('contacts', ContactController::class);
+    }
+
+    public function forPageBlocks(): void
+    {
+        Route::get('pages/{id}/blocks', [PageBlockController::class, 'index'])
+            ->name('pages.blocks.index');
+        Route::put('pages/{id}/blocks', [PageBlockController::class, 'update'])
+            ->name('blocks.update');
+    }
+
+    public function forBlocks(): void
+    {
+        Route::get('blocks/{id}', [BlockController::class, 'show'])
+            ->name('blocks.show');
     }
 
     public function forBlockTypes(): void

@@ -14,6 +14,8 @@ class PageSlugsController extends Controller
     {
         $result = $repo->findBySlug($slug);
 
-        return Fabriq::getDto('live_page')::fromModel($result)->wrap('data')->toResponse($request);
+        return Fabriq::getDto('live_page')::fromModel($result)
+            ->wrap('data')
+            ->toResponse($request);
     }
 }

@@ -33,11 +33,17 @@ class EloquentPageRepository implements PageRepositoryInterface
             ->whereHas('slugs', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })
+            ->with('blocks', function ($query) {
+                $query->where('locale', app()->getLocale())
+                    ->with('children', 'blockType')
+                    ->whereNull('parent_id');
+            })
             ->where('published', true)
             ->firstOrFail();
 
         // Decorate with content
         $model->content = $model->getSimpleFieldContent($model->published_version, app()->getLocale());
+        unset($model->content['boxes']);
         $model->slug = $slug;
 
         return $model;

@@ -188,6 +188,13 @@ class Page extends Model implements HasMedia
         return MediaGetter::get($meta);
     }
 
+    public function blocks(): MorphMany
+    {
+        return $this->morphMany(Fabriq::getFqnModel('block'), 'model')
+            ->where('model_type', 'fabriq_page')
+            ->orderBy('blocks.sortindex');
+    }
+
     public function menuItems(): HasMany
     {
         return $this->hasMany(Fabriq::getFqnModel('menuItem'));
@@ -247,6 +254,20 @@ class Page extends Model implements HasMedia
         })->reverse()->toArray();
 
         foreach ($value as $locale => $localeContent) {
+            if ($locale === 'sv' && isset($localeContent['boxes'])) {
+                foreach ($localeContent['boxes'] as $box) {
+                    Block::updateOrCreate([
+                        'uuid' => 'x',
+                    ], [
+                        'name' => $box['name'],
+                        'content' => $box,
+                        'model_id' => $this->id,
+                        'model_type' => $this->getMorphClass(),
+                        'revision' => $this->revision,
+                        'block_type_id' => $box['block_type']['id'],
+                    ]);
+                }
+            }
             $this->updateContent($localeContent, (string) $locale);
             $revisionContent = $this->getFieldContent($this->revision, $locale);
 
