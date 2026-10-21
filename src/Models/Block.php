@@ -5,6 +5,7 @@ namespace Karabin\Fabriq\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Karabin\Fabriq\Database\Factories\BlockFactory;
@@ -56,7 +57,7 @@ class Block extends Model implements Sortable
         return $this->hasMany(Block::class, 'parent_id');
     }
 
-    public function blockType()
+    public function blockType(): BelongsTo
     {
         return $this->belongsTo(BlockType::class);
     }
