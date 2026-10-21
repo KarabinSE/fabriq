@@ -9,6 +9,6 @@ class ContentValue extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'meta_value' => 'array',
+        'value' => 'array',
     ];
 }

@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -34,7 +35,11 @@ class MenuItemController extends Controller
 
         /** @var MenuItem $item */
 
-        return Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$item],
+            fn () => Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request),
+        );
     }
 
     /**
@@ -69,7 +74,11 @@ class MenuItemController extends Controller
         }
         $item->save();
 
-        return Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$item],
+            fn () => Fabriq::getDto('menuItem')::fromModel($item)->wrap('data')->toResponse($request),
+        );
     }
 
     /**
@@ -94,10 +103,14 @@ class MenuItemController extends Controller
 
         $menuItem->updateMetaContent($content);
 
-        return Fabriq::getDto('menuItem')::fromModel($menuItem)
-            ->wrap('data')
-            ->toResponse($request)
-            ->setStatusCode(201);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$menuItem],
+            fn () => Fabriq::getDto('menuItem')::fromModel($menuItem)
+                ->wrap('data')
+                ->toResponse($request)
+                ->setStatusCode(201),
+        );
     }
 
     /**

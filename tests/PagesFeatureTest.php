@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
 use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
+use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
@@ -84,6 +86,35 @@ class PagesFeatureTest extends AdminUserTestCase
             'meta_description' => 'Describing the page',
         ]);
         $response->assertJsonCount(3, 'data.content.data.boxes');
+    }
+
+    /** @test **/
+    public function it_interpolates_meta_og_image_when_including_page_content()
+    {
+        $page = Page::factory()->create([
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
+        ]);
+        $this->assertSame(
+            'image',
+            ContentTemplateField::query()
+                ->where('template_id', $page->template_id)
+                ->where('key', 'meta_og_image')
+                ->value('type'),
+        );
+        $image = Image::factory()->create([
+            'alt_text' => 'Page social image',
+        ]);
+        $page->updateContent([
+            'meta_og_image' => $image->id,
+        ], 'en');
+
+        $response = $this->json('GET', '/pages/'.$page->id.'?include=content,localizedContent');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.content.data.meta_og_image.id', $image->id);
+        $response->assertJsonPath('data.content.data.meta_og_image.alt_text', 'Page social image');
+        $response->assertJsonPath('data.localizedContent.data.en.content.meta_og_image.id', $image->id);
+        $response->assertJsonPath('data.localizedContent.data.en.content.meta_og_image.alt_text', 'Page social image');
     }
 
     /** @test **/
@@ -194,7 +225,7 @@ class PagesFeatureTest extends AdminUserTestCase
             'locale' => 'sv',
             'slug' => 'en-mycket-bra-titel-1',
         ]);
-        $definition = $page->contentTerms()->where('field_key', 'page_title')->first()->definition;
+        $definition = $page->contentDefinitions()->where('field_key', 'page_title')->firstOrFail();
         $this->assertSame('English title', $definition->getTranslation('content', 'en'));
         $this->assertSame('En mycket bra titel', $definition->getTranslation('content', 'sv'));
     }

@@ -5,13 +5,15 @@ namespace Karabin\Fabriq\Traits;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
+use Karabin\Fabriq\ContentGetters\ContentReferenceTransformer;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Exceptions\ContentFieldNotFound;
 use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\ContentValue;
 use Karabin\Fabriq\Models\I18nDefinition;
-use Karabin\Fabriq\Models\I18nTerm;
 
 trait HasContent
 {
@@ -20,7 +22,7 @@ trait HasContent
 
     protected static function bootHasContent(): void
     {
-        static::deleting(fn ($model) => $model->contentTerms()->delete());
+        static::deleting(fn ($model) => $model->contentDefinitions()->delete());
     }
 
     public function template(): BelongsTo
@@ -31,18 +33,15 @@ trait HasContent
     public function updateContent(array $fieldData, ?string $locale = null): Collection
     {
         $locale ??= app()->getLocale();
-
-        $updated = collect($fieldData)->map(function ($value, $fieldKey) use ($locale) {
+        $options = $this->getContentOptions();
+        $updated = collect($fieldData)->map(function ($value, $fieldKey) use ($locale, $options) {
             $field = $this->getTemplateField((string) $fieldKey);
-            $term = $this->contentTerms()->updateOrCreate(['field_key' => $field->key]);
-            $definition = I18nDefinition::firstOrNew(['term_id' => $term->id]);
+            $value = ContentReferenceTransformer::normalize($value, $options, $field->type);
+            $definition = $this->contentDefinitions()->firstOrNew(['field_key' => $field->key]);
             $definition->setTranslation('content', $field->translated ? $locale : '*', $value);
             $definition->save();
 
-            return [
-                'term' => $term,
-                'definition' => $definition,
-            ];
+            return $definition;
         });
 
         event(new ContentUpdated($this, $locale, collect($fieldData)));
@@ -54,31 +53,40 @@ trait HasContent
     {
         $locale ??= app()->getLocale();
 
-        return $this->contentTerms()
-            ->with('definition')
-            ->get()
-            ->mapWithKeys(function (I18nTerm $term) use ($locale) {
-                $translations = $term->definition?->getTranslations('content') ?? [];
+        if (($content = ContentResourceContext::contentFor($this)) !== null) {
+            return collect($content)->mapWithKeys(function (array $translations, string $fieldKey) use ($locale) {
                 $value = $translations[$locale] ?? $translations['*'] ?? null;
 
-                return $value === null ? [] : [(string) $term->field_key => $value];
+                return $value === null ? [] : [$fieldKey => $value];
+            });
+        }
+
+        return $this->contentDefinitions()
+            ->get()
+            ->mapWithKeys(function (I18nDefinition $definition) use ($locale) {
+                $translations = $definition->getTranslations('content');
+                $value = $translations[$locale] ?? $translations['*'] ?? null;
+
+                return $value === null ? [] : [(string) $definition->field_key => $value];
             });
     }
 
     public function getFieldContent(?string $locale = null): Collection
     {
         $locale ??= app()->getLocale();
+        $options = $this->getContentOptions();
 
-        return $this->getSimpleFieldContent($locale)->mapWithKeys(function ($value, $fieldKey) {
+        return $this->getSimpleFieldContent($locale)->mapWithKeys(function ($value, $fieldKey) use ($options) {
             $field = $this->getTemplateField((string) $fieldKey);
 
             if ($field->repeater) {
                 return [$fieldKey => $this->getRepeater($value)];
             }
 
-            $getter = $this->getContentGetters()[$field->type] ?? null;
-            if ($getter !== null && method_exists($this, $getter)) {
-                return [$fieldKey => $this->handleCallable([$this, $getter], new ContentValue(['meta_value' => $value]))];
+            $getter = $options->getter((string) $fieldKey)
+                ?? $options->getter($field->type);
+            if ($getter !== null) {
+                return [$fieldKey => ContentReferenceTransformer::invokeGetter($getter, $value, $this)];
             }
 
             return [$fieldKey => $value];
@@ -94,26 +102,28 @@ trait HasContent
     {
         $this->updateContent([(string) $fieldKey => $data]);
 
-        return new ContentValue(['meta_key' => $fieldKey, 'meta_value' => $data]);
+        return new ContentValue(['key' => $fieldKey, 'value' => $data]);
     }
 
-    public function getMeta(ContentValue $meta): mixed
+    public function getMeta(ContentValue $contentValue): mixed
     {
-        $getter = $this->getContentGetters()[$meta->meta_key] ?? null;
+        $getter = $this->getContentOptions()->getter((string) $contentValue->key);
 
-        return $getter !== null && method_exists($this, $getter)
-            ? $this->handleCallable([$this, $getter], $meta)
-            : $meta->meta_value;
+        return $getter !== null
+            ? ContentReferenceTransformer::invokeGetter($getter, $contentValue->value, $this)
+            : $contentValue->value;
     }
 
     public function getRepeater(mixed $repeater): array
     {
-        return collect($repeater)->map(function ($item) {
-            return collect($item)->map(function ($value, $key) {
-                $getter = $this->getContentGetters()[(string) $key] ?? null;
+        $getters = $this->getContentOptions()->getters();
 
-                if ($getter !== null && method_exists($this, $getter)) {
-                    return $this->handleCallable([$this, $getter], new ContentValue(['meta_value' => $value]));
+        return collect($repeater)->map(function ($item) use ($getters) {
+            return collect($item)->map(function ($value, $key) use ($getters) {
+                $getter = $getters[(string) $key] ?? null;
+
+                if ($getter !== null) {
+                    return ContentReferenceTransformer::invokeGetter($getter, $value, $this);
                 }
 
                 if (str_contains((string) $key, 'children')) {
@@ -127,12 +137,14 @@ trait HasContent
 
     public function handleChildRepeater(mixed $children): Collection
     {
-        return collect($children)->map(function ($child) {
-            return collect($child)->map(function ($value, $key) {
-                $getter = $this->getContentGetters()[(string) $key] ?? null;
+        $getters = $this->getContentOptions()->getters();
 
-                return $getter !== null && method_exists($this, $getter)
-                    ? $this->handleCallable([$this, $getter], new ContentValue(['meta_value' => $value]))
+        return collect($children)->map(function ($child) use ($getters) {
+            return collect($child)->map(function ($value, $key) use ($getters) {
+                $getter = $getters[(string) $key] ?? null;
+
+                return $getter !== null
+                    ? ContentReferenceTransformer::invokeGetter($getter, $value, $this)
                     : $value;
             });
         });
@@ -143,10 +155,10 @@ trait HasContent
         return $callable($value);
     }
 
-    /** @return MorphMany<I18nTerm, $this> */
-    public function contentTerms(): MorphMany
+    /** @return MorphMany<I18nDefinition, $this> */
+    public function contentDefinitions(): MorphMany
     {
-        return $this->morphMany(I18nTerm::class, 'model')
+        return $this->morphMany(I18nDefinition::class, 'model')
             ->whereNotNull('field_key');
     }
 
@@ -164,6 +176,11 @@ trait HasContent
 
         if (isset($this->contentFieldCache[$cacheKey])) {
             return $this->contentFieldCache[$cacheKey];
+        }
+
+        $field = ContentResourceContext::templateField($this, $fieldKey);
+        if ($field) {
+            return $this->contentFieldCache[$cacheKey] = $field;
         }
 
         $query = ContentTemplateField::query()->where('key', $fieldKey);
@@ -192,11 +209,13 @@ trait HasContent
         return null;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    protected function getContentGetters(): array
+    public function contentTemplateSlug(): ?string
     {
-        return [];
+        return $this->getContentTemplateSlug();
+    }
+
+    public function getContentOptions(): ContentOptions
+    {
+        return ContentOptions::create();
     }
 }

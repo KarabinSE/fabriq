@@ -3,8 +3,8 @@
 namespace Karabin\Fabriq\Data;
 
 use Illuminate\Database\Eloquent\Collection;
-use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Models\Locale as I18nLocale;
+use Karabin\Fabriq\Models\Page;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -40,7 +40,7 @@ class PageData extends Data
             published: (bool) $page->published,
             created_at: $page->created_at?->toISOString(),
             updated_at: $page->updated_at?->toISOString(),
-            content: Lazy::create(fn () => ['data' => $page->getSimpleFieldContent()->toArray()]),
+            content: Lazy::create(fn () => ['data' => $page->getFieldContent()->toArray()]),
             localizedContent: Lazy::create(fn () => ['data' => self::buildLocalizedContent($page)]),
             template: Lazy::create(fn () => $page->template ? ['data' => self::buildTemplate($page)] : null)->defaultIncluded(),
             slugs: Lazy::create(fn () => ['data' => $page->slugs->toArray()]),
@@ -68,7 +68,7 @@ class PageData extends Data
 
         foreach ($enabledLocales as $locale) {
             $result[(string) $locale->iso_code] = [
-                'content' => $page->getSimpleFieldContent((string) $locale->iso_code),
+                'content' => $page->getFieldContent((string) $locale->iso_code),
             ];
         }
 

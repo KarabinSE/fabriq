@@ -2,68 +2,80 @@
 
 namespace Karabin\Fabriq\ContentGetters;
 
-use Exception;
-use Karabin\Fabriq\Fabriq;
-use Karabin\Fabriq\Models\Image;
+use Illuminate\Support\Collection;
+use Karabin\Fabriq\Data\ContentResourceIdsData;
+use Karabin\Fabriq\Data\ContentValueMetaData;
+use Karabin\Fabriq\Data\ImageContentData;
 use Karabin\Fabriq\Models\ContentValue;
+use Karabin\Fabriq\Models\Image;
 
 class ImageGetter extends BaseGetter implements GetterInterface
 {
-    /**
-     * @return array|null
-     */
-    public static function get(ContentValue $meta, bool $publishing = false)
+    public static function get(ContentValue $contentValue, bool $publishing = false): mixed
     {
-        if (empty($meta->toArray())) {
-            return [
-                'meta_id' => $meta->id,
-            ];
+        if (empty($contentValue->toArray())) {
+            return new ContentValueMetaData($contentValue->id);
         }
 
-        if ($meta->meta_value === null || empty($meta->meta_value)) {
+        if ($contentValue->value === null || empty($contentValue->value)) {
             return null;
         }
 
-        try {
-            $keyName = Fabriq::getModelClass('image')->getKeyName();
-            $id = $meta->meta_value[$keyName];
-        } catch (Exception $e) {
-            $id = $meta->meta_value[0];
+        $ids = ContentResourceContext::extractIds($contentValue->value);
+        if ($ids === []) {
+            return null;
         }
 
-        $image = Fabriq::getModelClass('image')
-            ->where('id', $id)
-            ->first();
-
-        if (! $image) {
+        $images = [];
+        foreach (ContentResourceContext::findMany('image', $ids) as $resource) {
+            if ($resource instanceof Image) {
+                $images[] = $resource;
+            }
+        }
+        if ($images === []) {
             return null;
         }
         if ($publishing) {
-            return [$image->id];
+            return new ContentResourceIdsData(array_map(fn (Image $image) => (int) $image->id, $images));
         }
 
-        /** @var Image $image * */
-        $media = $image->getFirstMedia('images');
+        $formatted = [];
+        foreach ($images as $image) {
+            $media = $image->getFirstMedia('images');
+            if (! $media) {
+                $formatted[] = null;
 
-        return [
-            'id' => $image->id,
-            'file_name' => $media->file_name,
-            'src' => $media->getUrl(),
-            'thumb_src' => $media->getUrl('thumb'),
-            'webp_src' => (string) ($media->hasGeneratedConversion('webp')) ? $media->getUrl('webp') : '',
-            'og_image_src' => (string) ($media->hasGeneratedConversion('og_image')) ? $media->getUrl('og_image') : '',
-            'srcset' => ($media->getSrcSet()) ? $media->getSrcset() : null,
-            'alt_text' => (string) $image->alt_text,
-            'caption' => $image->caption,
-            'mime_type' => $media->mime_type,
-            'size' => $media->size,
-            'width' => ($media->responsiveImages()->files->first()) ? $media->responsiveImages()->files->first()->width() : null,
-            'height' => ($media->responsiveImages()->files->first()) ? $media->responsiveImages()->files->first()->height() : null,
-            'custom_crop' => (bool) $image->custom_crop,
-            'responsive' => $media->toHtml(),
-            'x_position' => (string) $image->x_position,
-            'y_position' => (string) $image->y_position,
-            'meta_id' => $meta->id,
-        ];
+                continue;
+            }
+            $responsiveFiles = $media->responsiveImages()->files;
+            $responsiveImage = $responsiveFiles->first();
+
+            $formatted[] = new ImageContentData(
+                id: (int) $image->id,
+                file_name: (string) $media->file_name,
+                src: (string) $media->getUrl(),
+                thumb_src: (string) $media->getUrl('thumb'),
+                webp_src: $media->hasGeneratedConversion('webp') ? (string) $media->getUrl('webp') : '',
+                og_image_src: $media->hasGeneratedConversion('og_image') ? (string) $media->getUrl('og_image') : '',
+                srcset: $media->getSrcSet() ? (string) $media->getSrcset() : null,
+                alt_text: (string) $image->alt_text,
+                caption: $image->caption,
+                mime_type: (string) $media->mime_type,
+                size: (int) $media->size,
+                width: $responsiveImage?->width(),
+                height: $responsiveImage?->height(),
+                custom_crop: (bool) $image->custom_crop,
+                responsive: (string) $media->toHtml(),
+                x_position: (string) $image->x_position,
+                y_position: (string) $image->y_position,
+                meta_id: $contentValue->id,
+            );
+        }
+
+        if (ContentResourceContext::hasMultipleReferenceValues($contentValue->value, $ids)) {
+            return new Collection($formatted);
+        }
+
+        return $formatted[0] ?? null;
     }
 }

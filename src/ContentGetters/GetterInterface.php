@@ -6,10 +6,6 @@ use Karabin\Fabriq\Models\ContentValue;
 
 interface GetterInterface
 {
-    /**
-     * Get transformed data.
-     *
-     * @return array|null
-     */
-    public static function get(ContentValue $meta, bool $isPublishing);
+    /** Get transformed content data. */
+    public static function get(ContentValue $contentValue, bool $isPublishing): mixed;
 }

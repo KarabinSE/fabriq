@@ -186,7 +186,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
         $this->assertDatabaseMissing('articles', [
             'id' => $article->id,
         ]);
-        $this->assertDatabaseMissing('i18n_terms', [
+        $this->assertDatabaseMissing('i18n_definitions', [
             'model_id' => $article->id,
             'model_type' => 'fabriq_article',
         ]);

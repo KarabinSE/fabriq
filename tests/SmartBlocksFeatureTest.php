@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
-use Karabin\Fabriq\ContentGetters\FileGetter;
-use Karabin\Fabriq\ContentGetters\ImageGetter;
-use Karabin\Fabriq\ContentGetters\VideoGetter;
+use Illuminate\Support\Facades\DB;
+use Karabin\Fabriq\Models\File;
+use Karabin\Fabriq\Models\I18nDefinition;
+use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\Models\SmartBlock;
+use Karabin\Fabriq\Models\Video;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\ContentValue;
 
 class SmartBlocksFeatureTest extends AdminUserTestCase
 {
@@ -32,11 +34,11 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_update_a_smart_block()
     {
         // Arrange
-        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
-        $image = \Karabin\Fabriq\Models\Image::factory()->create();
-        $video = \Karabin\Fabriq\Models\Video::factory()->create();
-        $file = \Karabin\Fabriq\Models\File::factory()->create();
-        $file2 = \Karabin\Fabriq\Models\File::factory()->create();
+        $smartBlock = SmartBlock::factory()->create();
+        $image = Image::factory()->create();
+        $video = Video::factory()->create();
+        $file = File::factory()->create();
+        $file2 = File::factory()->create();
 
         // Act
         $response = $this->json('PATCH', '/smart-blocks/'.$smartBlock->id, [
@@ -46,9 +48,9 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
                     'boxes' => [
                         [
                             'name' => 'Superblocket',
-                            'image' => $this->getParsedImage($image),
-                            'video' => $this->getParsedVideo($video),
-                            'file' => $this->getParsedFile($file2),
+                            'image' => $image->id,
+                            'video' => $video->id,
+                            'file' => $file2->id,
                         ],
                     ],
                 ],
@@ -69,13 +71,26 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
             'name' => 'Another name',
         ]);
         $this->assertSame([['name' => 'The super block']], $smartBlock->getFieldContent('en')->get('boxes'));
+
+        $boxesDefinition = I18nDefinition::query()
+            ->where('model_id', $smartBlock->id)
+            ->where('model_type', $smartBlock->getMorphClass())
+            ->where('field_key', 'boxes')
+            ->firstOrFail();
+        $this->assertSame(
+            [
+                'sv' => [['name' => 'Superblocket', 'image' => $image->id, 'video' => $video->id, 'file' => $file2->id]],
+                'en' => [['name' => 'The super block']],
+            ],
+            $boxesDefinition->getTranslations('content')
+        );
     }
 
     /** @test **/
     public function it_can_get_all_smart_blocks()
     {
         // Arrange
-        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
+        $smartBlocks = SmartBlock::factory()->count(3)->create();
 
         // Act
         $response = $this->json('GET', '/smart-blocks');
@@ -89,8 +104,8 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_sort_smart_blocks()
     {
         // Arrange
-        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
-        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create([
+        $smartBlocks = SmartBlock::factory()->count(3)->create();
+        $smartBlock = SmartBlock::factory()->create([
             'name' => '1st :)',
         ]);
 
@@ -107,8 +122,8 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     public function it_can_search_for_a_smart_block()
     {
         // Arrange
-        $smartBlocks = \Karabin\Fabriq\Models\SmartBlock::factory()->count(3)->create();
-        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create([
+        $smartBlocks = SmartBlock::factory()->count(3)->create();
+        $smartBlock = SmartBlock::factory()->create([
             'name' => 'Find me',
         ]);
 
@@ -125,14 +140,14 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
-        $image = \Karabin\Fabriq\Models\Image::factory()->create([
+        $smartBlock = SmartBlock::factory()->create();
+        $image = Image::factory()->create([
             'alt_text' => 'Image alt text',
         ]);
-        $video = \Karabin\Fabriq\Models\Video::factory()->create([
+        $video = Video::factory()->create([
             'alt_text' => 'Video alt text',
         ]);
-        $file = \Karabin\Fabriq\Models\File::factory()->create([
+        $file = File::factory()->create([
             'caption' => 'File caption',
         ]);
         $smartBlock->localizedContent = [
@@ -140,9 +155,9 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
                 'boxes' => [
                     [
                         'name' => 'Superblocket',
-                        'image' => $this->getParsedImage($image),
-                        'video' => $this->getParsedVideo($video),
-                        'file' => $this->getParsedFile($file),
+                        'image' => $image->id,
+                        'video' => $video->id,
+                        'file' => $file->id,
                     ],
                 ],
             ],
@@ -157,6 +172,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
         $smartBlock->save();
 
         // Act
+        app()->setLocale('sv');
         $response = $this->json('GET', '/smart-blocks/'.$smartBlock->id.'?include=localizedContent,content');
 
         // Assert
@@ -176,11 +192,55 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
+    public function it_batches_image_lookups_and_resolves_multiple_image_ids()
+    {
+        $firstBlock = SmartBlock::factory()->create();
+        $secondBlock = SmartBlock::factory()->create();
+        $images = Image::factory()->count(3)->create();
+
+        $firstBlock->updateContent([
+            'boxes' => [
+                ['image' => [$images[0]->id, $images[1]->id]],
+            ],
+        ], 'sv');
+        $secondBlock->updateContent([
+            'boxes' => [
+                ['image' => $images[2]->id],
+            ],
+        ], 'sv');
+
+        app()->setLocale('sv');
+        $imageSelects = 0;
+        DB::listen(function ($query) use (&$imageSelects) {
+            if (preg_match('/from\s+[`"]?images[`"]?/i', $query->sql)) {
+                $imageSelects++;
+            }
+        });
+
+        $response = $this->json('GET', '/smart-blocks?include=content');
+
+        $response->assertOk();
+        $response->assertJsonFragment(['alt_text' => $images[0]->alt_text]);
+        $response->assertJsonFragment(['alt_text' => $images[1]->alt_text]);
+        $response->assertJsonFragment(['alt_text' => $images[2]->alt_text]);
+        $this->assertSame(1, $imageSelects);
+        $this->assertSame(
+            [['image' => [$images[0]->id, $images[1]->id]]],
+            I18nDefinition::query()
+                ->where('model_id', $firstBlock->id)
+                ->where('model_type', $firstBlock->getMorphClass())
+                ->where('field_key', 'boxes')
+                ->firstOrFail()
+                ->getTranslation('content', 'sv')
+        );
+    }
+
+    /** @test **/
     public function it_can_destroy_a_smart_block()
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $smartBlock = \Karabin\Fabriq\Models\SmartBlock::factory()->create();
+        $smartBlock = SmartBlock::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/smart-blocks/'.$smartBlock->id);
@@ -190,32 +250,5 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
         $this->assertDatabaseMissing('smart_blocks', [
             'id' => $smartBlock->id,
         ]);
-    }
-
-    protected function getParsedImage($image)
-    {
-        $metaImage = new ContentValue([
-            'meta_value' => [$image->id],
-        ]);
-
-        return ImageGetter::get($metaImage);
-    }
-
-    protected function getParsedVideo($video)
-    {
-        $metaVideo = new ContentValue([
-            'meta_value' => [$video->id],
-        ]);
-
-        return VideoGetter::get($metaVideo);
-    }
-
-    protected function getParsedFile($file)
-    {
-        $metaFile = new ContentValue([
-            'meta_value' => [$file->id],
-        ]);
-
-        return FileGetter::get($metaFile);
     }
 }

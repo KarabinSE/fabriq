@@ -28,7 +28,6 @@ use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\Contact;
 use Karabin\Fabriq\Models\Event;
 use Karabin\Fabriq\Models\File;
-use Karabin\Fabriq\Models\I18nDefinition;
 use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\Models\Locale;
 use Karabin\Fabriq\Models\Media;
@@ -151,7 +150,6 @@ return [
         'contact' => Contact::class,
         'event' => Event::class,
         'file' => File::class,
-        'i18nDefinition' => I18nDefinition::class,
         'image' => Image::class,
         'locale' => Locale::class,
         'media' => Media::class,

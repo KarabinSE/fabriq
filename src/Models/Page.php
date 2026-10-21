@@ -15,6 +15,7 @@ use Karabin\Fabriq\Concerns\BroadcastsModelEvents;
 use Karabin\Fabriq\Concerns\HasPaths;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\MediaGetter;
@@ -94,20 +95,28 @@ class Page extends Model implements HasMedia
         });
     }
 
-    protected function getContentGetters(): array
+    public function getContentOptions(): ContentOptions
     {
-        return [
-            'image' => 'getImages',
-            'main_image' => 'getImages',
-            'meta_og_image' => 'getImages',
-            'logo_image' => 'getImages',
-            'file' => 'getFiles',
-            'video' => 'getVideos',
-            'button' => 'getButton',
-            'buttons' => 'getButtons',
-            'smartBlock' => 'getSmartBlock',
-            'media' => 'getMediaViaType',
-        ];
+        return ContentOptions::create()
+            ->registerSpecialTypes([
+                'image', 'main_image', 'meta_og_image', 'logo_image', 'file',
+                'video', 'button', 'buttons', 'smartBlock', 'media',
+            ])
+            ->registerGetters([
+                'image' => 'getImages',
+                'main_image' => 'getImages',
+                'meta_og_image' => 'getImages',
+                'logo_image' => 'getImages',
+                'file' => 'getFiles',
+                'video' => 'getVideos',
+                'button' => 'getButton',
+                'buttons' => 'getButtons',
+                'smartBlock' => 'getSmartBlock',
+                'media' => 'getMediaViaType',
+            ])
+            ->registerResourceReferenceKeys([
+                'image', 'main_image', 'meta_og_image', 'logo_image', 'file', 'video', 'smartBlock',
+            ]);
     }
 
     /**
@@ -115,9 +124,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getImages(ContentValue $meta)
+    public function getImages(ContentValue $contentValue)
     {
-        return ImageGetter::get($meta);
+        return ImageGetter::get($contentValue);
     }
 
     /**
@@ -125,9 +134,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getFiles(ContentValue $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        return FileGetter::get($meta);
+        return FileGetter::get($contentValue);
     }
 
     /**
@@ -135,9 +144,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getVideos(ContentValue $meta)
+    public function getVideos(ContentValue $contentValue)
     {
-        return VideoGetter::get($meta);
+        return VideoGetter::get($contentValue);
     }
 
     /**
@@ -145,9 +154,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getButton(ContentValue $meta)
+    public function getButton(ContentValue $contentValue)
     {
-        return ButtonGetter::get($meta);
+        return ButtonGetter::get($contentValue);
     }
 
     /**
@@ -155,9 +164,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getButtons(ContentValue $meta)
+    public function getButtons(ContentValue $contentValue)
     {
-        return ButtonsGetter::get($meta);
+        return ButtonsGetter::get($contentValue);
     }
 
     /**
@@ -165,14 +174,14 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getSmartBlock(ContentValue $meta)
+    public function getSmartBlock(ContentValue $contentValue)
     {
-        return SmartBlockGetter::get($meta);
+        return SmartBlockGetter::get($contentValue);
     }
 
-    public function getMediaViaType(ContentValue $meta)
+    public function getMediaViaType(ContentValue $contentValue)
     {
-        return MediaGetter::get($meta);
+        return MediaGetter::get($contentValue);
     }
 
     public function blocks(): MorphMany
@@ -229,7 +238,6 @@ class Page extends Model implements HasMedia
      * Set localized content.
      *
      * @param  array  $value
-     * @return void
      */
     public function setLocalizedContentAttribute($value): void
     {

@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\Data\ContentValueMetaData;
 use Karabin\Fabriq\Database\Factories\MenuItemFactory;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Traits\HasContent;
@@ -67,9 +69,12 @@ class MenuItem extends Model
         return 'menu-item';
     }
 
-    protected function getContentGetters(): array
+    public function getContentOptions(): ContentOptions
     {
-        return ['file' => 'getFiles'];
+        return ContentOptions::create()
+            ->registerSpecialTypes(['file'])
+            ->registerGetters(['file' => 'getFiles'])
+            ->registerResourceReferenceKeys(['file']);
     }
 
     /** @return BelongsTo<Page, $this> */
@@ -84,15 +89,13 @@ class MenuItem extends Model
      *
      * @return mixed
      */
-    public function getFiles(ContentValue $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        if (! $meta->meta_value) {
-            return [
-                'meta_id' => $meta->id,
-            ];
+        if (! $contentValue->value) {
+            return new ContentValueMetaData($contentValue->id);
         }
 
-        return FileGetter::get($meta);
+        return FileGetter::get($contentValue);
     }
 
     /**

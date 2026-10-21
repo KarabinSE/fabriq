@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Karabin\Fabriq\ContentGetters\ButtonGetter;
+use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
+use Karabin\Fabriq\ContentGetters\ContentReferenceTransformer;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\BlockFactory;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -45,6 +52,28 @@ class Block extends Model implements Sortable
         return [
             'content' => 'object',
         ];
+    }
+
+    public function setContentAttribute(mixed $value): void
+    {
+        $content = ContentReferenceTransformer::normalize($value, self::contentOptions());
+        $this->attributes['content'] = $content === null
+            ? null
+            : json_encode($content, JSON_THROW_ON_ERROR);
+    }
+
+    public static function contentOptions(): ContentOptions
+    {
+        return ContentOptions::create()
+            ->registerSpecialTypes(['image', 'file', 'video', 'button', 'buttons'])
+            ->registerGetters([
+                'image' => ImageGetter::class,
+                'file' => FileGetter::class,
+                'video' => VideoGetter::class,
+                'button' => ButtonGetter::class,
+                'buttons' => ButtonsGetter::class,
+            ])
+            ->registerResourceReferenceKeys(['image', 'file', 'video']);
     }
 
     public function buildSortQuery(): Builder

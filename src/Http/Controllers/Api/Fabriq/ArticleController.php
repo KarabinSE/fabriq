@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController extends Controller
 {
-    public function index(Request $request): PaginatedDataCollection
+    public function index(Request $request): Response
     {
         $number = $request->integer('number', 100);
         $allowedIncludes = [
@@ -36,7 +37,7 @@ class ArticleController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return Fabriq::getDto('article')::collect($articles, PaginatedDataCollection::class);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, $articles->getCollection(), fn () => Fabriq::getDto('article')::collect($articles, PaginatedDataCollection::class)->toResponse($request));
     }
 
     public function show(Request $request, int $id): Response
@@ -53,7 +54,7 @@ class ArticleController extends Controller
 
         /** @var Article $article */
 
-        return Fabriq::getDto('article')::fromModel($article)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$article], fn () => Fabriq::getDto('article')::fromModel($article)->wrap('data')->toResponse($request));
     }
 
     public function store(CreateArticleRequest $request): Response

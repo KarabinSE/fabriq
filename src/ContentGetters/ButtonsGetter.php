@@ -3,6 +3,7 @@
 namespace Karabin\Fabriq\ContentGetters;
 
 use Illuminate\Support\Collection;
+use Karabin\Fabriq\Data\ContentValueMetaData;
 use Karabin\Fabriq\Models\ContentValue;
 
 class ButtonsGetter
@@ -13,24 +14,19 @@ class ButtonsGetter
      * @param  bool  $publishing
      * @return mixed
      */
-    public static function get(ContentValue $meta, $publishing = false)
+    public static function get(ContentValue $contentValue, $publishing = false)
     {
-        if (empty($meta->toArray())) {
-            return [
-                'meta_id' => $meta->id,
-            ];
+        if (empty($contentValue->toArray())) {
+            return new ContentValueMetaData($contentValue->id);
         }
-        $value = new Collection($meta->meta_value);
+        $value = new Collection($contentValue->value);
 
-        $buttons = $value->map(function ($button) {
-            $tempMeta = ContentValue::make([
-                'meta_value' => $button,
+        return $value->map(function ($button) {
+            $buttonContentValue = ContentValue::make([
+                'value' => $button,
             ]);
-            $button = ButtonGetter::get($tempMeta);
 
-            return $button;
+            return ButtonGetter::get($buttonContentValue);
         });
-
-        return $buttons;
     }
 }

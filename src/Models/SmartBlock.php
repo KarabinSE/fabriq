@@ -2,16 +2,17 @@
 
 namespace Karabin\Fabriq\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\SmartBlockFactory;
 use Karabin\Fabriq\Traits\HasContent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class SmartBlock extends Model
 {
@@ -34,15 +35,18 @@ class SmartBlock extends Model
         return 'smart_block';
     }
 
-    protected function getContentGetters(): array
+    public function getContentOptions(): ContentOptions
     {
-        return [
-            'image' => 'getImages',
-            'button' => 'getButton',
-            'buttons' => 'getButtons',
-            'file' => 'getFiles',
-            'video' => 'getVideos',
-        ];
+        return ContentOptions::create()
+            ->registerSpecialTypes(['image', 'button', 'buttons', 'file', 'video'])
+            ->registerGetters([
+                'image' => 'getImages',
+                'button' => 'getButton',
+                'buttons' => 'getButtons',
+                'file' => 'getFiles',
+                'video' => 'getVideos',
+            ])
+            ->registerResourceReferenceKeys(['image', 'file', 'video']);
     }
 
     /**
@@ -61,25 +65,25 @@ class SmartBlock extends Model
     /**
      * @return mixed
      */
-    public function getImages(ContentValue $meta)
+    public function getImages(ContentValue $contentValue)
     {
-        return ImageGetter::get($meta);
+        return ImageGetter::get($contentValue);
     }
 
     /**
      * @return mixed
      */
-    public function getFiles(ContentValue $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        return FileGetter::get($meta);
+        return FileGetter::get($contentValue);
     }
 
     /**
      * @return mixed
      */
-    public function getVideos(ContentValue $meta)
+    public function getVideos(ContentValue $contentValue)
     {
-        return VideoGetter::get($meta);
+        return VideoGetter::get($contentValue);
     }
 
     /**
@@ -87,9 +91,9 @@ class SmartBlock extends Model
      *
      * @return mixed
      */
-    public function getButton(ContentValue $meta)
+    public function getButton(ContentValue $contentValue)
     {
-        return ButtonGetter::get($meta);
+        return ButtonGetter::get($contentValue);
     }
 
     /**
@@ -97,9 +101,9 @@ class SmartBlock extends Model
      *
      * @return mixed
      */
-    public function getButtons(ContentValue $meta)
+    public function getButtons(ContentValue $contentValue)
     {
-        return ButtonsGetter::get($meta);
+        return ButtonsGetter::get($contentValue);
     }
 
     /**

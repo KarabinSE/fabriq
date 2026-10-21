@@ -82,7 +82,7 @@ class EventFeatureTest extends AdminUserTestCase
             'full_day' => 1,
         ]);
         $event = Event::latest()->firstOrFail();
-        $definition = $event->contentTerms()->where('field_key', 'title')->firstOrFail()->definition;
+        $definition = $event->contentDefinitions()->where('field_key', 'title')->firstOrFail();
         $this->assertSame('Shop is closed', $definition->getTranslation('content', 'en'));
     }
 
@@ -161,7 +161,7 @@ class EventFeatureTest extends AdminUserTestCase
         $this->assertDatabaseMissing('events', [
             'id' => $event0->id,
         ]);
-        $this->assertDatabaseMissing('i18n_terms', [
+        $this->assertDatabaseMissing('i18n_definitions', [
             'model_id' => $event0->id,
             'model_type' => $event0->getMorphClass(),
         ]);

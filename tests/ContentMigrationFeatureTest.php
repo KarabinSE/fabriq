@@ -110,6 +110,8 @@ class ContentMigrationFeatureTest extends AdminUserTestCase
         $dropLegacyTermColumns = require __DIR__.'/../database/migrations/2026_10_21_100000_drop_legacy_i18n_term_columns.php';
         $dropLegacyTermColumns->up();
         $renameTemplates->up();
+        $consolidateDefinitions = require __DIR__.'/../database/migrations/2026_10_21_130000_consolidate_i18n_definitions.php';
+        $consolidateDefinitions->up();
 
         $migratedPage = Page::findOrFail($page->id);
 
@@ -124,9 +126,24 @@ class ContentMigrationFeatureTest extends AdminUserTestCase
         ]);
         $migratedPage->updateContent(['page_title' => 'Updated title'], 'en');
         $this->assertSame('Updated title', $migratedPage->getSimpleFieldContent('en')->get('page_title'));
-        $this->assertFalse(Schema::hasColumn('i18n_terms', 'key'));
-        $this->assertFalse(Schema::hasColumn('i18n_terms', 'description'));
-        $this->assertFalse(Schema::hasColumn('i18n_terms', 'group'));
+        $this->assertDatabaseHas('i18n_definitions', [
+            'model_type' => $page->getMorphClass(),
+            'model_id' => $page->id,
+            'field_key' => 'page_title',
+        ]);
+        $this->assertSame(
+            1,
+            DB::table('i18n_definitions')
+                ->where('model_type', $page->getMorphClass())
+                ->where('model_id', $page->id)
+                ->where('field_key', 'page_title')
+                ->count(),
+        );
+        $this->assertFalse(Schema::hasTable('i18n_terms'));
+        $this->assertTrue(Schema::hasColumn('i18n_definitions', 'model_type'));
+        $this->assertTrue(Schema::hasColumn('i18n_definitions', 'model_id'));
+        $this->assertTrue(Schema::hasColumn('i18n_definitions', 'field_key'));
+        $this->assertFalse(Schema::hasColumn('i18n_definitions', 'term_id'));
         $this->assertFalse(Schema::hasColumn('pages', 'revision'));
         $this->assertFalse(Schema::hasColumn('pages', 'published_version'));
         $this->assertFalse(Schema::hasTable('revision_meta'));

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\Database\Factories\ContactFactory;
 use Karabin\Fabriq\Fabriq;
@@ -40,9 +41,12 @@ class Contact extends Model
         return 'contact';
     }
 
-    protected function getContentGetters(): array
+    public function getContentOptions(): ContentOptions
     {
-        return ['image' => 'getImages'];
+        return ContentOptions::create()
+            ->registerSpecialTypes(['image'])
+            ->registerGetters(['image' => 'getImages'])
+            ->registerResourceReferenceKeys(['image']);
     }
 
     public static function getTagClassName(): string
@@ -53,12 +57,12 @@ class Contact extends Model
     /**
      * Getter for images.
      *
-     * @param  mixed  $meta
+     * @param  mixed  $contentValue
      * @return mixed
      */
-    public function getImages($meta)
+    public function getImages($contentValue)
     {
-        return ImageGetter::get($meta);
+        return ImageGetter::get($contentValue);
     }
 
     /**

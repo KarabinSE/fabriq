@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -21,7 +22,7 @@ class SmartBlockController extends Controller
     /**
      * Get index of the resource.
      */
-    public function index(Request $request): PaginatedDataCollection
+    public function index(Request $request): Response
     {
         $number = $request->integer('number', 100);
         $allowedIncludes = [
@@ -37,7 +38,7 @@ class SmartBlockController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return Fabriq::getDto('smartBlock')::collect($smartBlocks, PaginatedDataCollection::class);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, $smartBlocks->getCollection(), fn () => Fabriq::getDto('smartBlock')::collect($smartBlocks, PaginatedDataCollection::class)->toResponse($request));
     }
 
     public function show(Request $request, int $id): Response
@@ -54,7 +55,7 @@ class SmartBlockController extends Controller
 
         /** @var SmartBlock $smartBlock */
 
-        return Fabriq::getDto('smartBlock')::fromModel($smartBlock)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$smartBlock], fn () => Fabriq::getDto('smartBlock')::fromModel($smartBlock)->wrap('data')->toResponse($request));
     }
 
     public function store(CreateSmartBlockRequest $request): Response

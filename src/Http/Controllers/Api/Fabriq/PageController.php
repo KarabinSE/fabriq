@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -42,9 +43,9 @@ class PageController extends Controller
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return Fabriq::getDto('page')::collect($pages, PaginatedDataCollection::class)
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, $pages->getCollection(), fn () => Fabriq::getDto('page')::collect($pages, PaginatedDataCollection::class)
             ->wrap('data')
-            ->toResponse($request);
+            ->toResponse($request));
     }
 
     /**
@@ -68,7 +69,7 @@ class PageController extends Controller
 
         /** @var Page $page */
 
-        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$page], fn () => Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request));
     }
 
     /**
@@ -109,7 +110,7 @@ class PageController extends Controller
 
         $page->save();
 
-        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$page], fn () => Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request));
     }
 
     /**

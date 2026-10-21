@@ -46,7 +46,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
             'fabriq_contact' => Fabriq::getFqnModel('contact'),
             'fabriq_event' => Fabriq::getFqnModel('event'),
             'fabriq_file' => Fabriq::getFqnModel('file'),
-            'fabriq_i18nDefinition' => Fabriq::getFqnModel('i18nDefinition'),
             'fabriq_image' => Fabriq::getFqnModel('image'),
             'fabriq_locale' => Fabriq::getFqnModel('locale'),
             'fabriq_media' => Fabriq::getFqnModel('media'),

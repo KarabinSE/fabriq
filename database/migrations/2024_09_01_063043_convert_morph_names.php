@@ -6,7 +6,6 @@ use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\SearchTerm;
 use Karabin\Fabriq\Models\Slug;
-use Karabin\Fabriq\Models\I18nTerm;
 
 return new class extends Migration
 {
@@ -63,11 +62,10 @@ return new class extends Migration
             $item->save();
         });
 
-        $terms = I18nTerm::where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($term) {
+        $terms = DB::table('i18n_terms')->where('model_type', 'LIKE', 'Ikoncept%')->get()->each(function ($term) {
             $model = new (self::resolveClassName($term->model_type));
             $morphName = $model->getMorphClass();
-            $term->model_type = $morphName;
-            $term->save();
+            DB::table('i18n_terms')->where('id', $term->id)->update(['model_type' => $morphName]);
         });       //
     }
 

@@ -2,7 +2,11 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Models\ContentTemplateField;
+use Karabin\Fabriq\Models\Menu;
+use Karabin\Fabriq\Models\MenuItem;
+use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class MenuFeatureTest extends AdminUserTestCase
@@ -11,7 +15,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_get_all_menus()
     {
         // Arrange
-        $menus = \Karabin\Fabriq\Models\Menu::factory()->count(2)->create();
+        $menus = Menu::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/menus');
@@ -25,7 +29,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_get_a_single_menu()
     {
         // Arrange
-        $menus = \Karabin\Fabriq\Models\Menu::factory()->count(2)->create();
+        $menus = Menu::factory()->count(2)->create();
 
         // Act
         $response = $this->json('GET', '/menus/'.$menus->first()->id);
@@ -84,7 +88,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_update_a_menu()
     {
         // Arrange
-        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $menu = Menu::factory()->create();
 
         // Act
         $response = $this->json('PATCH', '/menus/'.$menu->id, [
@@ -102,7 +106,7 @@ class MenuFeatureTest extends AdminUserTestCase
     public function it_can_delete_a_menu()
     {
         // Arrange
-        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $menu = Menu::factory()->create();
 
         // Act
         $response = $this->json('DELETE', '/menus/'.$menu->id);
@@ -119,11 +123,11 @@ class MenuFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->withoutExceptionHandling();
-        $menu = \Karabin\Fabriq\Models\Menu::factory()->create([
+        $menu = Menu::factory()->create([
             'slug' => 'main_menu',
             'name' => 'Huvudmeny',
         ]);
-        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+        $root = MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
         $field = ContentTemplateField::factory()->create([
@@ -131,21 +135,21 @@ class MenuFeatureTest extends AdminUserTestCase
             'key' => 'page_title',
             'translated' => true,
         ]);
-        $page = \Karabin\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
+        $page = Page::factory()->create(['template_id' => 2]);
         $page->updateContent(['page_title' => 'En titel'], 'en');
         $page->save();
 
-        $page2 = \Karabin\Fabriq\Models\Page::factory()->create(['template_id' => 2]);
+        $page2 = Page::factory()->create(['template_id' => 2]);
         $page2->updateContent(['page_title' => 'En annan titel'], 'en');
         $page2->save();
-        $first = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+        $first = MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $root->id,
             'type' => 'internal',
             'page_id' => $page->id,
         ]);
-        $second = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+        $second = MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'sortindex' => 10,
             'parent_id' => $first->id,
@@ -165,5 +169,38 @@ class MenuFeatureTest extends AdminUserTestCase
         $response->assertJsonFragment([
             'path' => '/en-titel/en-annan-titel',
         ]);
+    }
+
+    /** @test **/
+    public function it_batches_menu_item_content_reads_for_the_public_menu()
+    {
+        $menu = Menu::factory()->create(['slug' => 'batched_menu']);
+        $root = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'type' => 'internal',
+        ]);
+
+        foreach (['First item', 'Second item'] as $title) {
+            $item = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'parent_id' => $root->id,
+                'type' => 'external',
+            ]);
+            $item->updateContent(['title' => $title], 'sv');
+        }
+
+        $definitionSelects = 0;
+        DB::listen(function ($query) use (&$definitionSelects) {
+            if (preg_match('/from\s+[`"]?i18n_definitions[`"]?/i', $query->sql)) {
+                $definitionSelects++;
+            }
+        });
+
+        $response = $this->json('GET', '/menus/'.$menu->slug.'/public/?include=children');
+
+        $response->assertOk();
+        $response->assertJsonFragment(['title' => 'First item']);
+        $response->assertJsonFragment(['title' => 'Second item']);
+        $this->assertSame(1, $definitionSelects);
     }
 }

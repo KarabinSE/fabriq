@@ -2,9 +2,25 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\DB;
+use Karabin\Fabriq\ContentGetters\ButtonGetter;
+use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\ContentGetters\MediaGetter;
+use Karabin\Fabriq\ContentGetters\VideoGetter;
+use Karabin\Fabriq\Data\ButtonContentData;
+use Karabin\Fabriq\Data\ContentResourceIdsData;
+use Karabin\Fabriq\Data\FileContentData;
+use Karabin\Fabriq\Data\ImageContentData;
+use Karabin\Fabriq\Data\MediaContentData;
+use Karabin\Fabriq\Data\VideoContentData;
 use Karabin\Fabriq\Models\Block;
 use Karabin\Fabriq\Models\BlockType;
+use Karabin\Fabriq\Models\ContentValue;
+use Karabin\Fabriq\Models\File;
+use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\Video;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class BlockFeatureTest extends AdminUserTestCase
@@ -177,6 +193,182 @@ class BlockFeatureTest extends AdminUserTestCase
             'content->title' => 'A very new title',
             'locale' => 'en',
         ]);
+    }
+
+    public function test_it_stores_block_resource_references_as_ids_and_keeps_locale()
+    {
+        $blockType = BlockType::factory()->create();
+        $page = Page::factory()->create();
+        $block = Block::factory()->create([
+            'model_id' => $page->id,
+            'model_type' => $page->getMorphClass(),
+            'block_type_id' => $blockType->id,
+            'locale' => 'en',
+        ]);
+        $firstImage = Image::factory()->create();
+        $secondImage = Image::factory()->create();
+        $file = File::factory()->create();
+        $video = Video::factory()->create();
+
+        $response = $this->json('PUT', route('blocks.update', $page->id), [
+            'blocks' => [[
+                'uuid' => $block->uuid,
+                'name' => $block->name,
+                'locale' => 'en',
+                'block_type_id' => $blockType->id,
+                'content' => [
+                    'image' => ['id' => $firstImage->id, 'file_name' => 'legacy.jpg'],
+                    'file' => ['id' => $file->id, 'file_name' => 'legacy.pdf'],
+                    'video' => ['id' => $video->id, 'file_name' => 'legacy.mp4'],
+                    'buttons' => [
+                        ['linkType' => 'file', 'file' => ['id' => $file->id, 'file_name' => 'legacy.pdf']],
+                    ],
+                    'gallery' => [
+                        ['image' => [['id' => $firstImage->id], ['id' => $secondImage->id]]],
+                    ],
+                ],
+            ]],
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('blocks', [
+            'id' => $block->id,
+            'locale' => 'en',
+            'content->image' => $firstImage->id,
+            'content->file' => $file->id,
+            'content->video' => $video->id,
+            'content->buttons' => json_encode([
+                ['linkType' => 'file', 'file' => $file->id],
+            ]),
+            'content->gallery' => json_encode([
+                ['image' => [$firstImage->id, $secondImage->id]],
+            ]),
+        ]);
+    }
+
+    public function test_it_interpolates_block_image_references_when_reading_blocks()
+    {
+        $blockType = BlockType::factory()->create();
+        $page = Page::factory()->create();
+        $firstImage = Image::factory()->create(['alt_text' => 'First block image']);
+        $secondImage = Image::factory()->create(['alt_text' => 'Second block image']);
+        $file = File::factory()->create(['readable_name' => 'Block attachment']);
+        $video = Video::factory()->create(['alt_text' => 'Block video']);
+        $block = Block::factory()->create([
+            'model_id' => $page->id,
+            'model_type' => $page->getMorphClass(),
+            'block_type_id' => $blockType->id,
+            'locale' => 'sv',
+            'content' => [
+                'image' => $firstImage->id,
+                'file' => $file->id,
+                'video' => $video->id,
+                'buttons' => [
+                    ['linkType' => 'file', 'file' => $file->id],
+                ],
+                'gallery' => [
+                    ['image' => [$firstImage->id, $secondImage->id]],
+                ],
+            ],
+        ]);
+
+        $contentSelects = 0;
+        DB::listen(function ($query) use (&$contentSelects) {
+            if (preg_match('/from\s+[`"]?i18n_(terms|definitions)[`"]?/i', $query->sql)) {
+                $contentSelects++;
+            }
+        });
+
+        $response = $this->json('GET', route('pages.blocks.index', $page->id));
+
+        $response->assertOk();
+        $response->assertJsonPath('0.locale', 'sv');
+        $response->assertJsonPath('0.content.image.id', $firstImage->id);
+        $response->assertJsonPath('0.content.image.alt_text', 'First block image');
+        $response->assertJsonPath('0.content.file.id', $file->id);
+        $response->assertJsonPath('0.content.file.readable_name', 'Block attachment');
+        $response->assertJsonPath('0.content.video.id', $video->id);
+        $response->assertJsonPath('0.content.video.alt_text', 'Block video');
+        $response->assertJsonPath('0.content.buttons.0.file', $file->id);
+        $response->assertJsonPath('0.content.buttons.0.path', $file->getFirstMedia('files')->getUrl());
+        $response->assertJsonPath('0.content.gallery.0.image.0.id', $firstImage->id);
+        $response->assertJsonPath('0.content.gallery.0.image.1.id', $secondImage->id);
+        $this->assertSame(0, $contentSelects);
+    }
+
+    public function test_resource_getters_return_data_objects()
+    {
+        $image = Image::factory()->create();
+        $secondImage = Image::factory()->create();
+        $file = File::factory()->create();
+        $video = Video::factory()->create();
+
+        $imageResult = ImageGetter::get(new ContentValue(['value' => $image->id]));
+        $imageListResult = ImageGetter::get(new ContentValue(['value' => [$image->id, $secondImage->id]]));
+        $fileResult = FileGetter::get(new ContentValue(['value' => $file->id]));
+        $videoResult = VideoGetter::get(new ContentValue(['value' => $video->id]));
+        $publishingImageResult = ImageGetter::get(new ContentValue(['value' => $image->id]), true);
+
+        $this->assertInstanceOf(ImageContentData::class, $imageResult);
+        $this->assertContainsOnlyInstancesOf(ImageContentData::class, $imageListResult);
+        $this->assertInstanceOf(FileContentData::class, $fileResult);
+        $this->assertInstanceOf(VideoContentData::class, $videoResult);
+        $this->assertInstanceOf(ContentResourceIdsData::class, $publishingImageResult);
+        $this->assertSame([$image->id], $publishingImageResult->toArray());
+    }
+
+    public function test_button_and_media_getters_return_typed_data_objects()
+    {
+        $button = ButtonGetter::get(new ContentValue([
+            'value' => [
+                'text' => 'Visit',
+                'linkType' => 'external',
+                'url' => 'https://example.com',
+                'newTab' => true,
+            ],
+        ]));
+        $media = MediaGetter::get(new ContentValue([
+            'value' => [
+                'type' => 'image',
+                'fullscreen' => false,
+                'image' => Image::factory()->create()->id,
+            ],
+        ]));
+
+        $this->assertInstanceOf(ButtonContentData::class, $button);
+        $this->assertSame('https://example.com', $button->toArray()['path']);
+        $this->assertSame('Visit', $button->toArray()['text']);
+        $this->assertArrayNotHasKey('page_id', $button->toArray());
+        $this->assertInstanceOf(MediaContentData::class, $media);
+        $this->assertSame('image', $media->toArray()['type']);
+        $this->assertFalse($media->toArray()['fullscreen']);
+        $this->assertArrayHasKey('image', $media->toArray());
+    }
+
+    public function test_media_getter_interpolates_optional_image_and_video_references()
+    {
+        $image = Image::factory()->create();
+        $video = Video::factory()->create();
+
+        $imageMedia = MediaGetter::get(new ContentValue([
+            'value' => [
+                'type' => 'image',
+                'image' => $image->id,
+                'video' => $video->id,
+            ],
+        ]));
+        $videoMedia = MediaGetter::get(new ContentValue([
+            'value' => [
+                'type' => 'video',
+                'video' => $video->id,
+                'image' => $image->id,
+            ],
+        ]));
+
+        $this->assertInstanceOf(MediaContentData::class, $imageMedia);
+        $this->assertInstanceOf(VideoContentData::class, $imageMedia->video);
+        $this->assertInstanceOf(MediaContentData::class, $videoMedia);
+        $this->assertInstanceOf(ImageContentData::class, $videoMedia->image);
     }
 
     public function test_it_will_destroy_blocks_that_are_not_present_in_the_update()

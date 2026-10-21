@@ -5,6 +5,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Requests\UpdateBlockRequest;
@@ -19,7 +20,10 @@ class PageBlockController
             ->whereNull('parent_id')
             ->get();
 
-        return Fabriq::getDto('block')::collect($blocks);
+        return ContentResourceContext::withModels(
+            $blocks,
+            fn () => Fabriq::getDto('block')::collect($blocks),
+        );
     }
 
     public function update(UpdateBlockRequest $request, int $pageId): JsonResponse
@@ -32,7 +36,7 @@ class PageBlockController
                 'uuid' => $block['uuid'] ?? null,
             ], [
                 'name' => $block['name'],
-                'content' => $block['content'],
+                'content' => $block['content'] ?? [],
                 'model_id' => $page->id,
                 'locale' => $block['locale'],
                 'model_type' => $page->getMorphClass(),
