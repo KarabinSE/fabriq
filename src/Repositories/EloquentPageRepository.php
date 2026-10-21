@@ -3,6 +3,7 @@
 namespace Karabin\Fabriq\Repositories;
 
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Block;
 use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Models\Slug;
 use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
@@ -33,17 +34,10 @@ class EloquentPageRepository implements PageRepositoryInterface
             ->whereHas('slugs', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })
-            ->with('blocks', function ($query) {
-                $query->where('locale', app()->getLocale())
-                    ->with('children', 'blockType')
-                    ->whereNull('parent_id');
-            })
             ->where('published', true)
             ->firstOrFail();
 
-        // Decorate with content
-        $model->content = $model->getFieldContent(app()->getLocale());
-        unset($model->content['boxes']);
+        $this->loadLiveBlocks($model);
         $model->slug = $slug;
 
         return $model;
@@ -55,8 +49,7 @@ class EloquentPageRepository implements PageRepositoryInterface
             $query->where('slug', $slug);
         })->firstOrFail();
 
-        // Decorate with content
-        $model->content = $model->getFieldContent();
+        $this->loadLiveBlocks($model);
         $model->slug = $slug;
 
         return $model;
@@ -73,5 +66,27 @@ class EloquentPageRepository implements PageRepositoryInterface
             });
 
         return $models;
+    }
+
+    private function loadLiveBlocks(Page $page): void
+    {
+        $blocks = Block::query()
+            ->where('model_type', $page->getMorphClass())
+            ->where('model_id', $page->getKey())
+            ->where('locale', app()->getLocale())
+            ->with('blockType')
+            ->orderBy('sortindex')
+            ->get();
+
+        $blocksByParent = $blocks->groupBy('parent_id');
+        $buildTree = function (int|string|null $parentId) use (&$buildTree, $blocksByParent) {
+            return $blocksByParent->get($parentId, collect())
+                ->each(function (Block $block) use (&$buildTree) {
+                    $block->setRelation('children', $buildTree($block->getKey()));
+                })
+                ->values();
+        };
+
+        $page->setRelation('blocks', $buildTree(null));
     }
 }

@@ -19,7 +19,7 @@ class PermalinksRedirectController extends Controller
     {
         App::setLocale($locale);
         $page = Fabriq::getModelClass('page')->whereHash($hash)
-            ->with('slugs', 'menuItems', 'latestSlug')
+            ->with(['menuItems' => fn ($query) => $query->without('page')])
             ->firstOrFail();
 
         $paths = $page->transformPaths();

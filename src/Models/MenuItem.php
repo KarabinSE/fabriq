@@ -5,7 +5,6 @@ namespace Karabin\Fabriq\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Karabin\Fabriq\ContentGetters\ContentOptions;
@@ -141,20 +140,7 @@ class MenuItem extends Model
 
     public function getRelativePathAttribute(): string
     {
-        if ($this->ancestors->count()) {
-            $collection = new Collection($this->ancestors);
-
-            return $collection->reduce(function ($carry, $subItem) {
-                /** @var MenuItem $subItem * */
-                if (! $subItem->page) {
-                    return;
-                }
-
-                return $carry.'/'.$subItem->getSlugString();
-            }, '').'/'.$this->getSlugString();
-        }
-
-        return $this->getSlugString();
+        return (string) ($this->getTranslation('path', app()->getLocale(), false) ?? '');
     }
 
     /**

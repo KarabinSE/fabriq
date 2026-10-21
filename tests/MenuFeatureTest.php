@@ -156,6 +156,15 @@ class MenuFeatureTest extends AdminUserTestCase
             'type' => 'internal',
             'page_id' => $page2->id,
         ]);
+        $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
+            'tree' => [[
+                'id' => $first->id,
+                'children' => [[
+                    'id' => $second->id,
+                    'children' => [],
+                ]],
+            ]],
+        ])->assertOk();
 
         // Act
         $response = $this->json('GET', '/menus/'.$menu->slug.'/public/'.'?include=children');

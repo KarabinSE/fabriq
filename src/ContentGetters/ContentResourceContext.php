@@ -85,7 +85,7 @@ class ContentResourceContext
             if (in_array($type, ['image', 'file', 'video'], true)) {
                 $query->with('media');
             } elseif ($type === 'page') {
-                $query->with(['slugs', 'latestSlug', 'menuItems.ancestors', 'menuItems.page.slugs']);
+                $query->with(['menuItems' => fn ($menuItemQuery) => $menuItemQuery->without('page')]);
             }
 
             $resources = $query->whereIn('id', $queryIds)
@@ -109,7 +109,7 @@ class ContentResourceContext
             if (in_array($type, ['image', 'file', 'video'], true)) {
                 $query->with('media');
             } elseif ($type === 'page') {
-                $query->with(['slugs', 'latestSlug', 'menuItems.ancestors', 'menuItems.page.slugs']);
+                $query->with(['menuItems' => fn ($menuItemQuery) => $menuItemQuery->without('page')]);
             }
 
             foreach ($query->whereIn('id', $missingIds)->get() as $resource) {
@@ -154,7 +154,7 @@ class ContentResourceContext
      */
     private function __construct(iterable $models, bool $loadReferencedResources)
     {
-        $models = collect($models)->values();
+        $models = $this->includeLoadedChildren(collect($models)->values());
 
         $this->loadContent($models);
         if (! $loadReferencedResources) {
@@ -184,6 +184,7 @@ class ContentResourceContext
                 $this->resources['smartBlock|'.$smartBlock->getKey()] = $smartBlock;
             }
             $this->loadTemplateFields($smartBlocks);
+            $smartBlocks = $this->includeLoadedChildren($smartBlocks);
             $this->loadContent($smartBlocks);
         }
 
@@ -197,7 +198,7 @@ class ContentResourceContext
             $model = Fabriq::getFqnModel($type);
             $query = $model::query();
             if ($type === 'page') {
-                $query->with(['slugs', 'latestSlug', 'menuItems.ancestors', 'menuItems.page.slugs']);
+                $query->with(['menuItems' => fn ($menuItemQuery) => $menuItemQuery->without('page')]);
             } else {
                 $query->with('media');
             }
@@ -207,6 +208,42 @@ class ContentResourceContext
                 $this->resources[$type.'|'.$resource->getKey()] = $resource;
             }
         }
+    }
+
+    /**
+     * @param  Collection<int, Model>  $models
+     * @return Collection<int, Model>
+     */
+    private function includeLoadedChildren(Collection $models): Collection
+    {
+        $included = collect();
+        $pending = $models;
+
+        while ($pending->isNotEmpty()) {
+            $model = $pending->shift();
+            $key = $model->getMorphClass().'|'.$model->getKey();
+
+            if ($included->has($key)) {
+                continue;
+            }
+
+            $included->put($key, $model);
+
+            foreach (['blocks', 'children'] as $relation) {
+                if (! $model->relationLoaded($relation)) {
+                    continue;
+                }
+
+                $related = $model->getRelation($relation);
+                if ($related instanceof Model) {
+                    $pending->push($related);
+                } elseif ($related instanceof Collection) {
+                    $pending = $pending->concat($related);
+                }
+            }
+        }
+
+        return $included->values();
     }
 
     /**

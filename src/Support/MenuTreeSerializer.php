@@ -52,12 +52,14 @@ class MenuTreeSerializer
      */
     private static function item(MenuItem $menuItem, array $includes): array
     {
+        $path = (string) $menuItem->relativePath;
+
         $data = [
             'id' => (int) $menuItem->id,
             'title' => (string) $menuItem->title,
             'slug' => (string) $menuItem->getSlugString(),
-            'path' => (string) $menuItem->relativePath,
-            'localized_path' => '/'.app()->getLocale().$menuItem->relativePath,
+            'path' => $path,
+            'localized_path' => $menuItem->type === 'external' ? $path : '/'.app()->getLocale().$path,
             'parent_id' => $menuItem->parent_id ? (int) $menuItem->parent_id : null,
             'type' => (string) $menuItem->type,
         ];

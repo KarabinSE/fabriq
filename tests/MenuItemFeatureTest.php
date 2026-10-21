@@ -531,6 +531,15 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'parent_id' => $menuItem->id,
             'page_id' => $subPage->id,
         ]);
+        $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
+            'tree' => [[
+                'id' => $menuItem->id,
+                'children' => [[
+                    'id' => $subMenuItem->id,
+                    'children' => [],
+                ]],
+            ]],
+        ])->assertOk();
 
         // Act
         $response = $this->withHeaders(['X-LOCALE' => 'en'])

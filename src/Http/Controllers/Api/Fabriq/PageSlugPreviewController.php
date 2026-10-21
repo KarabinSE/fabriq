@@ -3,6 +3,7 @@
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -25,6 +26,10 @@ class PageSlugPreviewController extends Controller
 
         $result = $repo->findPreviewBySlug($slug);
 
-        return Fabriq::getDto('live_page')::fromModel($result)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModels([$result], function () use ($result, $request) {
+            $result->content = $result->getFieldContent()->except('boxes');
+
+            return Fabriq::getDto('live_page')::fromModel($result)->wrap('data')->toResponse($request);
+        });
     }
 }

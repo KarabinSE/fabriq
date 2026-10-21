@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Fabriq;
-use Karabin\Fabriq\Models\MenuItem;
 
 trait HasPaths
 {
@@ -73,25 +72,16 @@ trait HasPaths
         $slugGroups = collect([]);
 
         $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
+        $menuItems = $this->getMenuItemsForPaths();
 
-        if ($this->menuItems->count()) {
-            foreach ($supportedLocales as $locale => $item) {
-                $localizedSlugs = $this->menuItems->map(function ($item) use ($locale) {
-                    if (! $item->ancestors->count()) {
-                        return '';
-                    }
+        if ($menuItems->isNotEmpty()) {
+            foreach ($supportedLocales->keys() as $locale) {
+                $localizedPaths = $menuItems
+                    ->map(fn ($menuItem) => $menuItem->getTranslation('path', (string) $locale, false) ?? '')
+                    ->unique()
+                    ->values();
 
-                    return collect($item->ancestors)->reduce(function ($carry, $subItem) use ($locale) {
-                        /** @var MenuItem $subItem * */
-                        if (! $subItem->page) {
-                            return;
-                        }
-
-                        return $carry.'/'.$subItem->getSlugString($locale);
-                    }, '').'/'.$item->getSlugString($locale);
-                })->unique();
-
-                $slugGroups->push([$locale => $localizedSlugs]);
+                $slugGroups->push([$locale => $localizedPaths]);
             }
 
             return $slugGroups;
@@ -112,27 +102,27 @@ trait HasPaths
     public function getLocalizedPathsAttribute(): Collection
     {
         $slugGroups = collect([]);
-        $localizedSlugs = $this->menuItems->map(function ($item) {
-            if (! $item->ancestors->count()) {
-                return '';
-            }
-
-            return collect($item->ancestors)->reduce(function ($carry, $subItem) {
-                /** @var MenuItem $subItem * */
-                if (! $subItem->page) {
-                    return;
-                }
-
-                return $carry.'/'.$subItem->getSlugString();
-            }, '').'/'.$item->getSlugString();
-        })->unique();
-        $slugGroups->push($localizedSlugs);
+        $menuItems = $this->getMenuItemsForPaths();
+        $localizedPaths = $menuItems
+            ->map(fn ($menuItem) => $menuItem->getTranslation('path', App::currentLocale(), false) ?? '')
+            ->unique()
+            ->values();
+        $slugGroups->push($localizedPaths);
 
         // If no menu items exists, fetch the latest slug
         if (! $slugGroups[0]->count()) {
-            $slugGroups[0]->push(['/'.$this->latestSlug->slug]);
+            $slugGroups[0]->push(['/'.$this->latestSlug?->slug]);
         }
 
         return $slugGroups;
+    }
+
+    private function getMenuItemsForPaths(): Collection
+    {
+        if ($this->relationLoaded('menuItems')) {
+            return $this->getRelation('menuItems');
+        }
+
+        return $this->menuItems()->without('page')->get();
     }
 }
