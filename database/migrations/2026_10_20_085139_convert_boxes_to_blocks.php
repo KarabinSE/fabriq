@@ -16,11 +16,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (app()->environment() === 'testing') {
+            return;
+        }
         $locales = Fabriq::getModelClass('locale')->cachedLocales();
         foreach ($locales as $locale) {
             App::setLocale($locale->iso_code);
             $pages = Page::all()->each(function ($page) use ($locale) {
-                $content = $page->getFieldContent($locale->iso_code);
                 $boxTerm = DB::table('i18n_terms')->where('field_key', 'boxes')
                     ->where('model_id', $page->id)
                     ->where('model_type', 'fabriq_page')
@@ -77,7 +79,6 @@ return new class extends Migration
 
                     }
                 }
-                // dd($page->toArray());
             });
         }
     }
