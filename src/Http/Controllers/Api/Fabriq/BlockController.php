@@ -13,12 +13,12 @@ class BlockController extends Controller
 
     public function store(Request $request): void {}
 
-    public function show(int $id): Response
+    public function show(Request $request, int $id): Response
     {
         $block = Fabriq::getFqnModel('block')::buildQuery(Fabriq::getFqnModel('block'))
             ->findOrFail($id);
 
-        return Fabriq::getDto('block')::from($block)->toResponse();
+        return Fabriq::getDto('block')::from($block)->toResponse($request);
     }
 
     public function destroy(int $id): void {}
