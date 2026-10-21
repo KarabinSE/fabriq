@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class MenuFeatureTest extends AdminUserTestCase
 {
@@ -126,7 +126,7 @@ class MenuFeatureTest extends AdminUserTestCase
         $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
             'menu_id' => $menu->id,
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => 2,
             'key' => 'page_title',
             'translated' => true,

@@ -3,11 +3,11 @@
 namespace Karabin\Fabriq\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Karabin\Fabriq\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\ContentTemplateField;
 
-class RevisionTemplateFieldFactory extends Factory
+class ContentTemplateFieldFactory extends Factory
 {
-    protected $model = RevisionTemplateField::class;
+    protected $model = ContentTemplateField::class;
 
     public function definition(): array
     {

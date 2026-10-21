@@ -19,6 +19,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\CommentController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ConfigController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactSortController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContentTemplateController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DeclineToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DownloadController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EmailVerificationController;
@@ -43,7 +44,6 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageTreeController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RevisionTemplateController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RoleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\SmartBlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\TagController;
@@ -264,7 +264,8 @@ class RouteRegistrar
 
     public function forMiscRoutes(): void
     {
-        Route::get('templates', [RevisionTemplateController::class, 'index'])->name('templates.index');
+        Route::get('content-templates', [ContentTemplateController::class, 'index'])->name('content-templates.index');
+        Route::get('templates', [ContentTemplateController::class, 'index'])->name('templates.index');
         Route::get('menus/{slug}/public', [MenuItemTreeController::class, 'show'])->name('menus.public.show');
         Route::get('{model}/count', [ModelCountController::class, 'show'])->name('model.count.show');
 

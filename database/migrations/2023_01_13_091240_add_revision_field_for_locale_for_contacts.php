@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,22 +12,24 @@ return new class extends Migration
      */
     public function up()
     {
-        RevisionTemplateField::unguard();
-        $template = RevisionTemplate::where('slug', 'contact')->first();
-        if (! $template) {
+        $templateId = DB::table('revision_templates')
+            ->where('slug', 'contact')
+            ->value('id');
+
+        if (! $templateId) {
             return;
         }
-        RevisionTemplateField::create([
-            'template_id' => $template->id,
+
+        DB::table('revision_template_fields')->insert([
+            'template_id' => $templateId,
             'name' => 'Språk',
             'key' => 'enabled_locales',
             'group' => 'contact',
-            'options' => [],
+            'options' => json_encode([]),
             'type' => 'text',
             'sort_index' => 40,
             'translated' => false,
         ]);
-        RevisionTemplateField::reguard();
     }
 
     /**
@@ -38,9 +39,8 @@ return new class extends Migration
      */
     public function down()
     {
-        $field = RevisionTemplateField::where('key', 'enabled_locales')->first();
-        if ($field) {
-            $field->delete();
-        }
+        DB::table('revision_template_fields')
+            ->where('key', 'enabled_locales')
+            ->delete();
     }
 };

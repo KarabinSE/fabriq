@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\RevisionTemplate;
 
 class SearchTermsFeatureTest extends AdminUserTestCase
 {
@@ -23,7 +23,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
         $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'En sida som ska publiceras',
             'published' => true,
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
 
         $page->updateContent([

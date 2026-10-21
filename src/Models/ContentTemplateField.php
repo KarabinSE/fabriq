@@ -5,13 +5,13 @@ namespace Karabin\Fabriq\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Karabin\Fabriq\Database\Factories\RevisionTemplateFieldFactory;
+use Karabin\Fabriq\Database\Factories\ContentTemplateFieldFactory;
 
-class RevisionTemplateField extends Model
+class ContentTemplateField extends Model
 {
     use HasFactory;
 
-    protected $table = 'revision_template_fields';
+    protected $table = 'content_template_fields';
 
     public $timestamps = false;
 
@@ -23,13 +23,13 @@ class RevisionTemplateField extends Model
         'translated' => 'boolean',
     ];
 
-    protected static function newFactory(): RevisionTemplateFieldFactory
+    protected static function newFactory(): ContentTemplateFieldFactory
     {
-        return RevisionTemplateFieldFactory::new();
+        return ContentTemplateFieldFactory::new();
     }
 
     public function template(): BelongsTo
     {
-        return $this->belongsTo(RevisionTemplate::class, 'template_id');
+        return $this->belongsTo(ContentTemplate::class, 'template_id');
     }
 }

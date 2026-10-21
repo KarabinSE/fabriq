@@ -3,10 +3,10 @@
 namespace Karabin\Fabriq\Support;
 
 use Illuminate\Support\Collection;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\Fabriq\Models\Locale as I18nLocale;
-use Karabin\Fabriq\Models\RevisionTemplate;
 
 class MenuTreeSerializer
 {
@@ -99,7 +99,7 @@ class MenuTreeSerializer
         }
 
         if (array_key_exists('template', $includes)) {
-            /** @var RevisionTemplate|null $template */
+            /** @var ContentTemplate|null $template */
             $template = $page->template;
             $data['template'] = [
                 'data' => $template ? self::template($template, $includes['template']) : null,
@@ -136,7 +136,7 @@ class MenuTreeSerializer
      * @param  array<string, array>  $includes
      * @return array<string, mixed>
      */
-    private static function template(RevisionTemplate $template, array $includes): array
+    private static function template(ContentTemplate $template, array $includes): array
     {
         $data = $template->toArray();
 

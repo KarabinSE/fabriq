@@ -25,7 +25,7 @@ class Block extends Model implements Sortable
         return BlockFactory::new();
     }
 
-    public $sortable = [
+    public array $sortable = [
         'order_column_name' => 'sortindex',
         'sort_when_creating' => true,
     ];

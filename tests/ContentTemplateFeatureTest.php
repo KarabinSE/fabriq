@@ -2,25 +2,26 @@
 
 namespace Tests\Feature;
 
+use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\RevisionTemplate;
 
-class RevisionTemplateFeatureTest extends AdminUserTestCase
+class ContentTemplateFeatureTest extends AdminUserTestCase
 {
     /** @test **/
-    public function it_can_get_all_templates()
+    public function it_can_get_all_content_templates()
     {
         // Arrange
-        RevisionTemplate::all()->each(function ($item) {
+        ContentTemplate::all()->each(function ($item) {
             $item->delete();
         });
-        // RevisionTemplate::truncate();
-        $templates = RevisionTemplate::factory()->count(3)->create([
+        // ContentTemplate::truncate();
+        $templates = ContentTemplate::factory()->count(3)->create([
             'locked' => true,
         ]);
 
         // Act
-        $response = $this->json('GET', '/templates');
+        $response = $this->json('GET', '/content-templates');
+        $legacyResponse = $this->json('GET', '/templates');
 
         // Assert
         $response->assertOk();
@@ -33,5 +34,6 @@ class RevisionTemplateFeatureTest extends AdminUserTestCase
                 ],
             ],
         ]);
+        $legacyResponse->assertOk()->assertJsonCount(3, 'data');
     }
 }

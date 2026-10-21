@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Exceptions\ContentFieldNotFound;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\ContentValue;
 use Karabin\Fabriq\Models\I18nDefinition;
 use Karabin\Fabriq\Models\I18nTerm;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
 
 trait HasContent
 {
-    /** @var array<string, RevisionTemplateField> */
+    /** @var array<string, ContentTemplateField> */
     protected array $contentFieldCache = [];
 
     protected static function bootHasContent(): void
@@ -25,7 +25,7 @@ trait HasContent
 
     public function template(): BelongsTo
     {
-        return $this->belongsTo(RevisionTemplate::class, 'template_id');
+        return $this->belongsTo(ContentTemplate::class, 'template_id');
     }
 
     public function updateContent(array $fieldData, ?string $locale = null): Collection
@@ -158,7 +158,7 @@ trait HasContent
         return [];
     }
 
-    protected function getTemplateField(string $fieldKey): RevisionTemplateField
+    protected function getTemplateField(string $fieldKey): ContentTemplateField
     {
         $cacheKey = $this->getAttribute('template_id').'|'.$fieldKey;
 
@@ -166,7 +166,7 @@ trait HasContent
             return $this->contentFieldCache[$cacheKey];
         }
 
-        $query = RevisionTemplateField::query()->where('key', $fieldKey);
+        $query = ContentTemplateField::query()->where('key', $fieldKey);
 
         if ($templateId = $this->getAttribute('template_id')) {
             $query->where('template_id', $templateId);
@@ -177,7 +177,7 @@ trait HasContent
         $field = $query->first();
 
         if (! $field && $this->getAttribute('template_id')) {
-            $field = RevisionTemplateField::query()->where('key', $fieldKey)->first();
+            $field = ContentTemplateField::query()->where('key', $fieldKey)->first();
         }
 
         if (! $field) {

@@ -3,9 +3,9 @@
 namespace Karabin\Fabriq\Tests\Feature;
 
 use Karabin\Fabriq\Models\Article;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class ArticlesFeatureTest extends AdminUserTestCase
 {
@@ -47,12 +47,12 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_update_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Nyhet',
             'slug' => 'article',
             'type' => 'article',
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Titel',
             'key' => 'title',
@@ -152,7 +152,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_delete_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()
+        $template = ContentTemplate::factory()
             ->hasFields(1, [
                 'key' => 'title',
                 'type' => 'text',
@@ -162,7 +162,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
                 'slug' => 'article',
             ]);
 
-        $metaField = RevisionTemplateField::factory()->create([
+        $metaField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => false,
             'key' => 'image',
@@ -226,7 +226,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_get_meta_data_for_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()
+        $template = ContentTemplate::factory()
             ->hasFields(1, [
                 'key' => 'title',
                 'type' => 'text',
@@ -236,7 +236,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
                 'slug' => 'article',
             ]);
 
-        $metaField = RevisionTemplateField::factory()->create([
+        $metaField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => false,
             'key' => 'header',

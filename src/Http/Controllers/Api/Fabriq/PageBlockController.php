@@ -2,14 +2,16 @@
 
 namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Requests\UpdateBlockRequest;
 
 class PageBlockController
 {
-    public function index(Request $request, int $pageId)
+    public function index(Request $request, int $pageId): Collection
     {
         $blocks = Fabriq::getFqnModel('block')::buildQuery(Fabriq::getFqnModel('block'))
             ->where('model_type', 'fabriq_page')
@@ -20,7 +22,7 @@ class PageBlockController
         return Fabriq::getDto('block')::collect($blocks);
     }
 
-    public function update(UpdateBlockRequest $request, int $pageId)
+    public function update(UpdateBlockRequest $request, int $pageId): JsonResponse
     {
         $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
         $blockUuids = [];

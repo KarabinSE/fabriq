@@ -3,8 +3,8 @@
 namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 
 class MakeTemplateField extends Command
 {
@@ -40,7 +40,7 @@ class MakeTemplateField extends Command
     public function handle()
     {
         // $name = $this->ask("Which ?") ?: '';
-        $templateOptions = RevisionTemplate::select('id', 'name', 'slug')
+        $templateOptions = ContentTemplate::select('id', 'name', 'slug')
             ->get();
 
         $choices = $templateOptions->map(function ($item) {
@@ -54,7 +54,7 @@ class MakeTemplateField extends Command
             return 1;
         }
 
-        $ff = RevisionTemplateField::where('template_id', $matches[1][0])->select('id')->get()->count();
+        $ff = ContentTemplateField::where('template_id', $matches[1][0])->select('id')->get()->count();
         $sortindex = ($ff + 1) * 10;
         // dd( + 1 * 10);
         $fieldName = $this->ask('Enter a name for the field');
@@ -63,14 +63,14 @@ class MakeTemplateField extends Command
         $repeater = $this->choice('Is the field a repeater?', ['Yes', 'No'], 1);
         $fieldType = $this->choice('Choose field type', ['text', 'textarea', 'image', 'html', 'date_time', 'video', 'date', 'switch'], 0);
 
-        $newField = new RevisionTemplateField;
+        $newField = new ContentTemplateField;
         $newField->template_id = $matches[1][0];
         $newField->name = $fieldName;
         $newField->key = $fieldKey;
         $newField->translated = ($translated === 'Yes') ? true : false;
         $newField->repeater = ($repeater === 'Yes') ? true : false;
         $newField->type = $fieldType;
-        $newField->sort_index = RevisionTemplate::where('id', $matches[1][0])->withCount('fields')->first()->fieldsCount + 1 * 10;
+        $newField->sort_index = ContentTemplate::where('id', $matches[1][0])->withCount('fields')->first()->fieldsCount + 1 * 10;
         $newField->sort_index = $sortindex;
         $newField->save();
 

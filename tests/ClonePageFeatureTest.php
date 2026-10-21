@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\Fabriq\Models\RevisionTemplate;
 
 class ClonePageFeatureTest extends AdminUserTestCase
 {
@@ -22,11 +22,11 @@ class ClonePageFeatureTest extends AdminUserTestCase
         // Arrange
         $root = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'root',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $image = \Karabin\Fabriq\Models\Image::factory()->create([
             'id' => 12,

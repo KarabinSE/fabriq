@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Models\Page;
-use Karabin\Fabriq\Models\RevisionTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class PagesFeatureTest extends AdminUserTestCase
@@ -24,7 +24,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
 
         // Act
@@ -45,7 +45,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $arr = ['page_title' => 'The page title for the page',
             'page_header' => 'The page title for the page',
@@ -93,7 +93,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
+            'template_id' => ContentTemplate::where('slug', 'startsida')->first()->id,
         ]);
 
         // Act
@@ -120,11 +120,11 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $otherPage = Page::factory()->create([
             'name' => 'Den andra startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
 
         // Act
@@ -147,7 +147,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         DB::table('slugs')->insert([
             'model_id' => Page::factory()->create()->id,
@@ -225,7 +225,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
 
         // Act
@@ -265,7 +265,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -288,7 +288,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
+            'template_id' => ContentTemplate::where('slug', 'startsida')->first()->id,
         ]);
 
         // Act
@@ -318,7 +318,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $page = Page::factory()->create([
             'name' => 'En sida som ska publiceras',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -359,7 +359,7 @@ class PagesFeatureTest extends AdminUserTestCase
             ->create([
                 'name' => 'Fooll',
             ]);
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Landningssida',
         ]);
         $page = Page::factory()
@@ -382,7 +382,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
         $page->updateContent([
             'page_title' => 'Svensk titel',

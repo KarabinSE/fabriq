@@ -5,20 +5,21 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\Request;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class BlockController extends Controller
 {
-    public function index() {}
+    public function index(): void {}
 
-    public function store(Request $request) {}
+    public function store(Request $request): void {}
 
-    public function show(int $id)
+    public function show(int $id): Response
     {
         $block = Fabriq::getFqnModel('block')::buildQuery(Fabriq::getFqnModel('block'))
             ->findOrFail($id);
 
-        return Fabriq::getDto('block')::from($block);
+        return Fabriq::getDto('block')::from($block)->toResponse();
     }
 
-    public function destroy($id) {}
+    public function destroy(int $id): void {}
 }

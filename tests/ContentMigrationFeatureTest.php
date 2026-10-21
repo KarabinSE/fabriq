@@ -5,28 +5,28 @@ namespace Tests\Feature;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\Page;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class ContentMigrationFeatureTest extends AdminUserTestCase
 {
     public function test_it_migrates_latest_revision_content_and_shared_meta_to_translations(): void
     {
-        $template = RevisionTemplate::factory()->create();
-        RevisionTemplateField::factory()->create([
+        $template = ContentTemplate::factory()->create();
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'page_title',
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'cards',
             'translated' => true,
             'repeater' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'shared_label',
             'translated' => false,
@@ -102,10 +102,14 @@ class ContentMigrationFeatureTest extends AdminUserTestCase
             'source_key' => 'pages_'.$page->id.'_2_page_title',
         ]);
 
+        $renameTemplates = require __DIR__.'/../database/migrations/2026_10_21_120000_rename_revision_templates_to_content_templates.php';
+        $renameTemplates->down();
+
         $migration = require __DIR__.'/../database/migrations/2026_10_21_090000_replace_revision_content_with_translations.php';
         $migration->up();
         $dropLegacyTermColumns = require __DIR__.'/../database/migrations/2026_10_21_100000_drop_legacy_i18n_term_columns.php';
         $dropLegacyTermColumns->up();
+        $renameTemplates->up();
 
         $migratedPage = Page::findOrFail($page->id);
 
@@ -126,6 +130,9 @@ class ContentMigrationFeatureTest extends AdminUserTestCase
         $this->assertFalse(Schema::hasColumn('pages', 'revision'));
         $this->assertFalse(Schema::hasColumn('pages', 'published_version'));
         $this->assertFalse(Schema::hasTable('revision_meta'));
+        $this->assertTrue(Schema::hasTable('content_templates'));
+        $this->assertTrue(Schema::hasTable('content_template_fields'));
+        $this->assertSame(3, ContentTemplateField::query()->where('template_id', $template->id)->count());
     }
 
     private function createLegacyI18nTables(): void

@@ -2,11 +2,11 @@
 
 namespace Karabin\Fabriq\Data;
 
-use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\ContentTemplate;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
-class RevisionTemplateData extends Data
+class ContentTemplateData extends Data
 {
     public function __construct(
         public int $id,
@@ -26,7 +26,7 @@ class RevisionTemplateData extends Data
         return ['fields', 'groupedFields'];
     }
 
-    public static function fromModel(RevisionTemplate $template): self
+    public static function fromModel(ContentTemplate $template): self
     {
         return new self(
             id: (int) $template->id,

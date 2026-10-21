@@ -3,36 +3,36 @@
 namespace Tests\Feature;
 
 use Carbon\CarbonImmutable;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\Event;
-use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Karabin\Fabriq\Models\Locale as I18nLocale;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class EventFeatureTest extends AdminUserTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Event item',
             'slug' => 'event-item',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'title',
             'key' => 'title',
             'type' => 'text',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'description',
             'key' => 'description',
             'type' => 'text',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'location',

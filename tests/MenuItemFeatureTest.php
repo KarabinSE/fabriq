@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\Menu;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\Fabriq\Models\RevisionTemplate;
-use Karabin\Fabriq\Models\RevisionTemplateField;
 use Karabin\Fabriq\Models\Slug;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
@@ -76,7 +76,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
 
         $this->assertEqualsCanonicalizing(
             ['title', 'url', 'body', 'file', 'external_url'],
-            RevisionTemplateField::query()
+            ContentTemplateField::query()
                 ->whereHas('template', fn ($query) => $query->where('slug', 'menu-item'))
                 ->whereIn('key', ['title', 'url', 'body', 'file', 'external_url'])
                 ->pluck('key')
@@ -135,10 +135,10 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'parent_id' => $parentItem->id,
             'page_id' => $childPage->id,
         ]);
-        $menuItemTemplate = RevisionTemplate::factory()->create([
+        $menuItemTemplate = ContentTemplate::factory()->create([
             'slug' => 'menu-item',
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $menuItemTemplate->id,
             'key' => 'external_url',
             'type' => 'text',
@@ -308,12 +308,12 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'menu_id' => $menu->id,
         ]);
 
-        $template = RevisionTemplate::query()->where('slug', 'menu-item')->firstOrFail();
-        RevisionTemplateField::query()
+        $template = ContentTemplate::query()->where('slug', 'menu-item')->firstOrFail();
+        ContentTemplateField::query()
             ->where('template_id', $template->id)
             ->where('key', 'title')
             ->update(['translated' => false]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'external_url',
             'type' => 'text',
@@ -387,16 +387,16 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'menu_id' => $menu->id,
         ]);
 
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'slug' => 'menu-item',
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'title',
             'type' => 'text',
             'translated' => true,
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'external_url',
             'type' => 'text',
@@ -444,16 +444,16 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'menu_id' => $menu->id,
         ]);
 
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'slug' => 'menu-item',
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'title',
             'type' => 'text',
             'translated' => false,
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'key' => 'external_url',
             'type' => 'text',
@@ -510,7 +510,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'template_id' => 3,
         ]);
 
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'key' => 'page_title',
             'translated' => true,
             'template_id' => 3,

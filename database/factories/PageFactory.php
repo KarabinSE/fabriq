@@ -2,9 +2,9 @@
 
 namespace Karabin\Fabriq\Database\Factories;
 
-use Karabin\Fabriq\Models\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\Page;
 
 class PageFactory extends Factory
 {
@@ -24,7 +24,7 @@ class PageFactory extends Factory
     {
         return [
             'name' => $this->faker->words(3, true),
-            'template_id' => RevisionTemplate::factory()->create()->id,
+            'template_id' => ContentTemplate::factory()->create()->id,
         ];
     }
 }
