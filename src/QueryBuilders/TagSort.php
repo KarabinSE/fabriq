@@ -13,13 +13,13 @@ class TagSort implements Sort
     /**
      * Sort custom columns.
      *
-     * @param  mixed  $descending
+     * @param  bool  $descending
      */
-    public function __invoke(Builder $query, $descending, string $property): Builder
+    public function __invoke(Builder $query, bool $descending, string $property): void
     {
         $model = Fabriq::getFqnModel(Str::singular($property));
 
-        return $query->select([$property.'.id', DB::raw('group_concat(tags.plain_name) as name')])
+        $query->select([$property.'.id', DB::raw('group_concat(tags.plain_name) as name')])
             ->leftJoin('taggables', 'taggables.taggable_id', '=', $property.'.id')
             ->leftJoin('tags', 'taggables.tag_id', '=', 'tags.id')
             ->where('taggables.taggable_type', '=', $model)

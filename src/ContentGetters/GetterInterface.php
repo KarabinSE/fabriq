@@ -2,7 +2,7 @@
 
 namespace Karabin\Fabriq\ContentGetters;
 
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 interface GetterInterface
 {
@@ -11,5 +11,5 @@ interface GetterInterface
      *
      * @return array|null
      */
-    public static function get(RevisionMeta $meta, bool $isPublishing);
+    public static function get(ContentValue $meta, bool $isPublishing);
 }

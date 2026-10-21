@@ -6,7 +6,7 @@ use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 class SmartBlocksFeatureTest extends AdminUserTestCase
 {
@@ -68,14 +68,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
             'id' => $smartBlock->id,
             'name' => 'Another name',
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-
-            'locale' => 'sv',
-        ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode([['name' => 'The super block']]),
-            'locale' => 'en',
-        ]);
+        $this->assertSame([['name' => 'The super block']], $smartBlock->getFieldContent('en')->get('boxes'));
     }
 
     /** @test **/
@@ -201,7 +194,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
 
     protected function getParsedImage($image)
     {
-        $metaImage = RevisionMeta::make([
+        $metaImage = new ContentValue([
             'meta_value' => [$image->id],
         ]);
 
@@ -210,7 +203,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
 
     protected function getParsedVideo($video)
     {
-        $metaVideo = RevisionMeta::make([
+        $metaVideo = new ContentValue([
             'meta_value' => [$video->id],
         ]);
 
@@ -219,7 +212,7 @@ class SmartBlocksFeatureTest extends AdminUserTestCase
 
     protected function getParsedFile($file)
     {
-        $metaFile = RevisionMeta::make([
+        $metaFile = new ContentValue([
             'meta_value' => [$file->id],
         ]);
 

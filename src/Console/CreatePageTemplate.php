@@ -6,7 +6,7 @@ use Karabin\Fabriq\Actions\ClonePage;
 use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplate;
 
 class CreatePageTemplate extends Command
 {
@@ -66,7 +66,6 @@ class CreatePageTemplate extends Command
             'name' => 'hidden_root',
             'sortindex' => 0,
             'parent_id' => null,
-            'revision' => 1,
             'template_id' => $sourceTemplate->id,
         ]);
         Fabriq::getFqnModel('page')::reguard();

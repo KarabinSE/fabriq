@@ -5,7 +5,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\Request;
 use Karabin\Fabriq\Data\RevisionTemplateData;
 use Karabin\Fabriq\Http\Controllers\Controller;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplate;
 use Spatie\LaravelData\DataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;

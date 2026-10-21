@@ -5,14 +5,14 @@ namespace Karabin\Fabriq\ContentGetters;
 use Exception;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Image;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 class ImageGetter extends BaseGetter implements GetterInterface
 {
     /**
      * @return array|null
      */
-    public static function get(RevisionMeta $meta, bool $publishing = false)
+    public static function get(ContentValue $meta, bool $publishing = false)
     {
         if (empty($meta->toArray())) {
             return [

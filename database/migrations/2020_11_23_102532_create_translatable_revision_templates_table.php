@@ -8,7 +8,7 @@ class CreateTranslatableRevisionTemplatesTable extends Migration
 {
     public function up()
     {
-        $tableName = config('translatable-revisions.revision_templates_table_name');
+        $tableName = 'revision_templates';
 
         Schema::create($tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -20,6 +20,6 @@ class CreateTranslatableRevisionTemplatesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists(config('translatable-revisions.revision_templates_table_name'));
+        Schema::dropIfExists('revision_templates');
     }
 }

@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
 use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\RevisionTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class PagesFeatureTest extends AdminUserTestCase
 {
@@ -46,8 +46,6 @@ class PagesFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
-            'revision' => 1,
-            'published_version' => null,
         ]);
         $arr = ['page_title' => 'The page title for the page',
             'page_header' => 'The page title for the page',
@@ -96,8 +94,6 @@ class PagesFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
-            'revision' => 1,
-            'published_version' => null,
         ]);
 
         // Act
@@ -198,14 +194,9 @@ class PagesFeatureTest extends AdminUserTestCase
             'locale' => 'sv',
             'slug' => 'en-mycket-bra-titel-1',
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'locale' => 'en',
-            'content' => json_encode('English title'),
-        ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'locale' => 'sv',
-            'content' => json_encode('En mycket bra titel'),
-        ]);
+        $definition = $page->contentTerms()->where('field_key', 'page_title')->first()->definition;
+        $this->assertSame('English title', $definition->getTranslation('content', 'en'));
+        $this->assertSame('En mycket bra titel', $definition->getTranslation('content', 'sv'));
     }
 
     /** @test **/
@@ -254,11 +245,11 @@ class PagesFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create();
         $page->updateContent([
             'page_title' => 'The page title for the page',
-        ], $page->revision, 'sv');
+        ], 'sv');
         $otherPage = Page::factory()->create();
         $otherPage->updateContent([
             'page_title' => 'The page title for the page',
-        ], $page->revision, 'sv');
+        ], 'sv');
 
         // Act
         $foundPage = Page::whereSlug('the-page-title-for-the-page')->first();
@@ -275,8 +266,6 @@ class PagesFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::all()->first()->id,
-            'revision' => 1,
-            'published_version' => null,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -289,7 +278,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $response->assertOk();
         $response->assertJsonFragment([
             'slug' => 'the-page-title-for-the-page',
-            'source_key' => 'pages-'.$page->id.'-1-page_title',
+            'source_key' => 'page_title',
         ]);
     }
 
@@ -300,8 +289,6 @@ class PagesFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => RevisionTemplate::where('slug', 'startsida')->first()->id,
-            'revision' => 1,
-            'published_version' => null,
         ]);
 
         // Act
@@ -326,13 +313,12 @@ class PagesFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
-    public function it_can_publish_a_page()
+    public function it_can_update_page_published_status()
     {
         // Arrange
         $page = Page::factory()->create([
             'name' => 'En sida som ska publiceras',
             'template_id' => RevisionTemplate::all()->first()->id,
-            'revision' => 1,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -349,17 +335,15 @@ class PagesFeatureTest extends AdminUserTestCase
         ]);
 
         // Act
-        $response = $this->json('POST', "/pages/{$page->id}/publish");
+        $response = $this->json('PATCH', "/pages/{$page->id}", [
+            'published' => true,
+        ]);
 
         // Assert
-        $this->markTestIncomplete('Not sure why this is not passing');
+        $response->assertOk();
         $this->assertDatabaseHas('pages', [
             'id' => $page->id,
-            'revision' => 2,
-            'published_version' => 1,
-        ]);
-        $this->assertDatabaseHas('i18n_terms', [
-            'key' => 'pages_1_2_page_title',
+            'published' => true,
         ]);
     }
 
@@ -399,7 +383,6 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'template_id' => RevisionTemplate::all()->first()->id,
-            'revision' => 1,
         ]);
         $page->updateContent([
             'page_title' => 'Svensk titel',
@@ -444,10 +427,13 @@ class PagesFeatureTest extends AdminUserTestCase
 
     public function test_it_can_be_published_or_not()
     {
-        // Arrange
+        $page = Page::factory()->create(['published' => true]);
 
-        // Act
+        $this->assertTrue((bool) $page->published);
 
-        // Assert
+        $page->published = false;
+        $page->save();
+
+        $this->assertFalse((bool) $page->fresh()->published);
     }
 }

@@ -3,24 +3,24 @@
 namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
-class MakeRevisionField extends Command
+class MakeTemplateField extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'fabriq:make-revision-field';
+    protected $signature = 'fabriq:make-template-field';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generates a revision field';
+    protected $description = 'Generates a template field';
 
     /**
      * Create a new command instance.

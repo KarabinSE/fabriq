@@ -4,8 +4,8 @@ namespace Karabin\Fabriq\Tests\Feature;
 
 use Karabin\Fabriq\Models\Article;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class ArticlesFeatureTest extends AdminUserTestCase
 {
@@ -89,9 +89,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'has_unpublished_time' => 1,
             'unpublishes_at' => '2055-02-03 13:00:00',
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('A real title'),
-        ]);
+        $this->assertSame('A real title', $article->getFieldContent('en')->get('title'));
         $this->assertDatabaseHas('slugs', [
             'slug' => 'a-real-title',
             'locale' => 'en',
@@ -171,7 +169,6 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'type' => 'image',
         ]);
         $article = Article::factory()->create([
-            'revision' => 1,
             'template_id' => $template->id,
         ]);
 
@@ -185,18 +182,11 @@ class ArticlesFeatureTest extends AdminUserTestCase
         $response = $this->json('DELETE', '/articles/'.$article->id);
 
         // Assert
-        // dd(RevisionMeta::all()->toArray());
         $response->assertOk();
         $this->assertDatabaseMissing('articles', [
             'id' => $article->id,
         ]);
         $this->assertDatabaseMissing('i18n_terms', [
-            'key' => 'articles_1_1_title',
-        ]);
-        $this->assertDatabaseMissing('i18n_definitions', [
-            'content' => 'En titel',
-        ]);
-        $this->assertDatabaseMissing('revision_meta', [
             'model_id' => $article->id,
             'model_type' => 'fabriq_article',
         ]);
@@ -253,7 +243,6 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'type' => 'text',
         ]);
         $article = Article::factory()->create([
-            'revision' => 1,
             'template_id' => $template->id,
         ]);
         $article->updateContent([
@@ -262,12 +251,12 @@ class ArticlesFeatureTest extends AdminUserTestCase
         $article->save();
 
         // Act
-        $content = $article->getFieldContent(1, 'sv');
+        $content = $article->getFieldContent('sv');
 
         // Assert
         $this->assertEquals('A nice header right', $content->first());
-        $this->assertDatabaseHas('revision_meta', [
-            'model_type' => $article->getMorphClass(),
+        $this->assertDatabaseHas('i18n_definitions', [
+            'content' => json_encode(['*' => 'A nice header right']),
         ]);
     }
 }

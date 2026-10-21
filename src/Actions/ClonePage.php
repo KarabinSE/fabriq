@@ -4,7 +4,7 @@ namespace Karabin\Fabriq\Actions;
 
 use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Model;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 
 class ClonePage
 {
@@ -13,8 +13,6 @@ class ClonePage
         $page = Fabriq::getModelClass('page');
         $page->name = ($pageName) ? $pageName : 'Kopia av '.$sourcePage->name;
         $page->template_id = $sourcePage->template_id;
-        $page->revision = $sourcePage->revision;
-        $page->published_version = $sourcePage->published_version;
         $page->parent_id = $root->id;
         $page->locked = $sourcePage->locked;
         $page->updated_by = auth()->user()->id ?? null;
@@ -25,7 +23,7 @@ class ClonePage
             ->orderBy('id', 'desc')->get();
 
         foreach ($locales as $locale) {
-            $content = $sourcePage->getFieldContent($sourcePage->revision, $locale->iso_code);
+            $content = $sourcePage->getFieldContent((string) $locale->iso_code);
             $page->updateContent($content->toArray(), $locale->iso_code);
         }
 

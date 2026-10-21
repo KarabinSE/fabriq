@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use Carbon\CarbonImmutable;
 use Karabin\Fabriq\Models\Event;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
+use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class EventFeatureTest extends AdminUserTestCase
 {
@@ -81,10 +81,9 @@ class EventFeatureTest extends AdminUserTestCase
             'end_time' => '10:00',
             'full_day' => 1,
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('Shop is closed'),
-            'locale' => 'en',
-        ]);
+        $event = Event::latest()->firstOrFail();
+        $definition = $event->contentTerms()->where('field_key', 'title')->firstOrFail()->definition;
+        $this->assertSame('Shop is closed', $definition->getTranslation('content', 'en'));
     }
 
     /** @test **/
@@ -159,12 +158,12 @@ class EventFeatureTest extends AdminUserTestCase
 
         // Assert
         $response->assertOk();
-        $delimiter = $event0->getDelimiter();
         $this->assertDatabaseMissing('events', [
             'id' => $event0->id,
         ]);
         $this->assertDatabaseMissing('i18n_terms', [
-            'key' => "events{$delimiter}1{$delimiter}{$delimiter}title",
+            'model_id' => $event0->id,
+            'model_type' => $event0->getMorphClass(),
         ]);
     }
 

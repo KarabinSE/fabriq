@@ -10,13 +10,13 @@ class ImageSort implements Sort
     /**
      * Sort custom columns.
      *
-     * @param  mixed  $descending
+     * @param  bool  $descending
      */
-    public function __invoke(Builder $query, $descending, string $property): Builder
+    public function __invoke(Builder $query, bool $descending, string $property): void
     {
         $keyName = $property;
 
-        return $query->select('images.*')
+        $query->select('images.*')
             ->join('media', 'media.model_id', '=', 'images.id')
             ->where('collection_name', 'images')
             ->orderBy('media.'.$keyName, $descending ? 'desc' : 'asc');

@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class MenuFeatureTest extends AdminUserTestCase
 {

@@ -97,14 +97,12 @@ class ContactsFeatureTest extends AdminUserTestCase
             'published' => true,
             'sortindex' => 100,
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('<p>en fin text text</p>'),
-            'locale' => 'sv',
-        ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('<p>a nice text</p>'),
-            'locale' => 'en',
-        ]);
+        $contact = Contact::findOrFail($response->json('data.id'));
+        $definition = $contact->contentTerms()->where('field_key', 'body')->firstOrFail()->definition;
+        $this->assertSame([
+            'sv' => '<p>en fin text text</p>',
+            'en' => '<p>a nice text</p>',
+        ], $definition->getTranslations('content'));
     }
 
     /** @test **/

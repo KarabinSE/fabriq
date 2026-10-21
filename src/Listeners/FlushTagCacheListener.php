@@ -24,7 +24,9 @@ class FlushTagCacheListener
      */
     public function handle($event)
     {
-        $tagsToFlush = $event->model->getRevisionOptions()->cacheKeysToFlush;
+        $tagsToFlush = method_exists($event->model, 'getContentCacheKeys')
+            ? $event->model->getContentCacheKeys()
+            : [];
 
         if (! $tagsToFlush) {
             return;

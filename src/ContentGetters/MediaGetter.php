@@ -2,14 +2,14 @@
 
 namespace Karabin\Fabriq\ContentGetters;
 
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 class MediaGetter implements GetterInterface
 {
-    public static function get(RevisionMeta $meta, bool $isPublishing = false)
+    public static function get(ContentValue $meta, bool $isPublishing = false)
     {
         if ($meta->meta_value['type'] === 'image') {
-            $localMeta = new RevisionMeta;
+            $localMeta = new ContentValue;
             $localMeta->meta_value = $meta->meta_value['image'];
 
             $imageData = ImageGetter::get($localMeta);
@@ -20,7 +20,7 @@ class MediaGetter implements GetterInterface
         }
 
         if ($meta->meta_value['type'] === 'video') {
-            $localMeta = new RevisionMeta;
+            $localMeta = new ContentValue;
             $localMeta->meta_value = $meta->meta_value['video'];
 
             $videoData = VideoGetter::get($localMeta);

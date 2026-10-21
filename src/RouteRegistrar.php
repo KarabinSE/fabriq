@@ -43,7 +43,6 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageTreeController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PublishPageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RevisionTemplateController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RoleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\SmartBlockController;
@@ -302,7 +301,6 @@ class RouteRegistrar
         Route::patch('pages/{id}', [PageController::class, 'update'])->name('pages.update');
         Route::delete('pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
         Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])->name('pages.clone.store');
-        Route::post('pages/{id}/publish', [PublishPageController::class, 'store'])->name('pages.publish.store');
     }
 
     public function forInvitations(): void

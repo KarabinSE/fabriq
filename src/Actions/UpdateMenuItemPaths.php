@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Actions;
 
 use Karabin\Fabriq\Models\MenuItem;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 
 class UpdateMenuItemPaths
 {
@@ -42,7 +42,7 @@ class UpdateMenuItemPaths
             foreach ($locales as $locale) {
                 if ($menuItem->type === 'external') {
                     $itemPaths[$locale] = (string) $menuItem
-                        ->getFieldContent($menuItem->revision, $locale)
+                        ->getFieldContent($locale)
                         ->get('external_url', '');
                 } else {
                     $slug = $menuItem->page?->slugs

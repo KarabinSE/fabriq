@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
 return new class extends Migration
 {

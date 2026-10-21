@@ -43,7 +43,6 @@ class PagePathsFeatureTest extends AdminUserTestCase
         // $terms = DB::table('i18n_terms')->get();
         // $slugs = DB::table('slugs')->get();
         // dd($terms->toArray(), $slugs->toArray());
-        // dd($page->fresh()->getFieldContent($page->revision, 'sv')->toArray());
         // dd($page->toArray());
         // Act
         $response = $this

@@ -4,7 +4,7 @@ namespace Karabin\Fabriq\Database\Factories;
 
 use Karabin\Fabriq\Models\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplate;
 
 class PageFactory extends Factory
 {

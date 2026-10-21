@@ -6,21 +6,24 @@ use Carbon\Carbon;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\Database\Factories\ArticleFactory;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\HasContent;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
 
 class Article extends Model
 {
-    use BroadcastsEvents, HasFactory, HasTranslatedRevisions;
+    use BroadcastsEvents, HasContent, HasFactory;
 
     public const RELATIONSHIPS = ['template', 'template.fields', 'slugs'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_articles', 'fabriq_articles|slug'];
+    }
 
     protected $guarded = ['content'];
 
@@ -44,18 +47,14 @@ class Article extends Model
         return ArticleFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('article')
-            ->registerSpecialTypes(['image'])
-            ->registerCacheKeysToFlush(['fabriq_articles', 'fabriq_articles|slug'])
-            ->registerGetters([
-                'image' => 'getImages',
-            ]);
+        return 'article';
+    }
+
+    protected function getContentGetters(): array
+    {
+        return ['image' => 'getImages'];
     }
 
     /**
@@ -71,9 +70,9 @@ class Article extends Model
      *
      * @return mixed
      */
-    public function getImages(RevisionMeta $meta)
+    public function getImages(ContentValue $meta)
     {
-        return ImageGetter::get($meta, $this->isPublishing);
+        return ImageGetter::get($meta);
     }
 
     public function getIsPublishedAttribute(): bool

@@ -11,23 +11,21 @@ use Kalnoy\Nestedset\NodeTrait;
 use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\Database\Factories\MenuItemFactory;
 use Karabin\Fabriq\Fabriq;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
 use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Translatable('path')]
 class MenuItem extends Model
 {
-    use HasFactory, HasTranslatedRevisions, HasTranslations, NodeTrait {
-        HasTranslatedRevisions::setLocale insteadof HasTranslations;
-        HasTranslations::setLocale as setTranslationsLocale;
-        HasTranslatedRevisions::getLocale insteadof HasTranslations;
-        HasTranslations::getLocale as getTranslationsLocale;
-    }
+    use HasContent, HasFactory, HasTranslations, NodeTrait;
 
     public const RELATIONSHIPS = ['page'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_menu'];
+    }
 
     protected $with = ['page'];
 
@@ -64,18 +62,14 @@ class MenuItem extends Model
         });
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('menu-item')
-            ->registerSpecialTypes(['file'])
-            ->registerGetters([
-                'file' => 'getFiles',
-            ])
-            ->registerCacheKeysToFlush(['fabriq_menu']);
+        return 'menu-item';
+    }
+
+    protected function getContentGetters(): array
+    {
+        return ['file' => 'getFiles'];
     }
 
     /** @return BelongsTo<Page, $this> */
@@ -90,7 +84,7 @@ class MenuItem extends Model
      *
      * @return mixed
      */
-    public function getFiles(RevisionMeta $meta)
+    public function getFiles(ContentValue $meta)
     {
         if (! $meta->meta_value) {
             return [
@@ -110,7 +104,7 @@ class MenuItem extends Model
             return $this->getSlug()->source_string ?? '';
         }
 
-        $content = $this->getFieldContent(null, 'sv');
+        $content = $this->getSimpleFieldContent('sv');
 
         return $content['title'] ?? '';
     }

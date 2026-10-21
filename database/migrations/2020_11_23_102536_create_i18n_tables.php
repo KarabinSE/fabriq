@@ -14,7 +14,7 @@ class CreateI18nTables extends Migration
      */
     public function up()
     {
-        $prefix = config('translatable-revisions.i18n_table_prefix_name');
+        $prefix = '';
 
         Schema::create($prefix.'i18n_locales', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -83,7 +83,7 @@ class CreateI18nTables extends Migration
      */
     public function down()
     {
-        $prefix = config('translatable-revisions.i18n_table_prefix_name');
+        $prefix = '';
         Schema::dropIfExists($prefix.'i18n_locales');
         Schema::dropIfExists($prefix.'i18n_definitions');
         Schema::dropIfExists($prefix.'i18n_terms');

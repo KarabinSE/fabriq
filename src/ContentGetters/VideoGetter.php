@@ -4,7 +4,7 @@ namespace Karabin\Fabriq\ContentGetters;
 
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Video;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 class VideoGetter
 {
@@ -14,7 +14,7 @@ class VideoGetter
      * @param  bool  $publishing
      * @return mixed
      */
-    public static function get(RevisionMeta $meta, $publishing = false)
+    public static function get(ContentValue $meta, $publishing = false)
     {
         if (empty($meta->toArray())) {
             return [

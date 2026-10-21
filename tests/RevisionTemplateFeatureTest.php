@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplate;
 
 class RevisionTemplateFeatureTest extends AdminUserTestCase
 {

@@ -91,10 +91,20 @@ class PageController extends Controller
             ->firstOrFail();
 
         /** @var Page $page */
-        $page->name = $request->name;
-        $page->published = $request->published;
+        if ($request->exists('name')) {
+            $page->name = $request->name;
+        }
+
+        if ($request->exists('published')) {
+            $page->published = $request->published;
+        }
+
         $page->touch();
-        $page->localizedContent = $request->localizedContent;
+
+        if ($request->exists('localizedContent')) {
+            $page->localizedContent = $request->localizedContent;
+        }
+
         $page->updated_by = $request->user()->id;
 
         $page->save();

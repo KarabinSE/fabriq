@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\ContentGetters;
 
 use Illuminate\Support\Collection;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 class ButtonsGetter
 {
@@ -13,7 +13,7 @@ class ButtonsGetter
      * @param  bool  $publishing
      * @return mixed
      */
-    public static function get(RevisionMeta $meta, $publishing = false)
+    public static function get(ContentValue $meta, $publishing = false)
     {
         if (empty($meta->toArray())) {
             return [
@@ -23,7 +23,7 @@ class ButtonsGetter
         $value = new Collection($meta->meta_value);
 
         $buttons = $value->map(function ($button) {
-            $tempMeta = RevisionMeta::make([
+            $tempMeta = ContentValue::make([
                 'meta_value' => $button,
             ]);
             $button = ButtonGetter::get($tempMeta);

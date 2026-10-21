@@ -5,8 +5,8 @@ namespace Karabin\Fabriq\Support;
 use Illuminate\Support\Collection;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
+use Karabin\Fabriq\Models\RevisionTemplate;
 
 class MenuTreeSerializer
 {
@@ -70,7 +70,7 @@ class MenuTreeSerializer
 
         if (array_key_exists('content', $includes)) {
             $data['content'] = [
-                'data' => self::normalize($menuItem->getFieldContent($menuItem->revision)),
+                'data' => self::normalize($menuItem->getFieldContent()),
             ];
         }
 
@@ -94,7 +94,7 @@ class MenuTreeSerializer
 
         if (array_key_exists('content', $includes)) {
             $data['content'] = [
-                'data' => self::normalize($page->getSimpleFieldContent($page->revision)),
+                'data' => self::normalize($page->getSimpleFieldContent()),
             ];
         }
 
@@ -169,7 +169,7 @@ class MenuTreeSerializer
         return $enabledLocales
             ->mapWithKeys(fn ($locale) => [
                 (string) $locale->iso_code => [
-                    'content' => self::normalize($page->getSimpleFieldContent($page->revision, (string) $locale->iso_code)),
+                    'content' => self::normalize($page->getSimpleFieldContent((string) $locale->iso_code)),
                 ],
             ])
             ->toArray();

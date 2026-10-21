@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Data;
 
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\DataCollection;
@@ -26,7 +26,7 @@ class BlockData extends Data
         public array|DataCollection $children = [],
     ) {
         if (isset($content->buttons)) {
-            $metaFake = RevisionMeta::make(['meta_value' => $content->buttons]);
+            $metaFake = ContentValue::make(['meta_value' => $content->buttons]);
             $nyaButtons = ButtonsGetter::get($metaFake);
             $content->buttons = $nyaButtons;
             // dd($content, $this->uuid);

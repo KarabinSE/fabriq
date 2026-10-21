@@ -42,7 +42,7 @@ class EloquentPageRepository implements PageRepositoryInterface
             ->firstOrFail();
 
         // Decorate with content
-        $model->content = $model->getSimpleFieldContent($model->published_version, app()->getLocale());
+        $model->content = $model->getSimpleFieldContent(app()->getLocale());
         unset($model->content['boxes']);
         $model->slug = $slug;
 
@@ -56,7 +56,7 @@ class EloquentPageRepository implements PageRepositoryInterface
         })->firstOrFail();
 
         // Decorate with content
-        $model->content = $model->getSimpleFieldContent($model->revision);
+        $model->content = $model->getSimpleFieldContent();
         $model->slug = $slug;
 
         return $model;
@@ -67,7 +67,7 @@ class EloquentPageRepository implements PageRepositoryInterface
         $models = $this->model->whereIn('id', $ids)
             ->orderBy('sortindex')
             ->get()->transform(function ($model) {
-                $model->content = $model->getSimpleFieldContent($model->revision);
+                $model->content = $model->getSimpleFieldContent();
 
                 return $model;
             });

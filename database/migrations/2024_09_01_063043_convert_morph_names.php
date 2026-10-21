@@ -6,7 +6,7 @@ use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\SearchTerm;
 use Karabin\Fabriq\Models\Slug;
-use Karabin\TranslatableRevisions\Models\I18nTerm;
+use Karabin\Fabriq\Models\I18nTerm;
 
 return new class extends Migration
 {

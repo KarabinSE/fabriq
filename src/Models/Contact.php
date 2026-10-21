@@ -11,15 +11,19 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\Database\Factories\ContactFactory;
 use Karabin\Fabriq\Fabriq;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
 use Spatie\Tags\HasTags;
 
 class Contact extends Model
 {
-    use BroadcastsEvents, HasFactory, HasTags, HasTranslatedRevisions;
+    use BroadcastsEvents, HasContent, HasFactory, HasTags;
 
     public const RELATIONSHIPS = ['images', 'tags'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_contacts'];
+    }
 
     protected $guarded = ['content', 'localizedContent'];
 
@@ -31,18 +35,14 @@ class Contact extends Model
         return ContactFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('contact')
-            ->registerSpecialTypes(['image'])
-            ->registerCacheKeysToFlush(['fabriq_contacts'])
-            ->registerGetters([
-                'image' => 'getImages',
-            ]);
+        return 'contact';
+    }
+
+    protected function getContentGetters(): array
+    {
+        return ['image' => 'getImages'];
     }
 
     public static function getTagClassName(): string
@@ -58,7 +58,7 @@ class Contact extends Model
      */
     public function getImages($meta)
     {
-        return ImageGetter::get($meta, $this->isPublishing);
+        return ImageGetter::get($meta);
     }
 
     /**
@@ -114,12 +114,7 @@ class Contact extends Model
      */
     public function getImageAttribute()
     {
-        $meta = $this->meta()->where('meta_key', 'image')->first();
-        if (! $meta) {
-            return null;
-        }
-
-        return $this->getImages($meta);
+        return $this->getFieldContent()->get('image');
     }
 
     /**

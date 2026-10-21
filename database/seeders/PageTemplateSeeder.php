@@ -4,8 +4,8 @@ namespace Karabin\Fabriq\Database\Seeders;
 
 use Karabin\Fabriq\Models\BlockType;
 use Illuminate\Database\Seeder;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplateField;
 
 class PageTemplateSeeder extends Seeder
 {

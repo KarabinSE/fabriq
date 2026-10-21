@@ -2,7 +2,7 @@
 
 namespace Karabin\Fabriq\Data;
 
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Models\RevisionTemplate;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 

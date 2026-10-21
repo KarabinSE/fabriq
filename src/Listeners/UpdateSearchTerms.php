@@ -2,11 +2,11 @@
 
 namespace Karabin\Fabriq\Listeners;
 
-use Karabin\Fabriq\Fabriq;
+use Illuminate\Support\Collection;
+use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Helpers\RecursiveArrayValues;
+use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Models\SearchTerm;
-use Karabin\TranslatableRevisions\Events\DefinitionsPublished;
-use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
 
 class UpdateSearchTerms
 {
@@ -19,58 +19,34 @@ class UpdateSearchTerms
 
     /**
      * Handle the event.
-     *
-     * @return void
      */
-    public function handle(DefinitionsUpdated|DefinitionsPublished $event)
+    public function handle(ContentUpdated $event): void
     {
-        $options = $event->model->getRevisionOptions();
-
-        if (! $options->isIndexable) {
+        if (! $event->model instanceof Page || ! $event->model->published) {
             return;
         }
 
-        if ($options->indexFunction) {
-            call_user_func_array($options->indexFunction, [
-                'args' => [
-                    'definitions' => $event->definitions,
-                ],
-            ]);
+        $content = $event->model->getSimpleFieldContent($event->locale);
+        $title = (string) ($content->get('page_title') ?? '');
+        /** @var Collection<int, array<string, mixed>> $paths */
+        $paths = $event->model->paths;
+        $pathGroup = $paths->first(fn ($group) => array_key_exists($event->locale, $group));
+        $localePaths = $pathGroup[$event->locale] ?? [];
+        $path = $localePaths instanceof Collection ? $localePaths->flatten()->first() : null;
+        $indexedKeys = RecursiveArrayValues::fromCollection($content, ['page_title', 'page_header', 'header']);
+        $data = [
+            'model_id' => $event->model->id,
+            'model_type' => $event->model->getMorphClass(),
+            'title' => $title,
+            'locale' => $event->locale,
+            'path' => (string) $path,
+            'search_string' => implode(' ', $indexedKeys),
+        ];
 
-            return;
-        }
-
-        if (get_class($event) === DefinitionsUpdated::class && Fabriq::getModelClass('page')->getMorphClass() === $event->model->getMorphClass()) {
-
-            return;
-        }
-
-        $event->model->paths->each(function ($path) use ($event, $options) {
-
-            /** @var array<string, string> $path */
-            $locale = collect($path)->keys()->first();
-
-            if (! isset($event->definitions[$locale][$options->titleKey])) {
-                return;
-            }
-
-            $indexedKeys = RecursiveArrayValues::fromCollection($event->definitions[$locale], $options->indexableKeys);
-            $title = $event->definitions[$locale][$options->titleKey];
-
-            $data = [
-                'model_id' => $event->model->id,
-                'model_type' => $event->model->getMorphClass(),
-                'title' => $title,
-                'locale' => $locale,
-                'path' => collect($path)->flatten()->first(),
-                'search_string' => implode(' ', $indexedKeys),
-            ];
-
-            SearchTerm::updateOrCreate([
-                'model_id' => $data['model_id'],
-                'model_type' => $data['model_type'],
-                'locale' => $data['locale'],
-            ], $data);
-        });
+        SearchTerm::updateOrCreate([
+            'model_id' => $data['model_id'],
+            'model_type' => $data['model_type'],
+            'locale' => $data['locale'],
+        ], $data);
     }
 }
