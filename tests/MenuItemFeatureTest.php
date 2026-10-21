@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Schema;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\I18nDefinition;
 use Karabin\Fabriq\Models\Page;
+use Karabin\Fabriq\Models\Slug;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
 use Karabin\TranslatableRevisions\Events\TranslatedRevisionUpdated;
 use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
@@ -81,6 +82,94 @@ class MenuItemFeatureTest extends AdminUserTestCase
 
         // Assert
         $response->assertOk();
+    }
+
+    /** @test **/
+    public function it_updates_menu_item_paths_for_each_locale_after_tree_update()
+    {
+        $menu = \Karabin\Fabriq\Models\Menu::factory()->create();
+        $rootPage = Page::factory()->create();
+        $root = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'page_id' => $rootPage->id,
+        ]);
+        $parentPage = Page::factory()->create();
+        $childPage = Page::factory()->create();
+        $parentItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $root->id,
+            'page_id' => $parentPage->id,
+        ]);
+        $childItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $parentItem->id,
+            'page_id' => $childPage->id,
+        ]);
+        $menuItemTemplate = RevisionTemplate::factory()->create([
+            'slug' => 'menu-item',
+        ]);
+        RevisionTemplateField::factory()->create([
+            'template_id' => $menuItemTemplate->id,
+            'key' => 'external_url',
+            'type' => 'text',
+            'translated' => true,
+        ]);
+        $externalItem = \Karabin\Fabriq\Models\MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $root->id,
+            'type' => 'external',
+        ]);
+        $externalItem->updateContent(['external_url' => 'https://example.se'], 'sv');
+        $externalItem->updateContent(['external_url' => 'https://example.com'], 'en');
+
+        foreach ([
+            [$rootPage, 'sv', 'rot-sv'],
+            [$rootPage, 'en', 'root-en'],
+            [$parentPage, 'sv', 'foralder-sv'],
+            [$parentPage, 'en', 'parent-en-old'],
+            [$parentPage, 'en', 'parent-en'],
+            [$childPage, 'sv', 'barn-sv'],
+            [$childPage, 'en', 'child-en'],
+        ] as [$page, $locale, $slug]) {
+            Slug::create([
+                'model_id' => $page->id,
+                'model_type' => $page->getMorphClass(),
+                'source_string' => $slug,
+                'source_key' => 'page_title',
+                'slug' => $slug,
+                'locale' => $locale,
+            ]);
+        }
+
+        $treeData = \Karabin\Fabriq\Models\MenuItem::descendantsOf($root->id)
+            ->toTree()
+            ->toArray();
+
+        $response = $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
+            'tree' => $treeData,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $root->id,
+            'path->sv' => '/rot-sv',
+            'path->en' => '/root-en',
+        ]);
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $parentItem->id,
+            'path->sv' => '/rot-sv/foralder-sv',
+            'path->en' => '/root-en/parent-en',
+        ]);
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $childItem->id,
+            'path->sv' => '/rot-sv/foralder-sv/barn-sv',
+            'path->en' => '/root-en/parent-en/child-en',
+        ]);
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $externalItem->id,
+            'path->sv' => 'https://example.se',
+            'path->en' => 'https://example.com',
+        ]);
     }
 
     /** @test **/
