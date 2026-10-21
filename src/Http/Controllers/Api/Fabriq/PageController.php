@@ -35,10 +35,10 @@ class PageController extends Controller
 
         $pages = QueryBuilder::for(Fabriq::getFqnModel('page'))
             ->allowedSorts('name', 'slug', 'id', 'created_at', 'updated_at')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
                 AllowedFilter::exact('template_id'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 

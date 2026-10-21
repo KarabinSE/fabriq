@@ -31,9 +31,9 @@ class SmartBlockController extends Controller
 
         $smartBlocks = QueryBuilder::for(Fabriq::getFqnModel('smartBlock'))
             ->allowedSorts('name', 'updated_at')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 

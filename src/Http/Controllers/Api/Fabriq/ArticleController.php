@@ -28,11 +28,11 @@ class ArticleController extends Controller
         ];
 
         $articles = QueryBuilder::for(Fabriq::getFqnModel('article'))
-            ->allowedSorts(['name', 'updated_at', 'publishes_at'])
-            ->allowedFilters([
+            ->allowedSorts('name', 'updated_at', 'publishes_at')
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
                 AllowedFilter::scope('published'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 

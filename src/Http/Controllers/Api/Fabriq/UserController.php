@@ -34,9 +34,9 @@ class UserController extends Controller
 
         $paginator = QueryBuilder::for(Fabriq::getFqnModel('user'))
             ->allowedSorts('name', 'email', 'id', 'updated_at')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->with('roles')
             ->paginate($number);

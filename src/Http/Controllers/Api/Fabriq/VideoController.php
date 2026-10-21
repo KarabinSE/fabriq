@@ -23,15 +23,15 @@ class VideoController extends Controller
         $number = $request->integer('number', 100);
 
         $videos = QueryBuilder::for(Fabriq::getFqnModel('video'))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
-            ])
-            ->allowedSorts([
+            )
+            ->allowedSorts(
                 'id', 'created_at', 'updated_at', 'alt_text',
                 AllowedSort::custom('file_name', new VideoSort),
                 AllowedSort::custom('size', new VideoSort),
                 AllowedSort::custom('tags', new TagSort, 'videos'),
-            ])
+            )
             ->allowedIncludes(...Video::RELATIONSHIPS)
             ->paginate($number);
 

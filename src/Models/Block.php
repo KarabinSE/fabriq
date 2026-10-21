@@ -64,9 +64,9 @@ class Block extends Model implements Sortable
     public static function buildQuery(): QueryBuilder
     {
         return QueryBuilder::for(self::class)
-            ->allowedIncludes(['blockType', 'children'])
-            ->allowedFilters([
+            ->allowedIncludes('blockType', 'children')
+            ->allowedFilters(
                 AllowedFilter::exact('locale'),
-            ]);
+            );
     }
 }

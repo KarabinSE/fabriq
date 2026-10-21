@@ -33,10 +33,10 @@ class ContactController extends Controller
 
         $contacts = QueryBuilder::for(Fabriq::getFqnModel('contact'))
             ->allowedSorts('name', 'email', 'updated_at', 'sortindex', 'published')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
                 AllowedFilter::scope('with_any_tags', 'withTags'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
