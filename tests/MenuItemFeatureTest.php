@@ -73,6 +73,15 @@ class MenuItemFeatureTest extends AdminUserTestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.content.data.title', 'External item');
+
+        $this->assertEqualsCanonicalizing(
+            ['title', 'url', 'body', 'file', 'external_url'],
+            RevisionTemplateField::query()
+                ->whereHas('template', fn ($query) => $query->where('slug', 'menu-item'))
+                ->whereIn('key', ['title', 'url', 'body', 'file', 'external_url'])
+                ->pluck('key')
+                ->all()
+        );
     }
 
     /** @test **/
@@ -333,7 +342,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'content' => json_encode(['*' => 'Sök på google'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ]);
         $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode(['*' => 'https://google.se'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            'content' => json_encode(['en' => 'https://google.se'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         ]);
     }
 

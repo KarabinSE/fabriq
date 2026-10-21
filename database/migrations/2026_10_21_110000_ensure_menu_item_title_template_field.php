@@ -21,26 +21,34 @@ return new class extends Migration
             ]);
         }
 
-        $titleExists = DB::table('revision_template_fields')
-            ->where('template_id', $templateId)
-            ->where('key', 'title')
-            ->exists();
+        $fields = [
+            ['name' => 'Title', 'key' => 'title', 'type' => 'text'],
+            ['name' => 'Url', 'key' => 'url', 'type' => 'text'],
+            ['name' => 'Innehåll', 'key' => 'body', 'type' => 'html'],
+            ['name' => 'Fil', 'key' => 'file', 'type' => 'file'],
+            ['name' => 'Extern url', 'key' => 'external_url', 'type' => 'text'],
+        ];
 
-        if ($titleExists) {
-            return;
+        foreach ($fields as $field) {
+            $exists = DB::table('revision_template_fields')
+                ->where('template_id', $templateId)
+                ->where('key', $field['key'])
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            DB::table('revision_template_fields')->insert([
+                'template_id' => $templateId,
+                ...$field,
+                'group' => 'menu',
+                'repeater' => false,
+                'translated' => true,
+                'sort_index' => 10,
+                'options' => null,
+            ]);
         }
-
-        DB::table('revision_template_fields')->insert([
-            'template_id' => $templateId,
-            'name' => 'Title',
-            'key' => 'title',
-            'type' => 'text',
-            'group' => 'menu',
-            'repeater' => false,
-            'translated' => true,
-            'sort_index' => 10,
-            'options' => null,
-        ]);
     }
 
     public function down(): void {}
