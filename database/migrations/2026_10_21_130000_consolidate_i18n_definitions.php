@@ -13,9 +13,11 @@ return new class extends Migration
         $this->ensureDefinitionsHaveNoMedia();
 
         Schema::table('i18n_definitions', function (Blueprint $table) {
-            $table->string('model_type')->nullable();
-            $table->unsignedBigInteger('model_id')->nullable();
-            $table->string('field_key')->nullable();
+            $table->after('content', function ($table) {
+                $table->string('model_type')->nullable();
+                $table->unsignedBigInteger('model_id')->nullable();
+                $table->string('field_key')->nullable();
+            });
         });
 
         $definitions = DB::table('i18n_definitions as definitions')
@@ -46,6 +48,10 @@ return new class extends Migration
             $table->dropForeign(['term_id']);
             $table->dropIndex('i18n_definitions_term_id_index');
             $table->dropColumn('term_id');
+        });
+
+        Schema::table('i18n_definitions', function (Blueprint $table) {
+            $table->dropColumn('approved');
         });
 
         Schema::drop('i18n_terms');
