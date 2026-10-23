@@ -16,6 +16,7 @@ use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\BlockFactory;
+use Karabin\Fabriq\Fabriq;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -52,6 +53,38 @@ class Block extends Model implements Sortable
         return [
             'content' => 'object',
         ];
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Block::class);
+    }
+
+    public function model()
+    {
+        return $this->morphTo();
+    }
+
+    public function setChildrenAttribute(array $children = [])
+    {
+        foreach ($children as $child) {
+            $this->createBlock($child, $this->parent->model);
+        }
+    }
+
+    public static function createBlock($block, Model $model)
+    {
+        return Fabriq::getFqnModel('block')::updateOrCreate([
+            'uuid' => $block['uuid'] ?? null,
+        ], [
+            'name' => $block['name'],
+            'content' => (object) ($block['content'] ?? []),
+            'model_id' => $model->id,
+            'locale' => $block['locale'],
+            'model_type' => $model->getMorphClass(),
+            'block_type_id' => $block['block_type_id'],
+            'children' => $block['children'] ?? [],
+        ]);
     }
 
     public function setContentAttribute(mixed $value): void
