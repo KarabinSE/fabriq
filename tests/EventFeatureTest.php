@@ -3,36 +3,36 @@
 namespace Tests\Feature;
 
 use Carbon\CarbonImmutable;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\Event;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
 class EventFeatureTest extends AdminUserTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Event item',
             'slug' => 'event-item',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'title',
             'key' => 'title',
             'type' => 'text',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'description',
             'key' => 'description',
             'type' => 'text',
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
+        $templateField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'location',
@@ -81,10 +81,9 @@ class EventFeatureTest extends AdminUserTestCase
             'end_time' => '10:00',
             'full_day' => 1,
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('Shop is closed'),
-            'locale' => 'en',
-        ]);
+        $event = Event::latest()->firstOrFail();
+        $definition = $event->contentDefinitions()->where('field_key', 'title')->firstOrFail();
+        $this->assertSame('Shop is closed', $definition->getTranslation('content', 'en'));
     }
 
     /** @test **/
@@ -159,12 +158,12 @@ class EventFeatureTest extends AdminUserTestCase
 
         // Assert
         $response->assertOk();
-        $delimiter = $event0->getDelimiter();
         $this->assertDatabaseMissing('events', [
             'id' => $event0->id,
         ]);
-        $this->assertDatabaseMissing('i18n_terms', [
-            'key' => "events{$delimiter}1{$delimiter}{$delimiter}title",
+        $this->assertDatabaseMissing('i18n_definitions', [
+            'model_id' => $event0->id,
+            'model_type' => $event0->getMorphClass(),
         ]);
     }
 

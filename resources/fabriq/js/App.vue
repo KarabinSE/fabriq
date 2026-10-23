@@ -108,7 +108,7 @@ export default {
             }
             this.pollingNotifications = setInterval(() => {
                 this.userStore.fetchNotifications();
-            }, 1000 * 15)
+            }, 1000 * 120)
         },
         listenToEchoEvents() {
             const wsPrefix = window.fabriqCms.pusher.ws_prefix

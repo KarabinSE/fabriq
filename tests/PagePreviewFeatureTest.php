@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
 class PagePreviewFeatureTest extends AdminUserTestCase
 {
@@ -14,10 +14,10 @@ class PagePreviewFeatureTest extends AdminUserTestCase
     {
         // Arrange
         $this->markTestSkipped();
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Sidmall',
         ]);
-        $titleField = RevisionTemplateField::factory()->create([
+        $titleField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Titel',
             'key' => 'page_title',
@@ -30,12 +30,10 @@ class PagePreviewFeatureTest extends AdminUserTestCase
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
             'template_id' => $template->id,
-            'revision' => 1,
         ]);
         $page->updateContent([
             'page_title' => 'the unborn title',
         ]);
-        $page->publish(1);
 
         $page->updateContent([
             'page_title' => 'the first title',

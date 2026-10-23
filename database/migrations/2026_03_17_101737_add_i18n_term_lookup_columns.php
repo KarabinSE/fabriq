@@ -8,7 +8,7 @@ class AddI18nTermLookupColumns extends Migration
 {
     public function up()
     {
-        $prefix = config('translatable-revisions.i18n_table_prefix_name');
+        $prefix = '';
         $tableName = $prefix.'i18n_terms';
 
         Schema::table($tableName, function (Blueprint $table) {
@@ -20,7 +20,7 @@ class AddI18nTermLookupColumns extends Migration
 
     public function down()
     {
-        $prefix = config('translatable-revisions.i18n_table_prefix_name');
+        $prefix = '';
         $tableName = $prefix.'i18n_terms';
 
         Schema::table($tableName, function (Blueprint $table) {

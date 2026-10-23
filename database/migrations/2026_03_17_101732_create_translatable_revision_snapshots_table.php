@@ -8,7 +8,7 @@ class CreateTranslatableRevisionSnapshotsTable extends Migration
 {
     public function up()
     {
-        $tableName = config('translatable-revisions.revision_snapshots_table_name');
+        $tableName = 'revision_snapshots';
 
         Schema::create($tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -25,7 +25,7 @@ class CreateTranslatableRevisionSnapshotsTable extends Migration
 
     public function down()
     {
-        $tableName = config('translatable-revisions.revision_snapshots_table_name');
+        $tableName = 'revision_snapshots';
 
         Schema::dropIfExists($tableName);
     }

@@ -5,7 +5,7 @@ namespace Karabin\Fabriq\Data;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -66,7 +66,7 @@ class MenuItemData extends Data
 
         foreach ($enabledLocales as $locale) {
             $result[(string) $locale->iso_code] = [
-                'content' => $menuItem->getSimpleFieldContent($menuItem->revision, (string) $locale->iso_code),
+                'content' => $menuItem->getSimpleFieldContent((string) $locale->iso_code),
             ];
         }
 

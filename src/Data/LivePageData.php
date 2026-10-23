@@ -4,7 +4,10 @@ namespace Karabin\Fabriq\Data;
 
 use Illuminate\Support\Collection;
 use Karabin\Fabriq\Models\Page;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
+use Spatie\LaravelData\Optional;
 
 class LivePageData extends Data
 {
@@ -15,6 +18,9 @@ class LivePageData extends Data
         public ?int $template_id,
         public ?string $updated_at,
         public array $content,
+        public Optional|BlockTypeData $blockType,
+        #[DataCollectionOf(BlockData::class)]
+        public Optional|DataCollection $blocks,
     ) {}
 
     public static function fromModel(Page $page): self
@@ -36,6 +42,8 @@ class LivePageData extends Data
             template_id: $page->template_id ? (int) $page->template_id : null,
             updated_at: $page->updated_at,
             content: ['data' => $content],
+            blocks: BlockData::collect($page->blocks, DataCollection::class),
+            blockType: Optional::create(),
         );
     }
 }

@@ -27,13 +27,12 @@
         "illuminate/database": "^8.56|^9.0|^10|^11|^12|^13",
         "illuminate/support": "^7.0.5|^8.0|^9.0|^10|^11|^12|^13",
         "spatie/laravel-permission": "^6.0",
-        "spatie/laravel-query-builder": "^3.5|^4.0|^5.0|^6.0",
+        "spatie/laravel-query-builder": "^3.5|^4.0|^5.0|^6.0|^7.0",
         "spatie/laravel-medialibrary": "^8.2|^9.0|^10.0|^11.0",
         "doctrine/dbal": "^3.1|^4.0",
         "kalnoy/nestedset": "^6.0|^7.0",
         "spatie/laravel-tags": "^3.1|^4.0",
         "spatie/laravel-sluggable": "^2.6|^3.0",
-        "karabinse/translatable-revisions": "^2.0.0|dev-main",
         "laravel/fortify": "^1.8",
         "dyrynda/laravel-make-user": "^7.3|^8.0|^9.0",
         "php-ffmpeg/php-ffmpeg": "^1.0",
@@ -44,7 +43,8 @@
         "laravel/pint": "^1.2",
         "spatie/laravel-webhook-server": "^3.8",
         "spatie/laravel-data": "^4.20",
-        "spatie/laravel-typescript-transformer": "^3.3"
+        "spatie/laravel-typescript-transformer": "^3.3",
+        "spatie/laravel-translatable": "^6.15"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

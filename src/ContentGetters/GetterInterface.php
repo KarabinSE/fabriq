@@ -2,14 +2,10 @@
 
 namespace Karabin\Fabriq\ContentGetters;
 
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Models\ContentValue;
 
 interface GetterInterface
 {
-    /**
-     * Get transformed data.
-     *
-     * @return array|null
-     */
-    public static function get(RevisionMeta $meta, bool $isPublishing);
+    /** Get transformed content data. */
+    public static function get(ContentValue $contentValue, bool $isPublishing): mixed;
 }

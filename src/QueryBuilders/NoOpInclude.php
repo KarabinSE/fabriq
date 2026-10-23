@@ -7,8 +7,7 @@ use Spatie\QueryBuilder\Includes\IncludeInterface;
 
 class NoOpInclude implements IncludeInterface
 {
-    public function __invoke(Builder $query, string $include)
+    public function __invoke(Builder $query, string $include): void
     {
-        return null;
     }
 }

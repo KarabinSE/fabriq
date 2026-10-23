@@ -2,8 +2,8 @@
 
 namespace Karabin\Fabriq\Database\Factories;
 
-use Karabin\Fabriq\Models\BlockType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Karabin\Fabriq\Models\BlockType;
 
 class BlockTypeFactory extends Factory
 {

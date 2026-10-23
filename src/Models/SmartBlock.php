@@ -2,47 +2,51 @@
 
 namespace Karabin\Fabriq\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\SmartBlockFactory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
 
 class SmartBlock extends Model
 {
-    use HasFactory, HasTranslatedRevisions;
+    use HasContent, HasFactory;
 
     public const RELATIONSHIPS = [];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_pages', 'fabriq_smart_blocks'];
+    }
 
     protected static function newFactory(): SmartBlockFactory
     {
         return SmartBlockFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerSpecialTypes(['image', 'video', 'file', 'buttons', 'button'])
+        return 'smart_block';
+    }
+
+    public function getContentOptions(): ContentOptions
+    {
+        return ContentOptions::create()
+            ->registerSpecialTypes(['image', 'button', 'buttons', 'file', 'video'])
             ->registerGetters([
                 'image' => 'getImages',
-                'repeater' => 'getRepeater',
                 'button' => 'getButton',
                 'buttons' => 'getButtons',
                 'file' => 'getFiles',
                 'video' => 'getVideos',
             ])
-            ->registerDefaultTemplate('smart_block')
-            ->registerCacheKeysToFlush(['fabriq_pages', 'fabriq_smart_blocks']);
+            ->registerResourceReferenceKeys(['image', 'file', 'video']);
     }
 
     /**
@@ -61,25 +65,25 @@ class SmartBlock extends Model
     /**
      * @return mixed
      */
-    public function getImages(RevisionMeta $meta)
+    public function getImages(ContentValue $contentValue)
     {
-        return ImageGetter::get($meta, $this->isPublishing);
+        return ImageGetter::get($contentValue);
     }
 
     /**
      * @return mixed
      */
-    public function getFiles(RevisionMeta $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        return FileGetter::get($meta, $this->isPublishing);
+        return FileGetter::get($contentValue);
     }
 
     /**
      * @return mixed
      */
-    public function getVideos(RevisionMeta $meta)
+    public function getVideos(ContentValue $contentValue)
     {
-        return VideoGetter::get($meta, $this->isPublishing);
+        return VideoGetter::get($contentValue);
     }
 
     /**
@@ -87,9 +91,9 @@ class SmartBlock extends Model
      *
      * @return mixed
      */
-    public function getButton(RevisionMeta $meta)
+    public function getButton(ContentValue $contentValue)
     {
-        return ButtonGetter::get($meta, $this->isPublishing);
+        return ButtonGetter::get($contentValue);
     }
 
     /**
@@ -97,9 +101,9 @@ class SmartBlock extends Model
      *
      * @return mixed
      */
-    public function getButtons(RevisionMeta $meta)
+    public function getButtons(ContentValue $contentValue)
     {
-        return ButtonsGetter::get($meta, $this->isPublishing);
+        return ButtonsGetter::get($contentValue);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Karabin\Fabriq;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
+use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Spatie\LaravelData\Data;
 
 class Fabriq
@@ -22,6 +23,7 @@ class Fabriq
         };
 
         $defaultOptions = [
+            'middleware' => [LocaleMiddleware::class],
         ];
 
         $options = array_merge($defaultOptions, $options);

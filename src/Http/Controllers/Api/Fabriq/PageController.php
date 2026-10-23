@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -35,16 +36,16 @@ class PageController extends Controller
 
         $pages = QueryBuilder::for(Fabriq::getFqnModel('page'))
             ->allowedSorts('name', 'slug', 'id', 'created_at', 'updated_at')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
                 AllowedFilter::exact('template_id'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return Fabriq::getDto('page')::collect($pages, PaginatedDataCollection::class)
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, $pages->getCollection(), fn () => Fabriq::getDto('page')::collect($pages, PaginatedDataCollection::class)
             ->wrap('data')
-            ->toResponse($request);
+            ->toResponse($request));
     }
 
     /**
@@ -52,6 +53,7 @@ class PageController extends Controller
      */
     public function show(Request $request, int $id): Response
     {
+        app()->setLocale($request->locale ?? 'sv');
         $allowedIncludes = [
             ...Fabriq::getModelClass('page')::RELATIONSHIPS,
             AllowedInclude::relationship('slugs'),
@@ -68,7 +70,7 @@ class PageController extends Controller
 
         /** @var Page $page */
 
-        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$page], fn () => Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request));
     }
 
     /**
@@ -91,15 +93,25 @@ class PageController extends Controller
             ->firstOrFail();
 
         /** @var Page $page */
-        $page->name = $request->name;
-        $page->published = $request->published;
+        if ($request->exists('name')) {
+            $page->name = $request->name;
+        }
+
+        if ($request->exists('published')) {
+            $page->published = $request->published;
+        }
+
         $page->touch();
-        $page->localizedContent = $request->localizedContent;
+
+        if ($request->exists('localizedContent')) {
+            $page->localizedContent = $request->localizedContent;
+        }
+
         $page->updated_by = $request->user()->id;
 
         $page->save();
 
-        return Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$page], fn () => Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request));
     }
 
     /**

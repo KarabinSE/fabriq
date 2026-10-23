@@ -26,15 +26,15 @@ class FileController extends Controller
         $number = $request->integer('number', 100);
 
         $files = QueryBuilder::for(Fabriq::getFqnModel('file'))
-            ->allowedSorts([
+            ->allowedSorts(
                 'id', 'created_at', 'updated_at', 'alt_text',
                 AllowedSort::custom('file_name', new FileSort),
                 AllowedSort::custom('size', new FileSort),
                 AllowedSort::custom('tags', new TagSort, 'files'),
-            ])
-            ->allowedFilters([
+            )
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
-            ])
+            )
             ->allowedIncludes(...File::RELATIONSHIPS)
             ->paginate($number);
 

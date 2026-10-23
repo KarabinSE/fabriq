@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Karabin\Fabriq\Models\Contact;
+use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class ContactsFeatureTest extends AdminUserTestCase
@@ -34,6 +35,21 @@ class ContactsFeatureTest extends AdminUserTestCase
 
         // Assert
         $response->assertOk();
+    }
+
+    /** @test **/
+    public function it_interpolates_the_contact_image_in_the_api_response()
+    {
+        $contact = Contact::factory()->create();
+        $image = Image::factory()->create([
+            'alt_text' => 'Contact portrait',
+        ]);
+        $contact->updateContent(['image' => $image->id], app()->getLocale());
+        $response = $this->json('GET', $this->endpoint.$contact->id.'?include=content');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.content.image.id', $image->id);
+        $response->assertJsonPath('data.content.image.alt_text', 'Contact portrait');
     }
 
     /** @test **/
@@ -97,14 +113,12 @@ class ContactsFeatureTest extends AdminUserTestCase
             'published' => true,
             'sortindex' => 100,
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('<p>en fin text text</p>'),
-            'locale' => 'sv',
-        ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('<p>a nice text</p>'),
-            'locale' => 'en',
-        ]);
+        $contact = Contact::findOrFail($response->json('data.id'));
+        $definition = $contact->contentDefinitions()->where('field_key', 'body')->firstOrFail();
+        $this->assertSame([
+            'sv' => '<p>en fin text text</p>',
+            'en' => '<p>a nice text</p>',
+        ], $definition->getTranslations('content'));
     }
 
     /** @test **/

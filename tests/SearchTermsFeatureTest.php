@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class SearchTermsFeatureTest extends AdminUserTestCase
 {
@@ -22,8 +22,8 @@ class SearchTermsFeatureTest extends AdminUserTestCase
         // Arrange
         $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'En sida som ska publiceras',
-            'template_id' => RevisionTemplate::all()->first()->id,
-            'revision' => 1,
+            'published' => true,
+            'template_id' => ContentTemplate::all()->first()->id,
         ]);
 
         $page->updateContent([
@@ -51,16 +51,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
         ], 'dk');
 
         // Act
-        $response = $this->json('POST', "/pages/{$page->id}/publish");
-
         // Assert
-        $response->assertOk();
-        $this->assertDatabaseHas('pages', [
-            'id' => $page->id,
-            'revision' => 2,
-            'published_version' => 1,
-        ]);
-
         $this->assertDatabaseHas('search_terms', [
             'model_id' => $page->id,
             'model_type' => Fabriq::getModelClass('page')->getMorphClass(),

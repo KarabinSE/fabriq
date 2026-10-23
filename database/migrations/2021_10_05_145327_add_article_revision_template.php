@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Illuminate\Support\Facades\DB;
 
 class AddArticleRevisionTemplate extends Migration
 {
@@ -14,52 +13,54 @@ class AddArticleRevisionTemplate extends Migration
     public function up()
     {
         //
-        $template = RevisionTemplate::factory()->create([
+        $templateId = DB::table('revision_templates')->insertGetId([
             'name' => 'Nyhet',
             'slug' => 'article',
             'type' => 'article',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-        $templateField = RevisionTemplateField::factory()->create([
-            'template_id' => $template->id,
-            'name' => 'Titel',
-            'key' => 'title',
-            'type' => 'text',
-            'translated' => true,
-            'group' => 'article',
-            'repeater' => false,
-            'sort_index' => 10,
-        ]);
-        $templateField = RevisionTemplateField::factory()->create([
-            'template_id' => $template->id,
-            'name' => 'image',
-            'key' => 'image',
-            'type' => 'image',
-            'translated' => false,
-            'group' => 'article',
-            'repeater' => false,
-            'sort_index' => 20,
-        ]);
-
-        $templateField = RevisionTemplateField::factory()->create([
-            'template_id' => $template->id,
-            'name' => 'Ingress',
-            'key' => 'preamble',
-            'type' => 'textarea',
-            'translated' => true,
-            'group' => 'article',
-            'repeater' => false,
-            'sort_index' => 30,
-        ]);
-
-        $templateField = RevisionTemplateField::factory()->create([
-            'template_id' => $template->id,
-            'name' => 'Innehåll',
-            'key' => 'body',
-            'type' => 'html',
-            'translated' => true,
-            'group' => 'article',
-            'repeater' => false,
-            'sort_index' => 40,
+        DB::table('revision_template_fields')->insert([
+            [
+                'template_id' => $templateId,
+                'name' => 'Titel',
+                'key' => 'title',
+                'type' => 'text',
+                'translated' => true,
+                'group' => 'article',
+                'repeater' => false,
+                'sort_index' => 10,
+            ],
+            [
+                'template_id' => $templateId,
+                'name' => 'image',
+                'key' => 'image',
+                'type' => 'image',
+                'translated' => false,
+                'group' => 'article',
+                'repeater' => false,
+                'sort_index' => 20,
+            ],
+            [
+                'template_id' => $templateId,
+                'name' => 'Ingress',
+                'key' => 'preamble',
+                'type' => 'textarea',
+                'translated' => true,
+                'group' => 'article',
+                'repeater' => false,
+                'sort_index' => 30,
+            ],
+            [
+                'template_id' => $templateId,
+                'name' => 'Innehåll',
+                'key' => 'body',
+                'type' => 'html',
+                'translated' => true,
+                'group' => 'article',
+                'repeater' => false,
+                'sort_index' => 40,
+            ],
         ]);
     }
 

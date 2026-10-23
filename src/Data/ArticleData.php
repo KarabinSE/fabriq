@@ -43,7 +43,7 @@ class ArticleData extends Data
             has_unpublished_time: (bool) $article->has_unpublished_time,
             updated_at: (string) $article->updated_at->toISOString(),
             created_at: (string) $article->created_at->toISOString(),
-            content: Lazy::create(fn () => $article->getFieldContent(1)->toArray()),
+            content: Lazy::create(fn () => $article->getFieldContent()->toArray()),
             template: Lazy::create(fn () => $article->template?->toArray()),
             slugs: Lazy::create(fn () => $article->slugs->toArray()),
         );
