@@ -53,7 +53,6 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoUploadController;
 use Karabin\Fabriq\Http\Controllers\PermalinksRedirectController;
 use Karabin\Fabriq\Http\Controllers\SpaController;
-use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 class RouteRegistrar
@@ -312,8 +311,7 @@ class RouteRegistrar
 
     public function forPreviews(): void
     {
-        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store')
-            ->middleware(LocaleMiddleware::class);
+        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store');
         Route::put('previews/{id}', [PagePreviewController::class, 'update'])->name('previews.update');
     }
 

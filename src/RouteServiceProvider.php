@@ -2,9 +2,9 @@
 
 namespace Karabin\Fabriq;
 
-use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 
 class RouteServiceProvider extends ServiceProvider
