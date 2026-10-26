@@ -443,4 +443,59 @@ class BlockFeatureTest extends AdminUserTestCase
             'id' => $block->id,
         ]);
     }
+
+    public function test_blocks_can_have_children()
+    {
+        // Arrange
+        $blockType = BlockType::factory()->create();
+        $page = Page::factory()->create();
+
+        // Act
+        $response = $this->json('PUT', route('blocks.update', $page->id), [
+            'blocks' => [[
+                'name' => 'block root',
+                'locale' => 'en',
+                'block_type_id' => $blockType->id,
+                'content' => ['name' => 'banana bread'],
+                'children' => [
+                    [
+                        'name' => 'child with child',
+                        'content' => [
+                            'name' => 'child name',
+                        ],
+                        'children' => [
+                            [
+                                'name' => 'grandchild',
+                                'content' => [
+                                    'name' => 'childchild name',
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'name' => 'child block 2',
+                        'content' => [
+                            'name' => 'child name',
+                        ],
+                    ],
+                ],
+            ]],
+        ]);
+
+        $rootBlock = Block::firstWhere('name', 'block root')->load('children');
+        $childWithChild = Block::firstWhere('name', 'child with child');
+
+        // Assert
+        $response->assertOk();
+        $this->assertDatabaseCount('blocks', 4);
+        $this->assertDatabaseHas('blocks', [
+            'name' => 'child block 2',
+            'parent_id' => $rootBlock->id,
+        ]);
+        $this->assertDatabaseHas('blocks', [
+            'name' => 'grandchild',
+            'parent_id' => $childWithChild->id,
+            'content' => json_encode(['name' => 'childchild name']),
+        ]);
+    }
 }
