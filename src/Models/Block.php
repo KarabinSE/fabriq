@@ -116,7 +116,7 @@ class Block extends Model implements Sortable
 
     public function children(): HasMany
     {
-        return $this->hasMany(Block::class, 'parent_id');
+        return $this->hasMany(Block::class, 'parent_id')->with('children');
     }
 
     public function blockType(): BelongsTo
