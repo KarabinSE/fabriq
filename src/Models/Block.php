@@ -65,26 +65,29 @@ class Block extends Model implements Sortable
         return $this->morphTo();
     }
 
-    public function setChildrenAttribute(array $children = [])
+    public static function createBlock($block, Model $model, ?Block $parent = null): Block
     {
-        foreach ($children as $child) {
-            $this->createBlock($child, $this->parent->model);
-        }
-    }
-
-    public static function createBlock($block, Model $model)
-    {
-        return Fabriq::getFqnModel('block')::updateOrCreate([
+        $newBlock = Fabriq::getFqnModel('block')::updateOrCreate([
             'uuid' => $block['uuid'] ?? null,
         ], [
             'name' => $block['name'],
             'content' => (object) ($block['content'] ?? []),
-            'model_id' => $model->id,
-            'locale' => $block['locale'],
+            'locale' => $parent['locale'] ?? $block['locale'],
+            'block_type_id' => $parent['block_type_id'] ?? $block['block_type_id'],
+
+            'parent_id' => $parent?->id ?? null,
+
             'model_type' => $model->getMorphClass(),
-            'block_type_id' => $block['block_type_id'],
-            'children' => $block['children'] ?? [],
+            'model_id' => $model->id,
         ]);
+
+        $children = $block['children'] ?? [];
+
+        foreach ($children as $child) {
+            self::createBlock($child, $model, $newBlock);
+        }
+
+        return $newBlock;
     }
 
     public function setContentAttribute(mixed $value): void
