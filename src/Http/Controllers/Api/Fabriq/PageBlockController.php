@@ -32,14 +32,14 @@ class PageBlockController
         $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
         $blockUuids = [];
 
-        foreach ($request->blocks as $block) {
+        foreach ($request->array('blocks') as $block) {
             $savedBlock = Block::createBlock($block, $page);
             $blockUuids[] = $savedBlock->uuid;
         }
 
         Fabriq::getFqnModel('block')::where('model_id', $page->id)
             ->where('model_type', $page->getMorphClass())
-            ->whereNotNull('parent_id')
+            ->whereNull('parent_id')
             ->whereNotIn('uuid', $blockUuids)
             ->delete();
 
