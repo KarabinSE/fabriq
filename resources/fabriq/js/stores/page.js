@@ -122,8 +122,7 @@ export const usePageStore = defineStore('page', () => {
             }
         }
         try {
-            const url = route('pages.blocks.index', { id: pageId })
-            const { data } = await axios.get(url, payload)
+            const { data } = await Blocks.show(url, payload)
 
             blocks.value = data.map(block => new Block(block, block.content))
         } catch (error) {
