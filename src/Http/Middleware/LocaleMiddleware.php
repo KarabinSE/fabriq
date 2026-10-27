@@ -14,7 +14,7 @@ class LocaleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $locale = $request->headers->get('X-LOCALE') || $request->query('locale');
+        $locale = $request->headers->get('X-LOCALE') ?: $request->query('locale');
 
         if (! $locale) {
             $locale = app()->getLocale();
