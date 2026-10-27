@@ -69,7 +69,7 @@
                                 class="grid grid-cols-3 gap-6"
                             >
                                 <FInput
-                                    v-model="page.name"
+                                    v-model="pageStore.page.name"
                                     label="Namn"
                                     name="name"
                                 />
@@ -218,7 +218,7 @@
                                         Avbryt
                                     </FButton>
                                     <FButton
-                                        :click="page.published ? publishPage : updateContent"
+                                        :click="updateContent"
                                         class="flex-1 px-6 py-2.5 leading-none text-sm fabriq-btn btn-royal whitespace-nowrap @4xl:min-w-[10rem]"
                                     >
                                         <span v-text="page.published ? 'Spara & publicera' : pageStore.wasInitiallyPublished ? 'Avpublicera & spara utkast' : 'Spara utkast'" />
@@ -248,11 +248,7 @@
                 </div>
             </div>
         </div>
-
-        <PagePreview
-            @publish="publishPage"
-            @save="updateContent"
-        />
+        <PagePreview @save="updateContent" />
     </div>
 </template>
 
@@ -361,16 +357,6 @@ export default {
                 this.$eventBus.emit('page-updated')
             } catch (error) {
                 console.error(error)
-            }
-        },
-
-        async publishPage () {
-            try {
-                await this.updateContent()
-                await this.pageStore.publish(this.pageId)
-                this.$toast.success({ title: 'Sidan har publicerats!' })
-            } catch (error) {
-                console.log(error)
             }
         },
 

@@ -33,7 +33,7 @@
 
             <Draggable
                 v-else
-                v-model="pageStore.blocks.index"
+                v-model="blocks"
                 handle=".handle"
                 tag="ul"
                 v-bind="dragOptions"
@@ -46,14 +46,13 @@
                     :name="'flip-list-move'"
                 >
                     <li
-                        v-for="(block, boxIndex) in pageStore.blocks.index"
-                        :key="'block-' + block.id"
+                        v-for="(block, boxIndex) in blocks"
+                        :key="'block-' + block.content.id"
                         class="list-group-item"
                     >
                         <UiCard
-                            v-if="block.id"
                             collapsible
-                            :identifier="block.id"
+                            :identifier="block.content.id"
                             :open-by-default="block.newlyAdded"
                             :padding="false"
                             header-classes="px-3 @sm/card:px-4 py-3 @sm/card:py-4"
@@ -70,7 +69,7 @@
                                                 <div
                                                     class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
                                                 >
-                                                    {{ block.block_type.name }}
+                                                    {{ block.blockType.name }}
                                                 </div>
                                                 <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
                                                     {{ block.name }}
@@ -79,9 +78,8 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4">
-                                        <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
                                         <VPopover
-                                            v-if="blockBlockType(block).preview_src || blockBlockType(block).base_64_svg"
+                                            v-if="getBlockType(block).preview_src || getBlockType(block).base_64_svg"
                                             trigger="hover"
                                             class="hidden @xl:flex"
                                             placement="top"
@@ -95,7 +93,7 @@
                                             <template #popover>
                                                 <div class="rounded-md border border-gray-200 shadow overflow-hidden bg-white max-w-md">
                                                     <img
-                                                        :src="blockBlockType(block).preview_src || `data:image/svg+xml;base64,` + blockBlockType(block).base_64_svg"
+                                                        :src="getBlockType(block).preview_src || `data:image/svg+xml;base64,` + getBlockType(block).base_64_svg"
                                                     >
                                                 </div>
                                             </template>
@@ -142,7 +140,7 @@
                                                         v-show="!lockedBlocks"
                                                         confirm-question="Vill du ta bort detta blocket?"
                                                         class="relative"
-                                                        @confirmed="deleteBlock(boxIndex)"
+                                                        @confirmed="deleteBlock(block)"
                                                     >
                                                         <div
                                                             class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
@@ -193,7 +191,7 @@
                                                 v-show="!lockedBlocks"
                                                 confirm-question="Vill du ta bort detta blocket?"
                                                 class="relative w-6 h-6"
-                                                @confirmed="deleteBlock(boxIndex)"
+                                                @confirmed="deleteBlock(block)"
                                             >
                                                 <TrashIcon
                                                     class="h-6 transition-colors duration-150 hover:text-red-500"
@@ -219,8 +217,8 @@
                             <div class="px-3 sm:px-4 py-3 sm:py-4">
                                 <KeepAlive>
                                     <Component
-                                        :is="block.block_type.component_name"
-                                        :content="block"
+                                        :is="block.blockType.component_name"
+                                        :content="block.content"
                                         :value="block"
                                         :index="boxIndex"
                                         @repeater-updated="refreshBlock"
@@ -298,6 +296,10 @@ export default {
             },
         },
 
+        blocks () {
+            return this.pageStore.blocks.index
+        },
+
         locale() {
             return this.configStore.activeLocale;
         },
@@ -339,12 +341,12 @@ export default {
             this.previewStore.locateBlock(blockId)
         },
 
-        blockBlockType(block) {
+        getBlockType(block) {
             if (!this.blockTypes || !Array.isArray(this.blockTypes)) {
-                return block.block_type
+                return block.blockType
             }
 
-            return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
+            return this.blockTypes?.find(blockType => block.blockType.id === blockType.id)
         },
 
         copySuccess() {
@@ -362,15 +364,12 @@ export default {
             this.$vfm.show('block-type-modal')
         },
 
-        deleteBlock(index) {
-            this.pageStore.blocks.remove(index)
+        deleteBlock(block) {
+            this.pageStore.blocks.remove(block)
         },
 
         cloneBlock(block) {
-            const clonedBlock = structuredClone(block)
-
-            clonedBlock.name = 'Kopia av ' + block.name
-            this.pageStore.blocks.add(clonedBlock)
+            this.pageStore.blocks.clone(block)
         },
 
         async fetchBlockTypes() {

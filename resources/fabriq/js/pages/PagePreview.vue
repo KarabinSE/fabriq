@@ -33,7 +33,7 @@
                             </button>
 
                             <FButton
-                                :click="page.published ? publishPage : updateContent"
+                                :click="updateContent"
                                 class="flex-1 px-6 py-2.5 leading-none text-sm fabriq-btn btn-royal whitespace-nowrap"
                             >
                                 <span v-text="page.published ? 'Spara & publicera' : pageStore.wasInitiallyPublished ? 'Avpublicera & spara utkast' : 'Spara utkast'" />
@@ -193,9 +193,6 @@ export default {
     },
 
     methods: {
-        async publishPage() {
-            this.$emit('publish')
-        },
         async updateContent() {
             this.$emit('save')
         },

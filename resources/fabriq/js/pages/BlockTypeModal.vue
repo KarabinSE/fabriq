@@ -40,20 +40,20 @@
                     <FSelect
                         v-if="!largeBlockPicker"
                         ref="selectInput"
-                        v-model="chosenBlock.block_type"
+                        v-model="chosenBlock.blockType"
                         label="Blocktyp"
                         :clearable="false"
-                        name="block_type"
+                        name="blockType"
                         rules="required"
                         :options="computedBlockTypes"
-                        :reduce-fn="block_type => block_type"
+                        :reduce-fn="blockType => blockType"
                         option-label="name"
                         @input="selectBlock"
                     />
                     <FInput
                         v-if="largeBlockPicker"
-                        v-model="chosenBlock.block_type.name"
-                        name="block_type"
+                        v-model="chosenBlock.blockType.name"
+                        name="blockType"
                         rules="required|min:2"
                         class="hidden"
                         label="Blocktyp"
@@ -78,7 +78,7 @@
                         <div
                             v-for="blockType in recommendedBlockTypes"
                             :key="'r' + blockType.id"
-                            :class="blockType.id === chosenBlock.block_type.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
                             class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
                             @click="selectBlock(blockType)"
                         >
@@ -100,7 +100,7 @@
                         <div
                             v-for="blockType in computedBlockTypes"
                             :key="blockType.id"
-                            :class="blockType.id === chosenBlock.block_type.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
                             class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
                             @click="selectBlock(blockType)"
                         >
@@ -133,7 +133,8 @@ function defaultCreationObject () {
     return {
         id: 0,
         name: '',
-        block_type: {
+        children: [],
+        blockType: {
             id: 0,
             name: 'Välj blocktyp',
         },
@@ -151,11 +152,9 @@ export default {
     },
 
     setup () {
-        const configStore = useConfigStore();
-
-        const pageStore = usePageStore();
-
-        const uiStore = useUiStore();
+        const configStore = useConfigStore()
+        const pageStore = usePageStore()
+        const uiStore = useUiStore()
 
         return { configStore, pageStore, uiStore }
     },
@@ -167,7 +166,7 @@ export default {
             chosenBlock: {
                 id: 0,
                 name: '',
-                block_type: {
+                blockType: {
                     name: '',
                     id: 0,
                 },
@@ -266,17 +265,9 @@ export default {
                 return
             }
 
-            if (this.chosenBlock.block_type.has_children) {
-                this.chosenBlock.children = []
-            }
-
-            setTimeout(() => {
-                this.uiStore.toggleOpenCard(this.chosenBlock.id);
-            }, 150);
+            this.pageStore.blocks.add(this.chosenBlock.blockType)
 
             this.show = false
-
-            this.pageStore.blocks.add(this.chosenBlock)
         },
 
         resetCreateModal () {
@@ -287,7 +278,7 @@ export default {
         },
 
         selectBlock(blockType) {
-            this.chosenBlock.block_type = blockType
+            this.chosenBlock.blockType = blockType
 
             if (!this.chosenBlock.name || this.blockNames.includes(this.chosenBlock.name)) {
                 this.chosenBlock.name = blockType.name
