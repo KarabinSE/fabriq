@@ -53,7 +53,6 @@ class PageController extends Controller
      */
     public function show(Request $request, int $id): Response
     {
-        app()->setLocale($request->locale ?? 'sv');
         $allowedIncludes = [
             ...Fabriq::getModelClass('page')::RELATIONSHIPS,
             AllowedInclude::relationship('slugs'),
