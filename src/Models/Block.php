@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
@@ -60,12 +61,12 @@ class Block extends Model implements Sortable
         return $this->belongsTo(Block::class);
     }
 
-    public function model()
+    public function model(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public static function createBlock($block, Model $model, ?Block $parent = null): Block
+    public static function createBlock(array $block, Model $model, ?Block $parent = null): Block
     {
         $newBlock = Fabriq::getFqnModel('block')::updateOrCreate([
             'uuid' => $block['uuid'] ?? null,
@@ -75,7 +76,7 @@ class Block extends Model implements Sortable
             'locale' => $parent['locale'] ?? $block['locale'],
             'block_type_id' => $parent['block_type_id'] ?? $block['block_type_id'],
 
-            'parent_id' => $parent?->id ?? null,
+            'parent_id' => $parent->id ?? null,
 
             'model_type' => $model->getMorphClass(),
             'model_id' => $model->id,
