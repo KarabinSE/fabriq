@@ -249,23 +249,6 @@ class Page extends Model implements HasMedia
         })->reverse()->toArray();
 
         foreach ($value as $locale => $localeContent) {
-            if ($locale === 'sv' && isset($localeContent['boxes'])) {
-                foreach ($localeContent['boxes'] as $box) {
-                    if (! isset($box['name'], $box['block_type']['id'])) {
-                        continue;
-                    }
-
-                    Block::updateOrCreate([
-                        'uuid' => 'x',
-                    ], [
-                        'name' => $box['name'],
-                        'content' => $box,
-                        'model_id' => $this->id,
-                        'model_type' => $this->getMorphClass(),
-                        'block_type_id' => $box['block_type']['id'],
-                    ]);
-                }
-            }
             $this->updateContent($localeContent, (string) $locale);
         }
     }
