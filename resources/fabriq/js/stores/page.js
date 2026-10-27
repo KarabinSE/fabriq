@@ -100,7 +100,7 @@ export const usePageStore = defineStore('page', () => {
             params: {
                 include: 'content,template.groupedFields',
                 append: 'paths',
-                locale: locale,
+                locale_override: locale,
             },
         }
         try {
