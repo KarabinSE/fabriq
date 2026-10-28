@@ -122,7 +122,7 @@ export const usePageStore = defineStore('page', () => {
             }
         }
         try {
-            const { data } = await Blocks.show(url, payload)
+            const data  = await Blocks.show(pageId, payload)
 
             blocks.value = data.map(block => new Block(block, block.content))
         } catch (error) {
