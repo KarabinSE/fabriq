@@ -2,8 +2,6 @@ import { defineStore } from "pinia";
 import Vue, { computed, ref, toRaw } from "vue";
 import { useConfigStore } from "./config";
 import Page from "@fabriq/models/Page";
-import axios from 'axios'
-import { route } from '@/generated/helpers/route'
 import { useUiStore } from '@fabriq/stores/ui'
 import Blocks, { Block } from '@fabriq/models/Block'
 
@@ -48,6 +46,7 @@ export const usePageStore = defineStore('page', () => {
     const config = useConfigStore()
     const ui = useUiStore()
 
+    const blocksLoading = ref(false)
     const page = ref(structuredClone(defaultPageData));
 
     const localizedContent = ref({
@@ -122,11 +121,14 @@ export const usePageStore = defineStore('page', () => {
             }
         }
         try {
+            blocksLoading.value = true
             const data  = await Blocks.show(pageId, payload)
 
             blocks.value = data.map(block => new Block(block, block.content))
         } catch (error) {
             console.error(error)
+        } finally {
+            blocksLoading.value = false
         }
     }
 
@@ -201,5 +203,6 @@ export const usePageStore = defineStore('page', () => {
         update,
         publish,
         resetPage,
+        blocksLoading
     }
 });

@@ -98,7 +98,6 @@
                                 :key="'g' + group"
                             >
                                 <UiCard
-                                    v-if="! repeaterKeys.includes(group)"
                                     :group="group"
                                     sync-groups
                                     collapsible
@@ -199,7 +198,6 @@
                                 </UiCard>
 
                                 <BlockList
-                                    v-else
                                     :key="'blocks-' + configStore.activeLocale"
                                 />
                             </div>
@@ -298,7 +296,6 @@ export default {
             active: false,
             pageId: 0,
             paths: [],
-            repeaterKeys: ['boxes'],
             drag: false,
             showBlockTypeModal: false,
         }

@@ -14,222 +14,235 @@
                 </button>
             </div>
         </slot>
-        <div>
-            <div v-if="pageStore.blocks.index.length === 0">
-                <div class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
-                    <div class="flex flex-col items-center">
-                        <div class="mb-4 text-xl font-light">
-                            Inga block har lagts till ännu
-                        </div>
-                        <button
-                            class="flex items-center text-sm link"
-                            @click="showBlockTypeModal"
-                        >
-                            <PlusIcon class="size-5 mr-2" />Lägg till block
-                        </button>
-                    </div>
-                </div>
+        <Transition
+            mode="out-in"
+            name="fade"
+        >
+            <div
+                v-if="pageStore.blocksLoading"
+                key="spinner"
+                class="flex justify-center"
+            >
+                <SpinIcon class="w-6 h-w-6 animate-spin" />
             </div>
 
-            <Draggable
-                v-else
-                v-model="blocks"
-                handle=".handle"
-                tag="ul"
-                v-bind="dragOptions"
-                class="list-group"
-                @start="drag = true"
-                @end="drag = false"
-            >
-                <TransitionGroup
-                    type="transition"
-                    :name="'flip-list-move'"
+            <div v-else>
+                <div v-if="pageStore.blocks.index.length === 0">
+                    <div class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
+                        <div class="flex flex-col items-center">
+                            <div class="mb-4 text-xl font-light">
+                                Inga block har lagts till ännu
+                            </div>
+                            <button
+                                class="flex items-center text-sm link"
+                                @click="showBlockTypeModal"
+                            >
+                                <PlusIcon class="size-5 mr-2" />Lägg till block
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <Draggable
+                    v-else
+                    v-model="blocks"
+                    handle=".handle"
+                    tag="ul"
+                    v-bind="dragOptions"
+                    class="list-group"
+                    @start="drag = true"
+                    @end="drag = false"
                 >
-                    <li
-                        v-for="(block, boxIndex) in blocks"
-                        :key="'block-' + block.content.id"
-                        class="list-group-item"
+                    <TransitionGroup
+                        type="transition"
+                        :name="'flip-list-move'"
                     >
-                        <UiCard
-                            collapsible
-                            :identifier="block.content.id"
-                            :open-by-default="block.newlyAdded"
-                            :padding="false"
-                            header-classes="px-3 @sm/card:px-4 py-3 @sm/card:py-4"
+                        <li
+                            v-for="(block, boxIndex) in blocks"
+                            :key="'block-' + block.content.id"
+                            class="list-group-item"
                         >
-                            <template #header>
-                                <div class="flex items-center justify-between ">
-                                    <div class="flex items-center flex-1 min-w-0 gap-2 @2xl:gap-6">
-                                        <GripVerticalIcon
-                                            v-if="!lockedBlocks"
-                                            class="block size-4 @2xl:size-6 text-gray-400 @2xl:text-gray-300 cursor-move handle"
-                                        />
-                                        <div class="w-full min-w-0 overflow-hidden">
-                                            <div class="flex min-w-0 flex-col gap-1">
-                                                <div
-                                                    class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
-                                                >
-                                                    {{ block.blockType.name }}
-                                                </div>
-                                                <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
-                                                    {{ block.name }}
+                            <UiCard
+                                collapsible
+                                :identifier="block.content.id"
+                                :open-by-default="block.newlyAdded"
+                                :padding="false"
+                                header-classes="px-3 @sm/card:px-4 py-3 @sm/card:py-4"
+                            >
+                                <template #header>
+                                    <div class="flex items-center justify-between ">
+                                        <div class="flex items-center flex-1 min-w-0 gap-2 @2xl:gap-6">
+                                            <GripVerticalIcon
+                                                v-if="!lockedBlocks"
+                                                class="block size-4 @2xl:size-6 text-gray-400 @2xl:text-gray-300 cursor-move handle"
+                                            />
+                                            <div class="w-full min-w-0 overflow-hidden">
+                                                <div class="flex min-w-0 flex-col gap-1">
+                                                    <div
+                                                        class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
+                                                    >
+                                                        {{ block.blockType.name }}
+                                                    </div>
+                                                    <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
+                                                        {{ block.name }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="flex items-center space-x-4">
-                                        <VPopover
-                                            v-if="getBlockType(block).preview_src || getBlockType(block).base_64_svg"
-                                            trigger="hover"
-                                            class="hidden @xl:flex"
-                                            placement="top"
-                                            :delay="{ show: 300, hide: 100 }"
-                                        >
-                                            <ImageIcon
-                                                thin
-                                                class="h-8"
+                                        <div class="flex items-center space-x-4">
+                                            <VPopover
+                                                v-if="getBlockType(block).preview_src || getBlockType(block).base_64_svg"
+                                                trigger="hover"
+                                                class="hidden @xl:flex"
+                                                placement="top"
+                                                :delay="{ show: 300, hide: 100 }"
+                                            >
+                                                <ImageIcon
+                                                    thin
+                                                    class="h-8"
+                                                />
+
+                                                <template #popover>
+                                                    <div class="rounded-md border border-gray-200 shadow overflow-hidden bg-white max-w-md">
+                                                        <img
+                                                            :src="getBlockType(block).preview_src || `data:image/svg+xml;base64,` + getBlockType(block).base_64_svg"
+                                                        >
+                                                    </div>
+                                                </template>
+                                            </VPopover>
+                                            <div v-if="lockedBlocks">
+                                                <LockIcon class="h-5 md:h-6" />
+                                            </div>
+                                            <div
+                                                v-if="lockedBlocks"
+                                                class="w-px h-7 md:h-8 mx-6 bg-gray-300"
                                             />
 
-                                            <template #popover>
-                                                <div class="rounded-md border border-gray-200 shadow overflow-hidden bg-white max-w-md">
-                                                    <img
-                                                        :src="getBlockType(block).preview_src || `data:image/svg+xml;base64,` + getBlockType(block).base_64_svg"
-                                                    >
-                                                </div>
-                                            </template>
-                                        </VPopover>
-                                        <div v-if="lockedBlocks">
-                                            <LockIcon class="h-5 md:h-6" />
-                                        </div>
-                                        <div
-                                            v-if="lockedBlocks"
-                                            class="w-px h-7 md:h-8 mx-6 bg-gray-300"
-                                        />
-
-                                        <div class="@xl:hidden flex items-center gap-4">
-                                            <UiDropdown alignment="top-right">
-                                                <GearIcon
-                                                    class="h-5 text-gray-300!"
-                                                    thin
-                                                />
-                                                <template #dropdown>
-                                                    <button
-                                                        v-show="!lockedBlocks"
-                                                        class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
-                                                        @click.stop="cloneBlock(block)"
-                                                    >
-                                                        <CloneIcon
-                                                            thin
-                                                            class="h-5"
-                                                        />
-                                                        Klona block
-                                                    </button>
-                                                    <button
-                                                        class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
-                                                        type="button"
-                                                        @click.stop="copyBlockId(block.id)"
-                                                    >
-                                                        <LinkIcon
-                                                            class="h-4"
-                                                            thin
-                                                        />
-                                                        Kopiera block-ID
-                                                    </button>
-
-                                                    <FConfirmDropdown
-                                                        v-show="!lockedBlocks"
-                                                        confirm-question="Vill du ta bort detta blocket?"
-                                                        class="relative"
-                                                        @confirmed="deleteBlock(block)"
-                                                    >
-                                                        <div
-                                                            class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                            <div class="@xl:hidden flex items-center gap-4">
+                                                <UiDropdown alignment="top-right">
+                                                    <GearIcon
+                                                        class="h-5 text-gray-300!"
+                                                        thin
+                                                    />
+                                                    <template #dropdown>
+                                                        <button
+                                                            v-show="!lockedBlocks"
+                                                            class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                            @click.stop="cloneBlock(block)"
                                                         >
-                                                            <TrashIcon
+                                                            <CloneIcon
+                                                                thin
                                                                 class="h-5"
+                                                            />
+                                                            Klona block
+                                                        </button>
+                                                        <button
+                                                            class="focus:outline-none flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                            type="button"
+                                                            @click.stop="copyBlockId(block.id)"
+                                                        >
+                                                            <LinkIcon
+                                                                class="h-4"
                                                                 thin
                                                             />
-                                                            Radera
-                                                        </div>
-                                                    </FConfirmDropdown>
-                                                </template>
-                                            </UiDropdown>
+                                                            Kopiera block-ID
+                                                        </button>
 
-                                            <FButtonSwitch
-                                                v-model="block.hidden"
-                                                class="self-center mb-1 [&_svg]:h-5"
-                                            />
-                                        </div>
-                                        <div class="hidden @xl:flex items-center space-x-4">
+                                                        <FConfirmDropdown
+                                                            v-show="!lockedBlocks"
+                                                            confirm-question="Vill du ta bort detta blocket?"
+                                                            class="relative"
+                                                            @confirmed="deleteBlock(block)"
+                                                        >
+                                                            <div
+                                                                class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
+                                                            >
+                                                                <TrashIcon
+                                                                    class="h-5"
+                                                                    thin
+                                                                />
+                                                                Radera
+                                                            </div>
+                                                        </FConfirmDropdown>
+                                                    </template>
+                                                </UiDropdown>
+
+                                                <FButtonSwitch
+                                                    v-model="block.hidden"
+                                                    class="self-center mb-1 [&_svg]:h-5"
+                                                />
+                                            </div>
+                                            <div class="hidden @xl:flex items-center space-x-4">
+                                                <button
+                                                    v-show="!lockedBlocks"
+                                                    v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
+                                                    class="focus:outline-none"
+                                                    @click.stop="cloneBlock(block)"
+                                                >
+                                                    <CloneIcon
+                                                        thin
+                                                        class="h-6"
+                                                    />
+                                                </button>
+                                                <button
+                                                    v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
+                                                    class="focus:outline-none"
+                                                    type="button"
+                                                    @click.stop="copyBlockId(block.id)"
+                                                >
+                                                    <LinkIcon
+                                                        class="h-6"
+                                                        thin
+                                                    />
+                                                </button>
+                                                <FButtonSwitch
+                                                    v-model="block.hidden"
+                                                    class="self-center mb-1 "
+                                                />
+                                                <FConfirmDropdown
+                                                    v-show="!lockedBlocks"
+                                                    confirm-question="Vill du ta bort detta blocket?"
+                                                    class="relative w-6 h-6"
+                                                    @confirmed="deleteBlock(block)"
+                                                >
+                                                    <TrashIcon
+                                                        class="h-6 transition-colors duration-150 hover:text-red-500"
+                                                        thin
+                                                    />
+                                                </FConfirmDropdown>
+                                            </div>
+                                            <div class="w-px h-8 mx-3 bg-gray-300" />
                                             <button
-                                                v-show="!lockedBlocks"
-                                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
+                                                v-if="withPreviewBlockLocator"
+                                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skrolla till block' }"
                                                 class="focus:outline-none"
-                                                @click.stop="cloneBlock(block)"
+                                                @click.stop="scrollToBlock(block.id)"
                                             >
-                                                <CloneIcon
+                                                <CrosshairsIcon
+                                                    class="size-6 text-gray-500"
                                                     thin
-                                                    class="h-6"
                                                 />
                                             </button>
-                                            <button
-                                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
-                                                class="focus:outline-none"
-                                                type="button"
-                                                @click.stop="copyBlockId(block.id)"
-                                            >
-                                                <LinkIcon
-                                                    class="h-6"
-                                                    thin
-                                                />
-                                            </button>
-                                            <FButtonSwitch
-                                                v-model="block.hidden"
-                                                class="self-center mb-1 "
-                                            />
-                                            <FConfirmDropdown
-                                                v-show="!lockedBlocks"
-                                                confirm-question="Vill du ta bort detta blocket?"
-                                                class="relative w-6 h-6"
-                                                @confirmed="deleteBlock(block)"
-                                            >
-                                                <TrashIcon
-                                                    class="h-6 transition-colors duration-150 hover:text-red-500"
-                                                    thin
-                                                />
-                                            </FConfirmDropdown>
                                         </div>
-                                        <div class="w-px h-8 mx-3 bg-gray-300" />
-                                        <button
-                                            v-if="withPreviewBlockLocator"
-                                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skrolla till block' }"
-                                            class="focus:outline-none"
-                                            @click.stop="scrollToBlock(block.id)"
-                                        >
-                                            <CrosshairsIcon
-                                                class="size-6 text-gray-500"
-                                                thin
-                                            />
-                                        </button>
                                     </div>
+                                </template>
+                                <div class="px-3 sm:px-4 py-3 sm:py-4">
+                                    <KeepAlive>
+                                        <Component
+                                            :is="block.blockType.component_name"
+                                            :content="block.content"
+                                            :value="block"
+                                            :index="boxIndex"
+                                            @repeater-updated="refreshBlock"
+                                        />
+                                    </KeepAlive>
                                 </div>
-                            </template>
-                            <div class="px-3 sm:px-4 py-3 sm:py-4">
-                                <KeepAlive>
-                                    <Component
-                                        :is="block.blockType.component_name"
-                                        :content="block.content"
-                                        :value="block"
-                                        :index="boxIndex"
-                                        @repeater-updated="refreshBlock"
-                                    />
-                                </KeepAlive>
-                            </div>
-                        </UiCard>
-                    </li>
-                </TransitionGroup>
-            </Draggable>
-        </div>
+                            </UiCard>
+                        </li>
+                    </TransitionGroup>
+                </Draggable>
+            </div>
+        </Transition>
     </div>
 </template>
 
