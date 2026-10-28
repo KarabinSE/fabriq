@@ -25,11 +25,13 @@ trait HasContent
         static::deleting(fn ($model) => $model->contentDefinitions()->delete());
     }
 
+    /** Get the content template assigned to the model. */
     public function template(): BelongsTo
     {
         return $this->belongsTo(ContentTemplate::class, 'template_id');
     }
 
+    /** Save field values for the given locale. */
     public function updateContent(array $fieldData, ?string $locale = null): Collection
     {
         $locale ??= app()->getLocale();
@@ -49,6 +51,7 @@ trait HasContent
         return $updated;
     }
 
+    /** Get untranslated field values, filtered to the model's template. */
     public function getSimpleFieldContent(?string $locale = null): Collection
     {
         $locale ??= app()->getLocale();
@@ -76,6 +79,7 @@ trait HasContent
         return $this->filterToTemplateFields($content);
     }
 
+    /** Get field values with configured getters and repeaters resolved. */
     public function getFieldContent(?string $locale = null): Collection
     {
         $locale ??= app()->getLocale();
@@ -98,11 +102,13 @@ trait HasContent
         });
     }
 
+    /** Update multiple metadata fields and return their definitions. */
     public function updateMetaContent(array $data): array
     {
         return $this->updateContent($data)->all();
     }
 
+    /** Update one metadata field and return it as a content value. */
     public function updateMetaItem(string|int $fieldKey, mixed $data): ContentValue
     {
         $this->updateContent([(string) $fieldKey => $data]);
@@ -110,6 +116,7 @@ trait HasContent
         return new ContentValue(['key' => $fieldKey, 'value' => $data]);
     }
 
+    /** Resolve a metadata value using its configured getter, if any. */
     public function getMeta(ContentValue $contentValue): mixed
     {
         $getter = $this->getContentOptions()->getter((string) $contentValue->key);
@@ -119,6 +126,7 @@ trait HasContent
             : $contentValue->value;
     }
 
+    /** Resolve configured getters within repeater items. */
     public function getRepeater(mixed $repeater): array
     {
         $getters = $this->getContentOptions()->getters();
@@ -140,6 +148,7 @@ trait HasContent
         })->toArray();
     }
 
+    /** Resolve configured getters within child repeater items. */
     public function handleChildRepeater(mixed $children): Collection
     {
         $getters = $this->getContentOptions()->getters();
@@ -155,12 +164,17 @@ trait HasContent
         });
     }
 
+    /** Invoke a content callback with its value. */
     public function handleCallable(callable $callable, ContentValue $value): mixed
     {
         return $callable($value);
     }
 
-    /** @return MorphMany<I18nDefinition, $this> */
+    /**
+     * Get the model's translatable content definitions.
+     *
+     * @return MorphMany<I18nDefinition, $this>
+     */
     public function contentDefinitions(): MorphMany
     {
         return $this->morphMany(I18nDefinition::class, 'model')
@@ -168,6 +182,8 @@ trait HasContent
     }
 
     /**
+     * Get cache keys to invalidate when the model's content changes.
+     *
      * @return array<int, string>
      */
     public function getContentCacheKeys(): array
@@ -175,6 +191,7 @@ trait HasContent
         return [];
     }
 
+    /** Find a template field by key or throw if it does not exist. */
     protected function getTemplateField(string $fieldKey): ContentTemplateField
     {
         $cacheKey = $this->getAttribute('template_id').'|'.$fieldKey;
@@ -215,6 +232,8 @@ trait HasContent
     }
 
     /**
+     * Keep only content fields defined by the model's template.
+     *
      * @param  Collection<string, mixed>  $content
      */
     private function filterToTemplateFields(Collection $content): Collection
@@ -245,11 +264,13 @@ trait HasContent
         return $content->only($templateFieldKeys);
     }
 
+    /** Get the template slug used when no template ID is assigned. */
     public function contentTemplateSlug(): ?string
     {
         return $this->getContentTemplateSlug();
     }
 
+    /** Get the content getter and reference options for the model. */
     public function getContentOptions(): ContentOptions
     {
         return ContentOptions::create();
