@@ -65,7 +65,7 @@ class BlockFeatureTest extends AdminUserTestCase
 
         // Assert
         $response->assertOk();
-        $this->assertEquals($response->json()[0]['blockType']['name'], $blockType->name);
+        $this->assertEquals($response->json()[0]['block_type']['name'], $blockType->name);
     }
 
     public function test_it_can_filter_by_locale()
