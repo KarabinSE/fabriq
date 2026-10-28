@@ -198,6 +198,15 @@ export default {
                 }
             },
         },
+        'pageStore.blocks.index': {
+            deep: true,
+            immediate: true,
+            handler(_, from ) {
+                if(this.previewVisible){
+                    this.debouncedUpdatePreview()
+                }
+            },
+        },
     },
 
     mounted() {

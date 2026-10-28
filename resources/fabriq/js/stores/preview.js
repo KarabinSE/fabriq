@@ -24,6 +24,7 @@ export const usePreviewStore = defineStore('preview', () => {
         published: pageStore.page.published,
         id: pageStore.page.id,
         content: pageStore.localizedContent,
+        blocks: pageStore.allBlocks,
     }))
 
     const page = computed(() => pageStore.page)

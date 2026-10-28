@@ -203,6 +203,7 @@ export const usePageStore = defineStore('page', () => {
         update,
         publish,
         resetPage,
-        blocksLoading
+        blocksLoading,
+        allBlocks: blocks
     }
 });
