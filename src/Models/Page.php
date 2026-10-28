@@ -119,7 +119,7 @@ class Page extends Model implements HasMedia
             ])
             ->setIndexable(
                 (bool) $this->published,
-                ['page_title', 'page_header', 'header', 'meta_description', 'meta_title', 'blocks'],
+                ['page_title', 'page_header', 'header'],
                 'page_title',
             );
     }

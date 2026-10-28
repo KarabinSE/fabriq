@@ -81,8 +81,8 @@ class PageSlugFeatureTest extends AdminUserTestCase
         $response = $this->json('GET', route('pages.live.show', $slug->slug));
 
         $response->assertOk();
-        $response->assertJsonPath('data.content.data.meta_og_image.id', $image->id);
-        $response->assertJsonPath('data.content.data.meta_og_image.alt_text', 'Page social image');
+        $response->assertJsonPath('data.content.meta_og_image.id', $image->id);
+        $response->assertJsonPath('data.content.meta_og_image.alt_text', 'Page social image');
     }
 
     /** @test **/
@@ -131,7 +131,7 @@ class PageSlugFeatureTest extends AdminUserTestCase
         $response = $this->json('GET', route('pages.live.show', $slug->slug));
 
         $response->assertOk();
-        $response->assertJsonPath('data.content.data.meta_og_image.id', $images[0]->id);
+        $response->assertJsonPath('data.content.meta_og_image.id', $images[0]->id);
         $response->assertJsonPath('data.blocks.0.content.image.id', $images[1]->id);
         $response->assertJsonPath('data.blocks.0.children.0.content.image.id', $images[2]->id);
         $this->assertSame(1, $imageSelects);
