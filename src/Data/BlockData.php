@@ -21,7 +21,7 @@ class BlockData extends Data
         public int $block_type_id,
         public ?object $content,
         public int $sortindex,
-        public Optional|BlockTypeData $blockType,
+        public Optional|BlockTypeData $block_type,
         #[DataCollectionOf(BlockData::class)]
         public array|DataCollection $children = [],
     ) {

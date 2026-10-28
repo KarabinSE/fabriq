@@ -4,6 +4,18 @@ namespace Karabin\Fabriq\ContentGetters;
 
 class ContentOptions
 {
+    private bool $indexable = false;
+
+    /**
+     * @var array<int, string>
+     */
+    private array $indexableKeys = [];
+
+    private string $titleKey = '';
+
+    /** @var callable|null */
+    private $indexFunction = null;
+
     /**
      * @var array<int, string>
      */
@@ -18,6 +30,23 @@ class ContentOptions
      * @var array<int, string>
      */
     private array $resourceReferenceKeys = [];
+
+    /**
+     * @param  array<int, string>  $indexableKeys
+     */
+    public function setIndexable(
+        bool $indexable,
+        array $indexableKeys = [],
+        string $titleKey = '',
+        ?callable $callable = null,
+    ): self {
+        $this->indexable = $indexable;
+        $this->indexableKeys = $indexableKeys;
+        $this->titleKey = $titleKey;
+        $this->indexFunction = $callable;
+
+        return $this;
+    }
 
     public static function create(): self
     {
@@ -83,5 +112,28 @@ class ContentOptions
     public function isResourceReferenceKey(string $key): bool
     {
         return in_array($key, $this->resourceReferenceKeys, true);
+    }
+
+    public function isIndexable(): bool
+    {
+        return $this->indexable;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function indexableKeys(): array
+    {
+        return $this->indexableKeys;
+    }
+
+    public function titleKey(): string
+    {
+        return $this->titleKey;
+    }
+
+    public function indexFunction(): ?callable
+    {
+        return $this->indexFunction;
     }
 }

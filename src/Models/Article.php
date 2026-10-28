@@ -58,7 +58,8 @@ class Article extends Model
         return ContentOptions::create()
             ->registerSpecialTypes(['image'])
             ->registerGetters(['image' => 'getImages'])
-            ->registerResourceReferenceKeys(['image']);
+            ->registerResourceReferenceKeys(['image'])
+            ->setIndexable(true, ['title', 'preamble', 'publishes_at'], 'title');
     }
 
     /**

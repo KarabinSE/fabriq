@@ -116,7 +116,12 @@ class Page extends Model implements HasMedia
             ])
             ->registerResourceReferenceKeys([
                 'image', 'main_image', 'meta_og_image', 'logo_image', 'file', 'video', 'smartBlock',
-            ]);
+            ])
+            ->setIndexable(
+                (bool) $this->published,
+                ['page_title', 'page_header', 'header', 'meta_description', 'meta_title', 'blocks'],
+                'page_title',
+            );
     }
 
     /**

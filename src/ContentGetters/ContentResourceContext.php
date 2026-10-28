@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Models\I18nDefinition;
@@ -90,6 +91,7 @@ class ContentResourceContext
                 $query->with(['menuItems' => fn ($menuItemQuery) => $menuItemQuery->without('page')]);
             }
 
+            Log::info('ids', $ids);
             $resources = $query->whereIn('id', $queryIds)
                 ->get()
                 ->keyBy(fn (Model $resource) => $resource->getKey());
