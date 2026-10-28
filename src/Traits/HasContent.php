@@ -53,7 +53,8 @@ trait HasContent
     {
         $locale ??= app()->getLocale();
 
-        if (($content = ContentResourceContext::contentFor($this)) !== null) {
+        $content = ContentResourceContext::contentFor($this);
+        if ($content !== null) {
             return collect($content)->mapWithKeys(function (array $translations, string $fieldKey) use ($locale) {
                 $value = $translations[$locale] ?? $translations['*'] ?? null;
 
