@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Repositories;
 
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Models\Menu;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
@@ -29,8 +30,13 @@ class EloquentMenuRepository implements MenuRepositoryInterface
             ->with('ancestors', 'ancestors.page', 'ancestors.page.slugs', 'page', 'page.slugs', 'page.template.fields');
 
         /** @phpstan-ignore-next-line */
-        $tree = $query->descendantsOf($menuItemRoot->id)->toTree();
+        $items = $query->descendantsOf($menuItemRoot->id);
+        $tree = $items->toTree();
 
-        return MenuTreeSerializer::collection($tree, $includes);
+        return ContentResourceContext::withModels(
+            $items,
+            fn () => MenuTreeSerializer::collection($tree, $includes),
+            array_key_exists('content', $includes),
+        );
     }
 }

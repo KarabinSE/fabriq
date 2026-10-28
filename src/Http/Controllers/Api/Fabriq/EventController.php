@@ -5,6 +5,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
-    public function index(Request $request): DataCollection
+    public function index(Request $request): Response
     {
         $number = $request->integer('number', 100);
 
@@ -30,22 +31,35 @@ class EventController extends Controller
         $computedEvents = CalendarService::getComputedDailyIntervals($events, $end);
 
         $mergedEvents = $events->toBase()->merge($computedEvents);
-        $eventData = $mergedEvents->map(function ($event) {
-            if ($event instanceof Event) {
-                return Fabriq::getDto('event')::fromModel($event);
-            }
 
-            return Fabriq::getDto('event')::fromModel(Event::make((array) $event));
-        });
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            $mergedEvents,
+            function () use ($mergedEvents, $request) {
+                $eventData = $mergedEvents->map(function ($event) {
+                    if ($event instanceof Event) {
+                        return Fabriq::getDto('event')::fromModel($event);
+                    }
 
-        return Fabriq::getDto('event')::collect($eventData, DataCollection::class)->wrap('data');
+                    return Fabriq::getDto('event')::fromModel(Event::make((array) $event));
+                });
+
+                return Fabriq::getDto('event')::collect($eventData, DataCollection::class)
+                    ->wrap('data')
+                    ->toResponse($request);
+            },
+        );
     }
 
     public function show(Request $request, int $id): Response
     {
         $event = Event::where('id', $id)->firstOrFail();
 
-        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$event],
+            fn () => Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request),
+        );
     }
 
     public function store(CreateEventRequest $request): Response
@@ -58,7 +72,11 @@ class EventController extends Controller
             $event->updateContent($content, $locale);
         }
 
-        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$event],
+            fn () => Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request),
+        );
     }
 
     public function update(CreateEventRequest $request, int $id): Response
@@ -71,7 +89,11 @@ class EventController extends Controller
             $event->updateContent($content, $locale);
         }
 
-        return Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested(
+            $request,
+            [$event],
+            fn () => Fabriq::getDto('event')::fromModel($event)->wrap('data')->toResponse($request),
+        );
     }
 
     public function destroy(int $id): JsonResponse

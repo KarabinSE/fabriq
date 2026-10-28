@@ -2,11 +2,11 @@
 
 namespace Karabin\Fabriq\Listeners;
 
-use Karabin\Fabriq\Fabriq;
+use Illuminate\Support\Collection;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
+use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Helpers\RecursiveArrayValues;
 use Karabin\Fabriq\Models\SearchTerm;
-use Karabin\TranslatableRevisions\Events\DefinitionsPublished;
-use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
 
 class UpdateSearchTerms
 {
@@ -19,58 +19,75 @@ class UpdateSearchTerms
 
     /**
      * Handle the event.
-     *
-     * @return void
      */
-    public function handle(DefinitionsUpdated|DefinitionsPublished $event)
+    public function handle(ContentUpdated $event): void
     {
-        $options = $event->model->getRevisionOptions();
-
-        if (! $options->isIndexable) {
+        if (! method_exists($event->model, 'getContentOptions')) {
             return;
         }
 
-        if ($options->indexFunction) {
-            call_user_func_array($options->indexFunction, [
-                'args' => [
-                    'definitions' => $event->definitions,
-                ],
-            ]);
-
+        $options = $event->model->getContentOptions();
+        if (! $options instanceof ContentOptions || ! $options->isIndexable()) {
             return;
         }
 
-        if (get_class($event) === DefinitionsUpdated::class && Fabriq::getModelClass('page')->getMorphClass() === $event->model->getMorphClass()) {
+        if ($callback = $options->indexFunction()) {
+            $callback($event);
 
             return;
         }
 
-        $event->model->paths->each(function ($path) use ($event, $options) {
+        if (! method_exists($event->model, 'getSimpleFieldContent')) {
+            return;
+        }
 
-            /** @var array<string, string> $path */
-            $locale = collect($path)->keys()->first();
+        $content = $event->model->getSimpleFieldContent($event->locale);
+        $titleKey = $options->titleKey();
+        $title = (string) ($content->get($titleKey) ?? $event->model->getAttribute($titleKey) ?? '');
+        $indexableKeys = $options->indexableKeys();
+        $indexedKeys = RecursiveArrayValues::fromCollection($content, $indexableKeys);
+        $indexedAttributes = collect($event->model->only($indexableKeys))
+            ->filter()
+            ->map(fn ($value) => is_scalar($value) || $value instanceof \Stringable ? (string) $value : null)
+            ->filter()
+            ->values()
+            ->all();
+        $path = $this->pathFor($event);
+        $data = [
+            'model_id' => $event->model->id,
+            'model_type' => $event->model->getMorphClass(),
+            'title' => $title,
+            'locale' => $event->locale,
+            'path' => (string) $path,
+            'search_string' => implode(' ', [...$indexedKeys, ...$indexedAttributes]),
+        ];
 
-            if (! isset($event->definitions[$locale][$options->titleKey])) {
-                return;
+        SearchTerm::updateOrCreate([
+            'model_id' => $data['model_id'],
+            'model_type' => $data['model_type'],
+            'locale' => $data['locale'],
+        ], $data);
+    }
+
+    private function pathFor(ContentUpdated $event): ?string
+    {
+        if (method_exists($event->model, 'getPathsAttribute')) {
+            /** @var Collection<int, array<string, mixed>> $paths */
+            $paths = $event->model->paths;
+            $pathGroup = $paths->first(fn ($group) => array_key_exists($event->locale, $group));
+            $localePaths = $pathGroup[$event->locale] ?? [];
+            $path = $localePaths instanceof Collection ? $localePaths->flatten()->first() : null;
+            if ($path) {
+                return $path;
             }
+        }
 
-            $indexedKeys = RecursiveArrayValues::fromCollection($event->definitions[$locale], $options->indexableKeys);
-            $title = $event->definitions[$locale][$options->titleKey];
+        if (! method_exists($event->model, 'slugs')) {
+            return null;
+        }
 
-            $data = [
-                'model_id' => $event->model->id,
-                'model_type' => $event->model->getMorphClass(),
-                'title' => $title,
-                'locale' => $locale,
-                'path' => collect($path)->flatten()->first(),
-                'search_string' => implode(' ', $indexedKeys),
-            ];
+        $firstSlug = $event->model->slugs->first()?->slug;
 
-            SearchTerm::updateOrCreate([
-                'model_id' => $data['model_id'],
-                'model_type' => $data['model_type'],
-                'locale' => $data['locale'],
-            ], $data);
-        });
+        return $firstSlug ? '/'.$firstSlug : null;
     }
 }

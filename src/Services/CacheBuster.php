@@ -9,8 +9,8 @@ class CacheBuster
 {
     public function getCacheKeys(Model $model, array $cacheKeysToFlush = []): Collection
     {
-        if (method_exists($model, 'getRevisionOptions') && count($cacheKeysToFlush) === 0) {
-            $cacheKeysToFlush = $model->getRevisionOptions()->cacheKeysToFlush;
+        if (method_exists($model, 'getContentCacheKeys') && count($cacheKeysToFlush) === 0) {
+            $cacheKeysToFlush = $model->getContentCacheKeys();
         }
 
         /** @var array<string, string> $cacheKeysToFlush */

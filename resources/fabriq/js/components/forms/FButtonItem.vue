@@ -57,7 +57,7 @@
             :id="modalId"
             :arrow="arrow"
             :color="color"
-            :value="value"
+            :value="localButton"
             @saved="onButtonSaved"
         />
     </div>
@@ -70,6 +70,7 @@ import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
 import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
 import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
 import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
+import { Button } from '@fabriq/models/Button'
 
 export const linkTypeOptions = [
     { label: 'Intern', value: 'internal' },
@@ -126,7 +127,7 @@ export default {
     data () {
         return {
             modalId: `button-modal-${Math.random().toString(20).substring(2,6)}`,
-            localButton: this.value,
+            localButton: this.value ?? new Button,
             localPages: this.pages,
             colors: colors['buttonColors'],
             arrows: buttonArrows,

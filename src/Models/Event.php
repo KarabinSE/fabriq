@@ -4,15 +4,14 @@ namespace Karabin\Fabriq\Models;
 
 use Carbon\Carbon;
 use Karabin\Fabriq\Database\Factories\EventFactory;
+use Karabin\Fabriq\Traits\HasContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
 
 class Event extends Model
 {
-    use HasFactory, HasTranslatedRevisions;
+    use HasContent, HasFactory;
 
     protected $fillable = ['start', 'end', 'start_time', 'end_time', 'date', 'title', 'daily_interval'];
 
@@ -34,13 +33,9 @@ class Event extends Model
         return EventFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('event-item');
+        return 'event-item';
     }
 
     /**
@@ -61,9 +56,7 @@ class Event extends Model
      */
     public function getTitleAttribute()
     {
-        $delimiter = $this->getDelimiter();
-
-        return $this->translateByKey('events'.$delimiter.$this->id.$delimiter.$delimiter.'title', 'sv');
+        return $this->getFieldContent('sv')->get('title');
     }
 
     /**

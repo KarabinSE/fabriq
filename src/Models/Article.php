@@ -3,24 +3,28 @@
 namespace Karabin\Fabriq\Models;
 
 use Carbon\Carbon;
-use Karabin\Fabriq\ContentGetters\ImageGetter;
-use Karabin\Fabriq\Database\Factories\ArticleFactory;
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
+use Karabin\Fabriq\ContentGetters\ImageGetter;
+use Karabin\Fabriq\Database\Factories\ArticleFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\HasContent;
 
 class Article extends Model
 {
-    use BroadcastsEvents, HasFactory, HasTranslatedRevisions;
+    use BroadcastsEvents, HasContent, HasFactory;
 
     public const RELATIONSHIPS = ['template', 'template.fields', 'slugs'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_articles', 'fabriq_articles|slug'];
+    }
 
     protected $guarded = ['content'];
 
@@ -44,18 +48,18 @@ class Article extends Model
         return ArticleFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('article')
+        return 'article';
+    }
+
+    public function getContentOptions(): ContentOptions
+    {
+        return ContentOptions::create()
             ->registerSpecialTypes(['image'])
-            ->registerCacheKeysToFlush(['fabriq_articles', 'fabriq_articles|slug'])
-            ->registerGetters([
-                'image' => 'getImages',
-            ]);
+            ->registerGetters(['image' => 'getImages'])
+            ->registerResourceReferenceKeys(['image'])
+            ->setIndexable(true, ['title', 'preamble', 'publishes_at'], 'title');
     }
 
     /**
@@ -71,9 +75,9 @@ class Article extends Model
      *
      * @return mixed
      */
-    public function getImages(RevisionMeta $meta)
+    public function getImages(ContentValue $contentValue)
     {
-        return ImageGetter::get($meta, $this->isPublishing);
+        return ImageGetter::get($contentValue);
     }
 
     public function getIsPublishedAttribute(): bool
@@ -148,7 +152,7 @@ class Article extends Model
      * Get the channels that model events should broadcast on.
      *
      * @param  string  $event
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel|array
      */
     public function broadcastOn($event)
     {

@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Str;
 use Karabin\Fabriq\Data\ArticleData;
+use Karabin\Fabriq\Data\BlockData;
 use Karabin\Fabriq\Data\BlockTypeData;
 use Karabin\Fabriq\Data\CommentData;
 use Karabin\Fabriq\Data\ContactData;
@@ -21,12 +22,12 @@ use Karabin\Fabriq\Data\UserData;
 use Karabin\Fabriq\Data\VideoData;
 use Karabin\Fabriq\Jobs\GenerateResponsiveImagesJob;
 use Karabin\Fabriq\Models\Article;
+use Karabin\Fabriq\Models\Block;
 use Karabin\Fabriq\Models\BlockType;
 use Karabin\Fabriq\Models\Comment;
 use Karabin\Fabriq\Models\Contact;
 use Karabin\Fabriq\Models\Event;
 use Karabin\Fabriq\Models\File;
-use Karabin\Fabriq\Models\I18nDefinition;
 use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\Models\Locale;
 use Karabin\Fabriq\Models\Media;
@@ -149,7 +150,6 @@ return [
         'contact' => Contact::class,
         'event' => Event::class,
         'file' => File::class,
-        'i18nDefinition' => I18nDefinition::class,
         'image' => Image::class,
         'locale' => Locale::class,
         'media' => Media::class,
@@ -163,6 +163,7 @@ return [
         'tag' => Tag::class,
         'user' => User::class,
         'video' => Video::class,
+        'block' => Block::class,
     ],
     'data_transfer_objects' => [
         'article' => ArticleData::class,
@@ -182,6 +183,7 @@ return [
         'user' => UserData::class,
         'video' => VideoData::class,
         'live_page' => LivePageData::class,
+        'block' => BlockData::class,
     ],
     'media-library' => [
         'max_file_size' => 1024 * 1024 * 500, // 500 MB,

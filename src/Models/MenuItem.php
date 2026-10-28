@@ -5,21 +5,28 @@ namespace Karabin\Fabriq\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
+use Karabin\Fabriq\Data\ContentValueMetaData;
 use Karabin\Fabriq\Database\Factories\MenuItemFactory;
 use Karabin\Fabriq\Fabriq;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
+use Spatie\Translatable\Attributes\Translatable;
+use Spatie\Translatable\HasTranslations;
 
+#[Translatable('path')]
 class MenuItem extends Model
 {
-    use HasFactory, HasTranslatedRevisions, NodeTrait;
+    use HasContent, HasFactory, HasTranslations, NodeTrait;
 
     public const RELATIONSHIPS = ['page'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_menu'];
+    }
 
     protected $with = ['page'];
 
@@ -56,18 +63,17 @@ class MenuItem extends Model
         });
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('menu-item')
+        return 'menu-item';
+    }
+
+    public function getContentOptions(): ContentOptions
+    {
+        return ContentOptions::create()
             ->registerSpecialTypes(['file'])
-            ->registerGetters([
-                'file' => 'getFiles',
-            ])
-            ->registerCacheKeysToFlush(['fabriq_menu']);
+            ->registerGetters(['file' => 'getFiles'])
+            ->registerResourceReferenceKeys(['file']);
     }
 
     /** @return BelongsTo<Page, $this> */
@@ -82,15 +88,13 @@ class MenuItem extends Model
      *
      * @return mixed
      */
-    public function getFiles(RevisionMeta $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        if (! $meta->meta_value) {
-            return [
-                'meta_id' => $meta->id,
-            ];
+        if (! $contentValue->value) {
+            return new ContentValueMetaData($contentValue->id);
         }
 
-        return FileGetter::get($meta);
+        return FileGetter::get($contentValue);
     }
 
     /**
@@ -102,7 +106,7 @@ class MenuItem extends Model
             return $this->getSlug()->source_string ?? '';
         }
 
-        $content = $this->getFieldContent(null, 'sv');
+        $content = $this->getSimpleFieldContent('sv');
 
         return $content['title'] ?? '';
     }
@@ -136,20 +140,7 @@ class MenuItem extends Model
 
     public function getRelativePathAttribute(): string
     {
-        if ($this->ancestors->count()) {
-            $collection = new Collection($this->ancestors);
-
-            return $collection->reduce(function ($carry, $subItem) {
-                /** @var MenuItem $subItem * */
-                if (! $subItem->page) {
-                    return;
-                }
-
-                return $carry.'/'.$subItem->getSlugString();
-            }, '').'/'.$this->getSlugString();
-        }
-
-        return $this->getSlugString();
+        return (string) ($this->getTranslation('path', app()->getLocale(), false) ?? '');
     }
 
     /**

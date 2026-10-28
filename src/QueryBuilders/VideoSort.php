@@ -11,15 +11,14 @@ class VideoSort implements Sort
      * Sort custom columns.
      *
      * @param  Builder  $query
-     * @param  mixed  $descending
+     * @param  bool  $descending
      * @param  string  $property
-     * @return Builder
      */
-    public function __invoke(Builder $query, $descending, string $property): Builder
+    public function __invoke(Builder $query, bool $descending, string $property): void
     {
         $keyName = $property;
 
-        return $query->select('videos.*')
+        $query->select('videos.*')
             ->join('media', 'media.model_id', '=', 'videos.id')
             ->where('collection_name', 'videos')
             ->orderBy('media.'.$keyName, $descending ? 'desc' : 'asc');

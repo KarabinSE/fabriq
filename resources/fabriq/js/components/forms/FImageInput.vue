@@ -163,6 +163,11 @@ export default {
             return false
         },
     },
+    watch: {
+        value(value) {
+            this.localImage = { ...value }
+        }
+    },
     created () {
         this.localImage = { ...this.value }
         this.$emit('input', this.localImage)

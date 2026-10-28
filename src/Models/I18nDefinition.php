@@ -2,11 +2,16 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\TranslatableRevisions\Models\I18nDefinition as BaseI18nDefinition;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
 
-class I18nDefinition extends BaseI18nDefinition implements HasMedia
+class I18nDefinition extends Model
 {
-    use InteractsWithMedia;
+    use HasTranslations;
+
+    protected $table = 'i18n_definitions';
+
+    protected $guarded = [];
+
+    public array $translatable = ['content'];
 }

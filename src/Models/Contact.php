@@ -8,18 +8,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\Database\Factories\ContactFactory;
 use Karabin\Fabriq\Fabriq;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
 use Spatie\Tags\HasTags;
 
 class Contact extends Model
 {
-    use BroadcastsEvents, HasFactory, HasTags, HasTranslatedRevisions;
+    use BroadcastsEvents, HasContent, HasFactory, HasTags;
 
     public const RELATIONSHIPS = ['images', 'tags'];
+
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_contacts'];
+    }
 
     protected $guarded = ['content', 'localizedContent'];
 
@@ -31,18 +36,17 @@ class Contact extends Model
         return ContactFactory::new();
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    protected function getContentTemplateSlug(): ?string
     {
-        return RevisionOptions::create()
-            ->registerDefaultTemplate('contact')
+        return 'contact';
+    }
+
+    public function getContentOptions(): ContentOptions
+    {
+        return ContentOptions::create()
             ->registerSpecialTypes(['image'])
-            ->registerCacheKeysToFlush(['fabriq_contacts'])
-            ->registerGetters([
-                'image' => 'getImages',
-            ]);
+            ->registerGetters(['image' => 'getImages'])
+            ->registerResourceReferenceKeys(['image']);
     }
 
     public static function getTagClassName(): string
@@ -53,12 +57,12 @@ class Contact extends Model
     /**
      * Getter for images.
      *
-     * @param  mixed  $meta
+     * @param  mixed  $contentValue
      * @return mixed
      */
-    public function getImages($meta)
+    public function getImages($contentValue)
     {
-        return ImageGetter::get($meta, $this->isPublishing);
+        return ImageGetter::get($contentValue);
     }
 
     /**
@@ -114,12 +118,7 @@ class Contact extends Model
      */
     public function getImageAttribute()
     {
-        $meta = $this->meta()->where('meta_key', 'image')->first();
-        if (! $meta) {
-            return null;
-        }
-
-        return $this->getImages($meta);
+        return $this->getFieldContent()->get('image');
     }
 
     /**

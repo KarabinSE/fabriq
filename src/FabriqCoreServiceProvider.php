@@ -12,7 +12,7 @@ use Karabin\Fabriq\Console\CreateMenuCommand;
 use Karabin\Fabriq\Console\CreatePageRootCommand;
 use Karabin\Fabriq\Console\CreatePageTemplate;
 use Karabin\Fabriq\Console\InstallFabriqCommand;
-use Karabin\Fabriq\Console\MakeRevisionField;
+use Karabin\Fabriq\Console\MakeTemplateField;
 use Karabin\Fabriq\Console\PublishNotification;
 use Karabin\Fabriq\Console\ResourceMakeCommand;
 use Karabin\Fabriq\Console\SendNotificationReminders;
@@ -26,7 +26,6 @@ use Karabin\Fabriq\Repositories\Decorators\CachingPageRepository;
 use Karabin\Fabriq\Repositories\EloquentMenuRepository;
 use Karabin\Fabriq\Repositories\EloquentPageRepository;
 use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
-use Karabin\TranslatableRevisions\TranslatableRevisionsServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 use Spatie\QueryBuilder\QueryBuilderServiceProvider;
@@ -47,7 +46,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
             'fabriq_contact' => Fabriq::getFqnModel('contact'),
             'fabriq_event' => Fabriq::getFqnModel('event'),
             'fabriq_file' => Fabriq::getFqnModel('file'),
-            'fabriq_i18nDefinition' => Fabriq::getFqnModel('i18nDefinition'),
             'fabriq_image' => Fabriq::getFqnModel('image'),
             'fabriq_locale' => Fabriq::getFqnModel('locale'),
             'fabriq_media' => Fabriq::getFqnModel('media'),
@@ -112,7 +110,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
         $this->app->register(BroadcastServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
-        $this->app->register(TranslatableRevisionsServiceProvider::class);
         $this->app->register(PermissionServiceProvider::class);
         $this->app->register(MediaLibraryServiceProvider::class);
         $this->app->register(QueryBuilderServiceProvider::class);
@@ -134,7 +131,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             ControllerMakeCommand::class,
             CreateMenuCommand::class,
             CreatePageRootCommand::class,
-            MakeRevisionField::class,
+            MakeTemplateField::class,
             InstallFabriqCommand::class,
             PublishNotification::class,
             ResourceMakeCommand::class,

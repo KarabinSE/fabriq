@@ -27,16 +27,16 @@ class ImageController extends Controller
         $number = $request->integer('number', 100);
 
         $images = QueryBuilder::for(Fabriq::getFqnModel('image'))
-            ->allowedSorts([
+            ->allowedSorts(
                 'id', 'created_at', 'updated_at', 'alt_text',
                 AllowedSort::custom('file_name', new ImageSort),
                 AllowedSort::custom('c_name', new ImageSort, 'name'),
                 AllowedSort::custom('size', new ImageSort),
                 AllowedSort::custom('tags', new TagSort, 'images'),
-            ])
-            ->allowedFilters([
+            )
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
-            ])
+            )
             ->allowedIncludes(...Image::RELATIONSHIPS)
             ->has('mediaImages')
             ->paginate($number);

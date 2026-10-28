@@ -134,9 +134,6 @@ importers:
       vue-select:
         specifier: ^3.20.4
         version: 3.20.4(vue@2.7.16)
-      vue-slide-up-down:
-        specifier: ^2.0.1
-        version: 2.0.1
       vuedraggable:
         specifier: ^2.24.3
         version: 2.24.3
@@ -3017,9 +3014,6 @@ packages:
     resolution: {integrity: sha512-pXIsDUnBR1075qHNEM7mKgX7YnHI3MfCO+7VmXSA1Hywplpqi52jOa0j6EHWQU6MnaW/mBZPuaQtgp3yvks2Kw==}
     peerDependencies:
       vue: 2.x
-
-  vue-slide-up-down@2.0.1:
-    resolution: {integrity: sha512-2crtzW3oeasRrDMNrKMUW5cz0HV7qhj2BPM9UNtPZwVXiHZT5qjdcn1GwpRxKK7DMBhD6OeTmEumwWxXK5XdHw==}
 
   vue-ts-types@1.6.2:
     resolution: {integrity: sha512-iOBe4oMoTeISs+Wxlt5E6q3W6lEX6UtkwWCPu6727IoweBE3O3Vp/2/BtO+Kf5pISQU7WpX71hXTeMGqHsmecA==}
@@ -6141,8 +6135,6 @@ snapshots:
   vue-select@3.20.4(vue@2.7.16):
     dependencies:
       vue: 2.7.16
-
-  vue-slide-up-down@2.0.1: {}
 
   vue-ts-types@1.6.2(vue@2.7.16):
     dependencies:

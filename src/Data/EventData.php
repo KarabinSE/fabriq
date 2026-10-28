@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Data;
 
 use Karabin\Fabriq\Models\Event;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -60,7 +60,7 @@ class EventData extends Data
 
         foreach ($enabledLocales as $locale) {
             $result[(string) $locale->iso_code] = [
-                'content' => $event->getSimpleFieldContent($event->revision, (string) $locale->iso_code),
+                'content' => $event->getSimpleFieldContent((string) $locale->iso_code),
             ];
         }
 

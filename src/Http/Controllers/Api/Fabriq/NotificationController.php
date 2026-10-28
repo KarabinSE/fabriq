@@ -22,10 +22,10 @@ class NotificationController extends Controller
         $number = $request->integer('number', $this->defaultPageSize);
 
         $notifications = QueryBuilder::for(Fabriq::getFqnModel('notification'))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('unseen'),
                 AllowedFilter::scope('seen'),
-            ])
+            )
             ->allowedIncludes(...array_map(
                 fn (string $include) => AllowedInclude::relationship($include),
                 Notification::RELATIONSHIPS,

@@ -2,11 +2,11 @@
 
 namespace Karabin\Fabriq\Console;
 
-use Karabin\Fabriq\Actions\ClonePage;
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
+use Karabin\Fabriq\Actions\ClonePage;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\ContentTemplate;
 
 class CreatePageTemplate extends Command
 {
@@ -48,7 +48,7 @@ class CreatePageTemplate extends Command
         $templateName = $this->ask('What should the template be named?');
         $lockedTemplate = $this->confirm('Should the template be locked?');
 
-        $sourceTemplate = RevisionTemplate::where('slug', 'startsida')
+        $sourceTemplate = ContentTemplate::where('slug', 'startsida')
             ->with('fields')
             ->first();
 
@@ -66,13 +66,12 @@ class CreatePageTemplate extends Command
             'name' => 'hidden_root',
             'sortindex' => 0,
             'parent_id' => null,
-            'revision' => 1,
             'template_id' => $sourceTemplate->id,
         ]);
         Fabriq::getFqnModel('page')::reguard();
 
-        RevisionTemplate::unguard();
-        $newTemplate = RevisionTemplate::create([
+        ContentTemplate::unguard();
+        $newTemplate = ContentTemplate::create([
             'name' => $templateName,
             'slug' => Str::slug($templateName),
             'type' => 'page',
@@ -84,7 +83,7 @@ class CreatePageTemplate extends Command
             $newField->save();
         }
 
-        RevisionTemplate::reguard();
+        ContentTemplate::reguard();
 
         $clonedPage = $clonePage($root, $sourcePage, $templateName);
         $clonedPage->locked = $lockedTemplate;

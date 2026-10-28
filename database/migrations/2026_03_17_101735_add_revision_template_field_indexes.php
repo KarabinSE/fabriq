@@ -8,7 +8,7 @@ class AddRevisionTemplateFieldIndexes extends Migration
 {
     public function up()
     {
-        $tableName = config('translatable-revisions.revision_template_fields_table_name');
+        $tableName = 'revision_template_fields';
 
         Schema::table($tableName, function (Blueprint $table) {
             $table->index(['template_id', 'key'], 'revision_template_fields_lookup_idx');
@@ -17,7 +17,7 @@ class AddRevisionTemplateFieldIndexes extends Migration
 
     public function down()
     {
-        $tableName = config('translatable-revisions.revision_template_fields_table_name');
+        $tableName = 'revision_template_fields';
 
         Schema::table($tableName, function (Blueprint $table) {
             $table->dropIndex('revision_template_fields_lookup_idx');

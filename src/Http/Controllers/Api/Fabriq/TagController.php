@@ -25,9 +25,9 @@ class TagController extends Controller
     public function index(Request $request): Response
     {
         $tags = QueryBuilder::for(Fabriq::getFqnModel('tag'))
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('type', 'withType'),
-            ])
+            )
             ->get();
 
         return Fabriq::getDto('tag')::collect($tags, DataCollection::class)

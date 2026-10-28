@@ -2,8 +2,10 @@
 
 namespace Karabin\Fabriq\ContentGetters;
 
-use Karabin\Fabriq\Fabriq;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
+use Karabin\Fabriq\Data\ContentValueMetaData;
+use Karabin\Fabriq\Data\SmartBlockContentData;
+use Karabin\Fabriq\Models\ContentValue;
+use Karabin\Fabriq\Models\SmartBlock;
 
 class SmartBlockGetter
 {
@@ -13,18 +15,16 @@ class SmartBlockGetter
      * @param  bool  $publishing
      * @return mixed
      */
-    public static function get(RevisionMeta $meta, $publishing = false)
+    public static function get(ContentValue $contentValue, $publishing = false)
     {
-        if (empty($meta->toArray())) {
-            return [
-                'meta_id' => $meta->id,
-            ];
+        if (empty($contentValue->toArray())) {
+            return new ContentValueMetaData($contentValue->id);
         }
 
-        $smartBlock = Fabriq::getModelClass('smartBlock')
-            ->where('id', (array) $meta->meta_value['id'])->first();
+        $ids = ContentResourceContext::extractIds($contentValue->value);
+        $smartBlock = isset($ids[0]) ? ContentResourceContext::find('smartBlock', $ids[0]) : null;
 
-        if (! $smartBlock) {
+        if (! $smartBlock instanceof SmartBlock) {
             return null;
         }
 
@@ -32,10 +32,10 @@ class SmartBlockGetter
             return $smartBlock->id;
         }
 
-        return [
-            'id' => $smartBlock->id,
-            'name' => $smartBlock->name,
-            'content' => $smartBlock->getFieldContent(),
-        ];
+        return new SmartBlockContentData(
+            id: (int) $smartBlock->id,
+            name: (string) $smartBlock->name,
+            content: $smartBlock->getFieldContent(),
+        );
     }
 }

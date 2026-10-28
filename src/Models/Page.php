@@ -15,6 +15,7 @@ use Karabin\Fabriq\Concerns\BroadcastsModelEvents;
 use Karabin\Fabriq\Concerns\HasPaths;
 use Karabin\Fabriq\ContentGetters\ButtonGetter;
 use Karabin\Fabriq\ContentGetters\ButtonsGetter;
+use Karabin\Fabriq\ContentGetters\ContentOptions;
 use Karabin\Fabriq\ContentGetters\FileGetter;
 use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\MediaGetter;
@@ -23,22 +24,20 @@ use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\PageFactory;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Traits\Commentable;
-use Karabin\TranslatableRevisions\Models\RevisionMeta;
-use Karabin\TranslatableRevisions\Traits\HasTranslatedRevisions;
-use Karabin\TranslatableRevisions\Traits\RevisionOptions;
+use Karabin\Fabriq\Traits\HasContent;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Page extends Model implements HasMedia
 {
-    use BroadcastsModelEvents, Commentable, HasFactory, HasPaths, HasTranslatedRevisions, InteractsWithMedia, NodeTrait;
+    use BroadcastsModelEvents, Commentable, HasContent, HasFactory, HasPaths, InteractsWithMedia, NodeTrait;
 
     public const RELATIONSHIPS = ['template', 'template.fields'];
 
-    /**
-     * @var array
-     */
-    protected $dates = ['published_at'];
+    public function getContentCacheKeys(): array
+    {
+        return ['fabriq_menu', 'fabriq_pages|slug'];
+    }
 
     protected $fillable = ['id', 'sortindex'];
 
@@ -48,7 +47,6 @@ class Page extends Model implements HasMedia
         '_lft' => 'int',
         '_rgt' => 'int',
         'parent_id' => 'int',
-        'published_at' => 'datetime',
     ];
 
     /**
@@ -89,29 +87,26 @@ class Page extends Model implements HasMedia
             $content = [
                 'page_title' => $page->name,
             ];
-            $localPage = Fabriq::getModelClass('page')
-                ->select('id', 'revision')
-                ->find($page->id);
+            $localPage = Fabriq::getModelClass('page')->find($page->id);
             $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
             $supportedLocales->each(function ($locale, $key) use ($content, $localPage) {
-                $localPage->updateContent($content, $key, $localPage->revision);
+                $localPage->updateContent($content, (string) $key);
             });
         });
     }
 
-    /**
-     * Get the options for the revisions.
-     */
-    public function getRevisionOptions(): RevisionOptions
+    public function getContentOptions(): ContentOptions
     {
-        return RevisionOptions::create()
-            ->registerSpecialTypes(['image', 'video', 'file', 'smartBlock', 'button', 'buttons'])
+        return ContentOptions::create()
+            ->registerSpecialTypes([
+                'image', 'main_image', 'meta_og_image', 'logo_image', 'file',
+                'video', 'button', 'buttons', 'smartBlock', 'media',
+            ])
             ->registerGetters([
                 'image' => 'getImages',
                 'main_image' => 'getImages',
                 'meta_og_image' => 'getImages',
                 'logo_image' => 'getImages',
-                'repeater' => 'getRepeater',
                 'file' => 'getFiles',
                 'video' => 'getVideos',
                 'button' => 'getButton',
@@ -119,8 +114,14 @@ class Page extends Model implements HasMedia
                 'smartBlock' => 'getSmartBlock',
                 'media' => 'getMediaViaType',
             ])
-            ->registerCacheKeysToFlush(['fabriq_menu', 'fabriq_pages|slug'])
-            ->setIndexable(indexable: true, indexableKeys: ['page_title', 'header'], titleKey: 'page_title');
+            ->registerResourceReferenceKeys([
+                'image', 'main_image', 'meta_og_image', 'logo_image', 'file', 'video', 'smartBlock',
+            ])
+            ->setIndexable(
+                (bool) $this->published,
+                ['page_title', 'page_header', 'header'],
+                'page_title',
+            );
     }
 
     /**
@@ -128,9 +129,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getImages(RevisionMeta $meta)
+    public function getImages(ContentValue $contentValue)
     {
-        return ImageGetter::get($meta);
+        return ImageGetter::get($contentValue);
     }
 
     /**
@@ -138,9 +139,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getFiles(RevisionMeta $meta)
+    public function getFiles(ContentValue $contentValue)
     {
-        return FileGetter::get($meta);
+        return FileGetter::get($contentValue);
     }
 
     /**
@@ -148,9 +149,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getVideos(RevisionMeta $meta)
+    public function getVideos(ContentValue $contentValue)
     {
-        return VideoGetter::get($meta);
+        return VideoGetter::get($contentValue);
     }
 
     /**
@@ -158,9 +159,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getButton(RevisionMeta $meta)
+    public function getButton(ContentValue $contentValue)
     {
-        return ButtonGetter::get($meta);
+        return ButtonGetter::get($contentValue);
     }
 
     /**
@@ -168,9 +169,9 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getButtons(RevisionMeta $meta)
+    public function getButtons(ContentValue $contentValue)
     {
-        return ButtonsGetter::get($meta);
+        return ButtonsGetter::get($contentValue);
     }
 
     /**
@@ -178,14 +179,21 @@ class Page extends Model implements HasMedia
      *
      * @return mixed
      */
-    public function getSmartBlock(RevisionMeta $meta)
+    public function getSmartBlock(ContentValue $contentValue)
     {
-        return SmartBlockGetter::get($meta);
+        return SmartBlockGetter::get($contentValue);
     }
 
-    public function getMediaViaType(RevisionMeta $meta)
+    public function getMediaViaType(ContentValue $contentValue)
     {
-        return MediaGetter::get($meta);
+        return MediaGetter::get($contentValue);
+    }
+
+    public function blocks(): MorphMany
+    {
+        return $this->morphMany(Fabriq::getFqnModel('block'), 'model')
+            ->where('model_type', 'fabriq_page')
+            ->orderBy('blocks.sortindex');
     }
 
     public function menuItems(): HasMany
@@ -235,9 +243,8 @@ class Page extends Model implements HasMedia
      * Set localized content.
      *
      * @param  array  $value
-     * @return void
      */
-    public function setLocalizedContentAttribute($value)
+    public function setLocalizedContentAttribute($value): void
     {
         // Sort by locale order, so that primary locale overwrites other locales when
         // saving non localized meta data
@@ -248,9 +255,6 @@ class Page extends Model implements HasMedia
 
         foreach ($value as $locale => $localeContent) {
             $this->updateContent($localeContent, (string) $locale);
-            $revisionContent = $this->getFieldContent($this->revision, $locale);
-
-            $this->updateContent($revisionContent->toArray(), (string) $locale);
         }
     }
 }

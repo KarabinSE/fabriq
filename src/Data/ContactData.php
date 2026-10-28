@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Data;
 
 use Karabin\Fabriq\Models\Contact;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -51,7 +51,7 @@ class ContactData extends Data
             created_at: $contact->created_at?->toISOString(),
             updated_at: $contact->updated_at?->toISOString(),
             localizedContent: Lazy::create(fn () => self::buildLocalizedContent($contact)),
-            content: Lazy::create(fn () => $contact->getFieldContent($contact->revision)->toArray()),
+            content: Lazy::create(fn () => $contact->getFieldContent()->toArray()),
             tags: Lazy::create(fn () => $tags),
         );
     }
@@ -71,7 +71,7 @@ class ContactData extends Data
 
         foreach ($enabledLocales as $locale) {
             $result[(string) $locale->iso_code] = [
-                'content' => $contact->getSimpleFieldContent($contact->revision, (string) $locale->iso_code),
+                'content' => $contact->getSimpleFieldContent((string) $locale->iso_code),
             ];
         }
 

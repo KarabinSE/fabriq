@@ -4,6 +4,9 @@ import { useMenuStore } from './menu';
 import Config from '@fabriq/models/Config';
 
 export const useConfigStore = defineStore('config', () => {
+
+    let resolve
+    const initiated = ref(new Promise((r) => resolve = r))
     const config = ref({
         modules: [],
         supported_locales: {
@@ -24,6 +27,7 @@ export const useConfigStore = defineStore('config', () => {
 
     async function index() {
         const { data } = await Config.index();
+        resolve()
 
         config.value = data;
 
@@ -47,5 +51,7 @@ export const useConfigStore = defineStore('config', () => {
         supportedLocales,
         index,
         setActiveLocale,
-        setDevMode: setDevelopmentMode }
+        setDevMode: setDevelopmentMode,
+        initiated,
+    }
 });

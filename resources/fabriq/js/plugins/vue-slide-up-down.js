@@ -1,4 +1,4 @@
 import Vue from 'vue'
-import SlideUpDown from 'vue-slide-up-down'
+import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
 
 Vue.component('SlideUpDown', SlideUpDown)

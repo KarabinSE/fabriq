@@ -4,6 +4,8 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\Actions\UpdateMenuItemPaths;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\MenuItem;
@@ -19,19 +21,22 @@ class MenuItemTreeController extends Controller
         $menuItemRoot = MenuItem::where('menu_id', $id)
             ->whereNull('parent_id')
             ->first();
-        $tree = MenuItem::orderBy('sortindex')
-            ->descendantsOf($menuItemRoot->id)
-            ->toTree();
+        $items = MenuItem::orderBy('sortindex')->descendantsOf($menuItemRoot->id);
+        $tree = $items->toTree();
 
-        return response()->json([
-            'data' => $tree->toArray(),
-        ]);
+        return ContentResourceContext::withModels(
+            $items,
+            fn () => response()->json([
+                'data' => $tree->toArray(),
+            ]),
+            false,
+        );
     }
 
     /**
      * Update the resoource.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, int $id, UpdateMenuItemPaths $updateMenuItemPaths): JsonResponse
     {
         $menuItemRoot = MenuItem::where('menu_id', $id)
             ->whereNull('parent_id')
@@ -40,6 +45,7 @@ class MenuItemTreeController extends Controller
 
         $treeData = $request->tree;
         MenuItem::rebuildSubtree($menuItemRoot, $treeData);
+        $updateMenuItemPaths($menuItemRoot);
 
         return response()->json([
             'code' => ApiResponseCode::Success->value,

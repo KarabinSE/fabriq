@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Data;
 
 use Karabin\Fabriq\Models\SmartBlock;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -31,7 +31,7 @@ class SmartBlockData extends Data
             created_at: $smartBlock->created_at?->toISOString(),
             updated_at: $smartBlock->updated_at?->toISOString(),
             localizedContent: Lazy::create(fn () => self::buildLocalizedContent($smartBlock)),
-            content: Lazy::create(fn () => $smartBlock->getFieldContent($smartBlock->revision)->toArray()),
+            content: Lazy::create(fn () => $smartBlock->getFieldContent()->toArray()),
         );
     }
 
@@ -50,7 +50,7 @@ class SmartBlockData extends Data
 
         foreach ($enabledLocales as $locale) {
             $result[(string) $locale->iso_code] = [
-                'content' => $smartBlock->getSimpleFieldContent($smartBlock->revision, (string) $locale->iso_code),
+                'content' => $smartBlock->getSimpleFieldContent((string) $locale->iso_code),
             ];
         }
 

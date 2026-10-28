@@ -3,7 +3,6 @@
 namespace Karabin\Fabriq\Listeners;
 
 use Karabin\Fabriq\Models\Slug;
-use Illuminate\Support\Str;
 
 class UpdateSlugListener
 {
@@ -28,27 +27,22 @@ class UpdateSlugListener
         if (! $event->model->templateSluggable) {
             return;
         }
-        $sluggableDefinitions = $event->definitions->filter(function ($def, $key) use ($event) {
-            return $key === implode(',', $event->model->templateSluggable);
-            // return Str::contains(implode(',', $event->model->templateSluggable), $key);
-        });
+        foreach ($event->model->templateSluggable as $fieldKey) {
+            if (! $event->content->has($fieldKey)) {
+                continue;
+            }
 
-        foreach ($sluggableDefinitions as $item) {
             $slug = Slug::firstOrNew([
                 'model_id' => $event->model->id,
-                'locale' => $item['definition']->locale,
+                'locale' => $event->locale,
                 'model_type' => $event->model->getMorphClass(),
-            ], [
-                'source_key' => $item['term']->key,
             ]);
-            if (! $item['definition']->content) {
-                $item['definition']->content = 'no_slug_yet_'.Str::random(6);
-            }
-            $slug->source_string = $item['definition']->content;
-            $slug->source_key = $item['term']->key;
-            $slug->locale = $item['definition']->locale;
+            $slug->source_string = (string) ($event->content->get($fieldKey) ?: 'no_slug_yet_'.$event->model->getKey());
+            $slug->source_key = $fieldKey;
+            $slug->locale = $event->locale;
             $slug->model_id = $event->model->id;
             $slug->save();
+            $event->model->unsetRelation('slugs');
         }
     }
 }

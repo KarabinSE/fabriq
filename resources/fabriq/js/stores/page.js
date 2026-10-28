@@ -1,19 +1,16 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import Vue, { computed, ref, toRaw } from "vue";
 import { useConfigStore } from "./config";
 import Page from "@fabriq/models/Page";
-
-const queryParameters = {
-    include: 'template,template.groupedFields,slugs,localizedContent',
-    locale: 'all',
-    append: 'paths',
-}
+import { useUiStore } from '@fabriq/stores/ui'
+import Blocks, { Block } from '@fabriq/models/Block'
 
 class PageFetchError extends Error {
-    constructor(message){
+    constructor(message, error){
         super(message)
         this.message = message
         this.name = 'PageFetchError'
+        this.error = error
     }
 }
 
@@ -47,35 +44,20 @@ const defaultPageData = {
 
 export const usePageStore = defineStore('page', () => {
     const config = useConfigStore()
+    const ui = useUiStore()
 
+    const blocksLoading = ref(false)
     const page = ref(structuredClone(defaultPageData));
 
-    const localizedContent = ref(null)
+    const localizedContent = ref({
+        sv: {}
+    })
     const wasInitiallyPublished = ref(true)
 
-    const fields = computed(() => page.value.template.data?.fields ?? {})
+    const blocks = ref([])
     const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {})
-
-    const activeLocaleContent = computed(() => {
-        if(!localizedContent.value?.[config.activeLocale]) {
-            console.warn({
-                message: `no localizedContent for locale ${config.activeLocale}`,
-                page: page.value
-            });
-
-            return {}
-        }
-
-        return localizedContent.value[config.activeLocale]
-    })
-
-    function setPage (data) {
-        page.value = data;
-    }
-
-    function resetPage () {
-        page.value = structuredClone(defaultPageData);
-    }
+    const activeLocaleBlocks = computed(() => blocks.value.filter(block => block.locale === config.activeLocale))
+    const activeLocaleContent = computed(() => localizedContent.value[config.activeLocale])
 
     const filteredGroupedFields = computed( () => {
         if (!groupedFields.value || typeof groupedFields.value !== 'object') {
@@ -87,31 +69,66 @@ export const usePageStore = defineStore('page', () => {
         )
     })
 
-    async function fetchPage (pageId) {
-        const payload = {
-            params: queryParameters,
-        }
+    function setPage (data) {
+        page.value = data;
+        wasInitiallyPublished.value = data.published
+    }
 
+    function resetPage () {
+        page.value = structuredClone(defaultPageData);
+    }
+
+    /**
+     * fetches page content for each locale
+     */
+    async function fetchPage (pageId) {
+        await config.initiated
+        blocks.value = []
+
+        fetchPageBlocks(pageId)
+
+        const promises = Object.keys(config.supportedLocales)
+            .map(async (locale) => await fetchPageForLocale(pageId, locale))
+
+        const page = await Promise.all(promises)
+        setPage(page[0])
+    }
+
+    async function fetchPageForLocale(pageId, locale) {
+        const payload = {
+            params: {
+                include: 'content,template.groupedFields',
+                append: 'paths',
+                locale_override: locale,
+            },
+        }
         try {
-            page.value.id = 0
             const { data } = await Page.show(pageId, payload)
 
-            page.value = data
-            wasInitiallyPublished.value = data.published
-
-            let temporary = {}
-            Object.entries(data.localizedContent.data).forEach(([locale, value]) => {
-                temporary[locale] = {
-                    ...value.content,
-                    boxes: value.content.boxes?.map(box => {
-                        delete box.newlyAdded
-                        return box
-                    }) ?? []
-                }
-            })
-            localizedContent.value = temporary
+            delete data.content.data.boxes
+            Vue.set(localizedContent.value, locale, data.content.data)
+            return data
         } catch (error) {
-            throw new PageFetchError(error)
+            throw new PageFetchError(`Failed to fetch page for locale: '${locale}`, error)
+        }
+    }
+
+    async function fetchPageBlocks (pageId) {
+        const payload = {
+            params: {
+                include: 'blockType,children',
+                // 'filter[locale]': locale,
+            }
+        }
+        try {
+            blocksLoading.value = true
+            const data  = await Blocks.show(pageId, payload)
+
+            blocks.value = data.map(block => new Block(block, block.content))
+        } catch (error) {
+            console.error(error)
+        } finally {
+            blocksLoading.value = false
         }
     }
 
@@ -124,6 +141,7 @@ export const usePageStore = defineStore('page', () => {
 
         try {
             await Page.update(pageId, payload)
+            await Blocks.put(pageId, blocks.value)
 
             wasInitiallyPublished.value = page.value.published
         } catch (error) {
@@ -139,30 +157,34 @@ export const usePageStore = defineStore('page', () => {
         }
     }
 
-    function addBlock(block) {
-        if(activeLocaleContent.value.boxes.length > 0) {
-            activeLocaleContent.value.boxes.at(-1).newlyAdded = false
-        }
-
-        activeLocaleContent.value.boxes.push({
-            ...block,
-            id: 'i' + Math.random().toString(20).substring(2, 6),
+    function addBlock(blockType) {
+        const newBlock = new Block({
+            name: blockType.name,
             newlyAdded: true,
+            block_type_id: blockType.id,
+            blockType: blockType,
+        }, {
+            name: blockType.name,
         })
+        blocks.value.push(newBlock)
+
+        ui.toggleOpenCard(newBlock.content.id)
     }
 
-    function removeBlock(index) {
-        activeLocaleContent.value.boxes.splice(index, 1)
+    function cloneBlock(blockToClone) {
+        const clonedBlock = structuredClone(blockToClone)
+        clonedBlock.name = 'Kopia av ' + clonedBlock.name
+
+        const newBlock = new Block(clonedBlock, clonedBlock.content)
+
+        blocks.value.push(newBlock)
     }
 
-    const blockIndex = computed({
-        get() {
-            return activeLocaleContent.value?.boxes ?? []
-        },
-        set(value) {
-            activeLocaleContent.value.boxes = value
-        }
-    })
+    function removeBlock(blockToRemove) {
+        const index = blocks.value.findIndex(block => blockToRemove.content.id === block.content.id)
+
+        blocks.value.splice(index, 1)
+    }
 
     return {
         page,
@@ -173,12 +195,14 @@ export const usePageStore = defineStore('page', () => {
         filteredGroupedFields,
         wasInitiallyPublished,
         blocks: {
-            index: blockIndex,
+            index: activeLocaleBlocks,
             add: addBlock,
+            clone: cloneBlock,
             remove: removeBlock,
         },
         update,
         publish,
         resetPage,
+        blocksLoading
     }
 });

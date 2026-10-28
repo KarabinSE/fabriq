@@ -2,10 +2,10 @@
 
 namespace Karabin\Fabriq\Database\Seeders;
 
-use Karabin\Fabriq\Models\BlockType;
 use Illuminate\Database\Seeder;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
+use Karabin\Fabriq\Models\BlockType;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 
 class PageTemplateSeeder extends Seeder
 {
@@ -16,11 +16,11 @@ class PageTemplateSeeder extends Seeder
      */
     public function run()
     {
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Landningssida',
             'slug' => 'startsida',
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Meta-titel',
             'key' => 'meta_title',
@@ -30,7 +30,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 10,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Meta-beskrivning',
             'key' => 'meta_description',
@@ -40,7 +40,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 20,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Meta-bild',
             'key' => 'meta_og_image',
@@ -50,7 +50,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 30,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Titel',
             'key' => 'page_title',
@@ -60,7 +60,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 40,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Rubrik',
             'key' => 'page_header',
@@ -70,7 +70,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 40,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Huvudbild',
             'key' => 'main_image',
@@ -80,7 +80,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 50,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Innehåll',
             'key' => 'page_content',
@@ -89,7 +89,7 @@ class PageTemplateSeeder extends Seeder
             'sort_index' => 60,
             'translated' => true,
         ]);
-        RevisionTemplateField::factory()->create([
+        ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => true,
             'name' => 'Box',

@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
@@ -22,7 +23,7 @@ class ContactController extends Controller
     /**
      * Returns an index of contacts.
      */
-    public function index(Request $request): PaginatedDataCollection
+    public function index(Request $request): Response
     {
         $number = $request->integer('number', 100);
         $allowedIncludes = [
@@ -33,14 +34,14 @@ class ContactController extends Controller
 
         $contacts = QueryBuilder::for(Fabriq::getFqnModel('contact'))
             ->allowedSorts('name', 'email', 'updated_at', 'sortindex', 'published')
-            ->allowedFilters([
+            ->allowedFilters(
                 AllowedFilter::scope('search'),
                 AllowedFilter::scope('with_any_tags', 'withTags'),
-            ])
+            )
             ->allowedIncludes(...$allowedIncludes)
             ->paginate($number);
 
-        return Fabriq::getDto('contact')::collect($contacts, PaginatedDataCollection::class);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, $contacts->getCollection(), fn () => Fabriq::getDto('contact')::collect($contacts, PaginatedDataCollection::class)->toResponse($request));
     }
 
     public function show(Request $request, int $id): Response
@@ -58,7 +59,7 @@ class ContactController extends Controller
 
         /** @var Contact $contact */
 
-        return Fabriq::getDto('contact')::fromModel($contact)->wrap('data')->toResponse($request);
+        return ContentResourceContext::withModelsWhenContentIsRequested($request, [$contact], fn () => Fabriq::getDto('contact')::fromModel($contact)->wrap('data')->toResponse($request));
     }
 
     public function store(CreateContactRequest $request): Response

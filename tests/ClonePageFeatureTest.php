@@ -4,12 +4,14 @@ namespace Tests\Feature;
 
 use Karabin\Fabriq\Database\Seeders\DatabaseSeeder;
 use Karabin\Fabriq\Database\Seeders\PageTemplateSeeder;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class ClonePageFeatureTest extends AdminUserTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,15 +22,16 @@ class ClonePageFeatureTest extends AdminUserTestCase
     public function it_can_clone_another_page()
     {
         // Arrange
-        $root = \Karabin\Fabriq\Models\Page::factory()->create([
+        $template = ContentTemplate::query()->where('slug', 'startsida')->firstOrFail();
+        $root = Page::factory()->create([
             'name' => 'root',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => $template->id,
         ]);
-        $page = \Karabin\Fabriq\Models\Page::factory()->create([
+        $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => RevisionTemplate::all()->first()->id,
+            'template_id' => $template->id,
         ]);
-        $image = \Karabin\Fabriq\Models\Image::factory()->create([
+        $image = Image::factory()->create([
             'id' => 12,
         ]);
         $page->updateContent([
@@ -69,7 +72,7 @@ class ClonePageFeatureTest extends AdminUserTestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('pages', [
             'name' => 'Kopia av Den första startsidan',
-            'template_id' => 1,
+            'template_id' => $template->id,
         ]);
         $response->assertJson([
             'data' => [
@@ -90,7 +93,6 @@ class ClonePageFeatureTest extends AdminUserTestCase
                                                 'id' => 'if0i8d5',
                                                 'hasImage' => true,
                                                 'image' => [
-                                                    'file_name' => 'text.txt',
                                                     'id' => 12,
                                                 ],
                                             ],

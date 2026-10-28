@@ -13,12 +13,12 @@ class CreateTranslatableRevisionTemplateFieldsTable extends Migration
      */
     public function up()
     {
-        $tableName = config('translatable-revisions.revision_template_fields_table_name');
+        $tableName = 'revision_template_fields';
 
         Schema::create($tableName, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('template_id');
-            $table->foreign('template_id')->references('id')->on(config('translatable-revisions.revision_templates_table_name'))->onDelete('cascade');
+            $table->foreign('template_id')->references('id')->on('revision_templates')->onDelete('cascade');
             $table->string('name');
             $table->string('key');
             $table->string('type');
@@ -36,6 +36,6 @@ class CreateTranslatableRevisionTemplateFieldsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('translatable-revisions.revision_template_fields_table_name'));
+        Schema::dropIfExists('revision_template_fields');
     }
 }

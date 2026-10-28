@@ -10,6 +10,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ArticleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AskToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AuthenticatedUserController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockTypeController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BustCacheController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ClonePageController;
@@ -18,6 +19,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\CommentController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ConfigController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactSortController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContentTemplateController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DeclineToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DownloadController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EmailVerificationController;
@@ -35,14 +37,13 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\MenuItemController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\MenuItemTreeController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ModelCountController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\NotificationController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageBlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePathController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PagePreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageTreeController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PublishPageController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RevisionTemplateController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RoleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\SmartBlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\TagController;
@@ -52,7 +53,6 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoUploadController;
 use Karabin\Fabriq\Http\Controllers\PermalinksRedirectController;
 use Karabin\Fabriq\Http\Controllers\SpaController;
-use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 class RouteRegistrar
@@ -139,6 +139,8 @@ class RouteRegistrar
         $this->forPageSlugs();
         $this->forPagePaths();
         $this->forInvitations();
+        $this->forPageBlocks();
+        $this->forBlocks();
     }
 
     public function forApiProtected()
@@ -169,6 +171,8 @@ class RouteRegistrar
         $this->forPagePaths();
         $this->forInvitations();
         $this->forPreviews();
+        $this->forPageBlocks();
+        $this->forBlocks();
     }
 
     public function forPublicApi()
@@ -192,6 +196,20 @@ class RouteRegistrar
     {
         Route::post('contacts/sort-contacts', ContactSortController::class)->name('contacts.sort');
         Route::resource('contacts', ContactController::class);
+    }
+
+    public function forPageBlocks(): void
+    {
+        Route::get('pages/{id}/blocks', [PageBlockController::class, 'index'])
+            ->name('pages.blocks.index');
+        Route::put('pages/{id}/blocks', [PageBlockController::class, 'update'])
+            ->name('blocks.update');
+    }
+
+    public function forBlocks(): void
+    {
+        Route::get('blocks/{id}', [BlockController::class, 'show'])
+            ->name('blocks.show');
     }
 
     public function forBlockTypes(): void
@@ -245,7 +263,8 @@ class RouteRegistrar
 
     public function forMiscRoutes(): void
     {
-        Route::get('templates', [RevisionTemplateController::class, 'index'])->name('templates.index');
+        Route::get('content-templates', [ContentTemplateController::class, 'index'])->name('content-templates.index');
+        Route::get('templates', [ContentTemplateController::class, 'index'])->name('templates.index');
         Route::get('menus/{slug}/public', [MenuItemTreeController::class, 'show'])->name('menus.public.show');
         Route::get('{model}/count', [ModelCountController::class, 'show'])->name('model.count.show');
 
@@ -282,7 +301,6 @@ class RouteRegistrar
         Route::patch('pages/{id}', [PageController::class, 'update'])->name('pages.update');
         Route::delete('pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
         Route::post('pages/{id}/clone', [ClonePageController::class, 'store'])->name('pages.clone.store');
-        Route::post('pages/{id}/publish', [PublishPageController::class, 'store'])->name('pages.publish.store');
     }
 
     public function forInvitations(): void
@@ -293,8 +311,7 @@ class RouteRegistrar
 
     public function forPreviews(): void
     {
-        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store')
-            ->middleware(LocaleMiddleware::class);
+        Route::post('previews', [PagePreviewController::class, 'store'])->name('previews.store');
         Route::put('previews/{id}', [PagePreviewController::class, 'update'])->name('previews.update');
     }
 

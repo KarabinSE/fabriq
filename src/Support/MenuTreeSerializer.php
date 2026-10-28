@@ -3,10 +3,10 @@
 namespace Karabin\Fabriq\Support;
 
 use Illuminate\Support\Collection;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\TranslatableRevisions\Models\I18nLocale;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
 
 class MenuTreeSerializer
 {
@@ -52,12 +52,14 @@ class MenuTreeSerializer
      */
     private static function item(MenuItem $menuItem, array $includes): array
     {
+        $path = (string) $menuItem->relativePath;
+
         $data = [
             'id' => (int) $menuItem->id,
             'title' => (string) $menuItem->title,
             'slug' => (string) $menuItem->getSlugString(),
-            'path' => (string) $menuItem->relativePath,
-            'localized_path' => '/'.app()->getLocale().$menuItem->relativePath,
+            'path' => $path,
+            'localized_path' => $menuItem->type === 'external' ? $path : '/'.app()->getLocale().$path,
             'parent_id' => $menuItem->parent_id ? (int) $menuItem->parent_id : null,
             'type' => (string) $menuItem->type,
         ];
@@ -70,7 +72,7 @@ class MenuTreeSerializer
 
         if (array_key_exists('content', $includes)) {
             $data['content'] = [
-                'data' => self::normalize($menuItem->getFieldContent($menuItem->revision)),
+                'data' => self::normalize($menuItem->getFieldContent()),
             ];
         }
 
@@ -94,12 +96,12 @@ class MenuTreeSerializer
 
         if (array_key_exists('content', $includes)) {
             $data['content'] = [
-                'data' => self::normalize($page->getSimpleFieldContent($page->revision)),
+                'data' => self::normalize($page->getSimpleFieldContent()),
             ];
         }
 
         if (array_key_exists('template', $includes)) {
-            /** @var RevisionTemplate|null $template */
+            /** @var ContentTemplate|null $template */
             $template = $page->template;
             $data['template'] = [
                 'data' => $template ? self::template($template, $includes['template']) : null,
@@ -136,7 +138,7 @@ class MenuTreeSerializer
      * @param  array<string, array>  $includes
      * @return array<string, mixed>
      */
-    private static function template(RevisionTemplate $template, array $includes): array
+    private static function template(ContentTemplate $template, array $includes): array
     {
         $data = $template->toArray();
 
@@ -169,7 +171,7 @@ class MenuTreeSerializer
         return $enabledLocales
             ->mapWithKeys(fn ($locale) => [
                 (string) $locale->iso_code => [
-                    'content' => self::normalize($page->getSimpleFieldContent($page->revision, (string) $locale->iso_code)),
+                    'content' => self::normalize($page->getSimpleFieldContent((string) $locale->iso_code)),
                 ],
             ])
             ->toArray();

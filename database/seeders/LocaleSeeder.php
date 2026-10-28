@@ -3,7 +3,7 @@
 namespace Karabin\Fabriq\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Karabin\Fabriq\Models\Locale;
 
 class LocaleSeeder extends Seeder
 {
@@ -14,12 +14,12 @@ class LocaleSeeder extends Seeder
      */
     public function run()
     {
-        $svLocale = DB::table(config('page-module.i18n_table_prefix_name').'i18n_locales')->insert([
+        Locale::query()->updateOrCreate(['iso_code' => 'sv'], [
             'name' => 'Swedish',
             'native' => 'Svenska',
             'regional' => 'se_SV',
-            'iso_code' => 'sv',
             'enabled' => true,
+            'sort_index' => 10,
         ]);
     }
 }

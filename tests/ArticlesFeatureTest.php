@@ -3,9 +3,9 @@
 namespace Karabin\Fabriq\Tests\Feature;
 
 use Karabin\Fabriq\Models\Article;
+use Karabin\Fabriq\Models\ContentTemplate;
+use Karabin\Fabriq\Models\ContentTemplateField;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
-use Karabin\TranslatableRevisions\Models\RevisionTemplate;
-use Karabin\TranslatableRevisions\Models\RevisionTemplateField;
 
 class ArticlesFeatureTest extends AdminUserTestCase
 {
@@ -47,12 +47,12 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_update_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()->create([
+        $template = ContentTemplate::factory()->create([
             'name' => 'Nyhet',
             'slug' => 'article',
             'type' => 'article',
         ]);
-        $field = RevisionTemplateField::factory()->create([
+        $field = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'name' => 'Titel',
             'key' => 'title',
@@ -89,9 +89,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
             'has_unpublished_time' => 1,
             'unpublishes_at' => '2055-02-03 13:00:00',
         ]);
-        $this->assertDatabaseHas('i18n_definitions', [
-            'content' => json_encode('A real title'),
-        ]);
+        $this->assertSame('A real title', $article->getFieldContent('en')->get('title'));
         $this->assertDatabaseHas('slugs', [
             'slug' => 'a-real-title',
             'locale' => 'en',
@@ -154,7 +152,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_delete_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()
+        $template = ContentTemplate::factory()
             ->hasFields(1, [
                 'key' => 'title',
                 'type' => 'text',
@@ -164,14 +162,13 @@ class ArticlesFeatureTest extends AdminUserTestCase
                 'slug' => 'article',
             ]);
 
-        $metaField = RevisionTemplateField::factory()->create([
+        $metaField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => false,
             'key' => 'image',
             'type' => 'image',
         ]);
         $article = Article::factory()->create([
-            'revision' => 1,
             'template_id' => $template->id,
         ]);
 
@@ -185,18 +182,11 @@ class ArticlesFeatureTest extends AdminUserTestCase
         $response = $this->json('DELETE', '/articles/'.$article->id);
 
         // Assert
-        // dd(RevisionMeta::all()->toArray());
         $response->assertOk();
         $this->assertDatabaseMissing('articles', [
             'id' => $article->id,
         ]);
-        $this->assertDatabaseMissing('i18n_terms', [
-            'key' => 'articles_1_1_title',
-        ]);
         $this->assertDatabaseMissing('i18n_definitions', [
-            'content' => 'En titel',
-        ]);
-        $this->assertDatabaseMissing('revision_meta', [
             'model_id' => $article->id,
             'model_type' => 'fabriq_article',
         ]);
@@ -236,7 +226,7 @@ class ArticlesFeatureTest extends AdminUserTestCase
     public function it_can_get_meta_data_for_an_article()
     {
         // Arrange
-        $template = RevisionTemplate::factory()
+        $template = ContentTemplate::factory()
             ->hasFields(1, [
                 'key' => 'title',
                 'type' => 'text',
@@ -246,14 +236,13 @@ class ArticlesFeatureTest extends AdminUserTestCase
                 'slug' => 'article',
             ]);
 
-        $metaField = RevisionTemplateField::factory()->create([
+        $metaField = ContentTemplateField::factory()->create([
             'template_id' => $template->id,
             'translated' => false,
             'key' => 'header',
             'type' => 'text',
         ]);
         $article = Article::factory()->create([
-            'revision' => 1,
             'template_id' => $template->id,
         ]);
         $article->updateContent([
@@ -262,12 +251,12 @@ class ArticlesFeatureTest extends AdminUserTestCase
         $article->save();
 
         // Act
-        $content = $article->getFieldContent(1, 'sv');
+        $content = $article->getFieldContent('sv');
 
         // Assert
         $this->assertEquals('A nice header right', $content->first());
-        $this->assertDatabaseHas('revision_meta', [
-            'model_type' => $article->getMorphClass(),
+        $this->assertDatabaseHas('i18n_definitions', [
+            'content' => json_encode(['*' => 'A nice header right']),
         ]);
     }
 }

@@ -5,7 +5,7 @@ namespace Karabin\Fabriq\Listeners;
 use Karabin\Fabriq\Actions\BustCacheWithWebhook;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Services\CacheBuster;
-use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
+use Karabin\Fabriq\Events\ContentUpdated;
 
 class CallCacheBustingWebhook
 {
@@ -35,7 +35,7 @@ class CallCacheBustingWebhook
         }
 
         // Case for pages, skip busting on update
-        if (get_class($event) === DefinitionsUpdated::class && Fabriq::getFqnModel('page') === get_class($model)) {
+        if ($event instanceof ContentUpdated && Fabriq::getFqnModel('page') === get_class($model) && ! $model->published) {
             return;
         }
 
