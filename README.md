@@ -10,3 +10,8 @@
 
 ### Documentation
 See documentation here: [https://docs.fabriq-cms.se](https://docs.fabriq-cms.se)
+
+### Upgrading
+- [v4 to v5](UPGRADE-v5.md)
+- [v3 to v4](UPGRADE-v4.md)
+- [v2 to v3](UPGRADE-v3.md)
