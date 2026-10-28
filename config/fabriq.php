@@ -15,6 +15,7 @@ use Karabin\Fabriq\Data\MenuData;
 use Karabin\Fabriq\Data\MenuItemData;
 use Karabin\Fabriq\Data\NotificationData;
 use Karabin\Fabriq\Data\PageData;
+use Karabin\Fabriq\Data\PreviewPageData;
 use Karabin\Fabriq\Data\RoleData;
 use Karabin\Fabriq\Data\SmartBlockData;
 use Karabin\Fabriq\Data\TagData;
@@ -183,6 +184,7 @@ return [
         'user' => UserData::class,
         'video' => VideoData::class,
         'live_page' => LivePageData::class,
+        'preview_page' => PreviewPageData::class,
         'block' => BlockData::class,
     ],
     'media-library' => [
