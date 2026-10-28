@@ -88,7 +88,7 @@
                                     </div>
 
                                     <div
-                                        class="rounded-lg border border-gray-300 shadow-xl flex-1 bg-white overflow-hidden shimmer"
+                                        class="rounded-lg border border-gray-300 shadow-xl flex-1 bg-white overflow-hidden"
                                     >
                                         <iframe
                                             ref="previewIframe"
@@ -270,20 +270,6 @@ export default {
 }
 </script>
 <style scoped>
-
-.shimmer {
-   background: linear-gradient(-45deg, #f5f5f5 45%, #fff 50%, #f5f5f5 55%);
-   background-size: 400%;
-   background-position-x: 140%;
-   animation: shimmer 2s infinite linear;
-}
-
-@keyframes shimmer {
-   to {
-      background-position-x: 0%
-   }
-}
-
 .preview-shell-enter-active {
     transition: opacity 200ms ease;
 }
@@ -373,10 +359,6 @@ export default {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .shimmer::after {
-        animation: none;
-    }
-
     .preview-shell-enter-active,
     .preview-shell-leave-active,
     .slide-top-enter-active,

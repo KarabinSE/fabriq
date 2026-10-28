@@ -6,7 +6,7 @@ export class Block {
     isBlock = true
     locale  = 'sv'
     hidden  = false
-    blockType = {}
+    block_type = {}
 
     name  = ''
     content =  {

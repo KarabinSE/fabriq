@@ -81,7 +81,7 @@
                                                     <div
                                                         class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
                                                     >
-                                                        {{ block.blockType.name }}
+                                                        {{ block.block_type.name }}
                                                     </div>
                                                     <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
                                                         {{ block.name }}
@@ -229,7 +229,7 @@
                                 <div class="px-3 sm:px-4 py-3 sm:py-4">
                                     <KeepAlive>
                                         <Component
-                                            :is="block.blockType.component_name"
+                                            :is="block.block_type.component_name"
                                             :content="block.content"
                                             :value="block"
                                             :index="boxIndex"
@@ -356,10 +356,10 @@ export default {
 
         getBlockType(block) {
             if (!this.blockTypes || !Array.isArray(this.blockTypes)) {
-                return block.blockType
+                return block.block_type
             }
 
-            return this.blockTypes?.find(blockType => block.blockType.id === blockType.id)
+            return this.blockTypes?.find(blockType => block.block_type.id === blockType.id)
         },
 
         copySuccess() {

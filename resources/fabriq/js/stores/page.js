@@ -162,7 +162,7 @@ export const usePageStore = defineStore('page', () => {
             name: blockType.name,
             newlyAdded: true,
             block_type_id: blockType.id,
-            blockType: blockType,
+            block_type: blockType,
         }, {
             name: blockType.name,
         })
