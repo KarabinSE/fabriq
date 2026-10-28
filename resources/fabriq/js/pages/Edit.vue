@@ -372,7 +372,6 @@ export default {
 
         setLanguage (key) {
             this.configStore.setActiveLocale(key)
-            this.$eventBus.emit('relayout-cards')
             this.$nextTick(() => {
                 this.$eventBus.emit('page-updated')
             })

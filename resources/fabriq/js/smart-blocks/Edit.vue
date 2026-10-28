@@ -274,7 +274,6 @@ export default {
         },
         setLanguage (key) {
             this.activeLocale = key
-            this.$eventBus.emit('relayout-cards')
         },
         showBlockTypeModal () {
             this.$vfm.show('block-type-modal')

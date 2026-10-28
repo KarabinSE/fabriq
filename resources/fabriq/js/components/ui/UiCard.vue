@@ -38,7 +38,6 @@
         </div>
         <SlideUpDown
             v-else
-            ref="monkey"
             :active="open"
             :duration="animationDuration"
             class="wobbly-accordion"
@@ -153,7 +152,6 @@ export default {
         if (!this.isChild) {
             this.$eventBus.on('open-all-cards', this.openCollapsible)
             this.$eventBus.on('close-all-cards', this.closeCollapsible)
-            this.$eventBus.on('relayout-cards', this.relayoutCard)
         }
 
         if (this.syncGroups) {
@@ -175,16 +173,6 @@ export default {
     },
 
     methods: {
-        relayoutCard () {
-            if (this.$refs.monkey) {
-                this.animationDuration = 0
-                this.$refs.monkey.layout()
-                setTimeout(() => {
-                    this.animationDuration = 500
-                }, 100)
-            }
-        },
-
         matchGroupAndOpen (parameters) {
             if (this.group === parameters) {
                 this.openCollapsible(false)
