@@ -69,7 +69,7 @@
                                 class="grid grid-cols-3 gap-6"
                             >
                                 <FInput
-                                    v-model="pageStore.page.name"
+                                    v-model="page.name"
                                     label="Namn"
                                     name="name"
                                 />
@@ -196,11 +196,11 @@
                                         </div>
                                     </div>
                                 </UiCard>
-
-                                <BlockList
-                                    :key="'blocks-' + configStore.activeLocale"
-                                />
                             </div>
+
+                            <BlockList
+                                :key="'blocks-' + configStore.activeLocale"
+                            />
                         </div>
                     </div>
 
