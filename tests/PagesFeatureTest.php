@@ -26,7 +26,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
 
         // Act
@@ -47,7 +47,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         $arr = ['page_title' => 'The page title for the page',
             'page_header' => 'The page title for the page',
@@ -151,11 +151,11 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         $otherPage = Page::factory()->create([
             'name' => 'Den andra startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
 
         // Act
@@ -178,7 +178,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         DB::table('slugs')->insert([
             'model_id' => Page::factory()->create()->id,
@@ -256,7 +256,7 @@ class PagesFeatureTest extends AdminUserTestCase
     {
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
 
         // Act
@@ -296,7 +296,7 @@ class PagesFeatureTest extends AdminUserTestCase
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -349,7 +349,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $page = Page::factory()->create([
             'name' => 'En sida som ska publiceras',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         $page->updateContent([
             'page_title' => 'The page title for the page',
@@ -413,7 +413,7 @@ class PagesFeatureTest extends AdminUserTestCase
         // Arrange
         $this->withoutExceptionHandling();
         $page = Page::factory()->create([
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
         $page->updateContent([
             'page_title' => 'Svensk titel',

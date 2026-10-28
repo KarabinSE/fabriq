@@ -23,6 +23,8 @@ class ContentResourceContext
     /** @var array<string, ContentTemplateField> */
     private array $templateFields = [];
 
+    private bool $templateFieldsLoaded = false;
+
     /** @var array<string, bool> */
     private array $loadedTypes = [];
 
@@ -150,6 +152,35 @@ class ContentResourceContext
     }
 
     /**
+     * @return array<int, string>|null
+     */
+    public static function templateFieldKeys(Model $model): ?array
+    {
+        $context = self::$current;
+        if (! $context || ! $context->templateFieldsLoaded) {
+            return null;
+        }
+
+        $templateId = $model->getAttribute('template_id');
+        $templateSlug = $templateId
+            ? null
+            : (method_exists($model, 'contentTemplateSlug') ? $model->contentTemplateSlug() : null);
+
+        if (! $templateId && ! $templateSlug) {
+            return null;
+        }
+
+        return collect($context->templateFields)
+            ->filter(fn (ContentTemplateField $field) => $templateId
+                ? (string) $field->template_id === (string) $templateId
+                : $field->template?->slug === $templateSlug)
+            ->pluck('key')
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
      * @param  iterable<Model>  $models
      */
     private function __construct(iterable $models, bool $loadReferencedResources)
@@ -165,6 +196,7 @@ class ContentResourceContext
             $this->collectReferences($model->getAttribute('content'), $this->additionalReferences);
         }
         $this->loadTemplateFields($models);
+        $this->templateFieldsLoaded = true;
 
         $smartBlockClass = Fabriq::getFqnModel('smartBlock');
         $loadedSmartBlocks = [];

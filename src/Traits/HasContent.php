@@ -55,14 +55,16 @@ trait HasContent
 
         $content = ContentResourceContext::contentFor($this);
         if ($content !== null) {
-            return collect($content)->mapWithKeys(function (array $translations, string $fieldKey) use ($locale) {
+            $content = collect($content)->mapWithKeys(function (array $translations, string $fieldKey) use ($locale) {
                 $value = $translations[$locale] ?? $translations['*'] ?? null;
 
                 return $value === null ? [] : [$fieldKey => $value];
             });
+
+            return $this->filterToTemplateFields($content);
         }
 
-        return $this->contentDefinitions()
+        $content = $this->contentDefinitions()
             ->get()
             ->mapWithKeys(function (I18nDefinition $definition) use ($locale) {
                 $translations = $definition->getTranslations('content');
@@ -70,6 +72,8 @@ trait HasContent
 
                 return $value === null ? [] : [(string) $definition->field_key => $value];
             });
+
+        return $this->filterToTemplateFields($content);
     }
 
     public function getFieldContent(?string $locale = null): Collection
@@ -208,6 +212,37 @@ trait HasContent
     protected function getContentTemplateSlug(): ?string
     {
         return null;
+    }
+
+    /**
+     * @param  Collection<string, mixed>  $content
+     */
+    private function filterToTemplateFields(Collection $content): Collection
+    {
+        if ($content->isEmpty()) {
+            return $content;
+        }
+
+        $templateId = $this->getAttribute('template_id');
+        $templateSlug = $templateId ? null : $this->getContentTemplateSlug();
+        if (! $templateId && ! $templateSlug) {
+            return $content;
+        }
+
+        $templateFieldKeys = ContentResourceContext::templateFieldKeys($this);
+        if ($templateFieldKeys === null) {
+            $query = ContentTemplateField::query()->whereIn('key', $content->keys());
+
+            if ($templateId) {
+                $query->where('template_id', $templateId);
+            } else {
+                $query->whereHas('template', fn ($templateQuery) => $templateQuery->where('slug', $templateSlug));
+            }
+
+            $templateFieldKeys = $query->pluck('key')->all();
+        }
+
+        return $content->only($templateFieldKeys);
     }
 
     public function contentTemplateSlug(): ?string
