@@ -22,13 +22,14 @@ class ClonePageFeatureTest extends AdminUserTestCase
     public function it_can_clone_another_page()
     {
         // Arrange
+        $template = ContentTemplate::query()->where('slug', 'startsida')->firstOrFail();
         $root = Page::factory()->create([
             'name' => 'root',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => $template->id,
         ]);
         $page = Page::factory()->create([
             'name' => 'Den första startsidan',
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => $template->id,
         ]);
         $image = Image::factory()->create([
             'id' => 12,
@@ -71,7 +72,7 @@ class ClonePageFeatureTest extends AdminUserTestCase
         $response->assertStatus(201);
         $this->assertDatabaseHas('pages', [
             'name' => 'Kopia av Den första startsidan',
-            'template_id' => 1,
+            'template_id' => $template->id,
         ]);
         $response->assertJson([
             'data' => [

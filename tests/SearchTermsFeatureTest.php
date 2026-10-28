@@ -23,7 +23,7 @@ class SearchTermsFeatureTest extends AdminUserTestCase
         $page = \Karabin\Fabriq\Models\Page::factory()->create([
             'name' => 'En sida som ska publiceras',
             'published' => true,
-            'template_id' => ContentTemplate::all()->first()->id,
+            'template_id' => ContentTemplate::query()->where('slug', 'startsida')->firstOrFail()->id,
         ]);
 
         $page->updateContent([

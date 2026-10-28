@@ -2,8 +2,8 @@
 
 namespace Karabin\Fabriq\Actions;
 
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Model;
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Locale as I18nLocale;
 
 class ClonePage
@@ -23,7 +23,7 @@ class ClonePage
             ->orderBy('id', 'desc')->get();
 
         foreach ($locales as $locale) {
-            $content = $sourcePage->getFieldContent((string) $locale->iso_code);
+            $content = $sourcePage->getSimpleFieldContent((string) $locale->iso_code);
             $page->updateContent($content->toArray(), $locale->iso_code);
         }
 
