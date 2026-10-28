@@ -82,8 +82,8 @@ export const usePageStore = defineStore('page', () => {
      * fetches page content for each locale
      */
     async function fetchPage (pageId) {
-        await config.initiated
         blocks.value = []
+        await config.initiated
 
         fetchPageBlocks(pageId)
 
