@@ -37,7 +37,7 @@
         >
             <UiCard
                 v-for="(child, childIndex) in children"
-                :key="'child' + (child.id ?? childIndex)"
+                :key="'child-' + (child.content.id ?? childIndex)"
                 is-child
                 collapsible
                 no-shadow
@@ -55,6 +55,7 @@
                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona' }"
                                 class="focus:outline-none"
                                 @click.stop="cloneChild(child)"
+                                :disabled="children.length >= max"
                             >
                                 <CloneIcon
                                     thin
@@ -123,6 +124,7 @@
 <script>
 import Draggable from 'vuedraggable';
 import { useClipboard } from '@vueuse/core';
+import { Block } from '@fabriq/models/Block'
 
 export default {
     name: 'FChildren',
@@ -131,6 +133,10 @@ export default {
         value: {
             type: Array,
             default: () => []
+        },
+        parent: {
+            type: Object,
+            default: () => ({})
         },
         labels: {
             type: Object,
@@ -176,51 +182,25 @@ export default {
 
         return { copy }
     },
-    data() {
-        return  {
-            children: this.value
-        }
-    },
-    watch: {
+    computed: {
         children() {
-            this.$emit('input', this.children)
-        }
-    },
-    mounted () {
-        if (!this.value) {
-            this.$emit('input', this.children)
-        } else {
-            this.children = this.value
+            return this.parent.children
         }
     },
     methods: {
         addChild () {
-            let newItem =  {
-                id: 'i' + Math.random().toString(20).substr(2, 6),
-                heading: this.labels.title + ' ' + ((this.children?.length ?? 0) + 1),
-                newlyAdded: true,
-                ...this.itemContent,
-            }
-
-            this.children.push(newItem)
-            this.$nextTick(() => {
-                newItem.newlyAdded = false
+            const child = new Block({
+                name: `${this.labels.title} ${((this.children?.length ?? 0) + 1)}`,
+                content: this.itemContent,
             })
+
+            this.parent.addChild(child)
         },
         cloneChild(child) {
-            const newItem = {
-                ...structuredClone(child),
-                id: 'i' + Math.random().toString(20).substr(2, 6),
-                heading: 'Kopia av ' + child.heading,
-            }
-
-            this.children.push(newItem)
-            this.$nextTick(() => {
-                newItem.newlyAdded = false
-            })
+            this.parent.addChild(child.clone())
         },
         deleteChild (index) {
-            this.children.splice(index, 1)
+            this.parent.removeChild(index)
         },
         copySuccess () {
             this.$toast.success({ title: `${this.labels.title}-ID har kopierats`, message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })

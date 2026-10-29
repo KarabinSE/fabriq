@@ -9,32 +9,41 @@ export class Block {
     block_type = {}
 
     name  = ''
-    content =  {
-        id: '',
-        name: '',
-    }
+    content =  {}
     children = []
 
-    constructor(data = {}, content = {}) {
+    constructor(data = {}) {
+        if(data.isBlock) {
+            return data
+        }
+
         const config = useConfigStore()
 
         this.locale = config.activeLocale
 
-        Object.entries(data).forEach(([k,v]) => this[k] = v)
+        Object.entries(data).forEach(([k, v]) => this[k] = v)
         this.content = {
-            ...structuredClone(content),
+            ...structuredClone(data.content),
             id: 'i' + Math.random().toString(20).substring(2, 6),
         }
 
-        this.children = data.children?.map(item => new Block(item, item.content)) ?? []
+        // convert children to Block:s
+        this.children = data.children?.map(item => new Block(item)) ?? []
     }
 
-    addChild(name, content){
-        const child = new Block({
-            name,
-        }, content)
+    addChild(block){
+        this.children.push(block)
+    }
 
-        this.children.push(child)
+    clone(){
+        const clone = structuredClone(this)
+
+        clone.name = 'Kopia av ' + clone.name
+        clone.uuid = null
+        clone.id = null
+        delete clone.isBlock
+
+        return new Block(clone)
     }
 
     removeChild(index) {
@@ -43,7 +52,7 @@ export class Block {
 }
 
 export default {
-    async show (pageId, payload) {
+    async index (pageId, payload) {
         const { data } = await axios.get(route('pages.blocks.index', { id: pageId }), payload)
 
         return data

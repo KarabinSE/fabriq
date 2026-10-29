@@ -26,26 +26,28 @@
                 <SpinIcon class="w-6 h-w-6 animate-spin" />
             </div>
 
-            <div v-else>
-                <div v-if="pageStore.blocks.index.length === 0">
-                    <div class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
-                        <div class="flex flex-col items-center">
-                            <div class="mb-4 text-xl font-light">
-                                Inga block har lagts till ännu
-                            </div>
-                            <button
-                                class="flex items-center text-sm link"
-                                @click="showBlockTypeModal"
-                            >
-                                <PlusIcon class="size-5 mr-2" />Lägg till block
-                            </button>
+            <div
+                v-else
+                class="contents"
+            >
+                <div  v-if="pageStore.blocks.index.length === 0"
+                      class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-xl font-light">
+                            Inga block har lagts till ännu
                         </div>
+                        <button
+                            class="flex items-center text-sm link"
+                            @click="showBlockTypeModal"
+                        >
+                            <PlusIcon class="size-5 mr-2" />Lägg till block
+                        </button>
                     </div>
                 </div>
 
                 <Draggable
                     v-else
-                    v-model="blocks"
+                    v-model="pageStore.blocks.index"
                     handle=".handle"
                     tag="ul"
                     v-bind="dragOptions"
@@ -58,7 +60,7 @@
                         :name="'flip-list-move'"
                     >
                         <li
-                            v-for="(block, boxIndex) in blocks"
+                            v-for="(block, boxIndex) in pageStore.blocks.index"
                             :key="'block-' + block.content.id"
                             class="list-group-item"
                         >
@@ -152,7 +154,7 @@
                                                             v-show="!lockedBlocks"
                                                             confirm-question="Vill du ta bort detta blocket?"
                                                             class="relative"
-                                                            @confirmed="deleteBlock(block)"
+                                                            @confirmed="deleteBlock(boxIndex)"
                                                         >
                                                             <div
                                                                 class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
@@ -203,7 +205,7 @@
                                                     v-show="!lockedBlocks"
                                                     confirm-question="Vill du ta bort detta blocket?"
                                                     class="relative w-6 h-6"
-                                                    @confirmed="deleteBlock(block)"
+                                                    @confirmed="deleteBlock(boxIndex)"
                                                 >
                                                     <TrashIcon
                                                         class="h-6 transition-colors duration-150 hover:text-red-500"
@@ -233,7 +235,6 @@
                                             :content="block.content"
                                             :value="block"
                                             :index="boxIndex"
-                                            @repeater-updated="refreshBlock"
                                         />
                                     </KeepAlive>
                                 </div>
@@ -298,21 +299,6 @@ export default {
     },
 
     computed: {
-
-        localBlocks: {
-            get() {
-                return this.value
-            },
-
-            set(value) {
-                this.$emit('input', value)
-            },
-        },
-
-        blocks () {
-            return this.pageStore.blocks.index
-        },
-
         locale() {
             return this.configStore.activeLocale;
         },
@@ -369,16 +355,12 @@ export default {
             })
         },
 
-        refreshBlock(payload) {
-            this.$emit('input', this.localBlocks)
-        },
-
         showBlockTypeModal() {
             this.$vfm.show('block-type-modal')
         },
 
-        deleteBlock(block) {
-            this.pageStore.blocks.remove(block)
+        deleteBlock(index) {
+            this.pageStore.blocks.remove(index)
         },
 
         cloneBlock(block) {

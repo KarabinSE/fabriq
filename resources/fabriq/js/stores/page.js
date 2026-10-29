@@ -46,18 +46,29 @@ export const usePageStore = defineStore('page', () => {
     const config = useConfigStore()
     const ui = useUiStore()
 
+    const wasInitiallyPublished = ref(true)
     const blocksLoading = ref(false)
     const page = ref(structuredClone(defaultPageData));
 
-    const localizedContent = ref({
-        sv: {}
-    })
-    const wasInitiallyPublished = ref(true)
+    const localizedContent = ref({ sv: {} })
+    const localizedBlocks = ref({ sv: [] })
 
-    const blocks = ref([])
     const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {})
-    const activeLocaleBlocks = computed(() => blocks.value.filter(block => block.locale === config.activeLocale))
-    const activeLocaleContent = computed(() => localizedContent.value[config.activeLocale])
+    const activeLocaleBlocks = computed({
+        get: () => {
+            if(!localizedBlocks.value[config.activeLocale]) {
+                Vue.set(localizedBlocks.value, config.activeLocale, [])
+            }
+            return localizedBlocks.value[config.activeLocale]
+        },
+        set: (newBlocks) => localizedBlocks.value[config.activeLocale] = newBlocks
+    })
+    const flatBlocks = computed(() => Object.values(localizedBlocks.value).flat())
+
+    const activeLocaleContent = computed({
+        get: () => localizedContent.value[config.activeLocale],
+        set: (newContent) => localizedContent.value[config.activeLocale] = newContent
+    })
 
     const filteredGroupedFields = computed( () => {
         if (!groupedFields.value || typeof groupedFields.value !== 'object') {
@@ -82,7 +93,7 @@ export const usePageStore = defineStore('page', () => {
      * fetches page content for each locale
      */
     async function fetchPage (pageId) {
-        blocks.value = []
+        localizedBlocks.value = { sv: [] }
         await config.initiated
 
         fetchPageBlocks(pageId)
@@ -122,9 +133,15 @@ export const usePageStore = defineStore('page', () => {
         }
         try {
             blocksLoading.value = true
-            const data  = await Blocks.show(pageId, payload)
+            const data  = await Blocks.index(pageId, payload)
 
-            blocks.value = data.map(block => new Block(block, block.content))
+            data.forEach(block => {
+                if(localizedBlocks.value[block.locale]) {
+                    localizedBlocks.value[block.locale].push(new Block(block, block.content))
+                } else {
+                    Vue.set(localizedBlocks.value, block.locale, [new Block(block, block.content)])
+                }
+            })
         } catch (error) {
             console.error(error)
         } finally {
@@ -141,7 +158,7 @@ export const usePageStore = defineStore('page', () => {
 
         try {
             await Page.update(pageId, payload)
-            await Blocks.put(pageId, blocks.value)
+            await Blocks.put(pageId, flatBlocks.value)
 
             wasInitiallyPublished.value = page.value.published
         } catch (error) {
@@ -166,24 +183,19 @@ export const usePageStore = defineStore('page', () => {
         }, {
             name: blockType.name,
         })
-        blocks.value.push(newBlock)
+        activeLocaleBlocks.value.push(newBlock)
 
         ui.toggleOpenCard(newBlock.content.id)
     }
 
     function cloneBlock(blockToClone) {
-        const clonedBlock = structuredClone(blockToClone)
-        clonedBlock.name = 'Kopia av ' + clonedBlock.name
-
-        const newBlock = new Block(clonedBlock, clonedBlock.content)
-
-        blocks.value.push(newBlock)
+        activeLocaleBlocks.value.push(blockToClone.clone())
     }
 
-    function removeBlock(blockToRemove) {
-        const index = blocks.value.findIndex(block => blockToRemove.content.id === block.content.id)
+    function removeBlock(index) {
+        console.log(index);
 
-        blocks.value.splice(index, 1)
+        activeLocaleBlocks.value.splice(index, 1)
     }
 
     return {
@@ -195,6 +207,7 @@ export const usePageStore = defineStore('page', () => {
         filteredGroupedFields,
         wasInitiallyPublished,
         blocks: {
+            flat: flatBlocks,
             index: activeLocaleBlocks,
             add: addBlock,
             clone: cloneBlock,
@@ -204,6 +217,5 @@ export const usePageStore = defineStore('page', () => {
         publish,
         resetPage,
         blocksLoading,
-        allBlocks: blocks
     }
 });
