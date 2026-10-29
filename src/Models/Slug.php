@@ -20,7 +20,8 @@ class Slug extends Model
     {
         return SlugOptions::create()
             ->generateSlugsFrom('source_string')
-            ->saveSlugsTo('slug');
+            ->saveSlugsTo('slug')
+            ->extraScope(fn ($query) => $query->where('locale', app()->currentLocale()));
     }
 
     public function model(): MorphTo

@@ -32,7 +32,8 @@ class EloquentPageRepository implements PageRepositoryInterface
     {
         $model = $this->model->query()
             ->whereHas('slugs', function ($query) use ($slug) {
-                $query->where('slug', $slug);
+                $query->where('slug', $slug)
+                    ->whereLocale(app()->currentLocale());
             })
             ->where('published', true)
             ->firstOrFail();
@@ -72,7 +73,7 @@ class EloquentPageRepository implements PageRepositoryInterface
     {
         $blocks = Block::query()
             ->whereMorphedTo('model', $page)
-            ->where('locale', app()->getLocale())
+            ->where('locale', app()->currentLocale())
             ->whereHidden(false)
             ->whereNull('parent_id')
             ->with('blockType')
