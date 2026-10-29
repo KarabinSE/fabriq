@@ -71,22 +71,17 @@ class EloquentPageRepository implements PageRepositoryInterface
     private function loadLiveBlocks(Page $page): void
     {
         $blocks = Block::query()
-            ->where('model_type', $page->getMorphClass())
-            ->where('model_id', $page->getKey())
+            ->whereMorphedTo('model', $page)
             ->where('locale', app()->getLocale())
+            ->whereHidden(false)
+            ->whereNull('parent_id')
             ->with('blockType')
+            ->with('children', function ($query) {
+                return $query->whereHidden(false);
+            })
             ->orderBy('sortindex')
             ->get();
 
-        $blocksByParent = $blocks->groupBy('parent_id');
-        $buildTree = function (int|string|null $parentId) use (&$buildTree, $blocksByParent) {
-            return $blocksByParent->get($parentId, collect())
-                ->each(function (Block $block) use (&$buildTree) {
-                    $block->setRelation('children', $buildTree($block->getKey()));
-                })
-                ->values();
-        };
-
-        $page->setRelation('blocks', $buildTree(null));
+        $page->setRelation('blocks', $blocks);
     }
 }

@@ -18,7 +18,7 @@ class LivePageData extends Data
         public ?int $template_id,
         public ?string $updated_at,
         public array $content,
-        #[DataCollectionOf(BlockData::class)]
+        #[DataCollectionOf(LiveBlockData::class)]
         public Optional|DataCollection $blocks,
     ) {}
 
@@ -41,7 +41,7 @@ class LivePageData extends Data
             template_id: $page->template_id ? (int) $page->template_id : null,
             updated_at: $page->updated_at,
             content: $content,
-            blocks: BlockData::collect($page->blocks, DataCollection::class),
+            blocks: LiveBlockData::collect($page->blocks, DataCollection::class),
         );
     }
 }
