@@ -19,7 +19,6 @@
             />
         </div>
         <SlideUpDown
-            ref="monkey"
             :active="commentSectionOpen"
             :duration="5"
             @open-start="scrollToLatestComment"
