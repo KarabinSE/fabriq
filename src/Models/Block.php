@@ -84,9 +84,13 @@ class Block extends Model implements Sortable
 
         $children = $block['children'] ?? [];
 
+        $newChildUuids = [];
         foreach ($children as $child) {
-            self::updateOrCreateBlock($child, $model, $newBlock);
+            $newChild = self::updateOrCreateBlock($child, $model, $newBlock);
+            $newChildUuids[] = $newChild->uuid;
         }
+
+        Block::setNewOrder($newChildUuids, primaryKeyColumn: 'uuid');
 
         return $newBlock;
     }
@@ -123,7 +127,9 @@ class Block extends Model implements Sortable
 
     public function children(): HasMany
     {
-        return $this->hasMany(Block::class, 'parent_id')->with('children');
+        return $this->hasMany(Block::class, 'parent_id')
+            ->orderBy('sortindex')
+            ->with('children');
     }
 
     public function blockType(): BelongsTo
