@@ -33,7 +33,7 @@ class PageBlockController
         $blockUuids = [];
 
         foreach ($request->array('blocks') as $block) {
-            $savedBlock = Block::createBlock($block, $page);
+            $savedBlock = Block::updateOrCreateBlock($block, $page);
             $blockUuids[] = $savedBlock->uuid;
         }
 

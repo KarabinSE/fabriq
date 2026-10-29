@@ -66,7 +66,7 @@ class Block extends Model implements Sortable
         return $this->morphTo();
     }
 
-    public static function createBlock(array $block, Model $model, ?Block $parent = null): Block
+    public static function updateOrCreateBlock(array $block, Model $model, ?Block $parent = null): Block
     {
         $newBlock = Fabriq::getFqnModel('block')::updateOrCreate([
             'uuid' => $block['uuid'] ?? null,
@@ -80,12 +80,14 @@ class Block extends Model implements Sortable
 
             'model_type' => $model->getMorphClass(),
             'model_id' => $model->id,
+
+            'sortindex' => $block['sortindex'],
         ]);
 
         $children = $block['children'] ?? [];
 
         foreach ($children as $child) {
-            self::createBlock($child, $model, $newBlock);
+            self::updateOrCreateBlock($child, $model, $newBlock);
         }
 
         return $newBlock;
