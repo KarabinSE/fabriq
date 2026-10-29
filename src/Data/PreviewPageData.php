@@ -16,7 +16,6 @@ class PreviewPageData extends Data
         public ?int $template_id,
         public ?string $updated_at,
         public array $content = [],
-        // public array $blocks = [],
         #[DataCollectionOf(LiveBlockData::class)]
         public Optional|DataCollection $blocks = new Optional,
     ) {
