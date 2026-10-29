@@ -80,14 +80,11 @@ class Block extends Model implements Sortable
 
             'model_type' => $model->getMorphClass(),
             'model_id' => $model->id,
-
-            'sortindex' => $block['sortindex'],
         ]);
 
         $children = $block['children'] ?? [];
 
-        foreach ($children as $index => $child) {
-            $child['sortindex'] = $index + 1;
+        foreach ($children as $child) {
             self::updateOrCreateBlock($child, $model, $newBlock);
         }
 

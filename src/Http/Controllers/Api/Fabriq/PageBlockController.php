@@ -33,11 +33,12 @@ class PageBlockController
         $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
         $blockUuids = [];
 
-        foreach ($request->array('blocks') as $index => $block) {
-            $block['sortindex'] = $index + 1;
+        foreach ($request->array('blocks') as $block) {
             $savedBlock = Block::updateOrCreateBlock($block, $page);
             $blockUuids[] = $savedBlock->uuid;
         }
+
+        Block::setNewOrder($blockUuids, primaryKeyColumn: 'uuid');
 
         Fabriq::getFqnModel('block')::where('model_id', $page->id)
             ->where('model_type', $page->getMorphClass())
