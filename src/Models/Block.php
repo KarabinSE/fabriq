@@ -86,7 +86,8 @@ class Block extends Model implements Sortable
 
         $children = $block['children'] ?? [];
 
-        foreach ($children as $child) {
+        foreach ($children as $index => $child) {
+            $child['sortindex'] = $index + 1;
             self::updateOrCreateBlock($child, $model, $newBlock);
         }
 
