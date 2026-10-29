@@ -10,6 +10,7 @@ use Karabin\Fabriq\Data\ContactData;
 use Karabin\Fabriq\Data\EventData;
 use Karabin\Fabriq\Data\FileData;
 use Karabin\Fabriq\Data\ImageData;
+use Karabin\Fabriq\Data\LiveBlockData;
 use Karabin\Fabriq\Data\LivePageData;
 use Karabin\Fabriq\Data\MenuData;
 use Karabin\Fabriq\Data\MenuItemData;
@@ -186,6 +187,7 @@ return [
         'live_page' => LivePageData::class,
         'preview_page' => PreviewPageData::class,
         'block' => BlockData::class,
+        'live_block' => LiveBlockData::class,
     ],
     'media-library' => [
         'max_file_size' => 1024 * 1024 * 500, // 500 MB,
