@@ -32,8 +32,7 @@ class EloquentPageRepository implements PageRepositoryInterface
     {
         $model = $this->model->query()
             ->whereHas('slugs', function ($query) use ($slug) {
-                $query->where('slug', $slug)
-                    ->whereLocale(app()->currentLocale());
+                $query->where('slug', $slug);
             })
             ->where('published', true)
             ->firstOrFail();

@@ -11,11 +11,10 @@ class BlockTypeData extends Data
      * @param  array<string, mixed>|null  $options
      */
     public function __construct(
-        public int $id,
-        public string $name,
-        public string $component_name,
+        public ?int $id,
+        public ?string $name,
+        public ?string $component_name,
         public ?string $base_64_svg,
-        public bool $has_children,
         public ?string $type,
         public ?bool $active,
         public ?array $options,
@@ -25,6 +24,7 @@ class BlockTypeData extends Data
 
         public ?string $created_at,
         public ?string $updated_at,
+        public bool $has_children = false,
     ) {}
 
     public static function fromModel(BlockType $blockType): self
@@ -47,5 +47,10 @@ class BlockTypeData extends Data
             created_at: $blockType->created_at?->toISOString(),
             updated_at: $blockType->updated_at?->toISOString(),
         );
+    }
+
+    public function fromArray(array $arsle)
+    {
+        dd('arsle');
     }
 }

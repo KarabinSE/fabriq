@@ -19,14 +19,14 @@ class BlockData extends Data
         public bool $hidden,
         public ?int $parent_id,
         public int $block_type_id,
-        public ?object $content,
+        public ?array $content,
         public int $sortindex,
         public Optional|BlockTypeData $block_type,
         #[DataCollectionOf(BlockData::class)]
         public array|DataCollection $children = [],
     ) {
         if ($content !== null) {
-            $this->content = (object) ContentReferenceTransformer::resolve($content, Block::contentOptions());
+            $this->content = ContentReferenceTransformer::resolve($content, Block::contentOptions());
         }
     }
 }

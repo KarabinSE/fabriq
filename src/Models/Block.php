@@ -52,7 +52,7 @@ class Block extends Model implements Sortable
     public function casts(): array
     {
         return [
-            'content' => 'object',
+            'content' => 'array',
         ];
     }
 
