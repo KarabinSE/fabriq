@@ -115,7 +115,10 @@ class Block extends Model implements Sortable
 
     public function buildSortQuery(): Builder
     {
-        return static::query()->where('locale', $this->locale);
+        return static::query()->where('locale', $this->locale)
+            ->where('model_id', $this->model_id)
+            ->where('model_type', $this->model_type)
+            ->where('parent_id', $this->parent_id);
     }
 
     public function children(): HasMany
