@@ -59,6 +59,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             'fabriq_tag' => Fabriq::getFqnModel('tag'),
             'fabriq_user' => Fabriq::getFqnModel('user'),
             'fabriq_video' => Fabriq::getFqnModel('video'),
+            'fabriq_block' => Fabriq::getFqnModel('block'),
         ]);
 
         if ($this->app->runningInConsole()) {
