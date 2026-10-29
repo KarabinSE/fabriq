@@ -28,7 +28,7 @@ class EloquentPageRepository implements PageRepositoryInterface
      *
      * @return mixed
      */
-    public function findBySlug(string $slug)
+    public function findBySlug(string $slug): Page
     {
         $model = $this->model->query()
             ->whereHas('slugs', function ($query) use ($slug) {
