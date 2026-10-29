@@ -40,7 +40,7 @@
                     <FSelect
                         v-if="!largeBlockPicker"
                         ref="selectInput"
-                        v-model="chosenBlock.block_type"
+                        v-model="chosenBlock.blockType"
                         label="Blocktyp"
                         :clearable="false"
                         name="blockType"
@@ -52,7 +52,7 @@
                     />
                     <FInput
                         v-if="largeBlockPicker"
-                        v-model="chosenBlock.block_type.name"
+                        v-model="chosenBlock.blockType.name"
                         name="blockType"
                         rules="required|min:2"
                         class="hidden"
@@ -78,7 +78,7 @@
                         <div
                             v-for="blockType in recommendedBlockTypes"
                             :key="'r' + blockType.id"
-                            :class="blockType.id === chosenBlock.block_type.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
                             class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
                             @click="selectBlock(blockType)"
                         >
@@ -100,7 +100,7 @@
                         <div
                             v-for="blockType in computedBlockTypes"
                             :key="blockType.id"
-                            :class="blockType.id === chosenBlock.block_type.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
                             class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
                             @click="selectBlock(blockType)"
                         >
@@ -265,7 +265,7 @@ export default {
                 return
             }
 
-            this.pageStore.blocks.add(this.chosenBlock.block_type)
+            this.pageStore.blocks.add(this.chosenBlock.blockType)
 
             this.show = false
         },
@@ -278,7 +278,7 @@ export default {
         },
 
         selectBlock(blockType) {
-            this.chosenBlock.block_type = blockType
+            this.chosenBlock.blockType = blockType
 
             if (!this.chosenBlock.name || this.blockNames.includes(this.chosenBlock.name)) {
                 this.chosenBlock.name = blockType.name
