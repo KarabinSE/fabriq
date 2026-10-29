@@ -8,25 +8,25 @@
             </div>
 
             <div
-                v-show="children.length > 0"
+                v-show="parent.children.length > 0"
                 class="flex justify-end"
             >
                 <button
-                    :disabled="children.length >= max"
+                    :disabled="parent.children.length >= max"
                     class="flex items-center text-sm link disabled:opacity-60"
                     @click="addChild"
                 >
                     <PlusIcon
-                        v-if="children.length < max"
+                        v-if="parent.children.length < max"
                         class="size-5 mr-2 "
                     />
-                    {{ children.length < max ? labels.add : labels.max }}
+                    {{ parent.children.length < max ? labels.add : labels.max }}
                 </button>
             </div>
         </div>
 
         <Draggable
-            v-model="children"
+            v-model="parent.children"
             handle=".handle"
             tag="ul"
             v-bind="dragOptions"
@@ -36,7 +36,7 @@
             @end="drag = false"
         >
             <UiCard
-                v-for="(child, childIndex) in children"
+                v-for="(child, childIndex) in parent.children"
                 :key="'child-' + (child.content.id ?? childIndex)"
                 is-child
                 collapsible
@@ -55,7 +55,7 @@
                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona' }"
                                 class="focus:outline-none"
                                 @click.stop="cloneChild(child)"
-                                :disabled="children.length >= max"
+                                :disabled="parent.children.length >= max"
                             >
                                 <CloneIcon
                                     thin
@@ -98,7 +98,7 @@
         </Draggable>
 
         <UiDashedBox
-            v-show="children?.length <= 0"
+            v-show="parent.children?.length <= 0"
             size="min-h-24"
         >
             <template #header>
@@ -190,7 +190,7 @@ export default {
     methods: {
         addChild () {
             const child = new Block({
-                name: `${this.labels.title} ${((this.children?.length ?? 0) + 1)}`,
+                name: `${this.labels.title} ${((this.parent.children?.length ?? 0) + 1)}`,
                 content: this.itemContent,
             })
 
