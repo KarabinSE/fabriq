@@ -48,9 +48,4 @@ class BlockTypeData extends Data
             updated_at: $blockType->updated_at?->toISOString(),
         );
     }
-
-    public function fromArray(array $arsle)
-    {
-        dd('arsle');
-    }
 }

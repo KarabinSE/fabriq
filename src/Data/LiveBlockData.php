@@ -25,7 +25,7 @@ class LiveBlockData extends Data
             $this->content = ContentReferenceTransformer::resolve($content, Fabriq::getFqnModel('block')::contentOptions());
         }
 
-        $this->component_name = $this->block_type?->component_name ?? Optional::create();
+        $this->component_name = $this->block_type->component_name ?? Optional::create();
         $this->block_type = Optional::create();
     }
 }
