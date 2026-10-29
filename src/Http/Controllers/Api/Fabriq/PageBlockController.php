@@ -19,6 +19,7 @@ class PageBlockController
             ->where('model_type', 'fabriq_page')
             ->where('model_id', $pageId)
             ->whereNull('parent_id')
+            ->orderBy('sortindex')
             ->get();
 
         return ContentResourceContext::withModels(
@@ -32,7 +33,8 @@ class PageBlockController
         $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
         $blockUuids = [];
 
-        foreach ($request->array('blocks') as $block) {
+        foreach ($request->array('blocks') as $index => $block) {
+            $block['sortindex'] = $index + 1;
             $savedBlock = Block::updateOrCreateBlock($block, $page);
             $blockUuids[] = $savedBlock->uuid;
         }
