@@ -89,10 +89,14 @@ export const usePageStore = defineStore('page', () => {
         page.value = structuredClone(defaultPageData);
     }
 
+
+    let markPageLoaded
+    const pageLoaded = ref(new Promise((r) => markPageLoaded = r))
     /**
      * fetches page content for each locale
      */
     async function fetchPage (pageId) {
+        pageLoaded.value = new Promise((r) => markPageLoaded = r)
         localizedBlocks.value = { sv: [] }
         await config.initiated
 
@@ -103,6 +107,8 @@ export const usePageStore = defineStore('page', () => {
 
         const page = await Promise.all(promises)
         setPage(page[0])
+
+        markPageLoaded()
     }
 
     async function fetchPageForLocale(pageId, locale) {
@@ -193,8 +199,6 @@ export const usePageStore = defineStore('page', () => {
     }
 
     function removeBlock(index) {
-        console.log(index);
-
         activeLocaleBlocks.value.splice(index, 1)
     }
 
@@ -217,5 +221,6 @@ export const usePageStore = defineStore('page', () => {
         publish,
         resetPage,
         blocksLoading,
+        pageLoaded,
     }
 });
