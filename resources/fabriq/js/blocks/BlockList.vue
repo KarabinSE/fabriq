@@ -30,8 +30,10 @@
                 v-else
                 class="contents"
             >
-                <div  v-if="pageStore.blocks.index.length === 0"
-                      class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
+                <div
+                    v-if="pageStore.blocks.index.length === 0"
+                    class="mt-4 flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200"
+                >
                     <div class="flex flex-col items-center">
                         <div class="mb-4 text-xl font-light">
                             Inga block har lagts till ännu
@@ -218,7 +220,7 @@
                                                 v-if="withPreviewBlockLocator"
                                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skrolla till block' }"
                                                 class="focus:outline-none"
-                                                @click.stop="scrollToBlock(block.id)"
+                                                @click.stop="scrollToBlock(block)"
                                             >
                                                 <CrosshairsIcon
                                                     class="size-6 text-gray-500"
@@ -336,8 +338,8 @@ export default {
 
     methods: {
 
-        scrollToBlock(blockId) {
-            this.previewStore.locateBlock(blockId)
+        scrollToBlock(block) {
+            this.previewStore.locateBlock(block.content.id)
         },
 
         getBlockType(block) {
