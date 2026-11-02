@@ -12,6 +12,13 @@ use Spatie\LaravelData\Data;
 
 class PagePreviewController
 {
+    private function buildPreviewUrl($preview)
+    {
+        $page = Fabriq::getModelClass('page')->findOrFail($preview->model_id);
+
+        return config('fabriq.front_end_domain').'/'.App::currentLocale().$page->localizedPaths->flatten()->first().'?preview='.$preview->uuid;
+    }
+
     public function store(Request $request): JsonResponse
     {
         $page = Fabriq::getModelClass('page')->findOrFail($request->id);
@@ -23,7 +30,7 @@ class PagePreviewController
             'content' => $request->content,
         ]);
 
-        $previewUrl = config('fabriq.front_end_domain').'/'.App::currentLocale().$page->localizedPaths->flatten()->first().'?preview='.$preview->uuid;
+        $previewUrl = $this->buildPreviewUrl($preview);
 
         return response()->json([
             'preview_url' => $previewUrl,
@@ -37,7 +44,7 @@ class PagePreviewController
         foreach ($request->blocks as $block) {
             $content[$block['locale']]['blocks'][] = $block;
         }
-        Preview::updateOrCreate(
+        $preview = Preview::updateOrCreate(
             [
                 'model_id' => $request->id,
                 'model_type' => 'fabriq_page',
@@ -47,7 +54,10 @@ class PagePreviewController
             ]
         );
 
-        return response()->json(['message' => 'Preview updated'], 200);
+        return response()->json([
+            'message' => 'Preview updated',
+            'preview_url' => $this->buildPreviewUrl($preview),
+        ], 200);
     }
 
     public function show(Request $request, string $uuid): Data
