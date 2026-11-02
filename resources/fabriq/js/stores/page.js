@@ -50,21 +50,12 @@ export const usePageStore = defineStore('page', () => {
     const blocksLoading = ref(false)
     const page = ref(structuredClone(defaultPageData));
 
+    const blocks = ref([])
     const localizedContent = ref({ sv: {} })
-    const localizedBlocks = ref({ sv: [] })
 
     const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {})
-    const activeLocaleBlocks = computed({
-        get: () => {
-            if(!localizedBlocks.value[config.activeLocale]) {
-                Vue.set(localizedBlocks.value, config.activeLocale, [])
-            }
-            return localizedBlocks.value[config.activeLocale]
-        },
-        set: (newBlocks) => localizedBlocks.value[config.activeLocale] = newBlocks
-    })
-    const flatBlocks = computed(() => Object.values(localizedBlocks.value).flat())
 
+    const activeLocaleBlocks = computed(() => blocks.value.filter(block => block.locale === config.activeLocale))
     const activeLocaleContent = computed({
         get: () => localizedContent.value[config.activeLocale],
         set: (newContent) => localizedContent.value[config.activeLocale] = newContent
@@ -89,7 +80,6 @@ export const usePageStore = defineStore('page', () => {
         page.value = structuredClone(defaultPageData);
     }
 
-
     let markPageLoaded
     const pageLoaded = ref(new Promise((r) => markPageLoaded = r))
     /**
@@ -97,16 +87,17 @@ export const usePageStore = defineStore('page', () => {
      */
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
-        localizedBlocks.value = { sv: [] }
+        blocks.value = []
         await config.initiated
-
-        fetchPageBlocks(pageId)
 
         const promises = Object.keys(config.supportedLocales)
             .map(async (locale) => await fetchPageForLocale(pageId, locale))
 
-        const page = await Promise.all(promises)
-        setPage(page[0])
+        const pages = await Promise.all([
+            ...promises,
+            fetchPageBlocks(pageId)
+        ])
+        setPage(pages[0])
 
         markPageLoaded()
     }
@@ -141,13 +132,7 @@ export const usePageStore = defineStore('page', () => {
             blocksLoading.value = true
             const data  = await Blocks.index(pageId, payload)
 
-            data.forEach(block => {
-                if(localizedBlocks.value[block.locale]) {
-                    localizedBlocks.value[block.locale].push(new Block(block, block.content))
-                } else {
-                    Vue.set(localizedBlocks.value, block.locale, [new Block(block, block.content)])
-                }
-            })
+            blocks.value = data.map(block => new Block(block, block.content))
         } catch (error) {
             console.error(error)
         } finally {
@@ -164,7 +149,7 @@ export const usePageStore = defineStore('page', () => {
 
         try {
             await Page.update(pageId, payload)
-            await Blocks.put(pageId, flatBlocks.value)
+            await Blocks.put(pageId, blocks.value)
 
             wasInitiallyPublished.value = page.value.published
         } catch (error) {
@@ -189,17 +174,18 @@ export const usePageStore = defineStore('page', () => {
         }, {
             name: blockType.name,
         })
-        activeLocaleBlocks.value.push(newBlock)
+        blocks.value.push(newBlock)
 
         ui.toggleOpenCard(newBlock.content.id)
     }
 
     function cloneBlock(blockToClone) {
-        activeLocaleBlocks.value.push(blockToClone.clone())
+        blocks.value.push(blockToClone.clone())
     }
 
-    function removeBlock(index) {
-        activeLocaleBlocks.value.splice(index, 1)
+    function removeBlock(block) {
+        const index = blocks.value.findIndex(b => b.content.id === block.content.id)
+        blocks.value.splice(index, 1)
     }
 
     return {
@@ -211,7 +197,7 @@ export const usePageStore = defineStore('page', () => {
         filteredGroupedFields,
         wasInitiallyPublished,
         blocks: {
-            flat: flatBlocks,
+            flat: blocks,
             index: activeLocaleBlocks,
             add: addBlock,
             clone: cloneBlock,
