@@ -60,7 +60,7 @@
                         :name="'flip-list-move'"
                     >
                         <li
-                            v-for="(block, boxIndex) in pageStore.blocks.index"
+                            v-for="(block, blockIndex) in pageStore.blocks.index"
                             :key="'block-' + block.content.id"
                             class="list-group-item"
                         >
@@ -154,7 +154,7 @@
                                                             v-show="!lockedBlocks"
                                                             confirm-question="Vill du ta bort detta blocket?"
                                                             class="relative"
-                                                            @confirmed="deleteBlock(boxIndex)"
+                                                            @confirmed="deleteBlock(block)"
                                                         >
                                                             <div
                                                                 class="flex gap-4 items-center py-3 px-4 whitespace-nowrap text-sm w-44"
@@ -205,7 +205,7 @@
                                                     v-show="!lockedBlocks"
                                                     confirm-question="Vill du ta bort detta blocket?"
                                                     class="relative w-6 h-6"
-                                                    @confirmed="deleteBlock(boxIndex)"
+                                                    @confirmed="deleteBlock(block)"
                                                 >
                                                     <TrashIcon
                                                         class="h-6 transition-colors duration-150 hover:text-red-500"
@@ -234,7 +234,7 @@
                                             :is="block.block_type.component_name"
                                             :content="block.content"
                                             :value="block"
-                                            :index="boxIndex"
+                                            :index="blockIndex"
                                         />
                                     </KeepAlive>
                                 </div>
@@ -359,8 +359,8 @@ export default {
             this.$vfm.show('block-type-modal')
         },
 
-        deleteBlock(index) {
-            this.pageStore.blocks.remove(index)
+        deleteBlock(block) {
+            this.pageStore.blocks.remove(block)
         },
 
         cloneBlock(block) {

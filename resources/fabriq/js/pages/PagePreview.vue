@@ -126,12 +126,6 @@ export default {
         const uiStore = useUiStore();
         const previewStore = usePreviewStore();
 
-        const instance = getCurrentInstance();
-
-        const debouncedUpdatePreview = useDebounceFn(() => {
-            instance?.proxy?.updatePreview()
-        }, 500)
-
         const resizeStorage = useStorage('preview-resize-width', { width: 700 })
 
         return {
@@ -139,7 +133,6 @@ export default {
             configStore,
             uiStore,
             previewStore,
-            debouncedUpdatePreview,
             resizeStorage
         }
     },
@@ -186,31 +179,6 @@ export default {
 
             return 'Spara'
         }
-    },
-
-    watch: {
-        localizedContent: {
-            deep: true,
-            immediate: true,
-            handler(_, from ) {
-                if(this.previewVisible){
-                    this.debouncedUpdatePreview()
-                }
-            },
-        },
-        'pageStore.blocks.index': {
-            deep: true,
-            immediate: true,
-            handler(_, from ) {
-                if(this.previewVisible){
-                    this.debouncedUpdatePreview()
-                }
-            },
-        },
-    },
-
-    mounted() {
-        this.setPreviewIframe()
     },
 
     methods: {
@@ -267,13 +235,6 @@ export default {
             // this.popoutWindow = window.open(this.previewStore.url, `Förhandsgranskning`, 'popup')
             // this.previewStore.setIframe(this.popoutWindow)
             // this.previewStore.toggleVisible()
-        },
-
-        async updatePreview () {
-            await this.previewStore.updatePreview()
-            if(this.previewStore.iFrameLoaded) {
-                this.previewStore.postToIframe()
-            }
         },
     }
 }

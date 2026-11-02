@@ -3,6 +3,7 @@ import { computed, readonly, ref, watch } from "vue";
 import { usePageStore } from "./page";
 import axios from "axios";
 import { route } from '@/generated/helpers/route'
+import { useDebounceFn } from '@vueuse/core'
 
 class MissingIFrameError extends Error {
     constructor(message) {
@@ -29,6 +30,18 @@ export const usePreviewStore = defineStore('preview', () => {
 
     const page = computed(() => pageStore.page)
 
+    const loaded = ref(false)
+
+    const debouncedUpdatePreview = useDebounceFn(updatePreview, 500)
+    watch(previewPayload, async () => {
+        if(!loaded.value) {
+            return
+        }
+
+        debouncedUpdatePreview()
+    }, {
+        deep: true
+    })
 
     /**
      * whenever we enter a new page, update the preview url.
@@ -37,33 +50,17 @@ export const usePreviewStore = defineStore('preview', () => {
      */
     watch(() => page.value.id, async () => {
         if(page.value.id) {
-            let newUrl = await getPreviewUrl()
-            const hasPreview = !!(new URL(newUrl)).searchParams.get('preview')
-
-            if(!hasPreview) {
-                await updatePreview()
-                newUrl = await getPreviewUrl()
-            }
-
-            previewUrl.value = newUrl
+            await pageStore.pageLoaded
+            await updatePreview()
+            loaded.value = true
         }
     })
 
-
-    async function getPreviewUrl() {
-        try {
-            const { data } = await axios.post(route('previews.store'), previewPayload.value)
-
-            return data.preview_url
-
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     async function updatePreview () {
         try {
-            await axios.put(route('previews.update', { id: pageStore.page.id }), previewPayload.value)
+            const { data } = await axios.put(route('previews.update', { id: pageStore.page.id }), previewPayload.value)
+
+            previewUrl.value = new URL(data.preview_url)
 
             postToIframe(iframeReference.value)
         } catch (error) {
@@ -76,7 +73,7 @@ export const usePreviewStore = defineStore('preview', () => {
             throw new MissingIFrameError()
         }
 
-        const targetOrigin = new URL(previewUrl.value).origin
+        const targetOrigin = previewUrl.value.origin
 
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-preview-ready', url: previewUrl.value }, targetOrigin)
     }
@@ -86,7 +83,7 @@ export const usePreviewStore = defineStore('preview', () => {
             throw new MissingIFrameError()
         }
 
-        const targetOrigin = new URL(previewUrl.value).origin
+        const targetOrigin = previewUrl.value.origin
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-locate-block', url: previewUrl.value, block: blockId }, targetOrigin)
     }
 
