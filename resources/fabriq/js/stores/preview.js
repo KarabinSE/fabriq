@@ -60,7 +60,7 @@ export const usePreviewStore = defineStore('preview', () => {
         try {
             const { data } = await axios.put(route('previews.update', { id: pageStore.page.id }), previewPayload.value)
 
-            previewUrl.value = new URL(data.preview_url)
+            previewUrl.value = data.preview_url
 
             postToIframe(iframeReference.value)
         } catch (error) {
@@ -73,7 +73,7 @@ export const usePreviewStore = defineStore('preview', () => {
             throw new MissingIFrameError()
         }
 
-        const targetOrigin = previewUrl.value.origin
+        const targetOrigin = new URL(previewUrl.value).origin
 
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-preview-ready', url: previewUrl.value }, targetOrigin)
     }
@@ -83,7 +83,7 @@ export const usePreviewStore = defineStore('preview', () => {
             throw new MissingIFrameError()
         }
 
-        const targetOrigin = previewUrl.value.origin
+        const targetOrigin = new URL(previewUrl.value).origin
         iframeReference.value.contentWindow.postMessage({ type: 'fabriq-locate-block', url: previewUrl.value, block: blockId }, targetOrigin)
     }
 
