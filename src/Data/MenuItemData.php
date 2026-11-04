@@ -3,9 +3,9 @@
 namespace Karabin\Fabriq\Data;
 
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
-use Karabin\Fabriq\Models\Locale as I18nLocale;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
 
@@ -24,6 +24,7 @@ class MenuItemData extends Data
         public Lazy|array $content,
         public Lazy|array|null $page,
         public Lazy|array $localizedContent,
+        public ?bool $has_custom_title = false,
     ) {}
 
     public static function allowedRequestIncludes(): ?array

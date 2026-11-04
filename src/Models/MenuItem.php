@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -102,11 +103,11 @@ class MenuItem extends Model
      */
     public function getTitleAttribute(): string
     {
-        if ($this->type === 'internal') {
+        $content = $this->getSimpleFieldContent('sv');
+
+        if ($this->type === 'internal' && empty($content['title'])) {
             return $this->getSlug()->source_string ?? '';
         }
-
-        $content = $this->getSimpleFieldContent('sv');
 
         return $content['title'] ?? '';
     }
@@ -162,5 +163,12 @@ class MenuItem extends Model
     {
         /** @var BelongsTo<Menu, $this> */
         return $this->belongsTo(Fabriq::getFqnModel('menu'));
+    }
+
+    public function scopeRootForMenu(Builder $query, int $menuId)
+    {
+        return $query
+            ->where('menu_id', $menuId)
+            ->whereNull('parent_id');
     }
 }

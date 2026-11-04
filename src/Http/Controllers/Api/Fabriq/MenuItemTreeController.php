@@ -10,6 +10,7 @@ use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Repositories\Decorators\CachingMenuRepository;
+use Karabin\Fabriq\Support\MenuTreeSerializer;
 
 class MenuItemTreeController extends Controller
 {
@@ -18,18 +19,17 @@ class MenuItemTreeController extends Controller
      */
     public function index(Request $request, int $id): JsonResponse
     {
-        $menuItemRoot = MenuItem::where('menu_id', $id)
-            ->whereNull('parent_id')
-            ->first();
-        $items = MenuItem::orderBy('sortindex')->descendantsOf($menuItemRoot->id);
+        $menuItemRoot = MenuItem::rootForMenu($id)->first();
+
+        $items = MenuItem::query()
+            ->orderBy('sortindex')
+            ->descendantsOf($menuItemRoot->id);
+
         $tree = $items->toTree();
 
         return ContentResourceContext::withModels(
             $items,
-            fn () => response()->json([
-                'data' => $tree->toArray(),
-            ]),
-            false,
+            fn () => response()->json(MenuTreeSerializer::modelTree($tree)),
         );
     }
 
@@ -38,9 +38,7 @@ class MenuItemTreeController extends Controller
      */
     public function update(Request $request, int $id, UpdateMenuItemPaths $updateMenuItemPaths): JsonResponse
     {
-        $menuItemRoot = MenuItem::where('menu_id', $id)
-            ->whereNull('parent_id')
-            ->first();
+        $menuItemRoot = MenuItem::rootForMenu($id)->first();
         $menuItemRoot->touch();
 
         $treeData = $request->tree;
