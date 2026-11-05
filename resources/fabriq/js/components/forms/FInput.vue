@@ -7,13 +7,11 @@
         >
             <span :class="classes">
                 <div class="flex justify-between">
-
                     <FLabel
                         v-if="label"
                         :name="name"
                         :non-white-bg="nonWhiteBg"
                         :optional="optional"
-
                         :required="hasRuleRequired"
                     >
                         {{ label }}
@@ -95,7 +93,7 @@
                         :readonly="readOnly"
                         :type="type"
                         :value="value"
-                        class="relative flex-1 block w-full px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
+                        class="relative flex-1 block w-full min-h-10 px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
                         @input="updateValue($event.target.value)"
                         v-on="inputListeners"
                     >

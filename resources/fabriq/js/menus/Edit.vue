@@ -61,64 +61,63 @@
                     <template slot-scope="{ item }">
                         <div
                             v-show="! deleteQueue.includes(item.id)"
-                            class="flex items-center h-12 p-2 border border-gray-300 rounded group"
+                            class="flex items-center h-14 p-2 border border-gray-300 rounded group"
                         >
                             <VueNestableHandle
                                 :item="item"
-                                class="px-2 -mx-2"
+                                class="h-full"
                             >
-                                <GripVerticalIcon class="w-4 h-4 ml-1 mr-2 text-gray-300" />
+                                <div class="h-full flex justify-center items-center px-2 -ml-2 " >
+                                    <GripVerticalIcon class="size-4 text-gray-300" />
+                                </div>
                             </VueNestableHandle>
 
                             <!-- Content -->
-                            <div class="flex flex-1 text-sm font-semibold text-gray-700">
-                                <span
-                                    v-if="item.type === 'internal'"
-                                    class="cursor-pointer"
-                                    @click="editMenuItem(item)"
-                                >
-                                    {{ item.page.name }}
-                                </span>
-                                <template v-if="item.type === 'external'">
-                                    <span>{{ item.title }}</span>
-                                    <span class="ml-4 mr-auto">
-                                        <!-- <external-link-icon
-                                        v-if="item.is_external"
-                                        class="w-4 h-4"
-                                        title="Extern url"
-                                    /> -->
-                                        <UiBadge v-if="item.type === 'external'">
-                                            <ExternalLinkIcon class="w-3 h-3 mr-1" /> Extern länk
-                                        </UiBadge>
-                                    </span>
-                                </template>
-                                <template v-if="item.type === 'file'">
-                                    <span>{{ item.title }}</span>
-                                    <span class="ml-4 mr-auto">
-                                        <UiBadge>
-                                            <FileIcon class="w-3 h-3 mr-1" /> Fil
-                                        </UiBadge>
-                                    </span>
-                                </template>
+                            <div class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
+                                 @click="editMenuItem(item)"
+                            >
+                                <div class="text-sm/none font-semibold truncate">
+                                    {{ item.title }}
+                                </div>
+                                <div class="text-xs/none pb-px text-gray-400/80 group-hover:text-gray-600 duration-100 truncate">
+                                    <span v-if="item.type === 'internal'">{{ item.page.name }}</span>
+                                    <span v-if="item.type === 'external'">{{ item.path['sv'] }}</span>
+                                    <span v-if="item.type === 'file'">{{ item.content?.data?.file?.file_name ?? 'Ej angivet' }}</span>
+                                </div>
                             </div>
-                            <div class="flex md:space-x-6">
+
+                            <div class="flex space-x-3">
+                                <div
+                                    v-if="item.type !== 'internal'"
+                                >
+                                    <UiBadge>
+                                        <template v-if="item.type === 'external'">
+                                            <ExternalLinkIcon class="size-3 mr-1" />
+                                            Extern länk
+                                        </template>
+                                        <template v-if="item.type === 'file'">
+                                            <FileIcon class="size-3 mr-1" />
+                                            Fil
+                                        </template>
+                                    </UiBadge>
+                                </div>
+
                                 <button
-                                    class="flex text-sm focus:outline-none "
+                                    class="flex text-sm focus:outline-none text-gray-500 hover:text-gray-800 duration-100"
                                     @click="editMenuItem(item)"
                                 >
                                     <PenToSquareIcon
-                                        class="w-6 h-6"
-                                        thin
+                                        class="size-5"
                                     />
                                 </button>
                                 <div class="pr-2">
                                     <FConfirmDropdown
                                         confirm-question="Vill du ta bort menypunkten?"
+                                        class="text-gray-500 hover:text-gray-800 duration-100"
                                         @confirmed="deleteConfirmed(item.id)"
                                     >
                                         <TrashIcon
-                                            class="w-6 h-6"
-                                            thin
+                                            class="size-5"
                                         />
                                     </FConfirmDropdown>
                                 </div>
