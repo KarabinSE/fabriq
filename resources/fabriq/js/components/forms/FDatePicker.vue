@@ -1,121 +1,105 @@
 <template>
-    <ValidationProvider
-        v-slot="{ errors, classes }"
-        :mode="validationMode"
-        :rules="rules"
-    >
-        <!-- eslint-disable-next-line -->
+    <!-- eslint-disable-next-line -->
         <v-date-picker
-            :class="classes"
-            :timezone="localTimezone"
-            :value="value"
-            :popover="{visibility: 'click' }"
-            color="gray"
-            :select-attribute="selectAttribute"
-            :is-range="isRange"
-            :mode="mode"
-            :attributes="attributes"
-            is24hr
-            @input="updateValue"
+        :class="classes"
+        :timezone="localTimezone"
+        :value="value"
+        :popover="{visibility: 'click' }"
+        color="gray"
+        :select-attribute="selectAttribute"
+        :is-range="isRange"
+        :mode="mode"
+        :attributes="attributes"
+        is24hr
+        @input="updateValue"
+    >
+        <template
+            v-if="isRange"
+            #default="{ inputValue, inputEvents, isDragging }"
         >
-            <template
-                v-if="isRange"
-                #default="{ inputValue, inputEvents, isDragging }"
-            >
-                <div class="flex justify-between">
-                    <FLabel
-                        v-if="label"
-                        class="mb-1"
-                        :name="name"
-                        :required="hasRuleRequired"
-                    >
-                        {{ label }}
-                    </FLabel>
-                    <button
-                        class="text-xs link"
-                        @click="clearDates"
-                    >
-                        Rensa
-                    </button>
-                </div>
-                <div class="flex flex-col items-center justify-start sm:flex-row">
-                    <div class="relative grow">
-                        <FInput
-                            :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
-                            :value="inputValue.start"
-                            :placeholder="placeholder"
-                            v-on="inputEvents.start"
-                        >
-                            <template #icon>
-                                <CalendarIcon class="w-4 h-4" />
-                            </template>
-                        </FInput>
-                    </div>
-                    <span class="shrink-0 m-2">
-                        <MinusIcon
-                            thin
-                            class="w-6 h-6 text-gray-800"
-                        />
-                    </span>
-                    <div class="relative grow">
-                        <FInput
-                            :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
-                            :value="inputValue.end"
-                            v-on="inputEvents.end"
-                        >
-                            <template #icon>
-                                <CalendarIcon class="w-4 h-4" />
-                            </template>
-                        </FInput>
-                    </div>
-                </div>
-            </template>
-            <template
-                v-else
-                #default="{ inputValue, inputEvents }"
-            >
-                <span class="flex justify-between">
-
-                    <FLabel
-                        v-if="label"
-                        class="mb-1"
-                        :name="name"
-                        :required="hasRuleRequired"
-                    >
-                        {{ label }}
-                    </FLabel>
-                    <button
-                        v-if="clearable"
-                        class="text-xs link"
-                        type="button"
-                        @click="clearDates"
-                    >
-                        Rensa
-                    </button>
-                </span>
-                <FInput
-                    class=""
-                    :value="inputValue"
-                    :placeholder="placeholder"
-                    v-on="inputEvents"
+            <div class="flex justify-between">
+                <FLabel
+                    v-if="label"
+                    class="mb-1"
+                    :name="name"
+                    :required="hasRuleRequired"
                 >
-                    <template #icon>
-                        <CalendarIcon class="w-4 h-4" />
-                    </template>
-                </FInput>
-            </template>
-        </v-date-picker>
-        <span
-            v-if="errors[0]"
-            class="font-sans text-xs text-red-500"
-            :class="{'absolute': absolutePosErrors, 'hidden': hideErrors}"
+                    {{ label }}
+                </FLabel>
+                <button
+                    class="text-xs link"
+                    @click="clearDates"
+                >
+                    Rensa
+                </button>
+            </div>
+            <div class="flex flex-col items-center justify-start sm:flex-row">
+                <div class="relative grow">
+                    <FInput
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.start"
+                        :placeholder="placeholder"
+                        v-on="inputEvents.start"
+                    >
+                        <template #icon>
+                            <CalendarIcon class="w-4 h-4" />
+                        </template>
+                    </FInput>
+                </div>
+                <span class="shrink-0 m-2">
+                    <MinusIcon
+                        thin
+                        class="w-6 h-6 text-gray-800"
+                    />
+                </span>
+                <div class="relative grow">
+                    <FInput
+                        :class="isDragging ? 'text-gray-600' : 'text-gray-900'"
+                        :value="inputValue.end"
+                        v-on="inputEvents.end"
+                    >
+                        <template #icon>
+                            <CalendarIcon class="w-4 h-4" />
+                        </template>
+                    </FInput>
+                </div>
+            </div>
+        </template>
+        <template
+            v-else
+            #default="{ inputValue, inputEvents }"
         >
-            <span class="inline-flex items-center mt-2 leading-none">
+            <span class="flex justify-between">
 
-                <CircleExclamationIcon class="size-5 mr-2" />
-                {{ convertErrorMessage(errors[0]) }}</span>
-        </span>
-    </ValidationProvider>
+                <FLabel
+                    v-if="label"
+                    class="mb-1"
+                    :name="name"
+                    :required="hasRuleRequired"
+                >
+                    {{ label }}
+                </FLabel>
+                <button
+                    v-if="clearable"
+                    class="text-xs link"
+                    type="button"
+                    @click="clearDates"
+                >
+                    Rensa
+                </button>
+            </span>
+            <FInput
+                class=""
+                :value="inputValue"
+                :placeholder="placeholder"
+                v-on="inputEvents"
+            >
+                <template #icon>
+                    <CalendarIcon class="w-4 h-4" />
+                </template>
+            </FInput>
+        </template>
+    </v-date-picker>
 </template>
 <script>
 import { format } from 'date-fns'
@@ -123,11 +107,6 @@ import { useUserStore } from '@fabriq/stores';
 
 export default {
     name: 'FDatePicker',
-    setup () {
-        const userStore = useUserStore();
-
-        return { userStore }
-    },
     props: {
         value: {
             required: true,
@@ -177,6 +156,11 @@ export default {
             type: String,
             default: ''
         }
+    },
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
     },
     data () {
         return {

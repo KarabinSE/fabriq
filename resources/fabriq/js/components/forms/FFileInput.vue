@@ -1,67 +1,53 @@
 <template>
     <div>
-        <ValidationProvider
-            v-slot="{ errors, classes }"
-            :mode="validationMode"
-            :rules="rules"
-        >
-            <span :class="classes">
-                <FLabel
-                    v-if="label"
-                    :name="name"
-                    :padding="false"
-                    :required="hasRuleRequired"
+        <span :class="classes">
+            <FLabel
+                v-if="label"
+                :name="name"
+                :padding="false"
+                :required="hasRuleRequired"
+            >
+                {{ label }}
+            </FLabel>
+            <div class="flex items-center space-x-4 min-h-10">
+                <button
+                    class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
+                    type="button"
+                    @click="pickerOpen = true"
                 >
-                    {{ label }}
-                </FLabel>
-                <div class="flex items-center space-x-4 min-h-10">
-                    <button
-                        class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
-                        type="button"
-                        @click="pickerOpen = true"
-                    >
-                        Välj fil
-                    </button>
+                    Välj fil
+                </button>
 
-                    <div
-                        v-if="hasFile"
-                        class="flex items-center space-x-4 text-sm overflow-hidden w-full"
-                    >
-                        <div class="text-xs truncate">
-                            {{ localFile.file_name }}
-                        </div>
-                        <div class="flex justify-start space-x-2 ml-auto">
-                            <button
-                                class="font-semibold text-left focus:outline-none"
-                                @click="$vfm.show('file-modal', {id: localFile.id})"
-                            >
-                                <PenToSquareIcon class="w-4 h-4" />
-                            </button>
-                            <button
-                                class="font-semibold focus:outline-none"
-                                @click="clearFile"
-                            >
-                                <XMarkIcon class="w-4 h-4" />
-                            </button>
-                        </div>
+                <div
+                    v-if="hasFile"
+                    class="flex items-center space-x-4 text-sm overflow-hidden w-full"
+                >
+                    <div class="text-xs truncate">
+                        {{ localFile.file_name }}
                     </div>
-
-                    <div v-else>
-                        <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
+                    <div class="flex justify-start space-x-2 ml-auto">
+                        <button
+                            class="font-semibold text-left focus:outline-none"
+                            @click="$vfm.show('file-modal', {id: localFile.id})"
+                        >
+                            <PenToSquareIcon class="w-4 h-4" />
+                        </button>
+                        <button
+                            class="font-semibold focus:outline-none"
+                            @click="clearFile"
+                        >
+                            <XMarkIcon class="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
-                <span
-                    v-if="errors[0]"
-                    class="font-sans text-xs text-red-500"
-                    :class="{'absolute': absolutePosErrors, 'hidden': hideErrors}"
-                >
-                    <span class="inline-flex items-center mt-2 leading-none">
 
-                        <CircleExclamationIcon class="size-5 mr-2" />
-                        {{ convertErrorMessage(errors[0]) }}</span>
-                </span>
-            </span>
-        </ValidationProvider>
+                <div v-else>
+                    <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
+                </div>
+            </div>
+
+        </span>
+
 
         <FMediaPicker
             :open="pickerOpen"

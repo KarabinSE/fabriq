@@ -1,124 +1,109 @@
 <template>
     <div>
-        <ValidationProvider
-            v-slot="{ errors, classes }"
-            :mode="validationMode"
-            :rules="rules"
-        >
-            <span :class="classes">
-                <div class="flex justify-between">
-                    <FLabel
-                        v-if="label"
-                        :name="name"
-                        :non-white-bg="nonWhiteBg"
-                        :optional="optional"
-                        :required="hasRuleRequired"
-                    >
-                        {{ label }}
-                    </FLabel>
-                    <span
-                        v-if="characterCount"
-                        class="text-xs text-gray-500"
-                    >Antal tecken: {{ value.length }}</span>
-                </div>
-                <div
-                    v-if="inputType === 'radio'"
-                    class="flex items-center space-x-4 min-h-10"
+        <span :class="classes">
+            <div class="flex justify-between">
+                <FLabel
+                    v-if="label"
+                    :name="name"
+                    :non-white-bg="nonWhiteBg"
+                    :optional="optional"
+                    :required="hasRuleRequired"
                 >
-                    <div
-                        v-for="(radioOption, index) in options"
-                        :key="'r' + index"
-                        class="flex items-center"
+                    {{ label }}
+                </FLabel>
+                <span
+                    v-if="characterCount"
+                    class="text-xs text-gray-500"
+                >Antal tecken: {{ value.length }}</span>
+            </div>
+            <div
+                v-if="inputType === 'radio'"
+                class="flex items-center space-x-4 min-h-10"
+            >
+                <div
+                    v-for="(radioOption, index) in options"
+                    :key="'r' + index"
+                    class="flex items-center"
+                >
+                    <input
+                        :id="id + radioOption.value + _uid"
+                        :name="id + name + _uid"
+                        type="radio"
+                        :checked="radioOption.value == value"
+                        :class="inputClasses"
+                        :disabled="inputDisabled"
+                        class="size-5 fabriq-radio form-radio focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
+                        @input="updateValue(radioOption.value)"
                     >
-                        <input
-                            :id="id + radioOption.value + _uid"
-                            :name="id + name + _uid"
-                            type="radio"
-                            :checked="radioOption.value == value"
-                            :class="inputClasses"
-                            :disabled="inputDisabled"
-                            class="size-5 fabriq-radio form-radio focus:outline-none focus:ring-offset-3 focus:ring-1 focus:ring-royal-300"
-                            @input="updateValue(radioOption.value)"
+                    <label
+                        :for="id + radioOption.value + _uid"
+                        class="cursor-pointer"
+                    >
+                        <slot
+                            name="option"
+                            v-bind="radioOption"
                         >
-                        <label
-                            :for="id + radioOption.value + _uid"
-                            class="cursor-pointer"
-                        >
-                            <slot
-                                name="option"
-                                v-bind="radioOption"
-                            >
-                                <span class="block ml-3 text-sm font-medium text-gray-700"> {{ radioOption.label }}</span>
-                            </slot>
-                        </label>
-                    </div>
+                            <span class="block ml-3 text-sm font-medium text-gray-700"> {{ radioOption.label }}</span>
+                        </slot>
+                    </label>
                 </div>
-                <textarea
-                    v-else-if="type === 'textarea'"
-                    ref="textarea"
-                    :class="{classes: classes }"
+            </div>
+            <textarea
+                v-else-if="type === 'textarea'"
+                ref="textarea"
+                :class="{classes: classes }"
+                :disabled="inputDisabled"
+                :name="name"
+                :placeholder="placeholder"
+                :readonly="readOnly"
+                :value="value"
+                class=" flex-1 block w-full rounded px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
+                :rows="rows"
+                v-on="inputListeners"
+                @input="updateValue($event.target.value)"
+            />
+            <span
+                v-else-if="inputType === 'input'"
+                class="relative flex items-center"
+            >
+                <div
+                    v-if="prefix"
+                    class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-500 bg-gray-100 rounded-l ring-1 ring-gray-300"
+                    v-text="prefix"
+                />
+                <span
+                    class="absolute ml-4"
+                    style="z-index: 1"
+                >
+                    <slot name="icon" />
+                </span>
+                <input
+                    ref="input"
+                    v-mask="mask"
+                    :class="[{classes: classes}, inputClasses, roundedClasses, hasIcon ? 'pl-12' : 'pl-4', inputDisabled ? 'bg-gray-100 text-gray-600 cursor-not-allowed' : 'text-gray-800 ']"
                     :disabled="inputDisabled"
+                    :min="min"
                     :name="name"
                     :placeholder="placeholder"
                     :readonly="readOnly"
+                    :type="type"
                     :value="value"
-                    class=" flex-1 block w-full rounded px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
-                    :rows="rows"
-                    v-on="inputListeners"
+                    class="relative flex-1 block w-full min-h-10 px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
                     @input="updateValue($event.target.value)"
+                    v-on="inputListeners"
+                >
+                <div
+                    v-if="suffix"
+                    class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-500 bg-gray-100 rounded-r ring-1 ring-gray-300"
+                    v-text="suffix"
                 />
-                <span
-                    v-else-if="inputType === 'input'"
-                    class="relative flex items-center"
-                >
-                    <div
-                        v-if="prefix"
-                        class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-500 bg-gray-100 rounded-l ring-1 ring-gray-300"
-                        v-text="prefix"
-                    />
-                    <span
-                        class="absolute ml-4"
-                        style="z-index: 1"
-                    >
-                        <slot name="icon" />
-                    </span>
-                    <input
-                        ref="input"
-                        v-mask="mask"
-                        :class="[{classes: classes}, inputClasses, roundedClasses, hasIcon ? 'pl-12' : 'pl-4', inputDisabled ? 'bg-gray-100 text-gray-600 cursor-not-allowed' : 'text-gray-800 ']"
-                        :disabled="inputDisabled"
-                        :min="min"
-                        :name="name"
-                        :placeholder="placeholder"
-                        :readonly="readOnly"
-                        :type="type"
-                        :value="value"
-                        class="relative flex-1 block w-full min-h-10 px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800"
-                        @input="updateValue($event.target.value)"
-                        v-on="inputListeners"
-                    >
-                    <div
-                        v-if="suffix"
-                        class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-500 bg-gray-100 rounded-r ring-1 ring-gray-300"
-                        v-text="suffix"
-                    />
-                    <slot name="buttonSuffix" />
-                </span>
-                <HelpText v-if="helpText">
-                    {{ helpText }}
-                </HelpText>
-                <span
-                    v-if="errors[0]"
-                    class="font-sans text-xs text-red-500"
-                    :class="{'absolute': absolutePosErrors, 'hidden': hideErrors}"
-                >
-                    <span class="inline-flex items-center mt-2 leading-none">
-
-                        <CircleExclamationIcon class="size-5 mr-2" />
-                        {{ convertErrorMessage(errors[0]) }}</span>
-                </span>
+                <slot name="buttonSuffix" />
             </span>
-        </ValidationProvider>
+            <HelpText v-if="helpText">
+                {{ helpText }}
+            </HelpText>
+
+        </span>
     </div>
 </template>
 
