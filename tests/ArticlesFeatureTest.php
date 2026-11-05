@@ -130,6 +130,30 @@ class ArticlesFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
+    public function it_can_include_content_when_showing_a_single_article()
+    {
+        $template = ContentTemplate::factory()->create([
+            'slug' => 'article',
+            'type' => 'article',
+        ]);
+        ContentTemplateField::factory()->create([
+            'template_id' => $template->id,
+            'key' => 'body',
+            'type' => 'text',
+            'translated' => true,
+        ]);
+        $article = Article::factory()->create([
+            'template_id' => $template->id,
+        ]);
+        $article->updateContent(['body' => 'Article body']);
+
+        $response = $this->json('GET', '/articles/'.$article->id.'?include=content');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.content.body', 'Article body');
+    }
+
+    /** @test **/
     public function it_can_search_for_an_article()
     {
         // Arrange
