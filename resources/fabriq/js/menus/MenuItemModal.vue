@@ -47,12 +47,12 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div
                             :data-checked="mItem.type === 'internal'"
-                            @click="mItem.type = 'internal'"
                             class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'internal'"
                         >
                             <div class="flex gap-2 items-center">
                                 <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
-                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200"  />
+                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
                                 </div>
                                 Intern
                             </div>
@@ -62,12 +62,12 @@
                         </div>
                         <div
                             :data-checked="mItem.type === 'external'"
-                            @click="mItem.type = 'external'"
                             class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'external'"
                         >
                             <div class="flex gap-2 items-center">
                                 <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
-                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200"  />
+                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
                                 </div>
                                 Extern
                             </div>
@@ -77,12 +77,12 @@
                         </div>
                         <div
                             :data-checked="mItem.type === 'file'"
-                            @click="mItem.type = 'file'"
                             class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'file'"
                         >
                             <div class="flex gap-2 items-center">
                                 <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
-                                    <span class="rounded-full size-full group-data-checked:bg-gray-800 aspect-square duration-200"  />
+                                    <span class="rounded-full size-full group-data-checked:bg-gray-800 aspect-square duration-200" />
                                 </div>
                                 Fil
                             </div>
@@ -95,51 +95,47 @@
 
                 <!-- Conditional inputs -->
                 <div class="h-22">
-                    <ValidationObserver
-                        ref="validator"
+                    <FSelect
+                        v-if="mItem.type === 'internal'"
+                        v-model="mItem.page_id"
+                        value-key="id"
+                        :reduce-fn="page => page.id"
+                        label="Länkas till sidan"
+                        :options="pages"
+                        option-label="name"
+                        rules="required"
+                        name="pageSelect"
+                        @input="onPageChange"
                     >
-                        <FSelect
-                            v-if="mItem.type === 'internal'"
-                            v-model="mItem.page_id"
-                            value-key="id"
-                            :reduce-fn="page => page.id"
-                            label="Länkas till sidan"
-                            :options="pages"
-                            option-label="name"
-                            rules="required"
-                            name="pageSelect"
-                            @input="onPageChange"
-                        >
-                            <template #prefix="option">
-                                <div
-                                    v-for="index in option.depth"
-                                    :key="index"
-                                >
-                                    <div class="mr-3" />
-                                </div>
-                            </template>
-                        </FSelect>
+                        <template #prefix="option">
+                            <div
+                                v-for="index in option.depth"
+                                :key="index"
+                            >
+                                <div class="mr-3" />
+                            </div>
+                        </template>
+                    </FSelect>
 
-                        <FInput
-                            v-if="mItem.type === 'external'"
-                            v-model="content.external_url"
-                            label="URL"
-                            placeholder="https://exempel.se"
-                            help-text="Ange en relativ URL för att länka till en sida på webbplatsen."
-                            name="URL"
-                            :rules="isCreating ? '' : 'required'"
-                            type="url"
-                            class="w-full"
-                        />
+                    <FInput
+                        v-if="mItem.type === 'external'"
+                        v-model="content.external_url"
+                        label="URL"
+                        placeholder="https://exempel.se"
+                        help-text="Ange en relativ URL för att länka till en sida på webbplatsen."
+                        name="URL"
+                        :rules="isCreating ? '' : 'required'"
+                        type="url"
+                        class="w-full"
+                    />
 
-                        <FFileInput
-                            v-if="mItem.type === 'file'"
-                            label="Fil"
-                            name="Fil"
-                            rules="required"
-                            v-model="content.file"
-                        />
-                    </ValidationObserver>
+                    <FFileInput
+                        v-if="mItem.type === 'file'"
+                        v-model="content.file"
+                        label="Fil"
+                        name="Fil"
+                        rules="required"
+                    />
                 </div>
 
                 <div>
@@ -231,18 +227,8 @@ export default {
             this.ready = true
         },
         async validate() {
-            let valid = false
-
-            if (!this.mItem.type) {
-                return
-            }
-
-            valid = await this.$refs.validator.validate()
-            this.$refs.validator.reset()
-
-            if(!valid) {
-                throw new Error("Validation failed");
-            }
+            // TODO: Implement new validation in Vue 3
+            return true;
         },
         async fetchPages () {
             try {

@@ -338,6 +338,9 @@ export default {
 
             return string
         },
+        classes() {
+            return
+        }
     },
 }
 </script>

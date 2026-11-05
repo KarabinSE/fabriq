@@ -42,39 +42,27 @@
                 </div>
             </template>
             <div class>
-                <VueNestable v-model="tree">
-                    <template #placeholder>
-                        <div class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
-                            <div class="flex flex-col items-center">
-                                <div class="mb-4 text-xl font-light">
-                                    Inga menypunkter har lagts till ännu
-                                </div>
-                                <button
-                                    class="flex items-center text-sm link"
-                                    @click="createMenuItem"
-                                >
-                                    <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                    <template slot-scope="{ item }">
+                <Draggable
+                    v-model="tree"
+                    tree-line
+                    class="menu-tree"
+                    trigger-class="drag-item"
+                >
+                    <template
+                        #default="{ node: item }"
+                    >
                         <div
                             v-show="! deleteQueue.includes(item.id)"
                             class="flex items-center h-14 p-2 border border-gray-300 rounded group"
                         >
-                            <VueNestableHandle
-                                :item="item"
-                                class="h-full"
-                            >
-                                <div class="h-full flex justify-center items-center px-2 -ml-2 " >
-                                    <GripVerticalIcon class="size-4 text-gray-300" />
-                                </div>
-                            </VueNestableHandle>
+                            <div class="h-full flex justify-center items-center px-2 -ml-2 drag-item cursor-grab">
+                                <GripVerticalIcon class="size-4 text-gray-300" />
+                            </div>
 
                             <!-- Content -->
-                            <div class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
-                                 @click="editMenuItem(item)"
+                            <div
+                                class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
+                                @click="editMenuItem(item)"
                             >
                                 <div class="text-sm/none font-semibold truncate">
                                     {{ item.title }}
@@ -124,22 +112,21 @@
                             </div>
                         </div>
                     </template>
-                </VueNestable>
+                </Draggable>
             </div>
         </UiCard>
     </div>
 </template>
 <script>
+import { Draggable } from "@he-tree/vue/vue2";
+import "@he-tree/vue/style/default.css";
 import FileIcon from '@fabriq/icons/FileIcon.vue'
 import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
 import Menu from '@fabriq/models/Menu.js'
 import MenuItem from '@fabriq/models/MenuItem.js'
-import VueNestable from '@fabriq/plugins/vue-nestable/VueNestable.vue'
-import VueNestableHandle from '@fabriq/plugins/vue-nestable/VueNestableHandle.vue'
-import '@fabriq/plugins/vue-nestable/vue-nestable.css';
 export default {
     name: 'MenusEdit',
-    components: { MenuItemModal, VueNestable, VueNestableHandle },
+    components: { MenuItemModal, Draggable },
     beforeRouteLeave (from, to, next) {
         this.$vfm.hide('menu-item-modal')
         this.$destroy()
@@ -216,17 +203,7 @@ export default {
         async editMenuItem (item) {
             this.isCreating = false
             this.$vfm.show('menu-item-modal', item.id)
-            // try {
-            //     const payload = {
-            //         params: {
-            //             include: 'content'
-            //         }
-            //     }
-            //     const { data } = await MenuItem.show(item.id, payload)
-            //     this.activeItem = data
-            // } catch (error) {
-            //     console.error(error)
-            // }
+
         },
         createMenuItem () {
             this.activeItem = {}
@@ -245,3 +222,9 @@ export default {
     }
 }
 </script>
+<style>
+@reference 'tailwindcss';
+.menu-tree .drag-placeholder {
+    height: 56px;
+}
+</style>

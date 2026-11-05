@@ -32,95 +32,93 @@
             </div>
         </template>
         <div class="relative z-40 py-2">
-            <ValidationObserver ref="observer">
-                <form
-                    class="grid grid-cols-1 gap-4 sm:grid-cols-2"
-                    @submit.prevent="setBlockType"
+            <form
+                class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+                @submit.prevent="setBlockType"
+            >
+                <FSelect
+                    v-if="!largeBlockPicker"
+                    ref="selectInput"
+                    v-model="chosenBlock.blockType"
+                    label="Blocktyp"
+                    :clearable="false"
+                    name="blockType"
+                    rules="required"
+                    :options="computedBlockTypes"
+                    :reduce-fn="blockType => blockType"
+                    option-label="name"
+                    @input="selectBlock"
+                />
+                <FInput
+                    v-if="largeBlockPicker"
+                    v-model="chosenBlock.blockType.name"
+                    name="blockType"
+                    rules="required|min:2"
+                    class="hidden"
+                    label="Blocktyp"
+                />
+                <FInput
+                    ref="nameInput"
+                    v-model="chosenBlock.name"
+                    name="name"
+                    rules="required"
+                    label="Namn"
+                />
+                <div
+                    v-if="largeBlockPicker"
+                    class="grid grid-cols-4 col-span-2 gap-4"
                 >
-                    <FSelect
-                        v-if="!largeBlockPicker"
-                        ref="selectInput"
-                        v-model="chosenBlock.blockType"
-                        label="Blocktyp"
-                        :clearable="false"
-                        name="blockType"
-                        rules="required"
-                        :options="computedBlockTypes"
-                        :reduce-fn="blockType => blockType"
-                        option-label="name"
-                        @input="selectBlock"
-                    />
-                    <FInput
-                        v-if="largeBlockPicker"
-                        v-model="chosenBlock.blockType.name"
-                        name="blockType"
-                        rules="required|min:2"
-                        class="hidden"
-                        label="Blocktyp"
-                    />
-                    <FInput
-                        ref="nameInput"
-                        v-model="chosenBlock.name"
-                        name="name"
-                        rules="required"
-                        label="Namn"
-                    />
                     <div
-                        v-if="largeBlockPicker"
-                        class="grid grid-cols-4 col-span-2 gap-4"
+                        v-show="recommendedBlockTypes.length > 0"
+                        class="col-span-4 -mb-4"
                     >
-                        <div
-                            v-show="recommendedBlockTypes.length > 0"
-                            class="col-span-4 -mb-4"
+                        <FLabel>Rekommenderade block</FLabel>
+                    </div>
+                    <div
+                        v-for="blockType in recommendedBlockTypes"
+                        :key="'r' + blockType.id"
+                        :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                        class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
+                        @click="selectBlock(blockType)"
+                    >
+                        <img
+                            :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
+                            class="w-full"
+                            alt=""
                         >
-                            <FLabel>Rekommenderade block</FLabel>
-                        </div>
-                        <div
-                            v-for="blockType in recommendedBlockTypes"
-                            :key="'r' + blockType.id"
-                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
-                            class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
-                            @click="selectBlock(blockType)"
-                        >
-                            <img
-                                :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
-                                class="w-full"
-                                alt=""
-                            >
-                            <div class="mt-2 text-xs">
-                                {{ blockType.name }}
-                            </div>
-                        </div>
-                        <div class="col-span-4 -mb-4">
-                            <FLabel>
-                                {{ recommendedBlockTypes.length > 0 ? 'Övriga' : 'Välj blocktyp' }}
-                            </FLabel>
-                        </div>
-                        <!-- <pre>{{ recommendedBlockTypes }}</pre> -->
-                        <div
-                            v-for="blockType in computedBlockTypes"
-                            :key="blockType.id"
-                            :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
-                            class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
-                            @click="selectBlock(blockType)"
-                        >
-                            <img
-                                :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
-                                class="w-full"
-                                alt=""
-                            >
-                            <div class="mt-2 text-xs">
-                                {{ blockType.name }}
-                            </div>
+                        <div class="mt-2 text-xs">
+                            {{ blockType.name }}
                         </div>
                     </div>
-                    <button
-                        class="hidden"
-                        type="submit"
-                        :click="setBlockType"
-                    />
-                </form>
-            </ValidationObserver>
+                    <div class="col-span-4 -mb-4">
+                        <FLabel>
+                            {{ recommendedBlockTypes.length > 0 ? 'Övriga' : 'Välj blocktyp' }}
+                        </FLabel>
+                    </div>
+                    <!-- <pre>{{ recommendedBlockTypes }}</pre> -->
+                    <div
+                        v-for="blockType in computedBlockTypes"
+                        :key="blockType.id"
+                        :class="blockType.id === chosenBlock.blockType.id ? '  border-royal-500  bg-royal-50' : 'opacity-60 border-white'"
+                        class="flex flex-col items-center p-3 pb-1 transition-all duration-200 border rounded-md cursor-pointer"
+                        @click="selectBlock(blockType)"
+                    >
+                        <img
+                            :src="blockType.thumb_src || `data:image/svg+xml;base64,` + blockType.base_64_svg"
+                            class="w-full"
+                            alt=""
+                        >
+                        <div class="mt-2 text-xs">
+                            {{ blockType.name }}
+                        </div>
+                    </div>
+                </div>
+                <button
+                    class="hidden"
+                    type="submit"
+                    :click="setBlockType"
+                />
+            </form>
         </div>
     </FModal>
 </template>
@@ -259,12 +257,7 @@ export default {
         },
 
         async setBlockType () {
-            const isValid = await this.$refs.observer.validate()
-
-            if (!isValid) {
-                return
-            }
-
+            // TODO: Implement new validation in Vue 3
             this.pageStore.blocks.add(this.chosenBlock.blockType)
 
             this.show = false

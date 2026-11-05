@@ -8,31 +8,26 @@
             <template #title>
                 Lägg till bild från URL
             </template>
-            <ValidationObserver
-                v-slot="{ invalid }"
-                ref="observer"
-            >
-                <form @submit.prevent="addImage">
-                    <FInput
-                        v-model="imageUrl"
-                        name="url"
-                        class="mb-6"
-                        validation-mode="aggressive"
-                        label="Webbadress"
-                        placeholder="https://via.placeholder.com/140x100.png"
-                        rules="required|url"
-                    />
-                    <div class="flex justify-end">
-                        <FButton
-                            :click="addImage"
-                            :disabled="invalid"
-                            class="py-2.5 px-6 fabriq-btn btn-royal"
-                        >
-                            Lägg till
-                        </FButton>
-                    </div>
-                </form>
-            </ValidationObserver>
+
+            <form @submit.prevent="addImage">
+                <FInput
+                    v-model="imageUrl"
+                    name="url"
+                    class="mb-6"
+                    validation-mode="aggressive"
+                    label="Webbadress"
+                    placeholder="https://via.placeholder.com/140x100.png"
+                    rules="required|url"
+                />
+                <div class="flex justify-end">
+                    <FButton
+                        :click="addImage"
+                        class="py-2.5 px-6 fabriq-btn btn-royal"
+                    >
+                        Lägg till
+                    </FButton>
+                </div>
+            </form>
         </FModal>
     </div>
 </template>
