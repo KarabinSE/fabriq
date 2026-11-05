@@ -24,17 +24,12 @@ class UpdateMenuItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'content.title' => 'required_if:item.type,external|max:255',
-            'content.external_url' => 'required_if:item.type,external|max:255',
-            'item.page_id' => 'required_if:item.type,internal|nullable',
             'item.type' => 'required',
+            'item.page_id' => 'required_if:item.type,internal|nullable',
+            'has_custom_title' => 'required|boolean',
             'content' => 'array',
-            // 'is_external' => 'boolean',
-            // 'external_url' => 'required_if:is_external,1|url|nullable',
-            // 'redirect' => 'boolean',
-            // 'redirect_url' => 'required_if:redirect,1|url|nullable',
-            // 'permanent_redirect' => 'boolean',
-            // 'interactive' => 'boolean',
+            'content.title' => 'required_if:item.type,external,file|max:255',
+            'content.external_url' => 'required_if:item.type,external|max:255',
         ];
     }
 }

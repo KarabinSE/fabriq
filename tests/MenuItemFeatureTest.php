@@ -8,6 +8,7 @@ use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Models\ContentTemplateField;
+use Karabin\Fabriq\Models\File;
 use Karabin\Fabriq\Models\Menu;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
@@ -81,6 +82,30 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 ->whereIn('key', ['title', 'url', 'body', 'file', 'external_url'])
                 ->pluck('key')
                 ->all()
+        );
+    }
+
+    /** @test **/
+    public function it_includes_file_content_with_filename_in_the_menu_item_tree(): void
+    {
+        $menu = Menu::factory()->create();
+        $root = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+        ]);
+        $item = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $root->id,
+            'type' => 'file',
+        ]);
+        $file = File::factory()->create();
+        $item->updateContent(['file' => $file->id], app()->getLocale());
+
+        $response = $this->json('GET', '/menus/'.$menu->id.'/items/tree');
+
+        $response->assertOk();
+        $response->assertJsonPath(
+            'data.0.content.data.file.file_name',
+            $file->getFirstMedia('files')->file_name,
         );
     }
 
@@ -224,6 +249,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'type' => 'internal',
                 'page_id' => $page->id,
             ],
+            'has_custom_title' => false,
             'content' => [],
         ]);
 
@@ -287,6 +313,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'page_id' => $page->id,
                 'type' => 'internal',
             ],
+            'has_custom_title' => false,
             'content' => [],
         ]);
 
@@ -326,6 +353,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'page_id' => null,
                 'type' => 'external',
             ],
+            'has_custom_title' => false,
             'content' => [
                 'title' => 'Sök på google',
                 'external_url' => 'https://google.se',
@@ -477,6 +505,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'item' => [
                 'type' => 'external',
             ],
+            'has_custom_title' => false,
             'content' => [
                 'title' => 'En extern',
                 'external_url' => 'https://google.se',

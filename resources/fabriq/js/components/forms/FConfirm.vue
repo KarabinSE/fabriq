@@ -61,7 +61,6 @@
     </VueFinalModal>
 </template>
 <script>
-// import { setInteractionMode } from 'vee-validate'
 export default {
     name: 'FConfirm',
     inheritAttrs: false,

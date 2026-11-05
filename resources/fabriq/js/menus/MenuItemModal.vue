@@ -2,7 +2,7 @@
     <FModal
         v-model="show"
         name="menu-item-modal"
-        width="max-w-3xl"
+        width="max-w-2xl"
         :click-to-close="false"
         @closed="resetModal"
         @before-open="initModal"
@@ -13,6 +13,7 @@
                 v-text="isCreating ? 'Skapa menypunkt' : 'Redigera menypunkt'"
             />
         </template>
+
         <template #actions>
             <div class="flex justify-end space-x-4">
                 <button
@@ -37,25 +38,65 @@
                 </FButton>
             </div>
         </template>
-        <div
-            class="relative py-2"
-        >
-            <div class="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
-                <fieldset class="mb-6">
-                    <FInput
-                        v-model="mItem.type"
-                        input-type="radio"
-                        name="link_types"
-                        label="Länktyp"
-                        :options="[{ label: 'Intern', value: 'internal' }, { label: 'Extern', value: 'external' }, { label: 'Fil', value: 'file' }]"
-                    />
-                </fieldset>
-            </div>
-            <div
-                v-show="mItem.type === 'internal'"
-            >
-                <ValidationObserver ref="internalObserver">
+
+        <div class="relative py-2 duration-300">
+            <!-- Menu item type -->
+            <div class="flex flex-col gap-6">
+                <div>
+                    <FLabel>Länktyp</FLabel>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div
+                            :data-checked="mItem.type === 'internal'"
+                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'internal'"
+                        >
+                            <div class="flex gap-2 items-center">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
+                                </div>
+                                Intern
+                            </div>
+                            <div class="text-gray-500 text-sm mt-2">
+                                Välj en sida att länka till
+                            </div>
+                        </div>
+                        <div
+                            :data-checked="mItem.type === 'external'"
+                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'external'"
+                        >
+                            <div class="flex gap-2 items-center">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
+                                </div>
+                                Extern
+                            </div>
+                            <div class="text-gray-500 text-sm mt-2">
+                                Ange en relativ URL eller en extern webbadress
+                            </div>
+                        </div>
+                        <div
+                            :data-checked="mItem.type === 'file'"
+                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            @click="mItem.type = 'file'"
+                        >
+                            <div class="flex gap-2 items-center">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                    <span class="rounded-full size-full group-data-checked:bg-gray-800 aspect-square duration-200" />
+                                </div>
+                                Fil
+                            </div>
+                            <div class="text-gray-500 text-sm mt-2">
+                                Välj en fil som besökare kan ladda ner
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditional inputs -->
+                <div class="h-22">
                     <FSelect
+                        v-if="mItem.type === 'internal'"
                         v-model="mItem.page_id"
                         value-key="id"
                         :reduce-fn="page => page.id"
@@ -64,6 +105,7 @@
                         option-label="name"
                         rules="required"
                         name="pageSelect"
+                        @input="onPageChange"
                     >
                         <template #prefix="option">
                             <div
@@ -74,50 +116,55 @@
                             </div>
                         </template>
                     </FSelect>
-                </ValidationObserver>
-            </div>
-            <div>
-                <ValidationObserver
-                    ref="externalObserver"
-                >
-                    <div class="grid grid-cols-12 gap-6">
-                        <div
-                            v-if="['external', 'file'].includes(mItem.type)"
-                            class="grid grid-cols-2 col-span-12 gap-6"
-                        >
-                            <FInput
-                                v-model="content.title"
-                                class=""
-                                help-text="Denna text visas i menyer"
-                                label="Titel"
-                                name="title"
-                                :rules="!isCreating ? 'required' : ''"
-                            />
-                            <FInput
-                                v-if="mItem.type === 'external'"
-                                v-model="content.external_url"
-                                label="URL"
-                                placeholder="https://exempel.se"
-                                name="url"
-                                :rules="!isCreating ? 'required' : ''"
-                                type="url"
-                            />
-                            <div
-                                v-if="mItem.type === 'file'"
-                                class="col-span-2"
-                            >
-                                <FFileInput v-model="content.file" />
-                            </div>
-                        </div>
-                    </div>
-                    <FEditor
-                        v-if="ready"
-                        :key="'html' + mItem.Id"
-                        v-model="content.body"
-                        class="mt-6"
-                        label="Menytext"
+
+                    <FInput
+                        v-if="mItem.type === 'external'"
+                        v-model="content.external_url"
+                        label="URL"
+                        placeholder="https://exempel.se"
+                        help-text="Ange en relativ URL för att länka till en sida på webbplatsen."
+                        name="URL"
+                        :rules="isCreating ? '' : 'required'"
+                        type="url"
+                        class="w-full"
                     />
-                </ValidationObserver>
+
+                    <FFileInput
+                        v-if="mItem.type === 'file'"
+                        v-model="content.file"
+                        label="Fil"
+                        name="Fil"
+                        rules="required"
+                    />
+                </div>
+
+                <div>
+                    <FInput
+                        v-model="content.title"
+                        :placeholder="placeholder"
+                        help-text="Texten visas i menyer"
+                        label="Titel"
+                        disabled
+                        name="title"
+                        :rules="isCreating || mItem.type === 'internal' ? '' : 'required'"
+                    />
+                </div>
+
+                <FEditor
+                    :key="'html' + mItem.Id"
+                    v-model="content.body"
+                    label="Menytext"
+                />
+
+                <Transition name="menu-item-spinner">
+                    <div
+                        v-if="!ready"
+                        key="spinner"
+                        class="absolute z-10 inset-0 flex justify-center items-center bg-white"
+                    >
+                        <SpinIcon class="animate-spin size-10" />
+                    </div>
+                </Transition>
             </div>
         </div>
     </FModal>
@@ -125,32 +172,16 @@
 <script>
 import MenuItem from '@fabriq/models/MenuItem.js'
 import PageTree from '@fabriq/models/PageTree.js'
-// import OperatingHour from '@fabriq/models/OperatingHour.js'
 function defaultCreationObject () {
     return {
         id: 0,
         type: 'internal',
         content: {
-            data: {
-                title: ''
-            }
+            title: ''
         }
     }
 }
-function defaultContentObject () {
-    return {
-        sv: {
-            title: '',
-            external_url: '',
-            body: ''
-        },
-        en: {
-            title: '',
-            external_url: '',
-            body: ''
-        }
-    }
-}
+
 export default {
     name: 'MenuItemModal',
     props: {
@@ -163,18 +194,15 @@ export default {
         return {
             show: false,
             pages: [],
-            localizedContent: {},
             content: {},
             ready: false,
-            selectedOperatingHour: null,
-            // operatingHours: [],
+            placeholder: null,
+            useCustomTitle: false,
             mItem: {
                 id: 0,
                 type: 'internal',
                 content: {
-                    data: {
-                        title: ''
-                    }
+                    title: ''
                 }
             }
         }
@@ -183,20 +211,24 @@ export default {
         async initModal (parameters) {
             if (this.isCreating) {
                 this.fetchPages()
-                this.localizedContent = { ...defaultContentObject() }
-                this.content = {
+                this.$set(this, 'content', {
                     title: null,
                     url: null,
+                    external_url: null,
                     body: null
-                }
-            }
-
-            if (!this.isCreating) {
+                })
+            } else {
                 const id = parameters.ref.params
                 this.mItem.id = id
-                const promises = [this.fetchPages(), this.fetchMenuItem(), this.fetchOperatingHours()]
+                const promises = [this.fetchPages(), this.fetchMenuItem()]
                 await Promise.all(promises)
             }
+
+            this.ready = true
+        },
+        async validate() {
+            // TODO: Implement new validation in Vue 3
+            return true;
         },
         async fetchPages () {
             try {
@@ -212,37 +244,17 @@ export default {
                 console.error(error)
             }
         },
-        async fetchOperatingHours () {
-            // try {
-            //     const { data } = await OperatingHour.index()
-            //     this.operatingHours = data
-            // } catch (error) {
-            //     console.error(error)
-            // }
-        },
         async createMenuItem () {
             try {
-                let isValid = false
-                if (!this.mItem.type) {
-                    return
-                }
-                if (this.mItem.type === 'internal') {
-                    isValid = await this.$refs.internalObserver.validate()
-                    this.$refs.externalObserver.reset()
-                } else if (this.mItem.type === 'external') {
-                    isValid = await this.$refs.externalObserver.validate()
-                    this.$refs.internalObserver.reset()
-                } else if (this.mItem.type === 'file') {
-                    isValid = true
-                    this.$refs.internalObserver.reset()
-                }
+                await this.validate()
 
-                if (!isValid) {
-                    return
-                }
                 const payload = {
                     item: this.mItem,
-                    content: { ...this.content }
+                    has_custom_title: this.useCustomTitle,
+                    content: {
+                        ...this.content,
+                        title: this.content.title ?? this.placeholder
+                    }
                 }
                 await MenuItem.store(this.$route.params.id, payload)
                 this.$toast.success({ title: 'Menypunkten har skapats!' })
@@ -253,27 +265,20 @@ export default {
             }
         },
         async updateMenuItem () {
-            let isValid = false
-
-            if (this.mItem.type === 'internal') {
-                isValid = await this.$refs.internalObserver.validate()
-                this.$refs.externalObserver.reset()
-            } else if (this.mItem.type === 'external') {
-                isValid = await this.$refs.externalObserver.validate()
-                this.$refs.internalObserver.reset()
-            } else if (this.mItem.type === 'file') {
-                isValid = true
-                this.$refs.internalObserver.reset()
-            }
-            if (!isValid) {
-                this.$toast.warning({ title: 'Oj då!', message: 'Något är tosigt med datan du försöker skicka.' })
+            try {
+                await this.validate()
+            } catch (error) {
+                this.$toast.warning({ title: 'Kontrollera uppgifterna', message: 'Fyll i alla obligatoriska fält korrekt.' })
                 return
             }
+
             try {
-                // this.mItem.operating_hour = this.selectedOperatingHour
                 const payload = {
                     item: this.mItem,
-                    content: this.content
+                    content: {
+                        ...this.content,
+                        title: this.content.title ?? this.placeholder,
+                    }
                 }
                 await MenuItem.update(this.mItem.id, payload)
                 this.$emit('updated')
@@ -286,18 +291,17 @@ export default {
             try {
                 const payload = {
                     params: {
-                        include: 'localizedContent,content'
+                        include: 'content'
                     }
                 }
                 const { data } = await MenuItem.show(this.mItem.id, payload)
                 this.mItem = { ...data }
-                this.content = data.content.data
-                this.selectedOperatingHour = this.mItem.content.data.operating_hour?.id ?? null
-                const localizedContent = { ...data.localizedContent.data }
-                Object.keys(localizedContent).forEach((item, key) => {
-                    this.$set(this.localizedContent, item, { ...localizedContent[item].content })
-                })
-                this.ready = true
+                if(!Array.isArray(data.content.data)) {
+                    this.content = data.content.data
+                }
+                if(!this.content.title) {
+                    this.$set(this, 'placeholder', this.pages.find(page => page.id === this.mItem.page_id)?.name ?? '')
+                }
             } catch (error) {
                 console.error(error)
             }
@@ -305,13 +309,32 @@ export default {
         resetModal () {
             this.ready = false
             this.mItem = { ...defaultCreationObject() }
-            this.localizedContent = { ...defaultContentObject() }
-            this.selectedOperatingHour = null
+            this.content = {}
             this.$nextTick(() => {
-                this.$refs.internalObserver.reset()
-                this.$refs.externalObserver.reset()
+                this.$refs.validator.reset()
             })
+        },
+        onPageChange(pageId) {
+            const pageTitle = this.pages.find(page => page.id === pageId)?.name ?? ''
+            this.$set(this, 'placeholder', pageTitle)
         }
     }
 }
 </script>
+
+<style>
+.menu-item-spinner-enter-active {
+    transition: all 150ms ease;
+}
+.menu-item-spinner-leave-active {
+    transition: all 150ms cubic-bezier(1, 0.5, 0.8, 1);
+}
+.menu-item-spinner-enter
+/* .menu-item-spinner-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+.menu-item-spinner-leave-to
+/* .menu-item-spinner-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+</style>

@@ -86,20 +86,19 @@ class MenuItemController extends Controller
      */
     public function store(UpdateMenuItemRequest $request, int $menuId): Response
     {
-        $menuItemRoot = Fabriq::getFqnModel('menuItem')::where('menu_id', $menuId)
-            ->whereNull('parent_id')
+        $menuItemRoot = Fabriq::getModelClass('menuItem')
+            ->rootForMenu($menuId)
             ->first();
-        $menuItem = Fabriq::getModelClass('menuItem');
-        $menuItem->page_id = $request->input('item.page_id');
-        $menuItem->parent_id = $menuItemRoot->id;
-        $menuItem->menu_id = $menuId;
-        $menuItem->type = $request->input('item.type');
-        $menuItem->save();
-        $content = $request->input('content', []);
 
-        if (! is_array($content)) {
-            $content = [];
-        }
+        $menuItem = Fabriq::getModelClass('menuItem')
+            ->create([
+                'page_id' => $request->input('item.page_id'),
+                'parent_id' => $menuItemRoot->id,
+                'menu_id' => $menuId,
+                'type' => $request->input('item.type'),
+            ]);
+
+        $content = $request->array('content');
 
         $menuItem->updateMetaContent($content);
 

@@ -72,6 +72,7 @@
                                     v-model="page.name"
                                     label="Namn"
                                     name="name"
+                                    help-text="Internt namn"
                                 />
                                 <FInput
                                     v-model="pageStore.activeLocaleContent.page_title"

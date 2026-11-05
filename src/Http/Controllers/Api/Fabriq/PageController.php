@@ -129,7 +129,7 @@ class PageController extends Controller
         $page->updated_by = $request->user()->id;
         $page->save();
 
-        return Fabriq::getDto('page')::fromModel($page)
+        return Fabriq::getDto('page')::from($page)
             ->wrap('data')
             ->toResponse($request)
             ->setStatusCode(201);
@@ -140,9 +140,9 @@ class PageController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $page = Fabriq::getModelClass('page')->where('id', $id)->firstOrFail();
-
-        $page->delete();
+        Fabriq::getModelClass('page')
+            ->where('id', $id)
+            ->delete();
 
         return response()->json([
             'code' => ApiResponseCode::Success->value,

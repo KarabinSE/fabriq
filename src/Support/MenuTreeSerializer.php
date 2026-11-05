@@ -27,6 +27,23 @@ class MenuTreeSerializer
     }
 
     /**
+     * Serialize a model tree with its resolved content while preserving model attributes.
+     *
+     * @param  iterable<MenuItem>  $menuItems
+     * @return array{data: array<int, array<string, mixed>>}
+     */
+    public static function modelTree(iterable $menuItems): array
+    {
+        $serialized = [];
+
+        foreach ($menuItems as $menuItem) {
+            $serialized[] = self::modelTreeItem($menuItem);
+        }
+
+        return ['data' => $serialized];
+    }
+
+    /**
      * @return array<string, array>
      */
     public static function parseIncludes(?string $includeParameter): array
@@ -81,6 +98,25 @@ class MenuTreeSerializer
             /** @var \Illuminate\Database\Eloquent\Collection<int, MenuItem> $children */
             $children = $menuItem->children;
             $data['children'] = self::collection($children, $childIncludes);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function modelTreeItem(MenuItem $menuItem): array
+    {
+        $data = $menuItem->toArray();
+        $data['content'] = [
+            'data' => self::normalize($menuItem->getFieldContent()),
+        ];
+
+        if ($menuItem->relationLoaded('children')) {
+            $data['children'] = $menuItem->children
+                ->map(fn (MenuItem $child) => self::modelTreeItem($child))
+                ->all();
         }
 
         return $data;

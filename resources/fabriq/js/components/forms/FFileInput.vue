@@ -1,48 +1,53 @@
 <template>
     <div>
-        <FLabel
-            v-if="label"
-            :padding="false"
-        >
-            {{ label }}
-        </FLabel>
-        <div class="flex items-center space-x-4">
-
-            <button
-                class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
-                type="button"
-                @click="pickerOpen = true"
+        <span :class="classes">
+            <FLabel
+                v-if="label"
+                :name="name"
+                :padding="false"
+                :required="hasRuleRequired"
             >
-                Välj fil
-            </button>
+                {{ label }}
+            </FLabel>
+            <div class="flex items-center space-x-4 min-h-10">
+                <button
+                    class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
+                    type="button"
+                    @click="pickerOpen = true"
+                >
+                    Välj fil
+                </button>
 
-            <div
-                v-if="hasFile"
-                class="flex items-center space-x-4 text-sm"
-            >
-                <div class="text-xs line-clamp-1">
-                    {{ localFile.file_name }}
+                <div
+                    v-if="hasFile"
+                    class="flex items-center space-x-4 text-sm overflow-hidden w-full"
+                >
+                    <div class="text-xs truncate">
+                        {{ localFile.file_name }}
+                    </div>
+                    <div class="flex justify-start space-x-2 ml-auto">
+                        <button
+                            class="font-semibold text-left focus:outline-none"
+                            @click="$vfm.show('file-modal', {id: localFile.id})"
+                        >
+                            <PenToSquareIcon class="w-4 h-4" />
+                        </button>
+                        <button
+                            class="font-semibold focus:outline-none"
+                            @click="clearFile"
+                        >
+                            <XMarkIcon class="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
-                <div class="flex justify-start space-x-2">
-                    <button
-                        class="font-semibold text-left focus:outline-none"
-                        @click="$vfm.show('file-modal', {id: localFile.id})"
-                    >
-                        <PenToSquareIcon class="w-4 h-4" />
-                    </button>
-                    <button
-                        class="font-semibold focus:outline-none"
-                        @click="clearFile"
-                    >
-                        <XMarkIcon class="w-4 h-4" />
-                    </button>
+
+                <div v-else>
+                    <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
                 </div>
             </div>
 
-            <div v-else>
-                <span class="text-xs italic text-neutral-400">Ingen fil vald</span>
-            </div>
-        </div>
+        </span>
+
 
         <FMediaPicker
             :open="pickerOpen"
@@ -95,7 +100,28 @@ export default {
         syncSimilar: {
             type: Boolean,
             default: false
-        }
+        },
+        name: {
+            type: String,
+            default: '',
+        },
+        validationMode: {
+            type: String,
+            default: 'eager',
+        },
+        rules: {
+            type: String,
+            default: '',
+        },
+        absolutePosErrors: {
+            type: Boolean,
+            default: false,
+        },
+        hideErrors: {
+            type: Boolean,
+            default: false,
+        },
+
     },
     data () {
         return {
@@ -113,7 +139,11 @@ export default {
         },
         hasFile () {
             return this.localFile.id
-        }
+        },
+        hasRuleRequired () {
+            return this.rules.includes('required')
+        },
+
     },
     created () {
         this.localFile = { ...this.value }
@@ -190,7 +220,14 @@ export default {
                     randomRef: this.randomRef
                 })
             }
-        }
+        },
+        convertErrorMessage (string) {
+            if (string.includes('{field}')) {
+                return string.replace('{field}', this.label.toLowerCase())
+            }
+
+            return string
+        },
     }
 }
 </script>
