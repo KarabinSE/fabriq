@@ -22,4 +22,6 @@
     --color-btn-primary: var(--btn-primary);
     --color-btn-secondary: var(--btn-secondary);
     --color-btn-tertiary: var(--btn-tertiary);
+
+    --radius: var(--radius-md);
 }
