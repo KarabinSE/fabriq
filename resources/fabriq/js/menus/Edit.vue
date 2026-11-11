@@ -41,7 +41,23 @@
                     </FButton>
                 </div>
             </template>
-            <div class>
+            <div>
+                <div
+                    v-if="tree.length === 0"
+                    class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200"
+                >
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-xl font-light">
+                            Inga menypunkter har lagts till ännu
+                        </div>
+                        <button
+                            class="flex items-center text-sm link"
+                            @click="createMenuItem"
+                        >
+                            <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
+                        </button>
+                    </div>
+                </div>
                 <Draggable
                     v-model="tree"
                     tree-line
