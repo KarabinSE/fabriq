@@ -46,12 +46,15 @@
                     <FLabel>Länktyp</FLabel>
                     <div class="grid grid-cols-3 gap-4">
                         <div
+                            tabindex="0"
+                            role="radio"
                             :data-checked="mItem.type === 'internal'"
-                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'internal'"
+                            @keydown.space="mItem.type = 'internal'"
                         >
                             <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
                                     <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
                                 </div>
                                 Intern
@@ -61,12 +64,15 @@
                             </div>
                         </div>
                         <div
+                            tabindex="0"
+                            role="radio"
                             :data-checked="mItem.type === 'external'"
-                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'external'"
+                            @keydown.space="mItem.type = 'external'"
                         >
                             <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
                                     <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
                                 </div>
                                 Extern
@@ -76,12 +82,15 @@
                             </div>
                         </div>
                         <div
+                            tabindex="0"
+                            role="radio"
                             :data-checked="mItem.type === 'file'"
-                            class="group rounded-md ring ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
+                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'file'"
+                            @keydown.space="mItem.type = 'file'"
                         >
                             <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full">
+                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
                                     <span class="rounded-full size-full group-data-checked:bg-gray-800 aspect-square duration-200" />
                                 </div>
                                 Fil
@@ -138,16 +147,42 @@
                     />
                 </div>
 
-                <div>
-                    <FInput
-                        v-model="content.title"
-                        :placeholder="placeholder"
-                        help-text="Texten visas i menyer"
-                        label="Titel"
-                        disabled
-                        name="title"
-                        :rules="isCreating || mItem.type === 'internal' ? '' : 'required'"
-                    />
+                <div class="rounded-md border border-gray-200 p-4">
+                    <div class="flex items-start justify-between gap-6">
+                        <div>
+                            <div class="text-sm font-medium text-gray-700">
+                                Menytitel
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ mItem.type === 'internal' ? 'Sidans översatta titel används automatiskt.' : 'Ange texten som ska visas i menyn.' }}
+                            </p>
+                        </div>
+                        <FSwitch
+                            v-if="mItem.type === 'internal'"
+                            v-model="useCustomTitle"
+                            name="custom-title"
+                        >
+                            Egen titel
+                        </FSwitch>
+                    </div>
+                    <div
+                        v-if="mItem.type === 'internal' && !useCustomTitle"
+                        class="mt-4 rounded ring ring-gray-100 bg-gray-50 min-h-10 px-4 py-2.5 text-sm h-10 text-gray-600"
+                    >
+                        {{ placeholder || 'Välj en sida för att se dess titel.' }}
+                    </div>
+                    <div
+                        v-else
+                        class="mt-4"
+                    >
+                        <FInput
+                            v-model="content.title"
+                            :placeholder="placeholder"
+                            :help-text="mItem.type === 'internal' ? 'Ange en egen titel för den här menypunkten.' : 'Texten visas i menyer.'"
+                            name="title"
+                            :rules="mItem.type === 'internal' || isCreating ? '' : 'required'"
+                        />
+                    </div>
                 </div>
 
                 <FEditor
@@ -275,6 +310,7 @@ export default {
             try {
                 const payload = {
                     item: this.mItem,
+                    has_custom_title: this.useCustomTitle,
                     content: {
                         ...this.content,
                         title: this.content.title ?? this.placeholder,
@@ -296,11 +332,15 @@ export default {
                 }
                 const { data } = await MenuItem.show(this.mItem.id, payload)
                 this.mItem = { ...data }
+                this.useCustomTitle = Boolean(data.has_custom_title)
                 if(!Array.isArray(data.content.data)) {
                     this.content = data.content.data
                 }
-                if(!this.content.title) {
-                    this.$set(this, 'placeholder', this.pages.find(page => page.id === this.mItem.page_id)?.name ?? '')
+                if (this.mItem.type === 'internal' && !this.useCustomTitle) {
+                    this.content.title = null
+                    this.$set(this, 'placeholder', data.title)
+                } else if (!this.content.title) {
+                    this.$set(this, 'placeholder', data.title || this.pages.find(page => page.id === this.mItem.page_id)?.name || '')
                 }
             } catch (error) {
                 console.error(error)
@@ -308,14 +348,13 @@ export default {
         },
         resetModal () {
             this.ready = false
+            this.useCustomTitle = false
+            this.placeholder = null
             this.mItem = { ...defaultCreationObject() }
             this.content = {}
-            this.$nextTick(() => {
-                this.$refs.validator.reset()
-            })
         },
         onPageChange(pageId) {
-            const pageTitle = this.pages.find(page => page.id === pageId)?.name ?? ''
+            const pageTitle = this.pages.find(page => page.id === pageId)?.page_title ?? ''
             this.$set(this, 'placeholder', pageTitle)
         }
     }

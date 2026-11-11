@@ -8,6 +8,7 @@ use Karabin\Fabriq\Data\PageTreeOptionData;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 
 class PageTreeController extends Controller
 {
@@ -23,9 +24,12 @@ class PageTreeController extends Controller
             ->toTree();
 
         if ($request->has('selectOptions')) {
-            return response()->json([
-                'data' => PageTreeOptionData::collectTree($tree),
-            ]);
+            return ContentResourceContext::withModels(
+                $tree,
+                fn () => response()->json([
+                    'data' => PageTreeOptionData::collectTree($tree),
+                ]),
+            );
         }
 
         return response()->json([

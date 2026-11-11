@@ -3,15 +3,13 @@
 namespace Karabin\Fabriq\Repositories;
 
 use Karabin\Fabriq\ContentGetters\ContentResourceContext;
-use Karabin\Fabriq\Models\Menu;
+use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
 use Karabin\Fabriq\Support\MenuTreeSerializer;
 
 class EloquentMenuRepository implements MenuRepositoryInterface
 {
-    public function __construct(private MenuItem $model, private Menu $menuModel) {}
-
     /**
      * Find by slug.
      *
@@ -19,22 +17,25 @@ class EloquentMenuRepository implements MenuRepositoryInterface
      */
     public function findBySlug(string $slug): array
     {
-        $menu = $this->menuModel->where('slug', $slug)->firstOrFail();
-        $menuItemRoot = MenuItem::where('menu_id', $menu->id)
-            ->whereNull('parent_id')
-            ->first();
+        $menu = Fabriq::getModelClass('menu')->where('slug', $slug)->firstOrFail();
+        $menuItemRoot = MenuItem::rootForMenu($menu->id)->first();
+
+        if ($menuItemRoot === null) {
+            return ['data' => []];
+        }
 
         $includes = MenuTreeSerializer::parseIncludes((string) request()->input('include', ''));
 
-        $query = $this->model->orderBy('sortindex')
+        $query = Fabriq::getModelClass('menuItem')->orderBy('sortindex')
             ->with('ancestors', 'ancestors.page', 'ancestors.page.slugs', 'page', 'page.slugs', 'page.template.fields');
 
         /** @phpstan-ignore-next-line */
         $items = $query->descendantsOf($menuItemRoot->id);
+        $contentModels = $items->concat($items->pluck('page')->filter());
         $tree = $items->toTree();
 
         return ContentResourceContext::withModels(
-            $items,
+            $contentModels,
             fn () => MenuTreeSerializer::collection($tree, $includes),
             array_key_exists('content', $includes),
         );

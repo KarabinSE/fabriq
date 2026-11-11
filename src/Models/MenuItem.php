@@ -14,13 +14,10 @@ use Karabin\Fabriq\Data\ContentValueMetaData;
 use Karabin\Fabriq\Database\Factories\MenuItemFactory;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Traits\HasContent;
-use Spatie\Translatable\Attributes\Translatable;
-use Spatie\Translatable\HasTranslations;
 
-#[Translatable('path')]
 class MenuItem extends Model
 {
-    use HasContent, HasFactory, HasTranslations, NodeTrait;
+    use HasContent, HasFactory, NodeTrait;
 
     public const RELATIONSHIPS = ['page'];
 
@@ -57,6 +54,10 @@ class MenuItem extends Model
      */
     protected static function booted()
     {
+        static::creating(function (MenuItem $menuItem) {
+            $menuItem->locale ??= app()->getLocale();
+        });
+
         static::deleting(function ($menuItem) {
             DB::table('slugs')->where('model_id', $menuItem->id)
                 ->where('model_type', 'Karabin\Fabriq\Models\MenuItem')
@@ -103,13 +104,20 @@ class MenuItem extends Model
      */
     public function getTitleAttribute(): string
     {
-        $content = $this->getSimpleFieldContent('sv');
+        $locale = $this->locale ?: app()->getLocale();
+        $content = $this->getSimpleFieldContent($locale);
 
-        if ($this->type === 'internal' && empty($content['title'])) {
-            return $this->getSlug()->source_string ?? '';
+        if ($this->type === 'internal' && ! $this->has_custom_title) {
+            $pageTitle = $this->page?->getSimpleFieldContent($locale)->get('page_title');
+
+            if ($pageTitle) {
+                return (string) $pageTitle;
+            }
+
+            return (string) ($this->getSlug($locale)->source_string ?? '');
         }
 
-        return $content['title'] ?? '';
+        return (string) ($content['title'] ?? '');
     }
 
     /**
@@ -141,7 +149,7 @@ class MenuItem extends Model
 
     public function getRelativePathAttribute(): string
     {
-        return (string) ($this->getTranslation('path', app()->getLocale(), false) ?? '');
+        return (string) ($this->path ?? '');
     }
 
     /**
@@ -165,10 +173,11 @@ class MenuItem extends Model
         return $this->belongsTo(Fabriq::getFqnModel('menu'));
     }
 
-    public function scopeRootForMenu(Builder $query, int $menuId)
+    public function scopeRootForMenu(Builder $query, int $menuId, ?string $locale = null)
     {
         return $query
             ->where('menu_id', $menuId)
+            ->where('locale', $locale ?? app()->getLocale())
             ->whereNull('parent_id');
     }
 }

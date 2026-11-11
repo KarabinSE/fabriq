@@ -76,7 +76,7 @@ class MenuTreeSerializer
             'title' => (string) $menuItem->title,
             'slug' => (string) $menuItem->getSlugString(),
             'path' => $path,
-            'localized_path' => $menuItem->type === 'external' ? $path : '/'.app()->getLocale().$path,
+            'localized_path' => $menuItem->type === 'external' ? $path : '/'.$menuItem->locale.$path,
             'parent_id' => $menuItem->parent_id ? (int) $menuItem->parent_id : null,
             'type' => (string) $menuItem->type,
         ];
@@ -110,7 +110,7 @@ class MenuTreeSerializer
     {
         $data = $menuItem->toArray();
         $data['content'] = [
-            'data' => self::normalize($menuItem->getFieldContent()),
+            'data' => self::normalize($menuItem->getFieldContent((string) $menuItem->locale)),
         ];
 
         if ($menuItem->relationLoaded('children')) {

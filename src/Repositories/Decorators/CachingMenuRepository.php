@@ -2,9 +2,9 @@
 
 namespace Karabin\Fabriq\Repositories\Decorators;
 
-use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Facades\Log;
+use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
 
 class CachingMenuRepository implements MenuRepositoryInterface
 {
@@ -37,8 +37,8 @@ class CachingMenuRepository implements MenuRepositoryInterface
     {
         $locale = app()->getLocale();
         $menu = $this->cache->tags(['fabriq_menu'])
-            ->rememberForever('fabriq_menu_'.$slug, function () use ($slug) {
-                Log::info('Caching menu', ['cache_key' => 'fabriq_menu_'.$slug, 'fabriq_menu']);
+            ->rememberForever('fabriq_menu_'.$slug.'_'.$locale, function () use ($slug, $locale) {
+                Log::info('Caching menu', ['cache_key' => 'fabriq_menu_'.$slug.'_'.$locale, 'fabriq_menu']);
 
                 return $this->repository->findBySlug($slug);
             });

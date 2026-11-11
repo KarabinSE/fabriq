@@ -18,6 +18,7 @@ class MenuItemData extends Data
         public bool $is_external,
         public bool $redirect,
         public string $external_url,
+        public string $title,
         public ?int $page_id,
         public ?string $created_at,
         public ?string $updated_at,
@@ -25,6 +26,7 @@ class MenuItemData extends Data
         public Lazy|array|null $page,
         public Lazy|array $localizedContent,
         public ?bool $has_custom_title = false,
+        public ?string $locale = null,
     ) {}
 
     public static function allowedRequestIncludes(): ?array
@@ -41,14 +43,17 @@ class MenuItemData extends Data
             is_external: (bool) $menuItem->is_external,
             redirect: (bool) $menuItem->redirect,
             external_url: (string) $menuItem->external_url,
+            title: (string) $menuItem->title,
             page_id: $menuItem->page_id ? (int) $menuItem->page_id : null,
             created_at: $menuItem->created_at ? (string) $menuItem->created_at : null,
             updated_at: $menuItem->updated_at ? (string) $menuItem->updated_at : null,
-            content: Lazy::create(fn () => ['data' => $menuItem->getFieldContent()->toArray()]),
+            content: Lazy::create(fn () => ['data' => $menuItem->getFieldContent((string) $menuItem->locale)->toArray()]),
             page: Lazy::create(fn () => $menuItem->page instanceof Page
                 ? ['data' => Fabriq::getDto('page')::fromModel($menuItem->page)->toArray()]
                 : null),
             localizedContent: Lazy::create(fn () => ['data' => self::buildLocalizedContent($menuItem)]),
+            has_custom_title: (bool) $menuItem->has_custom_title,
+            locale: (string) $menuItem->locale,
         );
     }
 

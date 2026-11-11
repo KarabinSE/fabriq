@@ -27,6 +27,20 @@
                 </div>
             </template>
         </UiSectionHeader>
+        <div class="min-h-[55px]">
+            <FTabs
+                v-if="Object.keys(locales).length > 0"
+                @change="setLanguage"
+            >
+                <FTab
+                    v-for="(locale, code) in locales"
+                    :key="code"
+                    :value-key="code"
+                    :title="locale.native"
+                    class="py-0!"
+                />
+            </FTabs>
+        </div>
         <UiCard>
             <template #header>
                 <div class="flex justify-between flex-1">
@@ -84,8 +98,8 @@
                                     {{ item.title }}
                                 </div>
                                 <div class="text-xs/none pb-px text-gray-400/80 group-hover:text-gray-600 duration-100 truncate">
-                                    <span v-if="item.type === 'internal'">{{ item.page.name }}</span>
-                                    <span v-if="item.type === 'external'">{{ item.path['sv'] }}</span>
+                                    <span v-if="item.type === 'internal'">{{ item.page?.name }}</span>
+                                    <span v-if="item.type === 'external'">{{ item.path }}</span>
                                     <span v-if="item.type === 'file'">{{ item.content?.data?.file?.file_name ?? 'Ej angivet' }}</span>
                                 </div>
                             </div>
@@ -140,6 +154,7 @@ import FileIcon from '@fabriq/icons/FileIcon.vue'
 import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
 import Menu from '@fabriq/models/Menu.js'
 import MenuItem from '@fabriq/models/MenuItem.js'
+import { useConfigStore } from '@fabriq/stores'
 export default {
     name: 'MenusEdit',
     components: { MenuItemModal, Draggable },
@@ -147,6 +162,11 @@ export default {
         this.$vfm.hide('menu-item-modal')
         this.$destroy()
         next()
+    },
+    setup () {
+        const configStore = useConfigStore()
+
+        return { configStore }
     },
     data () {
         return {
@@ -160,12 +180,21 @@ export default {
             confirm_id: 0
         }
     },
+    computed: {
+        locales () {
+            return this.configStore.supportedLocales
+        }
+    },
     activated () {
         this.id = this.$route.params.id
         this.fetchMenu()
         this.fetchTree()
     },
     methods: {
+        setLanguage (locale) {
+            this.configStore.setActiveLocale(locale)
+            this.fetchTree()
+        },
         async fetchTree () {
             try {
                 const { data } = await Menu.showTree(this.id)

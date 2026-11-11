@@ -68,6 +68,7 @@ class MenuItemController extends Controller
         $item->updateMetaContent($content);
         $item->page_id = $request->input('item.page_id');
         $item->type = $request->input('item.type');
+        $item->has_custom_title = $request->boolean('has_custom_title');
         $item->page_id = $request->input('item.page_id');
         if ($item->type === 'external') {
             $item->page_id = null;
@@ -88,14 +89,16 @@ class MenuItemController extends Controller
     {
         $menuItemRoot = Fabriq::getModelClass('menuItem')
             ->rootForMenu($menuId)
-            ->first();
+            ->firstOrFail();
 
         $menuItem = Fabriq::getModelClass('menuItem')
             ->create([
                 'page_id' => $request->input('item.page_id'),
                 'parent_id' => $menuItemRoot->id,
                 'menu_id' => $menuId,
+                'locale' => $menuItemRoot->locale,
                 'type' => $request->input('item.type'),
+                'has_custom_title' => $request->boolean('has_custom_title'),
             ]);
 
         $content = $request->array('content');

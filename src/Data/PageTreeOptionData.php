@@ -14,6 +14,7 @@ class PageTreeOptionData extends Data
         public string $name,
         public string $prefixed_name,
         public int $depth,
+        public ?string $page_title,
     ) {}
 
     /**
@@ -44,11 +45,15 @@ class PageTreeOptionData extends Data
 
     public static function fromModel(Page $page, string $prefix = '-'): self
     {
+        $pageTitle = $page->getSimpleFieldContent(app()->getLocale())->get('page_title');
+        $name = (string) $page->name;
+
         return new self(
             id: (int) $page->id,
-            name: (string) $page->name,
-            prefixed_name: $prefix.' '.$page->name,
+            name: $name,
+            prefixed_name: $prefix.' '.$name,
             depth: strlen($prefix),
+            page_title: $pageTitle !== null ? (string) $pageTitle : null,
         );
     }
 }

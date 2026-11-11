@@ -23,6 +23,7 @@ class PagePathsFeatureTest extends AdminUserTestCase
         $parentItem = MenuItem::create([
             'page_id' => $parent->id,
             'menu_id' => $menu->id,
+            'locale' => 'sv',
         ]);
         $childOne = Page::factory()->create([
             'name' => 'child 2',
@@ -31,6 +32,7 @@ class PagePathsFeatureTest extends AdminUserTestCase
             'page_id' => $childOne->id,
             'menu_id' => $menu->id,
             'parent_id' => $parentItem->id,
+            'locale' => 'sv',
         ]);
         $childChildOne = Page::factory()->create([
             'name' => 'child 1 of child 1',
@@ -39,8 +41,9 @@ class PagePathsFeatureTest extends AdminUserTestCase
             'page_id' => $childChildOne->id,
             'menu_id' => $menu->id,
             'parent_id' => $subItem->id,
+            'locale' => 'sv',
         ]);
-        $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
+        $this->withHeaders(['X-LOCALE' => 'sv'])->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
             'tree' => [[
                 'id' => $subItem->id,
                 'children' => [[
@@ -70,17 +73,29 @@ class PagePathsFeatureTest extends AdminUserTestCase
         $firstMenuItem = MenuItem::factory()->create([
             'menu_id' => $firstMenu->id,
             'page_id' => $page->id,
+            'locale' => 'sv',
         ]);
-        $firstMenuItem->setTranslation('path', 'sv', '/sv/first');
-        $firstMenuItem->setTranslation('path', 'en', '/en/first');
+        $firstMenuItem->path = '/sv/first';
         $firstMenuItem->save();
+        $firstEnglishMenuItem = MenuItem::factory()->create([
+            'menu_id' => $firstMenu->id,
+            'page_id' => $page->id,
+            'locale' => 'en',
+            'path' => '/en/first',
+        ]);
         $secondMenuItem = MenuItem::factory()->create([
             'menu_id' => $secondMenu->id,
             'page_id' => $page->id,
+            'locale' => 'sv',
         ]);
-        $secondMenuItem->setTranslation('path', 'sv', '/sv/second');
-        $secondMenuItem->setTranslation('path', 'en', '/en/second');
+        $secondMenuItem->path = '/sv/second';
         $secondMenuItem->save();
+        $secondEnglishMenuItem = MenuItem::factory()->create([
+            'menu_id' => $secondMenu->id,
+            'page_id' => $page->id,
+            'locale' => 'en',
+            'path' => '/en/second',
+        ]);
         $page = Page::query()
             ->with(['menuItems' => fn ($query) => $query->without('page')])
             ->findOrFail($page->id);
