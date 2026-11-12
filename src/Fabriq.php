@@ -39,7 +39,7 @@ class Fabriq
      *
      * @throws InvalidArgumentException
      */
-    public static function getModelClass(string $key, ...$arguments): Model
+    public static function getModelClass(string $key, ...$arguments): mixed
     {
         $class = config('fabriq.models.'.$key);
         if (! $class) {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Karabin\Fabriq\ContentGetters\ContentOptions;
@@ -83,6 +84,14 @@ class MenuItem extends Model
     {
         /** @var BelongsTo<Page, $this> */
         return $this->belongsTo(Fabriq::getFqnModel('page'));
+    }
+
+    /**
+     * @return HasMany<MenuItem, $this>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(MenuItem::class, 'parent_id');
     }
 
     /**
@@ -173,7 +182,7 @@ class MenuItem extends Model
         return $this->belongsTo(Fabriq::getFqnModel('menu'));
     }
 
-    public function scopeRootForMenu(Builder $query, int $menuId, ?string $locale = null)
+    public function scopeRootForMenu(Builder $query, int $menuId, ?string $locale = null): Builder
     {
         return $query
             ->where('menu_id', $menuId)

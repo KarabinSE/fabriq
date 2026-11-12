@@ -115,7 +115,7 @@ class MenuTreeSerializer
 
         if ($menuItem->relationLoaded('children')) {
             $data['children'] = $menuItem->children
-                ->map(fn (MenuItem $child) => self::modelTreeItem($child))
+                ->map(self::modelTreeItem(...))
                 ->all();
         }
 

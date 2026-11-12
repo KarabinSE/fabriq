@@ -3,13 +3,15 @@
 namespace Karabin\Fabriq\Repositories;
 
 use Karabin\Fabriq\ContentGetters\ContentResourceContext;
-use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Menu;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Repositories\Interfaces\MenuRepositoryInterface;
 use Karabin\Fabriq\Support\MenuTreeSerializer;
 
 class EloquentMenuRepository implements MenuRepositoryInterface
 {
+    public function __construct(private MenuItem $model, private Menu $menuModel) {}
+
     /**
      * Find by slug.
      *
@@ -17,7 +19,7 @@ class EloquentMenuRepository implements MenuRepositoryInterface
      */
     public function findBySlug(string $slug): array
     {
-        $menu = Fabriq::getModelClass('menu')->where('slug', $slug)->firstOrFail();
+        $menu = $this->menuModel->where('slug', $slug)->firstOrFail();
         $menuItemRoot = MenuItem::rootForMenu($menu->id)->first();
 
         if ($menuItemRoot === null) {
@@ -26,7 +28,7 @@ class EloquentMenuRepository implements MenuRepositoryInterface
 
         $includes = MenuTreeSerializer::parseIncludes((string) request()->input('include', ''));
 
-        $query = Fabriq::getModelClass('menuItem')->orderBy('sortindex')
+        $query = $this->model->orderBy('sortindex')
             ->with('ancestors', 'ancestors.page', 'ancestors.page.slugs', 'page', 'page.slugs', 'page.template.fields');
 
         /** @phpstan-ignore-next-line */
