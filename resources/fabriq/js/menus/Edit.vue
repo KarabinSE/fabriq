@@ -27,6 +27,20 @@
                 </div>
             </template>
         </UiSectionHeader>
+        <div class="min-h-[55px]">
+            <FTabs
+                v-if="Object.keys(locales).length > 0"
+                @change="setLanguage"
+            >
+                <FTab
+                    v-for="(locale, code) in locales"
+                    :key="code"
+                    :value-key="code"
+                    :title="locale.native"
+                    class="py-0!"
+                />
+            </FTabs>
+        </div>
         <UiCard>
             <template #header>
                 <div class="flex justify-between flex-1">
@@ -41,110 +55,118 @@
                     </FButton>
                 </div>
             </template>
-            <div class>
-                <VueNestable v-model="tree">
-                    <template #placeholder>
-                        <div class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
-                            <div class="flex flex-col items-center">
-                                <div class="mb-4 text-xl font-light">
-                                    Inga menypunkter har lagts till ännu
-                                </div>
-                                <button
-                                    class="flex items-center text-sm link"
-                                    @click="createMenuItem"
-                                >
-                                    <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
-                                </button>
-                            </div>
+            <div>
+                <div
+                    v-if="tree.length === 0"
+                    class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200"
+                >
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-xl font-light">
+                            Inga menypunkter har lagts till ännu
                         </div>
-                    </template>
-                    <template slot-scope="{ item }">
+                        <button
+                            class="flex items-center text-sm link"
+                            @click="createMenuItem"
+                        >
+                            <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
+                        </button>
+                    </div>
+                </div>
+                <Draggable
+                    v-model="tree"
+                    tree-line
+                    class="menu-tree"
+                    trigger-class="drag-item"
+                >
+                    <template
+                        #default="{ node: item }"
+                    >
                         <div
                             v-show="! deleteQueue.includes(item.id)"
-                            class="flex items-center h-12 p-2 border border-gray-300 rounded group"
+                            class="flex items-center h-14 p-2 border border-gray-300 rounded group"
                         >
-                            <VueNestableHandle
-                                :item="item"
-                                class="px-2 -mx-2"
-                            >
-                                <GripVerticalIcon class="w-4 h-4 ml-1 mr-2 text-gray-300" />
-                            </VueNestableHandle>
+                            <div class="h-full flex justify-center items-center px-2 -ml-2 drag-item cursor-grab">
+                                <GripVerticalIcon class="size-4 text-gray-300" />
+                            </div>
 
                             <!-- Content -->
-                            <div class="flex flex-1 text-sm font-semibold text-gray-700">
-                                <span
-                                    v-if="item.type === 'internal'"
-                                    class="cursor-pointer"
-                                    @click="editMenuItem(item)"
-                                >
-                                    {{ item.page.name }}
-                                </span>
-                                <template v-if="item.type === 'external'">
-                                    <span>{{ item.title }}</span>
-                                    <span class="ml-4 mr-auto">
-                                        <!-- <external-link-icon
-                                        v-if="item.is_external"
-                                        class="w-4 h-4"
-                                        title="Extern url"
-                                    /> -->
-                                        <UiBadge v-if="item.type === 'external'">
-                                            <ExternalLinkIcon class="w-3 h-3 mr-1" /> Extern länk
-                                        </UiBadge>
-                                    </span>
-                                </template>
-                                <template v-if="item.type === 'file'">
-                                    <span>{{ item.title }}</span>
-                                    <span class="ml-4 mr-auto">
-                                        <UiBadge>
-                                            <FileIcon class="w-3 h-3 mr-1" /> Fil
-                                        </UiBadge>
-                                    </span>
-                                </template>
+                            <div
+                                class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
+                                @click="editMenuItem(item)"
+                            >
+                                <div class="text-sm/none font-semibold truncate">
+                                    {{ item.title }}
+                                </div>
+                                <div class="text-xs/none pb-px text-gray-400/80 group-hover:text-gray-600 duration-100 truncate">
+                                    <span v-if="item.type === 'internal'">{{ item.page?.name }}</span>
+                                    <span v-if="item.type === 'external'">{{ item.path }}</span>
+                                    <span v-if="item.type === 'file'">{{ item.content?.data?.file?.file_name ?? 'Ej angivet' }}</span>
+                                </div>
                             </div>
-                            <div class="flex md:space-x-6">
+
+                            <div class="flex space-x-3">
+                                <div
+                                    v-if="item.type !== 'internal'"
+                                >
+                                    <UiBadge>
+                                        <template v-if="item.type === 'external'">
+                                            <ExternalLinkIcon class="size-3 mr-1" />
+                                            Extern länk
+                                        </template>
+                                        <template v-if="item.type === 'file'">
+                                            <FileIcon class="size-3 mr-1" />
+                                            Fil
+                                        </template>
+                                    </UiBadge>
+                                </div>
+
                                 <button
-                                    class="flex text-sm focus:outline-none "
+                                    class="flex text-sm focus:outline-none text-gray-500 hover:text-gray-800 duration-100"
                                     @click="editMenuItem(item)"
                                 >
                                     <PenToSquareIcon
-                                        class="w-6 h-6"
-                                        thin
+                                        class="size-5"
                                     />
                                 </button>
                                 <div class="pr-2">
                                     <FConfirmDropdown
                                         confirm-question="Vill du ta bort menypunkten?"
+                                        class="text-gray-500 hover:text-gray-800 duration-100"
                                         @confirmed="deleteConfirmed(item.id)"
                                     >
                                         <TrashIcon
-                                            class="w-6 h-6"
-                                            thin
+                                            class="size-5"
                                         />
                                     </FConfirmDropdown>
                                 </div>
                             </div>
                         </div>
                     </template>
-                </VueNestable>
+                </Draggable>
             </div>
         </UiCard>
     </div>
 </template>
 <script>
+import { Draggable } from "@he-tree/vue/vue2";
+import "@he-tree/vue/style/default.css";
 import FileIcon from '@fabriq/icons/FileIcon.vue'
 import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
 import Menu from '@fabriq/models/Menu.js'
 import MenuItem from '@fabriq/models/MenuItem.js'
-import VueNestable from '@fabriq/plugins/vue-nestable/VueNestable.vue'
-import VueNestableHandle from '@fabriq/plugins/vue-nestable/VueNestableHandle.vue'
-import '@fabriq/plugins/vue-nestable/vue-nestable.css';
+import { useConfigStore } from '@fabriq/stores'
 export default {
     name: 'MenusEdit',
-    components: { MenuItemModal, VueNestable, VueNestableHandle },
+    components: { MenuItemModal, Draggable },
     beforeRouteLeave (from, to, next) {
         this.$vfm.hide('menu-item-modal')
         this.$destroy()
         next()
+    },
+    setup () {
+        const configStore = useConfigStore()
+
+        return { configStore }
     },
     data () {
         return {
@@ -158,12 +180,21 @@ export default {
             confirm_id: 0
         }
     },
+    computed: {
+        locales () {
+            return this.configStore.supportedLocales
+        }
+    },
     activated () {
         this.id = this.$route.params.id
         this.fetchMenu()
         this.fetchTree()
     },
     methods: {
+        setLanguage (locale) {
+            this.configStore.setActiveLocale(locale)
+            this.fetchTree()
+        },
         async fetchTree () {
             try {
                 const { data } = await Menu.showTree(this.id)
@@ -217,17 +248,7 @@ export default {
         async editMenuItem (item) {
             this.isCreating = false
             this.$vfm.show('menu-item-modal', item.id)
-            // try {
-            //     const payload = {
-            //         params: {
-            //             include: 'content'
-            //         }
-            //     }
-            //     const { data } = await MenuItem.show(item.id, payload)
-            //     this.activeItem = data
-            // } catch (error) {
-            //     console.error(error)
-            // }
+
         },
         createMenuItem () {
             this.activeItem = {}
@@ -246,3 +267,9 @@ export default {
     }
 }
 </script>
+<style>
+@reference 'tailwindcss';
+.menu-tree .drag-placeholder {
+    height: 56px;
+}
+</style>

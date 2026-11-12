@@ -183,7 +183,6 @@ export default {
         },
         localesOptions() {
             return Object.keys(this.locales).map((key) => {
-                console.log(key)
                 return this.locales[key]
             })
         },

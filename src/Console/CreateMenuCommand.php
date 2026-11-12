@@ -2,8 +2,9 @@
 
 namespace Karabin\Fabriq\Console;
 
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Console\Command;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Models\Locale;
 
 class CreateMenuCommand extends Command
 {
@@ -59,9 +60,13 @@ class CreateMenuCommand extends Command
         $menu->slug = $slug;
         $menu->save();
 
-        $menuItem = Fabriq::getModelClass('menuItem');
-        $menuItem->menu_id = $menu->id;
-        $menuItem->save();
+        $locales = Locale::query()->enabled()->pluck('iso_code')->all();
+        foreach ($locales ?: [app()->getLocale()] as $locale) {
+            $menuItem = Fabriq::getModelClass('menuItem');
+            $menuItem->menu_id = $menu->id;
+            $menuItem->locale = $locale;
+            $menuItem->save();
+        }
 
         $this->info('Menu created successfully created');
         $this->table(

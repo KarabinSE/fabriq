@@ -187,6 +187,7 @@ class MenuFeatureTest extends AdminUserTestCase
         $root = MenuItem::factory()->create([
             'menu_id' => $menu->id,
             'type' => 'internal',
+            'locale' => 'sv',
         ]);
 
         foreach (['First item', 'Second item'] as $title) {
@@ -194,6 +195,7 @@ class MenuFeatureTest extends AdminUserTestCase
                 'menu_id' => $menu->id,
                 'parent_id' => $root->id,
                 'type' => 'external',
+                'locale' => 'sv',
             ]);
             $item->updateContent(['title' => $title], 'sv');
         }
@@ -205,11 +207,45 @@ class MenuFeatureTest extends AdminUserTestCase
             }
         });
 
-        $response = $this->json('GET', '/menus/'.$menu->slug.'/public/?include=children');
+        $response = $this->withHeaders(['X-LOCALE' => 'sv'])
+            ->json('GET', '/menus/'.$menu->slug.'/public/?include=children');
 
         $response->assertOk();
         $response->assertJsonFragment(['title' => 'First item']);
         $response->assertJsonFragment(['title' => 'Second item']);
         $this->assertSame(1, $definitionSelects);
+    }
+
+    /** @test **/
+    public function it_serves_the_public_menu_tree_for_the_requested_locale(): void
+    {
+        $menu = Menu::factory()->create(['slug' => 'locale_menu']);
+
+        foreach ([
+            ['sv', 'Svensk meny'],
+            ['en', 'English menu'],
+        ] as [$locale, $title]) {
+            $root = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'locale' => $locale,
+            ]);
+            $item = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'parent_id' => $root->id,
+                'locale' => $locale,
+                'type' => 'external',
+            ]);
+            $item->updateContent(['title' => $title], $locale);
+        }
+
+        $this->withHeaders(['X-LOCALE' => 'sv'])
+            ->json('GET', '/menus/'.$menu->slug.'/public?include=children')
+            ->assertOk()
+            ->assertJsonPath('data.0.title', 'Svensk meny');
+
+        $this->withHeaders(['X-LOCALE' => 'en'])
+            ->json('GET', '/menus/'.$menu->slug.'/public?include=children')
+            ->assertOk()
+            ->assertJsonPath('data.0.title', 'English menu');
     }
 }

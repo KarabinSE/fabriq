@@ -77,7 +77,8 @@ trait HasPaths
         if ($menuItems->isNotEmpty()) {
             foreach ($supportedLocales->keys() as $locale) {
                 $localizedPaths = $menuItems
-                    ->map(fn ($menuItem) => $menuItem->getTranslation('path', (string) $locale, false) ?? '')
+                    ->where('locale', (string) $locale)
+                    ->map(fn ($menuItem) => $menuItem->path ?? '')
                     ->unique()
                     ->values();
 
@@ -104,7 +105,8 @@ trait HasPaths
         $slugGroups = collect([]);
         $menuItems = $this->getMenuItemsForPaths();
         $localizedPaths = $menuItems
-            ->map(fn ($menuItem) => $menuItem->getTranslation('path', App::currentLocale(), false) ?? '')
+            ->where('locale', App::currentLocale())
+            ->map(fn ($menuItem) => $menuItem->path ?? '')
             ->unique()
             ->values();
         $slugGroups->push($localizedPaths);

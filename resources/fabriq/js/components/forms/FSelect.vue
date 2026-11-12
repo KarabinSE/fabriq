@@ -1,87 +1,72 @@
 <template>
     <div>
-        <ValidationProvider
-            v-slot="{ errors, classes }"
-            :mode="validationMode"
-            :rules="rules"
+        <FLabel
+            v-if="label"
+            :class="classes"
+            :name="name"
+            :required="hasRuleRequired"
         >
-            <FLabel
-                v-if="label"
-                :class="classes"
-                :name="name"
-                :required="hasRuleRequired"
-            >
-                {{ label }}
-            </FLabel>
-            <VSelect
-                :value="value"
-                :options="options"
-                :reduce="reduceFn"
-                class="relative min-h-[40px] flex-1 block w-full px-4 py-2.5 text-sm antialiased text-gray-800 transition duration-200 ease-out appearance-none leadning-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800 rounded"
-                :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : inputDisabled}"
-                :disabled="inputDisabled"
-                :label="optionLabel"
-                :multiple="multiple"
-                :name="name"
-                :input-id="name"
-                :clearable="clearable"
-                :placeholder="placeholder"
-                :taggable="taggable"
-                :create-option="createOption"
-                :push-tags="pushTags"
-                @open="$emit('open')"
-                @input="emitValue"
-            >
-                <template #selected-option="option">
-                    <slot
-                        name="fop"
-                        v-bind="option"
-                    />
-                </template>
-                <template #option="option">
+            {{ label }}
+        </FLabel>
+        <VSelect
+            :value="value"
+            :options="options"
+            :reduce="reduceFn"
+            class="relative flex-1 block w-full min-h-10 px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800 rounded"
+            :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : inputDisabled}"
+            :disabled="inputDisabled"
+            :label="optionLabel"
+            :multiple="multiple"
+            :name="name"
+            :input-id="name"
+            :clearable="clearable"
+            :placeholder="placeholder"
+            :taggable="taggable"
+            :create-option="createOption"
+            :push-tags="pushTags"
+            @open="$emit('open')"
+            @input="emitValue"
+        >
+            <template #selected-option="option">
+                <slot
+                    name="fop"
+                    v-bind="option"
+                />
+            </template>
+            <template #option="option">
+                <div
+                    class="inline-flex items-center"
+                >
                     <div
-                        class="inline-flex items-center"
-                    >
-                        <div
-                            v-if="value && valueKey && option[valueKey] === value"
-                            class="absolute z-10 w-2 h-2 rounded-full bg-gold-500"
+                        v-if="value && valueKey && option[valueKey] === value"
+                        class="absolute z-10 w-2 h-2 rounded-full bg-gold-500"
+                    />
+                    <div
+                        v-if="value && ! valueKey && option[optionLabel] === value[optionLabel]"
+                        class="absolute w-2 h-2 rounded-full bg-gold-500"
+                    />
+                    <span class="flex items-center ml-4">
+                        <slot
+                            name="prefix"
+                            v-bind="option"
                         />
-                        <div
-                            v-if="value && ! valueKey && option[optionLabel] === value[optionLabel]"
-                            class="absolute w-2 h-2 rounded-full bg-gold-500"
-                        />
-                        <span class="flex items-center ml-4">
-                            <slot
-                                name="prefix"
-                                v-bind="option"
-                            />
-                            <span v-text="option[optionLabel]" />
-                        </span>
-                    </div>
-                </template>
-                <template #no-options>
-                    <div class="flex items-center justify-center px-2 space-x-3">
-                        <span class="text-xl">🧐 </span> <span class="text-xs">Kunde inte hitta några resultat</span>
-                    </div>
-                </template>
-                <template #open-indicator>
-                    <AngleDownIcon class="w-4 h-4 text-gray-500 vs__open-indicator" />
-                </template>
-            </VSelect>
-            <span
-                v-if="errors[0]"
-                class="font-sans text-xs text-red-500"
-                :class="{'absolute': absolutePosErrors, 'hidden': hideErrors}"
-            >
-                <span class="inline-flex items-center mt-2 leading-none">
+                        <span v-text="option[optionLabel]" />
+                    </span>
+                </div>
+            </template>
+            <template #no-options>
+                <div class="flex items-center justify-center px-2 space-x-3">
+                    <span class="text-xl">🧐 </span> <span class="text-xs">Kunde inte hitta några resultat</span>
+                </div>
+            </template>
+            <template #open-indicator>
+                <AngleDownIcon class="w-4 h-4 text-gray-500 vs__open-indicator" />
+            </template>
+        </VSelect>
 
-                    <CircleExclamationIcon class="size-5 mr-2" />
-                    {{ convertErrorMessage(errors[0]) }}</span>
-            </span>
-            <HelpText v-if="helpText">
-                {{ helpText }}
-            </HelpText>
-        </ValidationProvider>
+        <HelpText v-if="helpText">
+            {{ helpText }}
+        </HelpText>
     </div>
 </template>
 
@@ -226,6 +211,9 @@ export default {
 
             return string
         },
+        classes() {
+            return
+        }
     },
 }
 </script>

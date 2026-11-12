@@ -5,16 +5,14 @@ use Karabin\FabriqPlugin\Http\Controllers\MenuController;
 use Karabin\FabriqPlugin\Http\Controllers\NewsController;
 use Karabin\FabriqPlugin\Http\Controllers\PageController;
 
-/**
- * Here you can register routes that should be accessible from the frontend
- */
+Route::middleware('locale')->group(function () {
+    // Pages
+    Route::get('pages/{slug}', [PageController::class, 'show'])->name('pages.show');
 
-// Pages
-Route::get('pages/{slug}', [PageController::class, 'show']);
+    // Menus
+    Route::get('menus/{slug}', [MenuController::class, 'show'])->name('menus.show');
 
-// Menus
-Route::get('menus/{slug}', [MenuController::class, 'show']);
-
-// news
-Route::get('news', [NewsController::class, 'index']);
-Route::get('news/{slug}', [NewsController::class, 'show']);
+    // news
+    Route::get('news', [NewsController::class, 'index'])->name('news.index');
+    Route::get('news/{slug}', [NewsController::class, 'show'])->name('news.show');
+});

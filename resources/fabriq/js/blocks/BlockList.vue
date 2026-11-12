@@ -71,7 +71,7 @@
                                 :identifier="block.content.id"
                                 :open-by-default="block.newlyAdded"
                                 :padding="false"
-                                header-classes="px-3 @sm/card:px-4 py-3 @sm/card:py-4"
+                                header-classes="px-3 @sm/card:px-4 py-2 @sm/card:py-3"
                             >
                                 <template #header>
                                     <div class="flex items-center justify-between ">
@@ -83,11 +83,11 @@
                                             <div class="w-full min-w-0 overflow-hidden">
                                                 <div class="flex min-w-0 flex-col gap-1">
                                                     <div
-                                                        class="inline text-xs @2xl:text-sm font-semibold leading-none text-gray-400"
+                                                        class="inline text-xs @2xl:text-sm font-medium leading-none text-gray-400"
                                                     >
                                                         {{ block.block_type.name }}
                                                     </div>
-                                                    <div class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap leading-none text-base font-normal @2xl:font-light @2xl:text-xl">
+                                                    <div class="min-w-0 flex-1 truncate leading-tight text-sm @2xl:font-light @2xl:text-lg pr-2">
                                                         {{ block.name }}
                                                     </div>
                                                 </div>

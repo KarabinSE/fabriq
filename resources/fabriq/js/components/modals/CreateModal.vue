@@ -29,18 +29,16 @@
             </div>
         </template>
 
-        <ValidationObserver ref="observer">
-            <form
-                class="flex flex-col col-span-4 gap-y-4"
-                @submit.prevent="validateForm"
-            >
-                <slot />
-                <button
-                    class="hidden"
-                    type="submit"
-                />
-            </form>
-        </ValidationObserver>
+        <form
+            class="flex flex-col col-span-4 gap-y-4"
+            @submit.prevent="validateForm"
+        >
+            <slot />
+            <button
+                class="hidden"
+                type="submit"
+            />
+        </form>
     </FModal>
 </template>
 <script>
@@ -73,10 +71,8 @@ export default {
             }, 200)
         },
         async validateForm () {
-            const result = await this.$refs.observer.validate()
-            if (result) {
-                this.$emit('validated')
-            }
+            // TODO: Implement new validation in Vue 3
+            this.$emit('validated')
         },
         emitOpened () {
             this.$emit('opened')

@@ -10,6 +10,7 @@ use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Repositories\Decorators\CachingMenuRepository;
+use Karabin\Fabriq\Support\MenuTreeSerializer;
 
 class MenuItemTreeController extends Controller
 {
@@ -18,32 +19,35 @@ class MenuItemTreeController extends Controller
      */
     public function index(Request $request, int $id): JsonResponse
     {
-        $menuItemRoot = MenuItem::where('menu_id', $id)
-            ->whereNull('parent_id')
-            ->first();
-        $items = MenuItem::orderBy('sortindex')->descendantsOf($menuItemRoot->id);
+        $menuItemRoot = MenuItem::rootForMenu($id)->first();
+
+        if ($menuItemRoot === null) {
+            return response()->json(['data' => []]);
+        }
+
+        $items = MenuItem::query()
+            ->orderBy('sortindex')
+            ->descendantsOf($menuItemRoot->id);
+        $contentModels = $items->concat($items->pluck('page')->filter());
+
         $tree = $items->toTree();
 
         return ContentResourceContext::withModels(
-            $items,
-            fn () => response()->json([
-                'data' => $tree->toArray(),
-            ]),
-            false,
+            $contentModels,
+            fn () => response()->json(MenuTreeSerializer::modelTree($tree)),
         );
     }
 
     /**
-     * Update the resoource.
+     * Update the resource.
      */
     public function update(Request $request, int $id, UpdateMenuItemPaths $updateMenuItemPaths): JsonResponse
     {
-        $menuItemRoot = MenuItem::where('menu_id', $id)
-            ->whereNull('parent_id')
-            ->first();
+        $menuItemRoot = MenuItem::rootForMenu($id)->firstOrFail();
         $menuItemRoot->touch();
 
-        $treeData = $request->tree;
+        /** @var array<int, array<string, mixed>> $treeData */
+        $treeData = $this->removeContentFromTree($request->input('tree'));
         MenuItem::rebuildSubtree($menuItemRoot, $treeData);
         $updateMenuItemPaths($menuItemRoot);
 
@@ -60,5 +64,26 @@ class MenuItemTreeController extends Controller
     public function show(CachingMenuRepository $repo, Request $request, string $slug): JsonResponse
     {
         return response()->json($repo->findBySlug($slug));
+    }
+
+    /**
+     * Remove serialized content before passing tree attributes to the nested-set rebuild.
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function removeContentFromTree(array $items): array
+    {
+        foreach ($items as $index => $item) {
+            unset($item['content']);
+
+            if (isset($item['children'])) {
+                $item['children'] = $this->removeContentFromTree($item['children']);
+            }
+
+            $items[$index] = $item;
+        }
+
+        return $items;
     }
 }

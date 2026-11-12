@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Models\Locale;
 use Karabin\Fabriq\Models\Menu;
 use Spatie\LaravelData\PaginatedDataCollection;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,9 +50,13 @@ class MenuController extends Controller
         $menu->name = $request->name;
         $menu->save();
 
-        Fabriq::getFqnModel('menuItem')::create([
-            'menu_id' => $menu->id,
-        ]);
+        $locales = Locale::query()->enabled()->pluck('iso_code')->all();
+        foreach ($locales ?: [app()->getLocale()] as $locale) {
+            Fabriq::getFqnModel('menuItem')::create([
+                'menu_id' => $menu->id,
+                'locale' => $locale,
+            ]);
+        }
 
         return Fabriq::getDto('menu')::fromModel($menu)
             ->wrap('data')

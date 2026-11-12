@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Karabin\Fabriq\Data\PageTreeOptionData;
 use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\ContentTemplate;
 use Karabin\Fabriq\Models\ContentTemplateField;
+use Karabin\Fabriq\Models\File;
 use Karabin\Fabriq\Models\Menu;
 use Karabin\Fabriq\Models\MenuItem;
 use Karabin\Fabriq\Models\Page;
@@ -85,6 +87,72 @@ class MenuItemFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
+    public function it_uses_the_linked_page_title_for_the_menu_item_locale_unless_a_custom_title_is_enabled(): void
+    {
+        ContentTemplateField::query()->updateOrCreate(
+            ['template_id' => 2, 'key' => 'page_title'],
+            ['name' => 'Page title', 'type' => 'text', 'translated' => true],
+        );
+        $menuItemTemplate = ContentTemplate::query()->where('slug', 'menu-item')->firstOrFail();
+        ContentTemplateField::query()->updateOrCreate(
+            ['template_id' => $menuItemTemplate->id, 'key' => 'title'],
+            ['name' => 'Title', 'type' => 'text', 'translated' => true],
+        );
+
+        $page = Page::factory()->create([
+            'template_id' => 2,
+            'name' => 'internt sidnamn',
+        ]);
+        $page->updateContent(['page_title' => 'Svensk sidtitel'], 'sv');
+        $page->updateContent(['page_title' => 'English page title'], 'en');
+
+        app()->setLocale('sv');
+        $pageOption = PageTreeOptionData::fromModel($page)->toArray();
+        $this->assertSame('internt sidnamn', $pageOption['name']);
+        $this->assertSame('Svensk sidtitel', $pageOption['page_title']);
+
+        $menu = Menu::factory()->create();
+        $menuItem = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'page_id' => $page->id,
+            'type' => 'internal',
+            'locale' => 'sv',
+            'has_custom_title' => false,
+        ]);
+        $this->assertSame('Svensk sidtitel', $menuItem->title);
+
+        $menuItem->has_custom_title = true;
+        $menuItem->updateContent(['title' => 'Egen svensk titel'], 'sv');
+        $menuItem->save();
+
+        $this->assertSame('Egen svensk titel', $menuItem->title);
+    }
+
+    /** @test **/
+    public function it_includes_file_content_with_filename_in_the_menu_item_tree(): void
+    {
+        $menu = Menu::factory()->create();
+        $root = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+        ]);
+        $item = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $root->id,
+            'type' => 'file',
+        ]);
+        $file = File::factory()->create();
+        $item->updateContent(['file' => $file->id], app()->getLocale());
+
+        $response = $this->json('GET', '/menus/'.$menu->id.'/items/tree');
+
+        $response->assertOk();
+        $response->assertJsonPath(
+            'data.0.content.data.file.file_name',
+            $file->getFirstMedia('files')->file_name,
+        );
+    }
+
+    /** @test **/
     public function it_can_update_a_tree()
     {
         // Arrange
@@ -115,26 +183,61 @@ class MenuItemFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
-    public function it_updates_menu_item_paths_for_each_locale_after_tree_update()
+    public function it_removes_content_from_menu_items_at_every_tree_depth_before_updating(): void
+    {
+        $menu = Menu::factory()->create();
+        $root = MenuItem::factory()->create(['menu_id' => $menu->id]);
+        $first = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $root->id,
+        ]);
+        $second = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $first->id,
+        ]);
+        $third = MenuItem::factory()->create([
+            'menu_id' => $menu->id,
+            'parent_id' => $second->id,
+        ]);
+
+        $response = $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
+            'tree' => [[
+                'id' => $first->id,
+                'content' => ['title' => 'First'],
+                'children' => [[
+                    'id' => $second->id,
+                    'content' => ['title' => 'Second'],
+                    'children' => [[
+                        'id' => $third->id,
+                        'content' => ['title' => 'Third'],
+                        'children' => [],
+                    ]],
+                ]],
+            ]],
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $first->id,
+            'parent_id' => $root->id,
+        ]);
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $second->id,
+            'parent_id' => $first->id,
+        ]);
+        $this->assertDatabaseHas('menu_items', [
+            'id' => $third->id,
+            'parent_id' => $second->id,
+        ]);
+    }
+
+    /** @test **/
+    public function it_updates_menu_item_paths_for_the_menu_item_locale_after_tree_update()
     {
         $menu = Menu::factory()->create();
         $rootPage = Page::factory()->create();
-        $root = MenuItem::factory()->create([
-            'menu_id' => $menu->id,
-            'page_id' => $rootPage->id,
-        ]);
         $parentPage = Page::factory()->create();
         $childPage = Page::factory()->create();
-        $parentItem = MenuItem::factory()->create([
-            'menu_id' => $menu->id,
-            'parent_id' => $root->id,
-            'page_id' => $parentPage->id,
-        ]);
-        $childItem = MenuItem::factory()->create([
-            'menu_id' => $menu->id,
-            'parent_id' => $parentItem->id,
-            'page_id' => $childPage->id,
-        ]);
         $menuItemTemplate = ContentTemplate::factory()->create([
             'slug' => 'menu-item',
         ]);
@@ -144,14 +247,6 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'type' => 'text',
             'translated' => true,
         ]);
-        $externalItem = MenuItem::factory()->create([
-            'menu_id' => $menu->id,
-            'parent_id' => $root->id,
-            'type' => 'external',
-        ]);
-        $externalItem->updateContent(['external_url' => 'https://example.se'], 'sv');
-        $externalItem->updateContent(['external_url' => 'https://example.com'], 'en');
-
         foreach ([
             [$rootPage, 'sv', 'rot-sv'],
             [$rootPage, 'en', 'root-en'],
@@ -171,35 +266,57 @@ class MenuItemFeatureTest extends AdminUserTestCase
             ]);
         }
 
-        $treeData = MenuItem::descendantsOf($root->id)
-            ->toTree()
-            ->toArray();
+        foreach ([
+            ['sv', 'rot-sv', 'foralder-sv', 'barn-sv', 'https://example.se'],
+            ['en', 'root-en', 'parent-en', 'child-en', 'https://example.com'],
+        ] as [$locale, $rootSlug, $parentSlug, $childSlug, $externalUrl]) {
+            $root = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'page_id' => $rootPage->id,
+                'locale' => $locale,
+            ]);
+            $parentItem = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'parent_id' => $root->id,
+                'page_id' => $parentPage->id,
+                'locale' => $locale,
+            ]);
+            $childItem = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'parent_id' => $parentItem->id,
+                'page_id' => $childPage->id,
+                'locale' => $locale,
+            ]);
+            $externalItem = MenuItem::factory()->create([
+                'menu_id' => $menu->id,
+                'parent_id' => $root->id,
+                'type' => 'external',
+                'locale' => $locale,
+            ]);
+            $externalItem->updateContent(['external_url' => $externalUrl], $locale);
 
-        $response = $this->json('PATCH', '/menus/'.$menu->id.'/items/tree', [
-            'tree' => $treeData,
-        ]);
+            $treeData = MenuItem::descendantsOf($root->id)->toTree()->toArray();
+            $this->withHeaders(['X-LOCALE' => $locale])
+                ->json('PATCH', '/menus/'.$menu->id.'/items/tree', ['tree' => $treeData])
+                ->assertOk();
 
-        $response->assertOk();
-        $this->assertDatabaseHas('menu_items', [
-            'id' => $root->id,
-            'path->sv' => '/rot-sv',
-            'path->en' => '/root-en',
-        ]);
-        $this->assertDatabaseHas('menu_items', [
-            'id' => $parentItem->id,
-            'path->sv' => '/rot-sv/foralder-sv',
-            'path->en' => '/root-en/parent-en',
-        ]);
-        $this->assertDatabaseHas('menu_items', [
-            'id' => $childItem->id,
-            'path->sv' => '/rot-sv/foralder-sv/barn-sv',
-            'path->en' => '/root-en/parent-en/child-en',
-        ]);
-        $this->assertDatabaseHas('menu_items', [
-            'id' => $externalItem->id,
-            'path->sv' => 'https://example.se',
-            'path->en' => 'https://example.com',
-        ]);
+            $this->assertDatabaseHas('menu_items', [
+                'id' => $root->id,
+                'path' => '/'.$rootSlug,
+            ]);
+            $this->assertDatabaseHas('menu_items', [
+                'id' => $parentItem->id,
+                'path' => '/'.$rootSlug.'/'.$parentSlug,
+            ]);
+            $this->assertDatabaseHas('menu_items', [
+                'id' => $childItem->id,
+                'path' => '/'.$rootSlug.'/'.$parentSlug.'/'.$childSlug,
+            ]);
+            $this->assertDatabaseHas('menu_items', [
+                'id' => $externalItem->id,
+                'path' => $externalUrl,
+            ]);
+        }
     }
 
     /** @test **/
@@ -224,6 +341,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'type' => 'internal',
                 'page_id' => $page->id,
             ],
+            'has_custom_title' => false,
             'content' => [],
         ]);
 
@@ -287,6 +405,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'page_id' => $page->id,
                 'type' => 'internal',
             ],
+            'has_custom_title' => false,
             'content' => [],
         ]);
 
@@ -326,6 +445,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
                 'page_id' => null,
                 'type' => 'external',
             ],
+            'has_custom_title' => false,
             'content' => [
                 'title' => 'Sök på google',
                 'external_url' => 'https://google.se',
@@ -477,6 +597,7 @@ class MenuItemFeatureTest extends AdminUserTestCase
             'item' => [
                 'type' => 'external',
             ],
+            'has_custom_title' => false,
             'content' => [
                 'title' => 'En extern',
                 'external_url' => 'https://google.se',

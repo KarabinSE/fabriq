@@ -68,7 +68,7 @@
 }
 
 .vs__search {
-    line-height: 1.35 !important;
+    /* line-height: 1.35 !important; */
 }
 
 .vs--disabled .vs__clear,

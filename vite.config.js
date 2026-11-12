@@ -46,7 +46,7 @@ export default defineConfig({
                         return 'vendor-ui'
                     }
 
-                    if (id.includes('/date-fns/') || id.includes('/axios/') || id.includes('/vee-validate') || id.includes('/v-calendar/')) {
+                    if (id.includes('/date-fns/') || id.includes('/axios/') || id.includes('/v-calendar/')) {
                         return 'vendor-utilities'
                     }
                 },

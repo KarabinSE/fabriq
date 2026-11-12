@@ -52,49 +52,49 @@
                     Sidor
                 </div>
             </template>
-            <VueNestable
+            <div
+                v-if="pageTree.length === 0"
+                class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200"
+            >
+                <div class="flex flex-col items-center">
+                    <div class="mb-4 text-xl font-light">
+                        Inga sidor har lagts till ännu
+                    </div>
+                    <button
+                        class="flex items-center text-sm link"
+                        @click="$vfm.show('createPageModal')"
+                    >
+                        <PlusIcon class="size-5 mr-2" />Lägg till sida
+                    </button>
+                </div>
+            </div>
+            <Draggable
                 v-model="pageTree"
+                tree-line
+                trigger-class="drag-item"
+                keep-placholder
                 @change="updateTree"
             >
-                <template #placeholder>
-                    <div class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200">
-                        <div class="flex flex-col items-center">
-                            <div class="mb-4 text-xl font-light">
-                                Inga sidor har lagts till ännu
-                            </div>
-                            <button
-                                class="flex items-center text-sm link"
-                                @click="$vfm.show('createPageModal')"
-                            >
-                                <PlusIcon class="size-5 mr-2" />Lägg till sida
-                            </button>
-                        </div>
-                    </div>
-                </template>
-                <template slot-scope="{ item }">
-                    <div class="flex items-center justify-between p-2 text-sm border border-gray-300 rounded group">
-                        <div class="flex items-center font-semibold text-gray-700">
-                            <VueNestableHandle
-                                :item="item"
-                                class="px-2 -mx-2"
-                            >
-                                <GripVerticalIcon class="w-4 h-4 ml-1 mr-2 text-gray-300" />
-                            </VueNestableHandle>
+                <template
+                    #default="{ node }"
+                >
+                    <div class="flex items-center w-full justify-between  text-sm border border-gray-300 rounded group py-2 px-2 mb-2">
+                        <div class="flex items-center">
+                            <GripVerticalIcon class="w-4 h-4 ml-1 mr-2 text-gray-300 drag-item cursor-grab" />
+
                             <div
-                                :class="item.published ? 'bg-green-400' : 'bg-gray-300'"
+                                :class="node.published ? 'bg-green-400' : 'bg-gray-300'"
                                 class="w-2 h-2 rounded-full mr-2"
                             />
-                            <RouterLink :to="{ name: 'pages.edit', params: {id: item.id } }">
-                                {{ item.name }}
+                            <RouterLink :to="{ name: 'pages.edit', params: {id: node.id } }">
+                                {{ node.name }}
                             </RouterLink>
                         </div>
-                        <div class="w-64" />
-
                         <div>
                             <div class="flex items-center justify-end space-x-4 ">
                                 <div class="font-medium text-gray-400">
                                     <UiBadge class="mr-8">
-                                        {{ item.template.name }}
+                                        {{ node.template.name }}
                                     </UiBadge>
                                 </div>
                                 <button
@@ -104,24 +104,24 @@
                                 >
                                     <CloneIcon
                                         thin
-                                        class="h-6"
+                                        class="h-5"
                                     />
                                 </button>
                                 <RouterLink
-                                    :to="{name: 'pages.edit', params: {id: item.id }}"
+                                    :to="{name: 'pages.edit', params: {id: node.id }}"
                                     class="flex items-center justify-end link"
                                 >
                                     <PenToSquareIcon
                                         thin
-                                        class="w-6 h-6 text-gray-800"
+                                        class="w-5 h-5 text-gray-800"
                                     />
                                 </RouterLink>
                                 <FConfirmDropdown
                                     confirm-question="Vill du ta bort denna sida?"
-                                    @confirmed="deletePage(item)"
+                                    @confirmed="deletePage(node)"
                                 >
                                     <TrashIcon
-                                        class="w-6 h-6 mt-1 text-gray-800 hover:text-red-500"
+                                        class="w-5 h-5 mt-1 text-gray-800 hover:text-red-500"
                                         thin
                                     />
                                 </FConfirmDropdown>
@@ -129,74 +129,16 @@
                         </div>
                     </div>
                 </template>
-            </VueNestable>
-            <FTable
-                v-if="false"
-                :columns="columns"
-                :options="tableOptions"
-                :pagination="pagination"
-                :rows="pages"
-                class="mb-8"
-                paginated
-                @change-page="setPage"
-                @sort="setSort"
-            >
-                <template #search>
-                    <div class="px-6 border-b border-gray-100">
-                        <div class="flex items-center ">
-                            <SearchIcon class="w-6 h-6 mr-0 text-gray-300" />
-                            <FSearchInput
-                                v-model="queryParams['filter[search]']"
-                                placeholder="Sök…"
-                                class="flex-1 px-6 py-4 text-sm text-gray-600 appearance-none focus:outline-none"
-                                @perform-search="fetchPages"
-                                @clear-search="clearSearch"
-                            />
-                        </div>
-                    </div>
-                </template>
-                <template #default="{ row: page, prop }">
-                    <span v-if="prop == 'updated_at'">{{ formatLocalTime(page.updated_at) }}</span>
-                    <span v-else-if="prop == 'template_name'">
-                        <UiBadge>
-                            {{ page.template.data.name }}
-                        </UiBadge>
-                    </span>
-                    <span
-                        v-else-if="prop == 'edit'"
-                        class="flex items-start justify-end space-x-5"
-                    >
-                        <RouterLink
-                            :to="{name: 'pages.edit', params: {id: page.id }}"
-                            class="flex items-center justify-end link"
-                        >
-                            <PenToSquareIcon
-                                thin
-                                class="w-6 h-6 text-gray-800"
-                            />
-                        </RouterLink>
-                        <FConfirmDropdown
-                            confirm-question="Vill du ta bort denna sida?"
-                            @confirmed="deletePage(page)"
-                        >
-                            <TrashIcon
-                                class="w-6 h-6 text-gray-800 hover:text-red-500"
-                                thin
-                            />
-                        </FConfirmDropdown>
-                    </span>
-                </template>
-            </FTable>
+            </Draggable>
         </UiCard>
     </div>
 </template>
 <script>
+import { Draggable } from "@he-tree/vue/vue2";
+import "@he-tree/vue/style/default.css";
 import Page from '@fabriq/models/Page.js'
 import PageTree from '@fabriq/models/PageTree.js'
 import Template from '@fabriq/models/Template.js'
-import '@fabriq/plugins/vue-nestable/vue-nestable.css'
-import VueNestable from '@fabriq/plugins/vue-nestable/VueNestable.vue'
-import VueNestableHandle from '@fabriq/plugins/vue-nestable/VueNestableHandle.vue'
 import * as formatters from '@fabriq/utils/formatters'
 
 function defaultCreationObject () {
@@ -207,7 +149,7 @@ function defaultCreationObject () {
 }
 export default {
     name: 'PagesIndex',
-    components: { VueNestable, VueNestableHandle },
+    components: { Draggable },
     data () {
         return {
             pages: [],
@@ -435,7 +377,7 @@ export default {
                     tree: this.pageTree
                 }
                 await PageTree.update(payload)
-                this.fetchPageTree()
+                // this.fetchPageTree()
             } catch (error) {
                 console.error(error)
             }
@@ -453,3 +395,23 @@ export default {
     }
 }
 </script>
+<style>
+@reference 'tailwindcss';
+ .tree-hline {
+  height: 1px;
+  width: 10px;
+}
+.tree-vline {
+  margin-top: -8px;
+  width: 1px;
+}
+
+.drag-placeholder {
+    height: 42px;
+    @apply bg-gray-50 border-2 border-dotted border-gray-400 rounded;
+}
+
+.tree-node-inner {
+    @apply mb-2;
+}
+</style>

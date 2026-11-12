@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
 use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
-use Spatie\LaravelData\Data;
 
 class Fabriq
 {
@@ -37,9 +36,10 @@ class Fabriq
      * Return a new instance of a model.
      *
      * @param  mixed  ...$arguments
-     * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
-    public static function getModelClass(string $key, ...$arguments)
+    public static function getModelClass(string $key, ...$arguments): mixed
     {
         $class = config('fabriq.models.'.$key);
         if (! $class) {
@@ -53,6 +53,8 @@ class Fabriq
      * Return the fully qualified model name.
      *
      * @return mixed
+     *
+     * @throws InvalidArgumentException
      */
     public static function getFqnModel(string $key)
     {
