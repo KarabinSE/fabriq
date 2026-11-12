@@ -8,44 +8,46 @@
         >
             {{ label }}
         </FLabel>
-        <VSelect
+        <Multiselect
+            :id="name"
             :value="value"
             :options="options"
-            :reduce="reduceFn"
-            class="relative flex-1 block w-full min-h-10 px-4 py-2.5 text-sm antialiased transition duration-200 ease-out appearance-none leading-none ring-1 focus:outline-none ring-gray-300 focus:ring-gray-800 rounded"
+            :value-prop="valueKey"
+            :object="object"
             :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : inputDisabled}"
             :disabled="inputDisabled"
+            :searchable="searchable"
             :label="optionLabel"
-            :multiple="multiple"
             :name="name"
-            :input-id="name"
-            :clearable="clearable"
+            :mode="mode"
+            :can-clear="canClear"
+            :can-deselect="clearable"
             :placeholder="placeholder"
-            :taggable="taggable"
-            :create-option="createOption"
-            :push-tags="pushTags"
+            :create-option="mode === 'tags'"
+            :on-create="createOption"
+            :append-new-option="pushTags"
             @open="$emit('open')"
             @input="emitValue"
         >
-            <template #selected-option="option">
-                <slot
-                    name="fop"
-                    v-bind="option"
-                />
+            <template #singlelabel="{ value: option }">
+                <div class="multiselect-single-label">
+                    <slot
+                        name="fop"
+                        v-bind="option"
+                    >
+                        {{ option[optionLabel] }}
+                    </slot>
+                </div>
             </template>
-            <template #option="option">
+            <template #option="{ option, isSelected }">
                 <div
                     class="inline-flex items-center"
                 >
                     <div
-                        v-if="value && valueKey && option[valueKey] === value"
+                        v-if="isSelected(option)"
                         class="absolute z-10 w-2 h-2 rounded-full bg-gold-500"
                     />
-                    <div
-                        v-if="value && ! valueKey && option[optionLabel] === value[optionLabel]"
-                        class="absolute w-2 h-2 rounded-full bg-gold-500"
-                    />
-                    <span class="flex items-center ml-4">
+                    <span class="flex items-center ml-2">
                         <slot
                             name="prefix"
                             v-bind="option"
@@ -54,16 +56,29 @@
                     </span>
                 </div>
             </template>
-            <template #no-options>
-                <div class="flex items-center justify-center px-2 space-x-3">
+            <template #nooptions>
+                <div class="flex items-center justify-center px-2 space-x-3 cursor-default h-9.5">
                     <span class="text-xl">🧐 </span> <span class="text-xs">Kunde inte hitta några resultat</span>
                 </div>
             </template>
-            <template #open-indicator>
-                <AngleDownIcon class="w-4 h-4 text-gray-500 vs__open-indicator" />
+            <template #noresults>
+                <div class="flex items-center justify-center px-2 space-x-3 cursor-default h-9.5">
+                    <span class="text-xl">🧐 </span> <span class="text-xs">Kunde inte hitta några resultat</span>
+                </div>
             </template>
-        </VSelect>
-
+            <template #caret="{ handleCaretClick, isOpen }">
+                <span
+                    :class="{ 'pointer-events-none': !isOpen }"
+                    class="fabriq-multiselect-caret"
+                    @mousedown.prevent="handleCaretClick"
+                >
+                    <AngleDownIcon
+                        class="w-4 h-4 text-gray-500 transition-[colors,rotate] duration-300"
+                        :class="isOpen ? '-rotate-180' : 'rotate-0'"
+                    />
+                </span>
+            </template>
+        </Multiselect>
         <HelpText v-if="helpText">
             {{ helpText }}
         </HelpText>
@@ -71,8 +86,13 @@
 </template>
 
 <script>
+import Multiselect from '@vueform/multiselect/dist/multiselect.vue2.js'
+
 export default {
     name: 'FSelect',
+    components: {
+        Multiselect,
+    },
     props: {
         value: {
             type: [String, Number, Object, Array, Boolean],
@@ -100,7 +120,17 @@ export default {
             default: 'value',
         },
 
-        multiple: {
+        mode: {
+            type: String,
+            default: 'single',
+        },
+
+        searchable: {
+            type: Boolean,
+            default: false,
+        },
+
+        object: {
             type: Boolean,
             default: false,
         },
@@ -110,15 +140,14 @@ export default {
             default: 'Välj',
         },
 
+        canClear: {
+            type: Boolean,
+            default: false,
+        },
+
         clearable: {
             type: Boolean,
             default: true,
-        },
-
-        reduceFn: {
-            type: Function,
-            required: false,
-            default: item => item.value,
         },
 
         rules: {
@@ -146,11 +175,6 @@ export default {
             default: false,
         },
 
-        taggable: {
-            type: Boolean,
-            default: false,
-        },
-
         pushTags: {
             type: Boolean,
             default: false,
@@ -158,7 +182,7 @@ export default {
 
         createOption: {
             type: Function,
-            default: () => {},
+            default: null,
         },
 
         disabled: {

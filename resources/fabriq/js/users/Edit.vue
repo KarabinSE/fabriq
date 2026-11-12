@@ -50,8 +50,7 @@
                         :disabled="currentUser.id === user.id"
                         :help-text=" currentUser.id === user.id ? 'Du kan inte ändra dina egna roller' : ''"
                         label="Roller"
-                        :reduce-fn="item => item.name"
-                        multiple
+                        mode="multiple"
                         name="roles"
                         :options="roles"
                         option-label="display_name"

@@ -12,16 +12,14 @@
             </template>
             <FSelect
                 v-model="selectedTags"
-                multiple
-                taggable
+                mode="tags"
                 label="Taggar"
                 name="tags"
-                :reduce-fn="tag => tag"
+                object
                 class=""
                 :create-option="tag => ({ name: tag, value: null, type: 'images'})"
                 value-key="name"
                 option-label="name"
-                :push-tags="false"
                 :options="imageTags"
             />
             <template #actions>

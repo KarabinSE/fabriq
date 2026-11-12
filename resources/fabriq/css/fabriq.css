@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './theme.css';
+@import './multiselect.css';
 @plugin "@tailwindcss/typography";
 
 @source '../js/**/*.{js,vue}';
@@ -122,22 +123,6 @@
 
     .sidebar-item.router-link-active {
         @apply text-gray-700 bg-gray-100;
-    }
-
-    .fabriq-input .vs__selected-options {
-        @apply space-x-2;
-    }
-
-    .fabriq-input .vs__selected {
-        @apply pl-2 pr-1 text-sm font-bold text-white rounded-full bg-gold-500;
-    }
-
-    .fabriq-input .vs__selected button svg {
-        @apply hidden;
-    }
-
-    .fabriq-input.v-select.vs--open {
-        /* @apply ring-gray-800 ring-1 rounded-b-none !important; */
     }
 
     .f-menu-bar button {

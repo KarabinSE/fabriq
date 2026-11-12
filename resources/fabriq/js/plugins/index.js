@@ -5,6 +5,5 @@ import '@fabriq/plugins/v-mask'
 import '@fabriq/plugins/v-tooltip'
 import '@fabriq/plugins/vue-final-modal'
 import '@fabriq/plugins/font-awesome'
-import '@fabriq/plugins/vue-select'
 import '@fabriq/plugins/vue-slide-up-down'
 

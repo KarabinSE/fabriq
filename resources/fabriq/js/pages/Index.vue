@@ -40,8 +40,9 @@
                 class="mb-6"
                 rules="required"
                 value-key="id"
+                searchable
                 label="Sidtyp"
-                :reduce-fn="item => item"
+                object
             />
         </CreateModal>
         <UiCard

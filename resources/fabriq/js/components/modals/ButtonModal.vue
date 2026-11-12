@@ -66,7 +66,6 @@
                     v-model="localButton.page_id"
                     class="h-18"
                     value-key="id"
-                    :reduce-fn="page => page.id"
                     label="Sida"
                     :options="localPages"
                     option-label="name"

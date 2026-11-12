@@ -38,12 +38,11 @@
                         <div class="flex space-x-6">
                             <FSelect
                                 v-model="tags"
-                                multiple
-                                taggable
+                                mode="tags"
                                 label="Kontaktgrupp"
                                 class="w-96"
                                 name="tags"
-                                :reduce-fn="tag => tag"
+                                object
                                 :create-option="tag => ({ name: tag, value: null, type: 'contacts'})"
                                 value-key="name"
                                 option-label="name"
@@ -53,11 +52,10 @@
                             <FSelect
                                 v-if="localesOptions.length > 1"
                                 v-model="content.enabled_locales"
-                                multiple
+                                mode="multiple"
                                 label="Aktiverade språk"
                                 class="w-96"
                                 name="tags"
-                                :reduce-fn="locale => locale.iso_code"
                                 value-key="iso_code"
                                 option-label="native"
                                 :options="localesOptions"

@@ -12,7 +12,7 @@
                 v-model="localContent.smartBlock"
                 label="Smart block"
                 name="smartBlock"
-                :reduce-fn="item => item"
+                object
                 option-label="name"
                 :clearable="false"
                 value-key="id"

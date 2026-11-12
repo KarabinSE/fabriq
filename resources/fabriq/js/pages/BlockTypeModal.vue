@@ -45,7 +45,9 @@
                     name="blockType"
                     rules="required"
                     :options="computedBlockTypes"
-                    :reduce-fn="blockType => blockType"
+                    searchable
+                    object
+                    value-key="id"
                     option-label="name"
                     @input="selectBlock"
                 />

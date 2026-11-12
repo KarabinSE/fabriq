@@ -27,28 +27,28 @@
                     <FSelect
                         v-model="activeItem.options.hidden_for"
                         label="Dold för"
-                        multiple
+                        mode="multiple"
                         :options="templates"
                         option-label="name"
-                        :reduce-fn="item => item.slug"
+                        value-key="slug"
                         name="hidden_for"
                     />
                     <FSelect
                         v-model="activeItem.options.recommended_for"
                         label="Rekommenderad för"
-                        multiple
+                        mode="multiple"
                         :options="templates"
                         option-label="name"
-                        :reduce-fn="item => item.slug"
+                        value-key="slug"
                         name="recommended_for"
                     />
                     <FSelect
                         v-model="activeItem.options.visible_for"
                         label="Synlig för"
-                        multiple
+                        mode="multiple"
                         :options="templates"
                         option-label="name"
-                        :reduce-fn="item => item.slug"
+                        value-key="slug"
                         name="visible_for"
                     />
 

@@ -72,17 +72,15 @@
                         name="caption"
                     />
                     <FSelect
-                        v-model="tags"
-                        multiple
-                        taggable
+                        v-model="video.tags"
+                        mode="tags"
                         label="Taggar"
                         name="videoTags"
-                        :reduce-fn="tag => tag"
-                        class=""
+                        searchable
+                        object
                         :create-option="tag => ({ name: tag, value: null, type: 'videos'})"
                         value-key="name"
                         option-label="name"
-                        :push-tags="false"
                         :options="videoTags"
                     />
                     <div>
@@ -138,15 +136,15 @@ export default {
             show: false,
             video: {
                 id: 0,
-                size: 0
+                size: 0,
+                tags: [],
             },
-            tags: [],
             videoTags: []
         }
     },
     computed: {
         nameTags () {
-            return this.tags.map(item => {
+            return this.video.tags?.map(item => {
                 return item.name
             })
         }
@@ -163,7 +161,6 @@ export default {
                 }
                 const { data } = await Video.show(id, payload)
                 this.video = data
-                this.tags = [...data.tags?.data ?? []]
             } catch (error) {
                 console.error(error)
             }
@@ -195,14 +192,17 @@ export default {
         resetVideo () {
             this.video = {
                 id: 0,
-                size: 0
+                size: 0,
+                tags: []
             }
         },
         async updateVideo () {
             try {
-                const object = { ...this.video }
-                object.tags = [...this.nameTags]
-                await Video.update(this.video.id, object)
+                const transformedVideo = {
+                    ...this.video,
+                    tags: this.nameTags
+                }
+                await Video.update(this.video.id, transformedVideo)
                 this.$eventBus.emit('video-updated')
                 this.$toast.success({ title: 'Videon har uppdaterats!' })
                 this.show = false

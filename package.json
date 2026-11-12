@@ -30,6 +30,7 @@
         "@tiptap/starter-kit": "^2.27.2",
         "@tiptap/vue-2": "^2.27.2",
         "@vue/composition-api": "^1.7.2",
+        "@vueform/multiselect": "^2.6.11",
         "@vueuse/core": "^9.13.0",
         "autosize": "^4.0.4",
         "axios": "^1.19.0",
@@ -50,7 +51,6 @@
         "vue": "^2.7.16",
         "vue-final-modal": "^0.20.1",
         "vue-router": "^3.6.5",
-        "vue-select": "^3.20.4",
         "vuedraggable": "^2.24.3"
     },
     "devDependencies": {

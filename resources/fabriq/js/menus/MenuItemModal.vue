@@ -108,7 +108,6 @@
                         v-if="mItem.type === 'internal'"
                         v-model="mItem.page_id"
                         value-key="id"
-                        :reduce-fn="page => page.id"
                         label="Länkas till sidan"
                         :options="pages"
                         option-label="name"

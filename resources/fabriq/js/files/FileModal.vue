@@ -69,16 +69,14 @@
                     /> -->
                     <FSelect
                         v-model="tags"
-                        multiple
-                        taggable
+                        mode="tags"
                         label="Taggar"
                         name="fileTags"
-                        :reduce-fn="tag => tag"
+                        object
                         class=""
                         :create-option="tag => ({ name: tag, value: null, type: 'files'})"
                         value-key="name"
                         option-label="name"
-                        :push-tags="false"
                         :options="fileTags"
                     />
                     <div>

@@ -1,0 +1,82 @@
+@import '@vueform/multiselect/themes/default.css';
+
+.multiselect {
+    --ms-bg: transparent;
+
+    --ms-border-width: 0;
+    --ms-border-width-active: 0;
+    --ms-border-color: transparent;
+    --ms-border-color-active: transparent;
+
+    --ms-ring-width: 0;
+    --ms-px: 1rem;
+    --ms-py: 0.5rem;
+    --ms-font-size: .875rem;
+    --ms-line-height: 1.428571;
+    --ms-radius: var(--radius);
+    --ms-placeholder-color: var(--color-gray-500);
+    --ms-max-height: 350px;
+
+    --ms-empty-color: var(--color-gray-600);
+
+    color: var(--color-gray-800);
+    flex: 1;
+    line-height: 1;
+    box-shadow: 0 0 0 1px var(--color-gray-300);
+    transition: color .2s ease-out,
+                background-color .2s ease-out,
+                border-color .2s ease-out,
+                box-shadow .2s ease-out;
+}
+
+.multiselect-wrapper {
+    @apply min-h-10;
+}
+
+.multiselect-option {
+    @apply text-sm/none px-3 py-3 mx-1 rounded;
+    --ms-option-bg-pointed: var(--color-gray-100);
+    --ms-option-color-pointed: var(--color-gray-800);
+    --ms-option-bg-selected: #fff;
+    --ms-option-color-selected: var(--color-gray-800);
+    --ms-option-bg-selected-pointed: var(--color-gray-100);
+    --ms-option-color-selected-pointed: var(--color-gray-800);
+    --ms-option-bg-disabled: #fff;
+    --ms-option-color-disabled: var(--color-gray-400);
+    --ms-option-bg-selected-disabled: #fff;
+    --ms-option-color-selected-disabled: var(--color-gray-400);
+}
+
+.multiselect.is-active {
+    box-shadow: 0 0 0 1px var(--color-gray-800);
+}
+
+.multiselect.is-disabled {
+    background-color: var(--color-gray-100);
+}
+
+.fabriq-multiselect-caret {
+    @apply inline-flex shrink-0 items-center mr-3.5;
+}
+
+.multiselect .multiselect-search,
+.multiselect .multiselect-tags-search {
+    color: inherit;
+    line-height: 1;
+}
+
+.multiselect-tag {
+    @apply bg-gold-200 text-gray-800 text-xs/none font-semibold rounded-xs pl-2.5 py-0.5;
+}
+
+.multiselect-dropdown {
+    @apply absolute inset-x-0 z-1000 border rounded overflow-y-auto shadow-md py-1 -bottom-1;
+}
+
+.multiselect-single-label {
+    @apply text-sm;
+}
+
+.multiselect.is-open {
+    @apply rounded;
+}
