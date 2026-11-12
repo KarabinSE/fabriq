@@ -19,8 +19,15 @@ class CreateTinySvg
     {
         $media = $event->media;
 
+        if (! config('media-library.responsive_images.use_tiny_placeholders')) {
+            $media->forgetCustomProperty('tiny_svg');
+            $media->save();
+
+            return;
+        }
+
         if (! (new Image)->canConvert($media)) {
-            $media->setCustomProperty('tiny_svg', null);
+            $media->forgetCustomProperty('tiny_svg');
             $media->save();
 
             return;
