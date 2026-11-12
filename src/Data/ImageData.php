@@ -37,6 +37,7 @@ class ImageData extends Data
         public ?string $updated_at,
         public ?string $created_at,
         public Lazy|array $tags,
+        public string $tiny_svg = '',
     ) {}
 
     public static function allowedRequestIncludes(): ?array
@@ -101,6 +102,7 @@ class ImageData extends Data
             size: $media->size,
             width: self::getWidth($media),
             height: self::getHeight($media),
+            tiny_svg: (string) $media->getCustomProperty('tiny_svg', ''),
             processing: (bool) $media->getCustomProperty('processing'),
             processing_failed: (bool) $media->getCustomProperty('processing_failed'),
             updated_at: $image->updated_at?->toISOString(),
