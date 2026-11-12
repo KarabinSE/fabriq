@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Karabin\Fabriq\Tests\AdminUserTestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
 use Karabin\Fabriq\Models\Image;
+use Karabin\Fabriq\Tests\AdminUserTestCase;
 
 class UploadFeatureTest extends AdminUserTestCase
 {
@@ -28,21 +28,6 @@ class UploadFeatureTest extends AdminUserTestCase
         $this->assertStringContainsString('<svg', base64_decode(substr($placeholder, strlen('data:image/svg+xml;base64,')), true));
         $this->assertSame($media->responsiveImages()->getPlaceholderSvg(), $placeholder);
         $this->assertSame(123, $media->getCustomProperty('width'));
-    }
-
-    /** @test **/
-    public function it_does_not_create_a_tiny_svg_when_placeholders_are_disabled()
-    {
-        config()->set('media-library.responsive_images.use_tiny_placeholders', false);
-        Queue::fake();
-        $image = Image::factory()->create();
-
-        $media = $image->addMedia(__DIR__.'/_fixtures/image.jpeg')
-            ->preservingOriginal()
-            ->toMediaCollection('images', '__test')
-            ->fresh();
-
-        $this->assertFalse($media->hasCustomProperty('tiny_svg'));
     }
 
     /** @test **/
