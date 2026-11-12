@@ -143,7 +143,6 @@ export default {
         }
 
         if (this.hasGlobalDrop) {
-            console.log('detaching paste')
             document.removeEventListener('paste', this.handlePaste)
         }
     },
