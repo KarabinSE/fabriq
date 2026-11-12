@@ -15,6 +15,7 @@ use Karabin\TranslatableRevisions\Events\DefinitionsPublished;
 use Karabin\TranslatableRevisions\Events\DefinitionsUpdated;
 use Karabin\TranslatableRevisions\Events\TranslatedRevisionDeleted;
 use Karabin\TranslatableRevisions\Events\TranslatedRevisionUpdated;
+use Spatie\MediaLibrary\MediaCollections\Events\MediaHasBeenAddedEvent;
 
 class EventServiceProvider extends ServiceProvider
 {
