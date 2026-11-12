@@ -9,7 +9,6 @@ import App from '@fabriq/App.vue'
 import BlockTypes from '@fabriq/block-types/index.js'
 import commonComponents from '@fabriq/components/common-components.js'
 import '@fabriq/directives/index.js'
-import '@fabriq/filters/index.js'
 import icons from '@fabriq/icons/index.js'
 import '@fabriq/plugins/index.js'
 

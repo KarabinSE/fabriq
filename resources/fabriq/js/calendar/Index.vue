@@ -174,7 +174,6 @@ export default {
                     dates: {
                         start: formatLocalTime(eventItem.start),
                         end: formatLocalTime(eventItem.end)
-                        // end: eventItem.has_interval ? null : this.$options.filters.localTime(eventItem.end),
                         // dailyInterval: eventItem.daily_interval ? eventItem.daily_interval : 1
                         // months: 2,
                         // ordinalWeekdays: { 2: 1 }
@@ -194,12 +193,6 @@ export default {
                 //         class: ''
                 //     },
                 //     // dates: { ordinalWeekdays: { 1: 3 } }
-                //     dates: {
-                //         start: this.$options.filters.localTime('2021-03-05 00:00:00'),
-                //         dailyInterval: 7
-                //         // end: this.$options.filters.localTime('2021-03-05 00:00:00')
-                //         // weeklyInterval: 2
-                //     }
                 // }
             ]
         }
