@@ -198,7 +198,7 @@ return [
         'path_generator' => MediaPathGenerator::class,
         'remote' => [
             'extra_headers' => [
-                'CacheControl' => 'max-age=604800',
+                'CacheControl' => 'max-age=2592000',
                 'ACL' => 'public-read',
             ],
         ],

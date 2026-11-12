@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="mb-1 text-sm">
-            Du blev omnämnd i en kommentar av <span class="font-semibold">{{ item.notifiable.data.user.data.name }}</span> <span class="text-xs font-bold">för {{ item.created_at | localTime(null, true) }}</span>
+            Du blev omnämnd i en kommentar av <span class="font-semibold">{{ item.notifiable.data.user.data.name }}</span> <span class="text-xs font-bold">för {{ formatLocalTime(item.created_at, null, true) }}</span>
         </div>
         <blockquote
             class="py-1 pl-2 pr-4 mb-4 text-xs leading-loose whitespace-pre-wrap border-l-4 border-gray-200 line-clamp-1"
@@ -13,6 +13,8 @@
     </div>
 </template>
 <script>
+import * as formatters from '@fabriq/utils/formatters'
+
 export default {
     name: 'PageComment',
     props: {
@@ -24,6 +26,9 @@ export default {
             type: Object,
             default: () => {}
         }
+    },
+    methods: {
+        ...formatters,
     }
 }
 </script>

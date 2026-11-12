@@ -172,7 +172,7 @@
                             />
                         </FConfirmDropdown>
                     </span>
-                    <span v-else-if="prop == 'created_at'">{{ item.created_at | localTime }}</span>
+                    <span v-else-if="prop == 'created_at'">{{ formatLocalTime(item.created_at) }}</span>
                 </template>
             </FTable>
         </UiCard>
@@ -183,6 +183,8 @@ import EditModal from '@fabriq/blockTypes/EditModal.vue'
 import FBlockTypeImageInput from '@fabriq/components/forms/FBlockTypeImageInput.vue'
 import BlockType from '@fabriq/models/BlockType'
 import Template from '@fabriq/models/Template'
+import * as formatters from '@fabriq/utils/formatters'
+
 function defaultCreationObject () {
     return {
         name: '',
@@ -247,6 +249,7 @@ export default {
         this.fetchItems()
     },
     methods: {
+        ...formatters,
         async fetchItems () {
             try {
                 const payload = {

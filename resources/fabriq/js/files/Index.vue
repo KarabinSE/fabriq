@@ -175,7 +175,7 @@
                             </div>
                         </span>
                         <span v-else-if="prop == 'created_at'">
-                            {{ item.created_at | localTime }}
+                            {{ formatLocalTime(item.created_at) }}
                         </span>
                         <span v-else-if="prop == 'file_name'">
                             <div class="truncate text-ellipsis max-w-64">
@@ -192,7 +192,7 @@
                             >{{ tag.name }}</UiBadge>
                         </span>
                         <span v-else-if="prop == 'size'">
-                            {{ item.size | filesize }}
+                            {{ formatFileSize(item.size) }}
                         </span>
                         <span v-else-if="prop == 'edit'">
                             <button
@@ -222,6 +222,7 @@
 import Download from '@fabriq/models/Download.js'
 import File from '@fabriq/models/File.js'
 import Tag from '@fabriq/models/Tag.js'
+import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'FilesIndex',
     beforeRouteLeave (from, to, next) {
@@ -301,6 +302,7 @@ export default {
     },
 
     methods: {
+        ...formatters,
         resetSearch () {
             this.search = ''
             this.queryParams['filter[search]'] = ''

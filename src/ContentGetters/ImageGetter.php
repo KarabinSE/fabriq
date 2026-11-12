@@ -68,6 +68,7 @@ class ImageGetter extends BaseGetter implements GetterInterface
                 responsive: (string) $media->toHtml(),
                 x_position: (string) $image->x_position,
                 y_position: (string) $image->y_position,
+                tiny_svg: (string) $media->getCustomProperty('tiny_svg', ''),
                 meta_id: $contentValue->id,
             );
         }

@@ -82,11 +82,11 @@
                                             >
                                                 <p>
                                                     <span v-if="attr.customData.data.start != attr.customData.data.end">
-                                                        {{ attr.customData.data.start | localTime('d MMMM yyyy') }} -
-                                                        {{ attr.customData.data.end | localTime('d MMMM yyyy') }}
+                                                        {{ formatLocalTime(attr.customData.data.start, 'd MMMM yyyy') }} -
+                                                        {{ formatLocalTime(attr.customData.data.end, 'd MMMM yyyy') }}
                                                     </span>
                                                     <span v-else>
-                                                        {{ attr.customData.data.start | localTime('d MMMM yyyy') }}
+                                                        {{ formatLocalTime(attr.customData.data.start, 'd MMMM yyyy') }}
                                                     </span>
                                                     <span v-if="attr.customData.data.start_time || attr.customData.data.end_time">{{ attr.customData.data.start_time }} - {{ attr.customData.data.end_time }}</span>
                                                 </p>
@@ -129,6 +129,7 @@ import EventModal from '@fabriq/calendar/EventModal.vue'
 import Event from '@fabriq/models/Event.js'
 import { endOfMonth, format, startOfMonth } from 'date-fns'
 import { useConfigStore } from '@fabriq/stores';
+import * as formatters from '@fabriq/utils/formatters'
 
 export default {
     name: 'CalendarIndex',
@@ -171,8 +172,8 @@ export default {
 
                 ...this.eventsData.map(eventItem => ({
                     dates: {
-                        start: this.$options.filters.localTime(eventItem.start),
-                        end: this.$options.filters.localTime(eventItem.end)
+                        start: formatLocalTime(eventItem.start),
+                        end: formatLocalTime(eventItem.end)
                         // end: eventItem.has_interval ? null : this.$options.filters.localTime(eventItem.end),
                         // dailyInterval: eventItem.daily_interval ? eventItem.daily_interval : 1
                         // months: 2,
@@ -208,6 +209,7 @@ export default {
         this.fetchEvents()
     },
     methods: {
+        ...formatters,
         setCurrentMonthFilter (payload) {
             const start = startOfMonth(new Date(payload.year, payload.month - 1))
             const end = endOfMonth(new Date(payload.year, payload.month - 1))

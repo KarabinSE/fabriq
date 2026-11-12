@@ -50,7 +50,7 @@
                 @sort="setSort"
             >
                 <template #default="{ row: item, prop }">
-                    <span v-if="prop == 'updated_at'">{{ item.updated_at | localTime }}</span>
+                    <span v-if="prop == 'updated_at'">{{ formatLocalTime(item.updated_at) }}</span>
                     <span
                         v-else-if="prop == 'edit'"
                         class="flex items-start justify-end space-x-5"
@@ -81,6 +81,8 @@
 </template>
 <script>
 import SmartBlock from '@fabriq/models/SmartBlock.js'
+import * as formatters from '@fabriq/utils/formatters'
+
 function defaultCreationObject () {
     return {
         name: ''
@@ -123,6 +125,7 @@ export default {
         this.fetchItems()
     },
     methods: {
+        ...formatters,
         async fetchItems () {
             try {
                 const payload = {

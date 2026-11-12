@@ -2,14 +2,16 @@
 
 namespace Karabin\Fabriq;
 
-use Karabin\Fabriq\Listeners\CallCacheBustingWebhook;
-use Karabin\Fabriq\Listeners\FlushTagCacheListener;
-use Karabin\Fabriq\Listeners\UpdateSearchTerms;
-use Karabin\Fabriq\Listeners\UpdateSlugListener;
-use Karabin\Fabriq\Events\ContentUpdated;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Karabin\Fabriq\Events\ContentUpdated;
+use Karabin\Fabriq\Listeners\CallCacheBustingWebhook;
+use Karabin\Fabriq\Listeners\CreateTinySvg;
+use Karabin\Fabriq\Listeners\FlushTagCacheListener;
+use Karabin\Fabriq\Listeners\UpdateSearchTerms;
+use Karabin\Fabriq\Listeners\UpdateSlugListener;
+use Spatie\MediaLibrary\MediaCollections\Events\MediaHasBeenAddedEvent;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
             CallCacheBustingWebhook::class,
             UpdateSearchTerms::class,
             FlushTagCacheListener::class,
+        ],
+        MediaHasBeenAddedEvent::class => [
+            CreateTinySvg::class,
         ],
     ];
 

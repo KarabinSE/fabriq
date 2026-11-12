@@ -100,7 +100,7 @@
                 <div class="col-span-8">
                     <div class="flex justify-end mb-1 space-x-2">
                         <UiBadge>
-                            {{ video.size | filesize }}
+                            {{ formatFileSize(video.size) }}
                         </UiBadge>
                         <UiBadge v-show="video.width">
                             {{ video.width }}×{{ video.height }}px
@@ -123,6 +123,7 @@
 import Download from '@fabriq/models/Download.js'
 import Video from '@fabriq/models/Video.js'
 import Tag from '@fabriq/models/Tag.js'
+import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'BlockTypeModal',
     props: {
@@ -151,6 +152,7 @@ export default {
         }
     },
     methods: {
+        ...formatters,
         async fetchVideo (parameters) {
             const id = parameters.ref.params.id
             try {

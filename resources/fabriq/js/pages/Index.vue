@@ -139,6 +139,10 @@ import "@he-tree/vue/style/default.css";
 import Page from '@fabriq/models/Page.js'
 import PageTree from '@fabriq/models/PageTree.js'
 import Template from '@fabriq/models/Template.js'
+import '@fabriq/plugins/vue-nestable/vue-nestable.css'
+import VueNestable from '@fabriq/plugins/vue-nestable/VueNestable.vue'
+import VueNestableHandle from '@fabriq/plugins/vue-nestable/VueNestableHandle.vue'
+import * as formatters from '@fabriq/utils/formatters'
 
 function defaultCreationObject () {
     return {
@@ -209,6 +213,7 @@ export default {
         this.fetchPageTree()
     },
     methods: {
+        ...formatters,
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchPages()

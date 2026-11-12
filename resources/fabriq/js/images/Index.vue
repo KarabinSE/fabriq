@@ -185,7 +185,7 @@
                             />
                         </span>
                         <span v-else-if="prop == 'created_at'">
-                            {{ item.created_at | localTime }}
+                            {{ formatLocalTime(item.created_at) }}
                         </span>
                         <span
                             v-else-if="prop == 'c_name'"
@@ -219,7 +219,7 @@
                             >{{ tag.name }}</UiBadge>
                         </span>
                         <span v-else-if="prop == 'size'">
-                            {{ item.size | filesize }}
+                            {{ formatFileSize(item.size) }}
                         </span>
                         <span v-else-if="prop == 'dimensions'">
 
@@ -256,6 +256,7 @@ import AddImageFromUrlModal from '@fabriq/images/AddImageFromUrlModal.vue'
 import Download from '@fabriq/models/Download.js'
 import Image from '@fabriq/models/Image.js'
 import Tag from '@fabriq/models/Tag.js'
+import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'ImagesIndex',
     components: { AddImageFromUrlModal },
@@ -349,6 +350,7 @@ export default {
         this.$eventBus.on('media-finished-processing', this.fetchImages)
     },
     methods: {
+        ...formatters,
         resetSearch () {
             this.search = ''
             this.queryParams['filter[search]'] = ''

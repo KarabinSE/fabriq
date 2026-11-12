@@ -121,7 +121,7 @@
                 <div class="col-span-8">
                     <div class="flex justify-end mb-1 space-x-2">
                         <UiBadge>
-                            {{ image.size | filesize }}
+                            {{ formatFileSize(image.size) }}
                         </UiBadge>
                         <UiBadge v-show="image.width">
                             {{ image.width }}×{{ image.height }}px
@@ -184,6 +184,8 @@
 import Download from '@fabriq/models/Download.js'
 import Image from '@fabriq/models/Image.js'
 import Tag from '@fabriq/models/Tag.js'
+import * as formatters from '@fabriq/utils/formatters'
+
 export default {
     name: 'BlockTypeModal',
     props: {
@@ -215,6 +217,7 @@ export default {
         }
     },
     methods: {
+        ...formatters,
         async fetchImage (parameters) {
             const id = parameters.ref.params.id
             try {

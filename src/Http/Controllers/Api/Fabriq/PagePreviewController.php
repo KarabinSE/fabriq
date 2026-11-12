@@ -12,7 +12,7 @@ use Spatie\LaravelData\Data;
 
 class PagePreviewController
 {
-    private function buildPreviewUrl($preview)
+    private function buildPreviewUrl(Preview $preview): string
     {
         $page = Fabriq::getModelClass('page')->findOrFail($preview->model_id);
 
