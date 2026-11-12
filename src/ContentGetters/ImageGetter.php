@@ -64,6 +64,7 @@ class ImageGetter extends BaseGetter implements GetterInterface
             'x_position' => (string) $image->x_position,
             'y_position' => (string) $image->y_position,
             'meta_id' => $meta->id,
+            'tiny_svg' => (string) $media->getCustomProperty('tiny_svg', ''),
         ];
     }
 }
