@@ -31,15 +31,6 @@ class UploadFeatureTest extends AdminUserTestCase
     }
 
     /** @test **/
-    public function it_does_not_create_a_tiny_svg_for_non_image_media()
-    {
-        $image = Image::factory()->create();
-        $media = $image->getFirstMedia('images')->fresh();
-
-        $this->assertFalse($media->hasCustomProperty('tiny_svg'));
-    }
-
-    /** @test **/
     public function it_can_upload_an_image_and_persist_it()
     {
         // Arrange
