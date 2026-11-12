@@ -187,7 +187,7 @@
                             >{{ tag.name }}</UiBadge>
                         </span>
                         <span v-else-if="prop == 'size'">
-                            {{ item.size | filesize }}
+                            {{ formatFileSize(item.size) }}
                         </span>
                         <span v-else-if="prop == 'edit'">
                             <button
@@ -217,6 +217,7 @@
 import Download from '@fabriq/models/Download.js'
 import Tag from '@fabriq/models/Tag.js'
 import Video from '@fabriq/models/Video.js'
+import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'VideosIndex',
     beforeRouteLeave (from, to, next) {
@@ -294,6 +295,7 @@ export default {
     },
 
     methods: {
+        ...formatters,
         resetSearch () {
             this.search = ''
             this.queryParams['filter[search]'] = ''

@@ -156,7 +156,7 @@
                                                 <span v-text="item.c_name.length > 40 ? item.c_name.substring(0,40) + '...' : item.c_name" />
                                             </span>
                                             <span v-else-if="prop == 'size'">
-                                                {{ item.size | filesize }}
+                                                {{ formatFileSize(item.size) }}
                                             </span>
                                             <span v-else-if="prop == 'dimensions'">
                                                 <UiBadge v-show="item.width">
@@ -198,6 +198,7 @@ import AddImageFromUrlModal from '@fabriq/images/AddImageFromUrlModal.vue'
 import File from '@fabriq/models/File.js'
 import Image from '@fabriq/models/Image.js'
 import Video from '@fabriq/models/Video.js'
+import * as formatters from '@fabriq/utils/formatters'
 
 export default {
     name: 'FMediaPicker',
@@ -283,6 +284,7 @@ export default {
     },
 
     methods: {
+        ...formatters,
         close () {
             this.$emit('close')
             this.search = ''

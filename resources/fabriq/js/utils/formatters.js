@@ -1,5 +1,5 @@
 import { format, formatDistance, isValid, parseISO } from 'date-fns'
-import svLocale from 'date-fns/locale/sv'
+import { sv } from 'date-fns/locale'
 import filesize from 'filesize'
 
 export function formatLocalTime(value, dateFormat = null, formatDistanceEnabled = false) {
@@ -15,11 +15,11 @@ export function formatLocalTime(value, dateFormat = null, formatDistanceEnabled 
     }
 
     if (formatDistanceEnabled) {
-        return formatDistance(date, new Date(), { locale: svLocale, addSuffix: true })
+        return formatDistance(date, new Date(), { locale: sv, addSuffix: true })
     }
 
     if (dateFormat) {
-        return format(date, dateFormat, { locale: svLocale })
+        return format(date, dateFormat, { locale: sv })
     }
 
     return format(date, 'yyyy-MM-dd HH:mm')
@@ -60,4 +60,3 @@ export function formatCurrency(value, options = {}) {
         ...mergedOptions,
     }).format(numberValue)
 }
-
