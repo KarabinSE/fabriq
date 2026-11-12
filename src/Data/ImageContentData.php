@@ -25,5 +25,6 @@ class ImageContentData extends Data
         public string $x_position,
         public string $y_position,
         public ?int $meta_id,
+        public string $tiny_svg,
     ) {}
 }

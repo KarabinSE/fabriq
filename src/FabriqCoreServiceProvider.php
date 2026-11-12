@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Karabin\Fabriq\Console\AddRoleToUserCommand;
+use Karabin\Fabriq\Console\BackfillTinySvgCommand;
 use Karabin\Fabriq\Console\ControllerMakeCommand;
 use Karabin\Fabriq\Console\CreateMenuCommand;
 use Karabin\Fabriq\Console\CreatePageRootCommand;
@@ -129,6 +130,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
         $this->commands([
             AddRoleToUserCommand::class,
+            BackfillTinySvgCommand::class,
             ControllerMakeCommand::class,
             CreateMenuCommand::class,
             CreatePageRootCommand::class,
