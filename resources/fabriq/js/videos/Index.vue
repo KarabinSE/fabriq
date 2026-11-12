@@ -16,7 +16,6 @@
                 label="Taggar"
                 name="tags"
                 object
-                class=""
                 :create-option="tag => ({ name: tag, value: null, type: 'images'})"
                 value-key="name"
                 option-label="name"

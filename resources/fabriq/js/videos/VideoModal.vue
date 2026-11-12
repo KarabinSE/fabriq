@@ -76,7 +76,6 @@
                         mode="tags"
                         label="Taggar"
                         name="videoTags"
-                        searchable
                         object
                         :create-option="tag => ({ name: tag, value: null, type: 'videos'})"
                         value-key="name"

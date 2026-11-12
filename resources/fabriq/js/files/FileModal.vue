@@ -73,7 +73,6 @@
                         label="Taggar"
                         name="fileTags"
                         object
-                        class=""
                         :create-option="tag => ({ name: tag, value: null, type: 'files'})"
                         value-key="name"
                         option-label="name"

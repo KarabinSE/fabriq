@@ -16,7 +16,7 @@
             :object="object"
             :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : inputDisabled}"
             :disabled="inputDisabled"
-            :searchable="searchable"
+            :searchable="(searchable === null && mode === 'tags') ? true : !!searchable"
             :label="optionLabel"
             :name="name"
             :mode="mode"
@@ -127,7 +127,7 @@ export default {
 
         searchable: {
             type: Boolean,
-            default: false,
+            default: null,
         },
 
         object: {
