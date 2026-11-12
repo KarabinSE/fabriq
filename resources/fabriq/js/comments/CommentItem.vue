@@ -47,7 +47,7 @@
                                     class="text-xs font-medium text-gray-900"
                                     v-text="isOwnedByUser ? 'Du' : comment.user.name"
                                 />
-                                <span class="text-xs text-gray-500">för {{ comment.created_at | localTime(null, true) }}</span>
+                                <span class="text-xs text-gray-500">för {{ formatLocalTime(comment.created_at, null, true) }}</span>
                             </div>
                             <div
                                 class="inline-flex flex-col prose-sm prose origin-left transform scale-95 "
@@ -63,7 +63,7 @@
                                     class="text-xs font-medium text-neutral-600 "
                                     v-text="isOwnedByUser ? 'Du' : comment.user.name"
                                 />
-                                tog bort kommentaren {{ comment.anonmyzed_at | localTime }}</span>
+                                tog bort kommentaren {{ formatLocalTime(comment.anonmyzed_at) }}</span>
                         </div>
                     </div>
                     <div
@@ -108,14 +108,10 @@
 <script>
 import Comment from '@fabriq/models/Comment.js'
 import { useUserStore } from '@fabriq/stores';
+import * as formatters from '@fabriq/utils/formatters'
 
 export default {
     name: 'CommentItem',
-    setup () {
-        const userStore = useUserStore();
-
-        return { userStore }
-    },
     props: {
         isLast: {
             type: Boolean,
@@ -140,6 +136,11 @@ export default {
             }
         }
     },
+    setup () {
+        const userStore = useUserStore();
+
+        return { userStore }
+    },
     data () {
         return {
             isDeleting: false,
@@ -156,6 +157,7 @@ export default {
         }
     },
     methods: {
+        ...formatters,
         rollBackDelete () {
             this.isDeleting = false
         },

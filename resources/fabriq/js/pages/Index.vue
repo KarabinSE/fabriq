@@ -156,7 +156,7 @@
                     </div>
                 </template>
                 <template #default="{ row: page, prop }">
-                    <span v-if="prop == 'updated_at'">{{ page.updated_at | localTime }}</span>
+                    <span v-if="prop == 'updated_at'">{{ formatLocalTime(page.updated_at) }}</span>
                     <span v-else-if="prop == 'template_name'">
                         <UiBadge>
                             {{ page.template.data.name }}
@@ -197,6 +197,8 @@ import Template from '@fabriq/models/Template.js'
 import '@fabriq/plugins/vue-nestable/vue-nestable.css'
 import VueNestable from '@fabriq/plugins/vue-nestable/VueNestable.vue'
 import VueNestableHandle from '@fabriq/plugins/vue-nestable/VueNestableHandle.vue'
+import * as formatters from '@fabriq/utils/formatters'
+
 function defaultCreationObject () {
     return {
         name: '',
@@ -266,6 +268,7 @@ export default {
         this.fetchPageTree()
     },
     methods: {
+        ...formatters,
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchPages()

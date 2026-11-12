@@ -175,7 +175,7 @@
                             </div>
                         </span>
                         <span v-else-if="prop == 'created_at'">
-                            {{ item.created_at | localTime }}
+                            {{ formatLocalTime(item.created_at) }}
                         </span>
                         <span v-else-if="prop == 'file_name'">
                             <div class="truncate text-ellipsis max-w-64">

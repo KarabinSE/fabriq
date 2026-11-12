@@ -73,7 +73,7 @@
                         >
                             {{ item.content }}
                             <div class="text-xs font-semibold">
-                                {{ item.created_at | localTime(null, true) }}
+                                {{ formatLocalTime(item.created_at, null, true) }}
                             </div>
                         </div>
                     </div>
@@ -86,6 +86,7 @@
 import Notification from '@fabriq/models/Notification.js'
 import PageComment from '@fabriq/notifications/PageComment.vue'
 import { useUserStore } from '@fabriq/stores/user'
+import * as formatters from '@fabriq/utils/formatters'
 
 export default {
     name: 'NotificationsIndex',
@@ -155,6 +156,7 @@ export default {
         this.fetchSeenItems()
     },
     methods: {
+        ...formatters,
         async fetchItems () {
             await this.fetchUnseenItems()
             await this.fetchSeenItems()

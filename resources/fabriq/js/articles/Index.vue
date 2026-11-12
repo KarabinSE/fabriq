@@ -66,17 +66,17 @@
                     </div>
                 </template>
                 <template #default="{ row: item, prop }">
-                    <span v-if="prop == 'updated_at'">{{ item.updated_at | localTime }}</span>
+                    <span v-if="prop == 'updated_at'">{{ formatLocalTime(item.updated_at) }}</span>
                     <span v-else-if="prop == 'publishes_at'">
                         <span v-if="item.is_published">
-                            <UiBadge color="gold">{{ item.publishes_at | localTime }}</UiBadge>
+                            <UiBadge color="gold">{{ formatLocalTime(item.publishes_at) }}</UiBadge>
                             <div
                                 v-if="item.has_unpublished_time"
                                 class="mt-1 text-xs italic text-gray-400"
-                            >Avpubliceras {{ item.unpublishes_at | localTime }}</div>
+                            >Avpubliceras {{ formatLocalTime(item.unpublishes_at) }}</div>
                         </span>
                         <span v-else-if="! item.has_unpublished_time">
-                            <UiBadge v-if="item.publishes_at">Publiceras {{ item.publishes_at | localTime }}</UiBadge>
+                            <UiBadge v-if="item.publishes_at">Publiceras {{ formatLocalTime(item.publishes_at) }}</UiBadge>
                             <span
                                 v-else
                                 class="text-xs italic text-gray-400"
@@ -118,6 +118,8 @@
 </template>
 <script>
 import Article from '@fabriq/models/Article.js'
+import * as formatters from '@fabriq/utils/formatters'
+
 function defaultCreationObject () {
     return {
         name: ''
@@ -175,6 +177,7 @@ export default {
         this.fetchArticles()
     },
     methods: {
+        ...formatters,
         async fetchArticles () {
             try {
                 const payload = {

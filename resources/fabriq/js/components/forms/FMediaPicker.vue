@@ -150,7 +150,7 @@
                                                 />
                                             </span>
                                             <span v-else-if="prop == 'created_at'">
-                                                {{ item.created_at | localTime }}
+                                                {{ formatLocalTime(item.created_at) }}
                                             </span>
                                             <span v-else-if="prop == 'c_name'">
                                                 <span v-text="item.c_name.length > 40 ? item.c_name.substring(0,40) + '...' : item.c_name" />

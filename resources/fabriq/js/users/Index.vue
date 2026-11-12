@@ -90,7 +90,7 @@
                         </div>
                     </template>
                     <template #default="{ row: item, prop }">
-                        <span v-if="prop == 'updated_at'">{{ item.updated_at | localTime }}</span>
+                        <span v-if="prop == 'updated_at'">{{ formatLocalTime(item.updated_at) }}</span>
                         <span
                             v-else-if="prop == 'roles'"
                             class="space-x-2"
@@ -135,7 +135,7 @@
                                             spinner-color="text-red-400"
                                         >Avbryt</FButton>
                                     </div>
-                                    <div class="mt-1 text-xs text-neutral-500">Skickad {{ item.invitation.data.created_at | localTime }}</div>
+                                    <div class="mt-1 text-xs text-neutral-500">Skickad {{ formatLocalTime(item.invitation.data.created_at) }}</div>
                                 </div>
                             </div>
                         </span>
@@ -180,6 +180,7 @@ function newUserObject() {
 }
 import User from '@fabriq/models/User.js'
 import Invitation from '@fabriq/models/Invitation.js'
+import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'UsersIndex',
     data () {
@@ -235,6 +236,7 @@ export default {
         this.fetchUsers()
     },
     methods: {
+        ...formatters,
         resetSearch () {
             this.queryParams['filter[search]'] = ''
             this.queryParams.page = 1

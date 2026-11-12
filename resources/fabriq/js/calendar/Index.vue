@@ -82,11 +82,11 @@
                                             >
                                                 <p>
                                                     <span v-if="attr.customData.data.start != attr.customData.data.end">
-                                                        {{ attr.customData.data.start | localTime('d MMMM yyyy') }} -
-                                                        {{ attr.customData.data.end | localTime('d MMMM yyyy') }}
+                                                        {{ formatLocalTime(attr.customData.data.start, 'd MMMM yyyy') }} -
+                                                        {{ formatLocalTime(attr.customData.data.end, 'd MMMM yyyy') }}
                                                     </span>
                                                     <span v-else>
-                                                        {{ attr.customData.data.start | localTime('d MMMM yyyy') }}
+                                                        {{ formatLocalTime(attr.customData.data.start, 'd MMMM yyyy') }}
                                                     </span>
                                                     <span v-if="attr.customData.data.start_time || attr.customData.data.end_time">{{ attr.customData.data.start_time }} - {{ attr.customData.data.end_time }}</span>
                                                 </p>
