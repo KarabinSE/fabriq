@@ -41,13 +41,15 @@
             </template>
             <template #option="{ option, isSelected }">
                 <div
-                    class="inline-flex items-center"
+                    class="inline-flex items-center gap-2.5"
                 >
                     <div
-                        v-if="isSelected(option)"
-                        class="absolute z-10 w-2 h-2 rounded-full bg-gold-500"
+                        :class="[
+                            'z-10 size-2 rounded-full bg-gold-500 duration-100',
+                            isSelected(option) ? '' : 'opacity-0 scale-0'
+                        ]"
                     />
-                    <span class="flex items-center ml-2">
+                    <span class="flex items-center">
                         <slot
                             name="prefix"
                             v-bind="option"
