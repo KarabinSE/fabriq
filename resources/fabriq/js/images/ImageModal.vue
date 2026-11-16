@@ -161,16 +161,6 @@
                                 Ladda ner
                             </FButton>
                         </div>
-                        <div v-if="image.webp_src">
-                            <FButton
-                                type="button"
-                                class="inline-block px-8 py-2 mb-4 leading-none fabriq-btn btn-outline-royal whitespace-nowrap"
-                                spinner-color="text-royal-500"
-                                :click="downloadWebP"
-                            >
-                                Ladda ner WebP
-                            </FButton>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -298,16 +288,6 @@ export default {
             const payload = {
                 params: {
                     type: 'images'
-                }
-            }
-            const { data, headers } = await Download.show(this.image.id, payload)
-            await Download.handleBlobDownload(data, headers)
-        },
-        async downloadWebP () {
-            const payload = {
-                params: {
-                    type: 'images',
-                    webp: true
                 }
             }
             const { data, headers } = await Download.show(this.image.id, payload)
