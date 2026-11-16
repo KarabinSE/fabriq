@@ -52,6 +52,12 @@ class Image extends Model implements HasMedia
             ->format(config('fabriq.enable_webp') ? 'webp' : 'jpg')
             ->quality(80);
 
+        $this->addMediaConversion('preview')
+            ->nonQueued()
+            ->fit(Fit::Max, 1600)
+            ->format('avif')
+            ->quality(85);
+
         $this->addMediaConversion('og_image')
             ->fit(Fit::Max, 1200)
             ->format('jpg')
@@ -99,11 +105,12 @@ class Image extends Model implements HasMedia
 
     public function saveMedia(bool $fromUrl = false, string $collection = 'images', string $url = '', ?string $name = null): void
     {
+        $generatesResponsiveImages = config('fabriq.generate_responsive_images');
         if ($fromUrl) {
             [$width, $height] = $this->getImageDimensions(request()->input('url', $url));
             $this->addMediaFromUrl(request()->input('url', $url))
-                ->withResponsiveImages()
-                ->withCustomProperties(['width' => $width, 'height' => $height, 'processing' => true, 'processing_failed' => false])
+                ->withResponsiveImagesIf($generatesResponsiveImages)
+                ->withCustomProperties(['width' => $width, 'height' => $height, 'processing' => $generatesResponsiveImages, 'processing_failed' => false])
                 ->setName($name ?? basename($url))
                 ->toMediaCollection($collection);
 
@@ -111,11 +118,11 @@ class Image extends Model implements HasMedia
         }
         [$width, $height] = $this->getImageDimensions(request()->file('image'));
         $this->addMediaFromRequest('image')
-            ->withResponsiveImages()
+            ->withResponsiveImagesIf($generatesResponsiveImages)
             ->withCustomProperties([
                 'width' => $width,
                 'height' => $height,
-                'processing' => ($width) ? true : false, 'processing_failed' => false,
+                'processing' => ($width && $generatesResponsiveImages) ? true : false, 'processing_failed' => false,
             ])
             ->toMediaCollection($collection);
     }
