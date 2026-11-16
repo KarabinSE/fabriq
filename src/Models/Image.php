@@ -62,12 +62,6 @@ class Image extends Model implements HasMedia
             ->fit(Fit::Max, 1200)
             ->format('jpg')
             ->quality(80);
-
-        if (config('fabriq.enable_webp')) {
-            $this->addMediaConversion('webp')
-                ->format('webp')
-                ->quality(85);
-        }
     }
 
     public function mediaImages(): MorphMany
