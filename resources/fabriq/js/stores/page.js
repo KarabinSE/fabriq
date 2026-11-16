@@ -50,12 +50,16 @@ export const usePageStore = defineStore('page', () => {
     const blocksLoading = ref(false)
     const page = ref(structuredClone(defaultPageData));
 
-    const blocks = ref([])
+    const blocks = computed(() => Object.values(localizedBlocks.value).flat())
     const localizedContent = ref({ sv: {} })
+    const localizedBlocks = ref({ sv: [] })
 
     const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {})
 
-    const activeLocaleBlocks = computed(() => blocks.value.filter(block => block.locale === config.activeLocale))
+    const activeLocaleBlocks = computed({
+        get: () => blocks.value.filter(block => block.locale === config.activeLocale),
+        set: (value) => localizedBlocks.value[config.activeLocale] = value
+    })
     const activeLocaleContent = computed({
         get: () => localizedContent.value[config.activeLocale],
         set: (newContent) => localizedContent.value[config.activeLocale] = newContent
@@ -87,7 +91,6 @@ export const usePageStore = defineStore('page', () => {
      */
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
-        blocks.value = []
         await config.initiated
 
         const promises = Object.keys(config.supportedLocales)
@@ -132,7 +135,17 @@ export const usePageStore = defineStore('page', () => {
             blocksLoading.value = true
             const data  = await Blocks.index(pageId, payload)
 
-            blocks.value = data.map(block => new Block(block, block.content))
+            data.forEach((block => {
+                const newBlock = new Block(block, block.content)
+
+                if(Array.isArray(localizedBlocks.value[block.locale])) {
+                    localizedBlocks.value[block.locale].push(newBlock)
+                } else {
+                    Vue.set(localizedBlocks.value, block.locale, [newBlock])
+                }
+            }))
+
+            // blocks.value = data.map(block => new Block(block, block.content))
         } catch (error) {
             console.error(error)
         } finally {
