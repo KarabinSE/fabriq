@@ -187,18 +187,18 @@ export const usePageStore = defineStore('page', () => {
         }, {
             name: blockType.name,
         })
-        blocks.value.push(newBlock)
+        localizedBlocks.value[config.activeLocale].push(newBlock)
 
         ui.toggleOpenCard(newBlock.content.id)
     }
 
     function cloneBlock(blockToClone) {
-        blocks.value.push(blockToClone.clone())
+        localizedBlocks.value[config.activeLocale].push(blockToClone.clone())
     }
 
     function removeBlock(block) {
-        const index = blocks.value.findIndex(b => b.content.id === block.content.id)
-        blocks.value.splice(index, 1)
+        const index = localizedBlocks.value[config.activeLocale].findIndex(b => b.content.id === block.content.id)
+        localizedBlocks.value[config.activeLocale].splice(index, 1)
     }
 
     return {
