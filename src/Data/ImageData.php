@@ -59,7 +59,6 @@ class ImageData extends Data
                 thumb_src: null,
                 og_image_src: null,
                 preview_src: null,
-                webp_src: null,
                 src: null,
                 srcset: null,
                 responsive: null,

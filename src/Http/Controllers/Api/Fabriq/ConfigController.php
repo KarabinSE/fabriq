@@ -25,7 +25,10 @@ class ConfigController extends Controller
         ])->toArray();
 
         $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
-        $config = array_merge($fabriqConfig, ['supported_locales' => $supportedLocales]);
+        $config = array_merge($fabriqConfig, [
+            'supported_locales' => $supportedLocales,
+            'analytics' => (bool) config('services.cloudflare.analytics_site_tag'),
+        ]);
 
         return response()->json([
             'data' => collect($config)

@@ -222,4 +222,12 @@ return [
         'secret' => env('FABRIQ_WEBHOOK_SECRET', 'very_secret'),
         'endpoint' => env('FABRIQ_WEBHOOK_ENDPOINT'),
     ],
+
+    'services' => [
+        'cloudflare' => [
+            'api_token' => env('CLOUDFLARE_API_TOKEN'),
+            'account_id' => env('CLOUDFLARE_ACCOUNT_ID'),
+            'analytics_site_tag' => env('CLOUDFLARE_ANALYTICS_SITE_TAG'),
+        ],
+    ],
 ];

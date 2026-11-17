@@ -128,6 +128,14 @@ class FabriqCoreServiceProvider extends ServiceProvider
             ),
         );
 
+        $this->app->get('config')->set(
+            'services',
+            array_merge(
+                $this->app->get('config')->get('services'),
+                $this->app->get('config')->get('fabriq.services')
+            ),
+        );
+
         $this->commands([
             AddRoleToUserCommand::class,
             BackfillTinySvgCommand::class,
