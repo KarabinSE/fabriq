@@ -91,6 +91,7 @@ export const usePageStore = defineStore('page', () => {
      */
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
+        localizedBlocks.value = { sv: [] }
         await config.initiated
 
         const promises = Object.keys(config.supportedLocales)
