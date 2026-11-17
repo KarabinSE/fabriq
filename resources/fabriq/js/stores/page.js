@@ -187,9 +187,8 @@ export const usePageStore = defineStore('page', () => {
         }, {
             name: blockType.name,
         })
-        localizedBlocks.value[config.activeLocale].push(newBlock)
 
-        ui.toggleOpenCard(newBlock.content.id)
+        localizedBlocks.value[config.activeLocale].push(newBlock)
     }
 
     function cloneBlock(blockToClone) {
