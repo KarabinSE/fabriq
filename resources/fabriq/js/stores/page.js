@@ -47,7 +47,7 @@ export const usePageStore = defineStore('page', () => {
     const ui = useUiStore()
 
     const wasInitiallyPublished = ref(true)
-    const blocksLoading = ref(false)
+    const blocksLoading = ref(true)
     const page = ref(structuredClone(defaultPageData));
 
     const blocks = computed(() => Object.values(localizedBlocks.value).flat())
