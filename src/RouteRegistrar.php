@@ -7,6 +7,7 @@ use Illuminate\Contracts\Routing\Registrar as Router;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AnalyticsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ArticleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AskToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AuthenticatedUserController;
@@ -136,6 +137,7 @@ class RouteRegistrar
         $this->forNotifications();
         $this->forAuthenticatedUsers();
         $this->forConfig();
+        $this->forAnalytics();
         $this->forPageSlugs();
         $this->forPagePaths();
         $this->forInvitations();
@@ -173,6 +175,7 @@ class RouteRegistrar
         $this->forPreviews();
         $this->forPageBlocks();
         $this->forBlocks();
+        $this->forAnalytics();
     }
 
     public function forPublicApi()
@@ -228,6 +231,11 @@ class RouteRegistrar
     public function forConfig(): void
     {
         Route::get('config', [ConfigController::class, 'index'])->name('config.index');
+    }
+
+    public function forAnalytics(): void
+    {
+        Route::get('web-analytics', AnalyticsController::class)->name('analytics.web-analytics');
     }
 
     public function forEvents(): void

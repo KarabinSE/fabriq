@@ -79,6 +79,7 @@ import LineChart from './analytics/LineChart.vue'
 import axios from 'axios'
 import AnalyticsStats from './analytics/AnalyticsStats.vue'
 import { useConfigStore } from './stores'
+import { route } from '@/generated/helpers/route'
 export default {
     name: 'HomeIndex',
     components: {
@@ -142,7 +143,11 @@ export default {
             this.analyticsLoading = true
 
             try {
-                const { data } = await axios.get(`/analytics?period=${this.analyticsPeriod}`)
+                const { data } = await axios.get(route('analytics.web-analytics'), {
+                    params: {
+                        period: this.analyticsPeriod
+                    }
+                })
                 this.chartData = data
             } finally {
                 this.analyticsLoading = false
