@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Models\Block;
@@ -33,6 +34,12 @@ return new class extends Migration
                 $definition = DB::table('i18n_definitions')->where('term_id', $boxTerm->id)
                     ->where('locale', $locale->iso_code)
                     ->first();
+
+                if (! $definition) {
+                    Log::warning('definition not found', ['term' => $boxTerm]);
+
+                    return;
+                }
 
                 $content['boxes'] = json_decode($definition->content, true);
 
