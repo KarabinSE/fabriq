@@ -9,6 +9,8 @@ export const useConfigStore = defineStore('config', () => {
     const initiated = ref(new Promise((r) => resolve = r))
     const config = ref({
         modules: [],
+        search_console_analytics: false,
+        web_analytics: false,
         supported_locales: {
             sv: {
                 name: 'Swedish',

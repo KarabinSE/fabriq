@@ -50,8 +50,11 @@
             </div>
         </div>
 
-        <template v-if="chartData && config.analytics">
-            <UiCard class="rounded-xl">
+        <template v-if="chartData && config.web_analytics">
+            <UiCard
+                class="rounded-xl"
+                no-shadow
+            >
                 <div class="flex gap-4">
                     <HelpText>Totalt antal besökare: {{ chartData.total.visits }}</HelpText>
                     <HelpText>Totalt antal visningar: {{ chartData.total.pageViews }}</HelpText>
@@ -67,6 +70,29 @@
                 :data="chartData"
             />
         </template>
+        <UiCard
+            v-if="config.search_console_analytics"
+            class="rounded-xl"
+            :padding="false"
+            no-shadow
+        >
+            <h3 class="px-6 py-5 text-xl font-light text-gray-800">
+                Sökfrågor som leder till din webbplats
+            </h3>
+            <div
+                v-if="searchConsoleLoading"
+                class="flex justify-center border-t border-gray-200 py-8"
+            >
+                <SpinIcon class="w-6 h-6 animate-spin text-royal-500" />
+            </div>
+            <FTable
+                v-else
+                :columns="searchConsoleColumns"
+                :rows="searchTermsRows"
+                :options="{ shadow: false, emptyText: 'Inga sökfrågor att visa' }"
+                :paginated="false"
+            />
+        </UiCard>
     </div>
 </template>
 <script>
@@ -103,13 +129,27 @@ export default {
                 { label: 'Senaste 30 dagarna', value: '30d' },
                 { label: 'Senaste 90 dagarna', value: '3m' }
             ],
-            analyticsLoading: false
+            analyticsLoading: false,
+            searchConsoleData: null,
+            searchConsoleLoading: true,
+            searchConsoleColumns: [
+                { key: 'query', title: 'Vanligaste frågorna' },
+                { key: 'clicks', title: 'Klick', thClasses: 'text-right', tdClasses: 'text-right' },
+                { key: 'impressions', title: 'Exponeringar', thClasses: 'text-right', tdClasses: 'text-right' }
+            ]
         }
     },
     computed: {
         config() {
             return this.configStore.config;
         },
+        searchTermsRows () {
+            return (this.searchConsoleData?.rows ?? []).map(row => ({
+                query: row.keys?.[0] ?? '',
+                clicks: row.clicks,
+                impressions: row.impressions
+            }))
+        }
     },
     activated () {
         this.fetchPageCount()
@@ -117,6 +157,7 @@ export default {
         this.fetchFileCount()
         this.fetchImageCount()
         this.fetchAnalytics()
+        this.fetchSearchConsole()
     },
     methods: {
         async fetchPageCount () {
@@ -138,6 +179,7 @@ export default {
         async changeAnalyticsPeriod (period) {
             this.analyticsPeriod = period
             await this.fetchAnalytics()
+            await this.fetchSearchConsole()
         },
         async fetchAnalytics () {
             this.analyticsLoading = true
@@ -151,6 +193,20 @@ export default {
                 this.chartData = data
             } finally {
                 this.analyticsLoading = false
+            }
+        },
+        async fetchSearchConsole () {
+            this.searchConsoleLoading = true
+
+            try {
+                const { data } = await axios.get(route('analytics.search-console'), {
+                    params: {
+                        period: this.analyticsPeriod
+                    }
+                })
+                this.searchConsoleData = data
+            } finally {
+                this.searchConsoleLoading = false
             }
         }
     }
