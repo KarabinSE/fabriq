@@ -47,7 +47,12 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center flex-1 space-x-6">
                             <GripVerticalIcon class="block w-4 h-4 text-gray-400 handle" />
-                            <span class="inline-flex text-sm font-semibold text-gray-500">{{ child.name ?? child.heading }}</span>
+                            <span class="inline-flex text-sm font-semibold text-gray-500">
+                                <slot
+                                    name="title"
+                                    :child="child"
+                                >{{ child.name ?? child.heading }}</slot>
+                            </span>
                         </div>
                         <div class="flex items-center space-x-4">
                             <button
@@ -80,7 +85,7 @@
                                 class="self-center mb-1 "
                             />
                             <FConfirmDropdown
-                                confirm-question="Vill du ta bort servicen?"
+                                :confirm-question="labels.confirmDeleteQuestion"
                                 @confirmed="deleteChild(childIndex)"
                             >
                                 <TrashIcon
@@ -147,7 +152,8 @@ export default {
                 title: 'Låda',
                 add: 'Lägg till låda',
                 empty: 'Ingen låda har lagts till ännu',
-                max: 'Max antal uppnått'
+                max: 'Max antal uppnått',
+                confirmDeleteQuestion: 'Vill du ta bort lådan?'
             })
         },
         canClone: {
