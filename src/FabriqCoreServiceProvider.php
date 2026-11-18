@@ -3,6 +3,7 @@
 namespace Karabin\Fabriq;
 
 use Dyrynda\Artisan\Console\Commands\MakeUser;
+use Google\Service\SearchConsole;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -134,6 +135,23 @@ class FabriqCoreServiceProvider extends ServiceProvider
                 $this->app->get('config')->get('services'),
                 $this->app->get('config')->get('fabriq.services')
             ),
+        );
+
+        // Search console
+        $this->app->get('config')->set(
+            'google',
+            [
+
+                'scopes' => [SearchConsole::WEBMASTERS],
+                'access_type' => 'offline',
+                'service' => [
+                    'enable' => env('GOOGLE_SERVICE_ENABLED', false),
+                    'file' => json_decode(env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION', ''), true),
+                ],
+                'config' => [
+                    'site_url' => env('GOOGLE_SEARCH_CONSOLE_SITE_URL'),
+                ],
+            ]
         );
 
         $this->commands([

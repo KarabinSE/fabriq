@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            v-if="!config.analytics"
+            v-if="!config.web_analytics"
             class="grid grow grid-cols-4 gap-8 mt-16"
         >
             <StatsBox
@@ -27,7 +27,7 @@
         </div>
 
         <div
-            v-if="config.analytics"
+            v-if="config.web_analytics"
             class="flex mt-5 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
             <h2 class="font-light text-3xl md:text-4xl">

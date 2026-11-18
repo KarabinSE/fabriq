@@ -7,7 +7,6 @@ use Illuminate\Contracts\Routing\Registrar as Router;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AnalyticsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ArticleController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AskToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AuthenticatedUserController;
@@ -46,12 +45,14 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugPreviewController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageSlugsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\PageTreeController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\RoleController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\SearchConsoleAnalyticsController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\SmartBlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\TagController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\UserController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\UserImageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoUploadController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\WebAnalyticsController;
 use Karabin\Fabriq\Http\Controllers\PermalinksRedirectController;
 use Karabin\Fabriq\Http\Controllers\SpaController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
@@ -235,7 +236,8 @@ class RouteRegistrar
 
     public function forAnalytics(): void
     {
-        Route::get('web-analytics', AnalyticsController::class)->name('analytics.web-analytics');
+        Route::get('web-analytics', WebAnalyticsController::class)->name('analytics.web-analytics');
+        Route::get('search-console-analytics', SearchConsoleAnalyticsController::class)->name('analytics.search-console');
     }
 
     public function forEvents(): void

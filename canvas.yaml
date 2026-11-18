@@ -1,0 +1,10 @@
+preset: laravel
+
+namespace: Karabin\Fabriq
+
+model:
+  namespace: Karabin\Fabriq
+
+paths:
+  src: src
+  resource: resources

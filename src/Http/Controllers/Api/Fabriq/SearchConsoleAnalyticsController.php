@@ -5,20 +5,22 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Karabin\Fabriq\Services\CloudflareAnalytics;
+use Karabin\Fabriq\Http\Controllers\Controller;
+use Karabin\Fabriq\Services\SearchConsoleService;
 
-class AnalyticsController
+class SearchConsoleAnalyticsController extends Controller
 {
     public function __invoke(
         Request $request,
-        CloudflareAnalytics $analytics
+        SearchConsoleService $searchConsole
     ): JsonResponse {
         $period = $request->string('period', '30d')->toString();
+        $siteUrl = config('google.config.site_url');
 
         $data = Cache::remember(
-            "cloudflare-analytics:{$period}",
+            "search-console-analytics:{$period}{$siteUrl}",
             now()->addMinutes(10),
-            fn () => $analytics->getAnalytics($period)
+            fn (): object => $searchConsole->getTopSearchTerms(config('google.config.site_url'), $period)
         );
 
         return response()->json($data);

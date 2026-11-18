@@ -44,7 +44,8 @@
         "spatie/laravel-webhook-server": "^3.8",
         "spatie/laravel-data": "^4.20",
         "spatie/laravel-typescript-transformer": "^3.3",
-        "spatie/laravel-translatable": "^6.15"
+        "spatie/laravel-translatable": "^6.15",
+        "revolution/laravel-google-searchconsole": "^4.2"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",

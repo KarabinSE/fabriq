@@ -27,7 +27,8 @@ class ConfigController extends Controller
         $supportedLocales = Fabriq::getModelClass('locale')->cachedLocales();
         $config = array_merge($fabriqConfig, [
             'supported_locales' => $supportedLocales,
-            'analytics' => (bool) config('services.cloudflare.analytics_site_tag'),
+            'web_analytics' => (bool) config('services.cloudflare.analytics_site_tag'),
+            'search_console_analytics' => (bool) config('google.service.enable', false),
         ]);
 
         return response()->json([
