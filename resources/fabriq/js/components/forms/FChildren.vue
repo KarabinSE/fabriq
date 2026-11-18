@@ -54,8 +54,8 @@
                                 v-if="canClone"
                                 v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona' }"
                                 class="focus:outline-none"
-                                @click.stop="cloneChild(child)"
                                 :disabled="parent.children.length >= max"
+                                @click.stop="cloneChild(child)"
                             >
                                 <CloneIcon
                                     thin
@@ -93,7 +93,10 @@
                     </div>
                 </template>
 
-                <slot :child="child" />
+                <slot
+                    :child="child"
+                    :index="childIndex"
+                />
             </UiCard>
         </Draggable>
 
@@ -149,15 +152,15 @@ export default {
         },
         canClone: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         canCopy: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         canHide: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         max: {
             type: Number,
