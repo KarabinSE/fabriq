@@ -3,7 +3,6 @@
 namespace Karabin\Fabriq;
 
 use Dyrynda\Artisan\Console\Commands\MakeUser;
-use Google\Service\SearchConsole;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -28,6 +27,7 @@ use Karabin\Fabriq\Repositories\Decorators\CachingPageRepository;
 use Karabin\Fabriq\Repositories\EloquentMenuRepository;
 use Karabin\Fabriq\Repositories\EloquentPageRepository;
 use Karabin\Fabriq\Repositories\Interfaces\PageRepositoryInterface;
+use Revolution\Google\SearchConsole\Providers\SearchConsoleServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 use Spatie\QueryBuilder\QueryBuilderServiceProvider;
@@ -106,6 +106,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/fabriq.php', 'fabriq');
         $this->mergeConfigFrom(__DIR__.'/../config/fortify.php', 'fortify');
         $this->mergeConfigFrom(__DIR__.'/../config/data.php', 'data');
+        $this->mergeConfigFrom(__DIR__.'/../config/google.php', 'google');
         $this->mergeConfigFrom(
             __DIR__.'/../config/ikoncept-websockets.php',
             'broadcasting.connections'
@@ -120,6 +121,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->register(FortifyServiceProvider::class);
         $this->app->register(TypeScriptTransformerServiceProvider::class);
+        $this->app->register(SearchConsoleServiceProvider::class);
 
         $this->app->get('config')->set(
             'media-library',
@@ -135,23 +137,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
                 $this->app->get('config')->get('services'),
                 $this->app->get('config')->get('fabriq.services')
             ),
-        );
-
-        // Search console
-        $this->app->get('config')->set(
-            'google',
-            [
-
-                'scopes' => [SearchConsole::WEBMASTERS],
-                'access_type' => 'offline',
-                'service' => [
-                    'enable' => env('GOOGLE_SERVICE_ENABLED', false),
-                    'file' => json_decode(env('GOOGLE_SERVICE_ACCOUNT_JSON_LOCATION', ''), true),
-                ],
-                'config' => [
-                    'site_url' => env('GOOGLE_SEARCH_CONSOLE_SITE_URL'),
-                ],
-            ]
         );
 
         $this->commands([

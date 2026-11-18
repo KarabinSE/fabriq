@@ -2,6 +2,7 @@
 
 namespace Karabin\Fabriq\Search;
 
+use Google\Service\SearchConsole\SearchAnalyticsQueryRequest;
 use Revolution\Google\SearchConsole\Query\AbstractQuery;
 
 class TopSearchTermsQuery extends AbstractQuery
@@ -14,6 +15,6 @@ class TopSearchTermsQuery extends AbstractQuery
         $this->setEndDate($endDate->toDateString());
         $this->setDimensions(['query']);
         $this->setRowLimit(15);
-        $this->setDataState('final');
+        $this->setDataState(SearchAnalyticsQueryRequest::DATA_STATE_FINAL);
     }
 }
