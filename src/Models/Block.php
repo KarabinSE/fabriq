@@ -66,6 +66,24 @@ class Block extends Model implements Sortable
         return $this->morphTo();
     }
 
+    public static function updateBlocks(array $blocks, Model $page): void
+    {
+        $blockUuids = [];
+
+        foreach ($blocks as $block) {
+            $savedBlock = Block::updateOrCreateBlock($block, $page);
+            $blockUuids[] = $savedBlock->uuid;
+        }
+
+        Block::setNewOrder($blockUuids, primaryKeyColumn: 'uuid');
+
+        Fabriq::getFqnModel('block')::where('model_id', $page->id)
+            ->where('model_type', $page->getMorphClass())
+            ->whereNull('parent_id')
+            ->whereNotIn('uuid', $blockUuids)
+            ->delete();
+    }
+
     public static function updateOrCreateBlock(array $block, Model $model, ?Block $parent = null): Block
     {
         $newBlock = Fabriq::getFqnModel('block')::updateOrCreate([
@@ -89,6 +107,9 @@ class Block extends Model implements Sortable
             $newChild = self::updateOrCreateBlock($child, $model, $newBlock);
             $newChildUuids[] = $newChild->uuid;
         }
+        Fabriq::getFqnModel('block')::where('parent_id', $newBlock['id'])
+            ->whereNotIn('uuid', $newChildUuids)
+            ->delete();
 
         Block::setNewOrder($newChildUuids, primaryKeyColumn: 'uuid');
 

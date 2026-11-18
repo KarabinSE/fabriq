@@ -31,20 +31,7 @@ class PageBlockController
     public function update(UpdateBlockRequest $request, int $pageId): JsonResponse
     {
         $page = Fabriq::getFqnModel('page')::findOrFail($pageId);
-        $blockUuids = [];
-
-        foreach ($request->array('blocks') as $block) {
-            $savedBlock = Block::updateOrCreateBlock($block, $page);
-            $blockUuids[] = $savedBlock->uuid;
-        }
-
-        Block::setNewOrder($blockUuids, primaryKeyColumn: 'uuid');
-
-        Fabriq::getFqnModel('block')::where('model_id', $page->id)
-            ->where('model_type', $page->getMorphClass())
-            ->whereNull('parent_id')
-            ->whereNotIn('uuid', $blockUuids)
-            ->delete();
+        Block::updateBlocks($request->array('blocks'), $page);
 
         return response()->json([
             'code' => ApiResponseCode::Success->value,
