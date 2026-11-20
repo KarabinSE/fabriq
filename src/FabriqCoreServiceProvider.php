@@ -15,6 +15,7 @@ use Karabin\Fabriq\Console\CreatePageTemplate;
 use Karabin\Fabriq\Console\InstallFabriqCommand;
 use Karabin\Fabriq\Console\MakeTemplateField;
 use Karabin\Fabriq\Console\PublishNotification;
+use Karabin\Fabriq\Console\RebuildBlockReferencesCommand;
 use Karabin\Fabriq\Console\ResourceMakeCommand;
 use Karabin\Fabriq\Console\SendNotificationReminders;
 use Karabin\Fabriq\Console\UpdateFabriqCommand;
@@ -114,6 +115,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
         $this->app->register(BroadcastServiceProvider::class);
         $this->app->register(EventServiceProvider::class);
+        $this->app->register(ReferenceEventServiceProvider::class);
         $this->app->register(PermissionServiceProvider::class);
         $this->app->register(MediaLibraryServiceProvider::class);
         $this->app->register(QueryBuilderServiceProvider::class);
@@ -148,6 +150,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             MakeTemplateField::class,
             InstallFabriqCommand::class,
             PublishNotification::class,
+            RebuildBlockReferencesCommand::class,
             ResourceMakeCommand::class,
             SendNotificationReminders::class,
             VueApiModelMakeCommand::class,

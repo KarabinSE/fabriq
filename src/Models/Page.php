@@ -23,6 +23,8 @@ use Karabin\Fabriq\ContentGetters\SmartBlockGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\PageFactory;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Services\BlockReferenceInvalidator;
+use Karabin\Fabriq\Services\CacheBuster;
 use Karabin\Fabriq\Traits\Commentable;
 use Karabin\Fabriq\Traits\HasContent;
 use Spatie\MediaLibrary\HasMedia;
@@ -33,6 +35,8 @@ class Page extends Model implements HasMedia
     use BroadcastsModelEvents, Commentable, HasContent, HasFactory, HasPaths, InteractsWithMedia, NodeTrait;
 
     public const RELATIONSHIPS = ['template', 'template.fields'];
+
+    private array $deletedCacheKeys = [];
 
     public function getContentCacheKeys(): array
     {
@@ -65,6 +69,9 @@ class Page extends Model implements HasMedia
     protected static function booted()
     {
         static::deleting(function ($page) {
+            if (config('fabriq.webhooks.enabled')) {
+                $page->deletedCacheKeys = app(CacheBuster::class)->getCacheKeys($page)->all();
+            }
             MenuItem::where('page_id', $page->id)->get()->each(function ($item) {
                 $item->delete();
             });
@@ -81,6 +88,12 @@ class Page extends Model implements HasMedia
                         ->orWhere('model_type', Fabriq::getFqnModel('page'));
                 })
                 ->delete();
+        });
+
+        static::deleted(function ($page) {
+            $invalidator = app(BlockReferenceInvalidator::class);
+            $invalidator->keysChanged($page->deletedCacheKeys);
+            $invalidator->resourceChanged('page', (int) $page->getKey());
         });
 
         static::created(function ($page) {

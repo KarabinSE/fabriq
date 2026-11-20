@@ -18,6 +18,9 @@ use Karabin\Fabriq\ContentGetters\ImageGetter;
 use Karabin\Fabriq\ContentGetters\VideoGetter;
 use Karabin\Fabriq\Database\Factories\BlockFactory;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Services\BlockReferenceIndex;
+use Karabin\Fabriq\Services\BlockReferenceInvalidator;
+use Karabin\Fabriq\Services\CacheWebhookBatcher;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -47,6 +50,24 @@ class Block extends Model implements Sortable
         static::creating(function (Block $block) {
             $block->uuid = Str::uuid();
         });
+
+        static::saved(function (Block $block) {
+            app(BlockReferenceIndex::class)->sync($block);
+            $pageClass = Fabriq::getFqnModel('page');
+            if ($block->model_type === (new $pageClass)->getMorphClass()) {
+                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->model_id);
+            }
+            if ($block->wasChanged(['model_type', 'model_id']) && $block->getOriginal('model_type') === (new $pageClass)->getMorphClass()) {
+                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->getOriginal('model_id'));
+            }
+        });
+
+        static::deleted(function (Block $block) {
+            $pageClass = Fabriq::getFqnModel('page');
+            if ($block->model_type === (new $pageClass)->getMorphClass()) {
+                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->model_id);
+            }
+        });
     }
 
     public function casts(): array
@@ -68,23 +89,43 @@ class Block extends Model implements Sortable
 
     public static function updateBlocks(array $blocks, Model $page): void
     {
-        $blockUuids = [];
+        app(CacheWebhookBatcher::class)->defer(function () use ($blocks, $page) {
+            $blockUuids = [];
 
-        foreach ($blocks as $block) {
-            $savedBlock = Block::updateOrCreateBlock($block, $page);
-            $blockUuids[] = $savedBlock->uuid;
-        }
+            foreach ($blocks as $block) {
+                $savedBlock = Block::updateOrCreateBlock($block, $page);
+                $blockUuids[] = $savedBlock->uuid;
+            }
 
-        Block::setNewOrder($blockUuids, primaryKeyColumn: 'uuid');
+            Block::setNewOrder($blockUuids, primaryKeyColumn: 'uuid');
 
-        Fabriq::getFqnModel('block')::where('model_id', $page->id)
-            ->where('model_type', $page->getMorphClass())
-            ->whereNull('parent_id')
-            ->whereNotIn('uuid', $blockUuids)
-            ->delete();
+            Fabriq::getFqnModel('block')::where('model_id', $page->id)
+                ->where('model_type', $page->getMorphClass())
+                ->whereNull('parent_id')
+                ->whereNotIn('uuid', $blockUuids)
+                ->delete();
+
+            $pageClass = Fabriq::getFqnModel('page');
+            if ($page instanceof $pageClass) {
+                app(BlockReferenceInvalidator::class)->blockChanged((int) $page->getKey());
+            }
+        });
     }
 
     public static function updateOrCreateBlock(array $block, Model $model, ?Block $parent = null): Block
+    {
+        return app(CacheWebhookBatcher::class)->defer(function () use ($block, $model, $parent) {
+            $savedBlock = self::saveBlockTree($block, $model, $parent);
+            $pageClass = Fabriq::getFqnModel('page');
+            if ($model instanceof $pageClass) {
+                app(BlockReferenceInvalidator::class)->blockChanged((int) $model->getKey());
+            }
+
+            return $savedBlock;
+        });
+    }
+
+    private static function saveBlockTree(array $block, Model $model, ?Block $parent = null): Block
     {
         $newBlock = Fabriq::getFqnModel('block')::updateOrCreate([
             'uuid' => $block['uuid'] ?? null,
@@ -104,7 +145,7 @@ class Block extends Model implements Sortable
 
         $newChildUuids = [];
         foreach ($children as $child) {
-            $newChild = self::updateOrCreateBlock($child, $model, $newBlock);
+            $newChild = self::saveBlockTree($child, $model, $newBlock);
             $newChildUuids[] = $newChild->uuid;
         }
         Fabriq::getFqnModel('block')::where('parent_id', $newBlock['id'])

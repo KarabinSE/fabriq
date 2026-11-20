@@ -2,13 +2,13 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\Fabriq\Actions\BustCacheWithWebhook;
-use Karabin\Fabriq\Database\Factories\MenuFactory;
-use Karabin\Fabriq\Fabriq;
-use Karabin\Fabriq\Services\CacheBuster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Karabin\Fabriq\Database\Factories\MenuFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Services\CacheBuster;
+use Karabin\Fabriq\Services\CacheWebhookBatcher;
 
 class Menu extends Model
 {
@@ -25,12 +25,12 @@ class Menu extends Model
     {
         static::saved(function ($menu) {
             $tagsToFlush = (new CacheBuster)->getCacheKeys($menu, ['fabriq_menu_'.$menu->slug]);
-            (new BustCacheWithWebhook)->handle($tagsToFlush->toArray());
+            app(CacheWebhookBatcher::class)->send($tagsToFlush->toArray());
         });
 
         static::deleted(function ($menu) {
             $tagsToFlush = (new CacheBuster)->getCacheKeys($menu, ['fabriq_menu_'.$menu->slug]);
-            (new BustCacheWithWebhook)->handle($tagsToFlush->toArray());
+            app(CacheWebhookBatcher::class)->send($tagsToFlush->toArray());
         });
     }
 

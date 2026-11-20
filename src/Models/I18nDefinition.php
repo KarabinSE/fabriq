@@ -3,6 +3,7 @@
 namespace Karabin\Fabriq\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Translatable\HasTranslations;
 
 class I18nDefinition extends Model
@@ -14,4 +15,9 @@ class I18nDefinition extends Model
     protected $guarded = [];
 
     public array $translatable = ['content'];
+
+    public function model(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

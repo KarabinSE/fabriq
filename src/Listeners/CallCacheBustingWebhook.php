@@ -2,10 +2,10 @@
 
 namespace Karabin\Fabriq\Listeners;
 
-use Karabin\Fabriq\Actions\BustCacheWithWebhook;
+use Karabin\Fabriq\Events\ContentUpdated;
 use Karabin\Fabriq\Fabriq;
 use Karabin\Fabriq\Services\CacheBuster;
-use Karabin\Fabriq\Events\ContentUpdated;
+use Karabin\Fabriq\Services\CacheWebhookBatcher;
 
 class CallCacheBustingWebhook
 {
@@ -45,6 +45,6 @@ class CallCacheBustingWebhook
             return;
         }
 
-        (new BustCacheWithWebhook)->handle($keysToForget->toArray());
+        app(CacheWebhookBatcher::class)->send($keysToForget->toArray());
     }
 }

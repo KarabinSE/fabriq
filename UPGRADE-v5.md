@@ -54,6 +54,7 @@ The migrations run in this order. All dates are in the 2026 migration file names
 | Migration                                         | What it does                                                                                    |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `2026_10_14_065053_create_blocks_table`           | Creates `blocks` (name, locale, JSON `content`, `hidden`, nested `parent_id`, polymorphic owner, `block_type_id`, `sortindex`). |
+| `2026_10_14_065054_create_block_references_table` | Creates the derived block reference index. |
 | `2026_10_20_141500_add_path_to_menu_items_table`  | Adds a nullable JSON `path` column to `menu_items`. Paths are updated when content is saved.    |
 
 These only add structures and are safe to repeat on a copy of the data.
@@ -198,6 +199,20 @@ Notes:
 - Use `updateContent(array $fieldData, ?string $locale = null)`. There is no revision argument.
 - Use `getSimpleFieldContent()` for raw stored values and `getFieldContent()` for values after getters and repeaters. Both **drop keys that are not fields on the model's content template**. Add a template field (via a migration, seeder or the admin) for any key you still need to read.
 - Saving content dispatches `ContentUpdated`. Listeners (slug, cache busting webhook, search terms, tag cache flush) hang off it. Replace any `BustPageCacheListener` registration with the `ContentUpdated` listeners.
+
+### Content references and cache invalidation
+
+The `2026_10_21_130001_create_content_references_table` migration creates the reference index for translated content definitions after the definitions are consolidated.
+
+After running migrations, run `php artisan fabriq:rebuild-block-references` once to index existing blocks and content definitions. The command can be rerun after imports, template field type changes or repairs; run only one rebuild at a time and pause block and content writes during the rebuild. Deploy the new code to all writers before rebuilding, and restart long-running workers so they also maintain the indexes.
+
+Image, file, video and linked page changes invalidate owners whose blocks or translated content reference them, using each owner's existing cache keys. This includes page content and block updates, even when the linked page's slug is unchanged. Smart block references are followed to pages that use them. Existing content is not covered until the rebuild completes. Consumers must handle the existing `invalid_cache_keys` webhook payload, including `fabriq_pages_slug_<slug>`; Fabriq cannot invalidate a consumer's cache otherwise. Webhook delivery still depends on the configured endpoint, queue and retry settings.
+
+Image, file and video updates through Fabriq combine the media and resource saves into one notification after both saves. Independent media changes still trigger their own notification.
+
+Page content and block updates each combine their cache keys into one notification after their respective writes. The editor sends these as separate requests, so a complete page save can still send one notification per request.
+
+The indexes follow the built-in `image`, `file`, `video`, `smartBlock`, `button` and `buttons` content shapes and template field types. Save blocks and content definitions through Eloquent with events enabled; direct database writes, bulk updates and `saveQuietly()` bypass index synchronization and require a rebuild. Indexing errors are surfaced but do not roll back the saved content; rebuild the indexes after resolving such an error. Webhooks are sent after the corresponding writes, without waiting for any transaction a consuming app may have started. The database must enforce foreign keys so deleting blocks or definitions also removes their references. No Fabriq page cache is introduced by this feature.
 
 ### Search terms
 

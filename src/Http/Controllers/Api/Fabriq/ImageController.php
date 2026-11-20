@@ -11,6 +11,7 @@ use Karabin\Fabriq\Http\Requests\UpdateImageRequest;
 use Karabin\Fabriq\Models\Image;
 use Karabin\Fabriq\QueryBuilders\ImageSort;
 use Karabin\Fabriq\QueryBuilders\TagSort;
+use Karabin\Fabriq\Services\BlockReferenceInvalidator;
 use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -68,8 +69,10 @@ class ImageController extends Controller
         $image->imageTags = $request->validated()['tags'] ?? [];
         $media = $image->getFirstmedia('images');
         $media->name = $request->name;
-        $media->save();
-        $image->save();
+        app(BlockReferenceInvalidator::class)->deferResourceChanges('image', (int) $image->getKey(), function () use ($media, $image) {
+            $media->save();
+            $image->save();
+        });
 
         return Fabriq::getDto('image')::fromModel($image)->wrap('data')->toResponse($request);
     }
