@@ -260,6 +260,10 @@ import { usePageStore, useConfigStore, useUiStore } from '@fabriq/stores/index.j
 
 import PagePreview from './PagePreview.vue'
 import { usePreviewStore } from '@fabriq/stores/preview.js'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast.js'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 
 export default {
     name: 'PagesEdit',
@@ -272,9 +276,8 @@ export default {
 
     beforeRouteLeave (from, to, next) {
         this.previewStore.reset()
-        this.$vfm.hide('block-type-modal')
-        this.$eventBus.off('page-updated-echo', this.askToUpdatePage)
-        this.$destroy()
+        this.vfm.close('block-type-modal')
+        this.eventBus.off('page-updated-echo', this.askToUpdatePage)
         next()
     },
 
@@ -283,12 +286,16 @@ export default {
         const configStore = useConfigStore();
         const uiStore = useUiStore();
         const previewStore = usePreviewStore()
+        const vfm = useVfm()
+        const eventBus = useEventBus()
 
         return {
+            vfm,
             pageStore,
             configStore,
             uiStore,
             previewStore,
+            eventBus,
         }
     },
 
@@ -338,12 +345,12 @@ export default {
 
     async activated () {
         this.pageId = this.$route.params.id
-        this.$eventBus.on('page-updated-echo', this.askToUpdatePage)
+        this.eventBus.on('page-updated-echo', this.askToUpdatePage)
         this.pageStore.resetPage()
         this.pageStore.fetchPage(this.pageId)
         this.$nextTick(() => {
             if (this.$route.query.openComments) {
-                this.$eventBus.emit('open-comment-section')
+                this.eventBus.emit('open-comment-section')
             }
         })
     },
@@ -354,18 +361,18 @@ export default {
         },
 
         askToUpdatePage(event) {
-            this.$vfm.show('RefreshObjectModal', event)
+            this.vfm.open('RefreshObjectModal', event)
         },
 
         openAllCards () {
-            this.$eventBus.emit('open-all-cards')
+            this.eventBus.emit('open-all-cards')
         },
 
         async updateContent () {
             try {
                 await this.pageStore.update(this.pageId)
-                this.$toast.success({ title: 'Utkastet har sparats' })
-                this.$eventBus.emit('page-updated')
+                toast.success({ title: 'Utkastet har sparats' })
+                this.eventBus.emit('page-updated')
             } catch (error) {
                 console.error(error)
             }
@@ -374,7 +381,7 @@ export default {
         setLanguage (key) {
             this.configStore.setActiveLocale(key)
             this.$nextTick(() => {
-                this.$eventBus.emit('page-updated')
+                this.eventBus.emit('page-updated')
             })
         },
 

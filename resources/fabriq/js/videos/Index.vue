@@ -16,7 +16,7 @@
                 label="Taggar"
                 name="tags"
                 object
-                :create-option="tag => ({ name: tag, value: null, type: 'images'})"
+                :create-option="tag => ({ name: tag.name, value: null, type: 'images'})"
                 value-key="name"
                 option-label="name"
                 :options="fileTags"
@@ -158,7 +158,7 @@
                         <span
                             v-if="prop == 'file'"
                             class="block w-20"
-                            @click="$vfm.show('video-modal', {id: item.id})"
+                            @click="vfm.open('video-modal', {id: item.id})"
                         >
                             <UiImagePresenter
                                 :image="item"
@@ -179,7 +179,7 @@
                             class="flex space-x-2"
                         >
                             <UiBadge
-                                v-for="(tag, index) in item.tags.data"
+                                v-for="(tag, index) in item.tags"
                                 :key="index"
                             >{{ tag.name }}</UiBadge>
                         </span>
@@ -211,16 +211,29 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
 import Tag from '@fabriq/models/Tag.js'
 import Video from '@fabriq/models/Video.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
+import { useEventBus } from '@fabriq/services/eventBus'
+import { createModal } from '@fabriq/helpers/utils'
+import VideoModal from '@fabriq/videos/VideoModal.vue'
+
 export default {
     name: 'VideosIndex',
     beforeRouteLeave (from, to, next) {
-        this.$eventBus.off('file-updated', this.fetchVideos)
+        this.eventBus.off('file-updated', this.fetchVideos)
         this.uploadInit = false
         next()
+    },
+
+    setup() {
+        const vfm = useVfm()
+        const eventBus = useEventBus()
+
+        return {vfm, eventBus}
     },
     data () {
         return {
@@ -288,7 +301,7 @@ export default {
     activated () {
         this.fetchVideos()
         this.uploadInit = true
-        this.$eventBus.on('video-updated', this.fetchVideos)
+        this.eventBus.on('video-updated', this.fetchVideos)
     },
 
     methods: {
@@ -315,7 +328,7 @@ export default {
             try {
                 await Video.destroy(id)
                 if (!this.suppressToast) {
-                    this.$toast.success({ title: 'Videon har tagits bort' })
+                    toast.success({ title: 'Videon har tagits bort' })
                     this.fetchVideos()
                 }
             } catch (error) {
@@ -335,7 +348,10 @@ export default {
             this.fetchVideos()
         },
         openVideoModal (item) {
-            this.$vfm.show('video-modal', { id: item.id })
+            createModal(VideoModal, {
+                item,
+                onItemDeleted: this.fetchVideos,
+            })
         },
         async fetchVideoTags () {
             this.selectedTags = []
@@ -365,7 +381,7 @@ export default {
                     model_type: 'videos'
                 }
                 await Tag.store(payload)
-                this.$toast.success({ title: 'Taggarna har lagts till!' })
+                toast.success({ title: 'Taggarna har lagts till!' })
                 this.fetchVideos()
                 this.showTagsModal = false
             } catch (error) {
@@ -398,8 +414,8 @@ export default {
                 })
             )
             this.suppressToast = false
-            this.$eventBus.emit('clear-checked-rows')
-            this.$toast.success({ title: 'Videorna har tagits bort' })
+            this.eventBus.emit('clear-checked-rows')
+            toast.success({ title: 'Videorna har tagits bort' })
             this.fetchVideos()
         }
     }

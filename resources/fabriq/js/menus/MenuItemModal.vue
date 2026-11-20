@@ -11,14 +11,14 @@
             <span
                 class="text-gray-700"
                 v-text="isCreating ? 'Skapa menypunkt' : 'Redigera menypunkt'"
-            />
+            /> {{ show }}
         </template>
 
-        <template #actions>
+        <template #actions="{ close }">
             <div class="flex justify-end space-x-4">
                 <button
                     class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                    @click="show = false"
+                    @click="close"
                 >
                     Stäng
                 </button>
@@ -48,7 +48,7 @@
                         <div
                             tabindex="0"
                             role="radio"
-                            :data-checked="mItem.type === 'internal'"
+                            :data-checked="mItem.type === 'internal' || undefined"
                             class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'internal'"
                             @keydown.space="mItem.type = 'internal'"
@@ -66,7 +66,7 @@
                         <div
                             tabindex="0"
                             role="radio"
-                            :data-checked="mItem.type === 'external'"
+                            :data-checked="mItem.type === 'external' || undefined"
                             class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'external'"
                             @keydown.space="mItem.type = 'external'"
@@ -84,7 +84,7 @@
                         <div
                             tabindex="0"
                             role="radio"
-                            :data-checked="mItem.type === 'file'"
+                            :data-checked="mItem.type === 'file' || undefined"
                             class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
                             @click="mItem.type = 'file'"
                             @keydown.space="mItem.type = 'file'"
@@ -204,6 +204,7 @@
     </FModal>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import MenuItem from '@fabriq/models/MenuItem.js'
 import PageTree from '@fabriq/models/PageTree.js'
 function defaultCreationObject () {
@@ -219,14 +220,14 @@ function defaultCreationObject () {
 export default {
     name: 'MenuItemModal',
     props: {
-        isCreating: {
-            type: Boolean,
-            default: false
+        item: {
+            type: [null, Object],
+            default: null
         }
     },
     data () {
         return {
-            show: false,
+            show: true,
             pages: [],
             content: {},
             ready: false,
@@ -241,21 +242,27 @@ export default {
             }
         }
     },
+    computed: {
+        isCreating() {
+            return !this.item
+        }
+    },
     methods: {
-        async initModal (parameters) {
-            if (this.isCreating) {
+        async initModal () {
+            if (this.item) {
+                this.mItem.id = this.item.id
+                await Promise.all([
+                    this.fetchPages(),
+                    this.fetchMenuItem()
+                ])
+            } else {
                 this.fetchPages()
-                this.$set(this, 'content', {
+                this.content = {
                     title: null,
                     url: null,
                     external_url: null,
                     body: null
-                })
-            } else {
-                const id = parameters.ref.params
-                this.mItem.id = id
-                const promises = [this.fetchPages(), this.fetchMenuItem()]
-                await Promise.all(promises)
+                }
             }
 
             this.ready = true
@@ -291,8 +298,8 @@ export default {
                     }
                 }
                 await MenuItem.store(this.$route.params.id, payload)
-                this.$toast.success({ title: 'Menypunkten har skapats!' })
-                this.$emit('created')
+                toast.success({ title: 'Menypunkten har skapats!' })
+                this.$vfm.close('menu-item-modal')
                 this.show = false
             } catch (error) {
                 console.error(error)
@@ -302,7 +309,7 @@ export default {
             try {
                 await this.validate()
             } catch (error) {
-                this.$toast.warning({ title: 'Kontrollera uppgifterna', message: 'Fyll i alla obligatoriska fält korrekt.' })
+                toast.warning({ title: 'Kontrollera uppgifterna', message: 'Fyll i alla obligatoriska fält korrekt.' })
                 return
             }
 
@@ -316,8 +323,8 @@ export default {
                     }
                 }
                 await MenuItem.update(this.mItem.id, payload)
-                this.$emit('updated')
-                this.show = false
+                toast.success({ title: 'Menypunkten har uppdaterats!' })
+                this.$vfm.close('menu-item-modal')
             } catch (error) {
                 console.error(error)
             }
@@ -337,9 +344,9 @@ export default {
                 }
                 if (this.mItem.type === 'internal' && !this.useCustomTitle) {
                     this.content.title = null
-                    this.$set(this, 'placeholder', data.title)
+                    this.placeholder = data.title
                 } else if (!this.content.title) {
-                    this.$set(this, 'placeholder', data.title || this.pages.find(page => page.id === this.mItem.page_id)?.name || '')
+                    this.placeholder = data.title || this.pages.find(page => page.id === this.mItem.page_id)?.name || ''
                 }
             } catch (error) {
                 console.error(error)
@@ -354,7 +361,7 @@ export default {
         },
         onPageChange(pageId) {
             const pageTitle = this.pages.find(page => page.id === pageId)?.page_title ?? ''
-            this.$set(this, 'placeholder', pageTitle)
+            this.placeholder = pageTitle
         }
     }
 }

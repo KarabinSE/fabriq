@@ -11,7 +11,6 @@
             <FSelect
                 v-model="localContent.size"
                 name="size"
-                default-value="large"
                 :clearable="false"
                 label="Storlek"
                 :options="[{ label: 'Small', value: 'small' }, { label: 'Medium', value: 'medium' }, { label: 'Large', value: 'large' }]"
@@ -78,7 +77,7 @@
                         </div>
                         <div class="flex items-center space-x-4">
                             <button
-                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona block' }"
+                                v-tooltip="'Klona block'"
                                 class="focus:outline-none"
                                 @click.stop="addCard(child)"
                             >
@@ -88,7 +87,7 @@
                                 />
                             </button>
                             <button
-                                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
+                                v-tooltip="'Kopiera block-ID'"
                                 class="focus:outline-none"
                                 type="button"
                                 @click.stop="copyBlockId(child.id)"
@@ -215,6 +214,7 @@
 <script>
 import Draggable from 'vuedraggable'
 import { useClipboard } from '@vueuse/core';
+import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'CardBlock',
     components: { Draggable },
@@ -267,7 +267,11 @@ export default {
                 }
             ],
             // repeaters: this.content.repeaters,
-            localContent: this.content
+            localContent: {
+                ...this.content,
+                size: 'large'
+
+            }
         }
     },
     computed: {
@@ -279,9 +283,6 @@ export default {
                 ghostClass: 'ghost'
             }
         }
-    },
-    mounted() {
-        this.$set(this.localContent, 'button', { text: '', linkType: 'internal', page_id: null })
     },
     methods: {
         addCard(item) {
@@ -307,7 +308,7 @@ export default {
             this.localContent.children.splice(index, 1)
         },
         copySuccess() {
-            this.$toast.success({ title: 'Kortets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+            toast.success({ title: 'Kortets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
         },
         async copyBlockId(id) {
             await this.copy('#' + id);

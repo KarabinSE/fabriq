@@ -21,14 +21,18 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Page from '@fabriq/models/Page.js'
 import { useClipboard } from '@vueuse/core';
+import { useEventBus } from '@fabriq/services/eventBus'
+
 export default {
     name: 'PagePaths',
     setup() {
         const { copy } = useClipboard({ legacy: true });
+        const eventBus = useEventBus()
 
-        return { copy }
+        return { copy, eventBus }
     },
     data() {
         return {
@@ -39,12 +43,12 @@ export default {
             }
         }
     },
-    beforeDestroy() {
-        this.$eventBus.off('page-updated', this.fetchPaths)
+    unmounted() {
+        this.eventBus.off('page-updated', this.fetchPaths)
     },
     mounted() {
         this.fetchPaths()
-        this.$eventBus.on('page-updated', this.fetchPaths)
+        this.eventBus.on('page-updated', this.fetchPaths)
     },
     methods: {
         async fetchPaths () {
@@ -53,7 +57,7 @@ export default {
         },
 
         copySuccess () {
-            this.$toast.success({ title: 'Länken har kopierats'})
+            toast.success({ title: 'Länken har kopierats'})
         },
 
         async copyPath (id) {

@@ -1,8 +1,8 @@
 <template>
     <div>
-        <div class="flex justify-between mt-2 mb-4 text-sm font-semibold">
+        <div class="flex justify-between mt-2 mb-3 text-sm font-semibold">
             <div class="text-xl font-light">
-                <slot />
+                <slot>Knappar</slot>
             </div>
             <button
                 :disabled="addLocked"
@@ -12,13 +12,15 @@
                 @click="addButton"
             >
                 <span
-                    v-if="maxItems && maxItems <= buttons.length"
+                    v-if="maxItems && maxItems <= model.length"
                     class="mr-4 text-xs italic font-normal text-neutral-400"
                 >
                     Du har nått det maximala antalet knappar
                 </span>
-                <div v-else
-                     class="flex gap-2 items-center">
+                <div
+                    v-else
+                    class="flex gap-2 items-center"
+                >
                     <PlusIcon class="size-5" />Lägg till knapp
                 </div>
             </button>
@@ -49,7 +51,7 @@
         <div
             v-for="(button, index) in buttons"
             :key="index"
-            class="flex mb-6 space-x-6"
+            class="flex mb-3 space-x-6"
         >
             <FButtonItem
                 v-model="buttons[index]"
@@ -83,119 +85,86 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import PageTree from '@fabriq/models/PageTree.js'
-import Menu from '@fabriq/models/Menu.js'
-export default {
-    name: 'FButtonList',
-    props: {
-        value: {
-            type: Array,
-            default: () => []
-        },
-        options: {
-            required: false,
-            type: Object,
-            default: () => ({})
-        },
-        maxItems: {
-            type: Number,
-            required: false,
-            default: null
-        },
-        placeholder: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        color: {
-            type: Boolean,
-            default: false,
-        },
-        arrow: {
-            type: Boolean,
-            default: false,
-        }
-    },
-    data () {
-        return {
-            buttons: [],
-            defaultOptions: {
-                newTab: false
-            },
-            pages: []
-        }
-    },
-    computed: {
-        noButtons () {
-            return this.buttons.length === 0
-        },
-        mergedOptions () {
-            return {
-                ...this.defaultOptions,
-                ...this.options
-            }
-        },
-        addLocked() {
-            return this.maxItems && this.maxItems <= this.buttons.length
-        }
-    },
-    created () {
-        if (!this.value) {
-            this.$emit('input', this.buttons)
-        }
-        this.fetchPages()
-        this.buttons = this.value
-    },
-    methods: {
-        async fetchPages () {
-            try {
-                const payload = {
-                    params: {
-                        // field: 'id,name',
-                        append: 'paths',
-                        selectOptions: true
-                    }
-                }
-                const { data } = await PageTree.index(payload)
-                this.pages = data
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        async fetchTree () {
-            try {
-                const payload = {
-                    params: {
-                        // field: 'id,name',
-                        selectOptions: true
-                    }
-                }
-                const { data } = await Menu.showTree(1, payload)
-                this.pages = data
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        addButton () {
-            this.buttons.push({
-                type: 'link',
-                linkType: 'internal',
-                text: 'Ny knapp',
-                url: '',
-                newTab: false,
-                file: {
-                    id: 0
-                }
-            })
-            this.$emit('input', this.buttons)
+import { onBeforeMount, ref, watch, watchEffect } from 'vue'
+import { computed } from 'vue'
+import { reactive } from 'vue'
+import { Button } from '@fabriq/models/Button'
 
-            this.fetchPages()
-            // this.fetchTree()
-        },
-        spliceButton (index) {
-            this.buttons.splice(index, 1)
-        }
+defineOptions({name: 'FButtonList'})
+
+const buttons = defineModel({
+    type: Array,
+    default: () => [],
+})
+
+const emit = defineEmits(['update:model-value'])
+const props = defineProps({
+    options: {
+        type: Object,
+        default: () => ({})
+    },
+    maxItems: {
+        type: Number,
+        default: null
+    },
+    placeholder: {
+        type: String,
+        default: null,
+    },
+    color: {
+        type: Boolean,
+        default: false,
+    },
+    arrow: {
+        type: Boolean,
+        default: false,
     }
+})
+
+watchEffect(() => {
+    if(buttons.value === undefined) {
+        emit('update:model-value', [])
+    }
+})
+
+const pages = ref([])
+const defaultOptions = reactive({
+    newTab: false
+})
+
+const noButtons = computed(() => buttons.value.length === 0)
+const addLocked = computed(() => props.maxItems && props.maxItems <= buttons.value.length)
+const mergedOptions = computed(() => ({
+    ...defaultOptions,
+    ...props.options,
+}))
+
+onBeforeMount(() => {
+    fetchPages()
+})
+
+async function fetchPages () {
+    try {
+        const payload = {
+            params: {
+                append: 'paths',
+                selectOptions: true
+            }
+        }
+        const { data } = await PageTree.index(payload)
+        pages.value = data
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function addButton () {
+    buttons.value.push(new Button)
+}
+
+function spliceButton(index) {
+    buttons.value.splice(index, 1)
 }
 </script>

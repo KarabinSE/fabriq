@@ -133,7 +133,7 @@
                 <button
                     type="button"
                     class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createBlockTypeModal')"
+                    @click="vfm.open('createBlockTypeModal')"
                 >
                     Lägg till blocktyp
                 </button>
@@ -181,9 +181,11 @@
 <script>
 import EditModal from '@fabriq/blockTypes/EditModal.vue'
 import FBlockTypeImageInput from '@fabriq/components/forms/FBlockTypeImageInput.vue'
+import { toast } from '@fabriq/components/toast/toast'
 import BlockType from '@fabriq/models/BlockType'
 import Template from '@fabriq/models/Template'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
 
 function defaultCreationObject () {
     return {
@@ -245,6 +247,11 @@ export default {
             ],
         }
     },
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     activated () {
         this.fetchItems()
     },
@@ -273,17 +280,17 @@ export default {
         async createItem () {
             try {
                 const { data } = await BlockType.store(this.newItem)
-                this.$toast.success({
+                toast.success({
                     title: 'Blocktypen har skapats!',
                     buttonText: 'Redigera till objektet',
                     onClick: () => this.handleRowClick(data)
                 })
-                this.$vfm.hide('createBlockTypeModal')
+                this.vfm.close('createBlockTypeModal')
                 this.resetCreateModal()
                 this.fetchItems()
             } catch (error) {
                 if (error.response.status === 422) {
-                    this.$refs.observer.validate()
+                    this.$refs.observer?.validate()
                 }
                 console.error(error)
             }
@@ -313,7 +320,7 @@ export default {
             const { data } = await Template.index(payload)
             this.templates = data
             this.showEditModal = true
-            this.$vfm.show('blockTypeEditModal')
+            this.vfm.open('blockTypeEditModal')
         },
         clearSearch () {
             this.queryParams['filter[search]'] = ''
@@ -357,8 +364,8 @@ export default {
         async updateBlockType() {
             await this.updateBlockTypeImage()
             await this.updateBlockTypeData()
-            this.$toast.success({title: 'Blocktypen har uppdaterats!'})
-            this.$vfm.hide('blockTypeEditModal')
+            toast.success({title: 'Blocktypen har uppdaterats!'})
+            this.vfm.close('blockTypeEditModal')
             this.fetchItems()
         }
     }

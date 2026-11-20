@@ -66,7 +66,7 @@
                     <div
                         v-for="(user, index) in usersIdleWithoutKey"
                         :key="user.id"
-                        v-tooltip.bottom="{ delay: { show: 100, hide: 100 }, content: authenticatedUser.id !== user.id ? `${user.name} tittar på denna sida nu` : 'Det är du!' }"
+                        v-tooltip="{ delay: { show: 100, hide: 100 }, content: authenticatedUser.id !== user.id ? `${user.name} tittar på denna sida nu` : 'Det är du!' }"
                         :class="{'z-10' : index === 0}"
                     >
                         <UiAvatar
@@ -81,15 +81,28 @@
 </template>
 <script>
 import RefreshObjectModal from '@fabriq/components/modals/RefreshObjectModal.vue'
+import { toast } from '@fabriq/components/toast/toast'
 import axios from 'axios'
+import { useVfm } from 'vue-final-modal'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 export default {
     name: 'PresenceInfo',
     components: { RefreshObjectModal },
+
+    setup() {
+        const vfm = useVfm()
+        const eventBus = useEventBus()
+
+        return {vfm, eventBus}
+    },
+
     data() {
         return {
             hasAskedToEdit: false
         }
     },
+
     computed: {
         authenticatedUser () {
             return this.$store.getters['user/user']
@@ -121,12 +134,12 @@ export default {
         }
     },
     created() {
-        this.$eventBus.$on('user-asked-to-leave-echo', this.notifyUser)
-        this.$eventBus.$on('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
+        this.eventBus.on('user-asked-to-leave-echo', this.notifyUser)
+        this.eventBus.on('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },
-    beforeDestroy() {
-        this.$eventBus.$off('user-asked-to-leave-echo', this.notifyUser)
-        this.$eventBus.$off('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
+    unmounted() {
+        this.eventBus.off('user-asked-to-leave-echo', this.notifyUser)
+        this.eventBus.off('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },
     methods: {
         async askToEdit() {
@@ -142,13 +155,13 @@ export default {
             await axios.post('/api/notifications/decline-to-leave/' + parameters.causer.id, {
                 path: this.$route.path
             })
-            this.$vfm.hide('askToLeaveModal')
+            this.vfm.close('askToLeaveModal')
         },
         notifyUserLeaveDeclined(event) {
             if(this.$route.path !== event.identifier) {
                 return
             }
-            this.$toast.declined({
+            toast.declined({
                 position: 'top-right',
                 title: 'Överlämning nekad',
                 message: event.text,
@@ -159,7 +172,7 @@ export default {
         },
         notifyUser(event) {
             if(event.identifier === this.$route.path) {
-                this.$vfm.show('askToLeaveModal', event)
+                this.vfm.open('askToLeaveModal', event)
             }
         },
     }

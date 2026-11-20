@@ -1,3 +1,4 @@
+@layer vfm;
 @import 'tailwindcss';
 @import './theme.css';
 @import './multiselect.css';
@@ -5,6 +6,18 @@
 
 @source '../js/**/*.{js,vue}';
 @source '../views/**/*.blade.php';
+
+@layer base {
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.2s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
+    }
+}
 
 @layer components {
     body {
@@ -94,7 +107,7 @@
 
     .btn-link,
     .btn-ghost {
-        @apply text-gray-800 border-transparent border-none hover:text-royal-700 focus:bg-gray-200 focus:ring-gray-400 focus:ring-0;
+        @apply text-gray-800 border-transparent border-none hover:text-royal-700 focus:bg-gray-200 focus:ring-gray-400 focus:ring-0 hover:bg-royal-50;
     }
 
     .btn-outline-white {
@@ -123,10 +136,6 @@
 
     .sidebar-item.router-link-active {
         @apply text-gray-700 bg-gray-100;
-    }
-
-    .f-menu-bar button {
-        @apply focus:outline-none;
     }
 
     .form-checkbox:disabled {
@@ -175,94 +184,6 @@
         background-position: top top;
     }
 
-    img .ProseMirror-selectednode {
-        outline: 3px solid #68cef8;
-    }
-
-    .f-editor table {
-        border-collapse: collapse;
-        table-layout: fixed;
-        width: 100%;
-        margin: 0;
-        overflow: hidden;
-    }
-
-    .f-editor .tableWrapper {
-        margin: 1em 0;
-        overflow-x: auto;
-    }
-
-    .f-editor table td p,
-    .f-editor table th p {
-        @apply py-1 my-1 text-sm;
-    }
-
-    .f-editor table td,
-    .f-editor table th {
-        @apply py-2 leading-none border border-gray-400;
-    }
-
-    .f-editor table th,
-    .f-editor table td {
-        position: relative;
-    }
-
-    .f-editor table th {
-        @apply px-4;
-    }
-
-    .f-editor table tr td:first-child {
-        @apply pl-4;
-    }
-
-    .f-editor > div {
-        @apply w-full px-4 pt-4 pb-4 transition duration-200 ease-out bg-white border border-t-0 border-gray-300 rounded-b-sm focus:outline-none focus:ring-1 ring-inset ring-gray-800;
-    }
-
-    .f-editor.prose,
-    .f-editor.prose-sm {
-        @apply max-w-full! rounded-b-sm!;
-    }
-
-    .f-menu-bar .is-active {
-        @apply bg-gray-300 rounded-sm;
-    }
-
-    .f-menu-bar button {
-        @apply px-2 py-2 text-gray-800 transition-colors duration-150;
-    }
-
-    .ProseMirror p {
-        margin-top: 0;
-        margin-bottom: 0;
-    }
-
-    .ProseMirror {
-        @apply max-w-full prose-sm prose;
-    }
-
-    .ProseMirror table .selectedCell:after {
-        z-index: 2;
-        position: absolute;
-        content: "";
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        pointer-events: none;
-        @apply bg-royal-100/40;
-    }
-
-    .ProseMirror table .column-resize-handle {
-        position: absolute;
-        right: -2px;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        z-index: 20;
-        background-color: var(--color-gold-300);
-        pointer-events: none;
-    }
 
     .lg-cal .vc-header {
         padding: 0 !important;
@@ -326,5 +247,10 @@
 
     .lg-cal .vc-day:not(.on-bottom) {
         @apply border-b border-r;
+    }
+
+    .ghost,
+    .sortable-ghost {
+        @apply opacity-50;
     }
 }

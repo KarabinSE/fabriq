@@ -100,6 +100,7 @@
 <script>
 import UiLogo from '@fabriq/components/Logo.vue'
 import LogoutForm from '@fabriq/components/LogoutForm.vue'
+import { toast } from '@fabriq/components/toast/toast'
 import Developer from '@fabriq/models/Developer.js'
 import { useConfigStore, useUserStore, useRouteHistoryStore, useMenuStore } from '@fabriq/stores';
 
@@ -151,7 +152,7 @@ export default {
         async bustCache () {
             try {
                 await Developer.bustCache()
-                this.$toast.success({ title: 'Cache was nuked successfully! 😵' })
+                toast.success({ title: 'Cache was nuked successfully! 😵' })
             } catch (error) {
                 console.error(error)
             }

@@ -106,6 +106,7 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Comment from '@fabriq/models/Comment.js'
 import { useUserStore } from '@fabriq/stores';
 import * as formatters from '@fabriq/utils/formatters'
@@ -198,7 +199,7 @@ export default {
             try {
                 await Comment.destroy(this.comment.id)
                 this.$emit('refresh-comments')
-                this.$toast.success({ title: 'Kommentaren har raderats!' })
+                toast.success({ title: 'Kommentaren har raderats!' })
             } catch (error) {
                 console.error(error)
                 this.isDeleting = false

@@ -3,7 +3,7 @@
         v-model="show"
         :name="id"
         :click-to-close="true"
-        :esc-to-close="localButton.linkType !== 'file'"
+        :esc-to-close="model.linkType !== 'file'"
         overflow="overflow-y-visible"
         width="max-w-xl"
         @before-open="fetchPages"
@@ -40,12 +40,12 @@
                 @submit.prevent="saveButton"
             >
                 <FInput
-                    v-model="localButton.text"
+                    v-model="model.text"
                     :disabled="disabled"
                     label="Knapptext"
                 />
                 <FInput
-                    v-model="localButton.linkType"
+                    v-model="model.linkType"
                     input-type="radio"
                     class="col-span-4 xl:col-span-3"
                     :disabled="disabled"
@@ -54,16 +54,16 @@
                     label="Länktyp"
                 />
                 <FInput
-                    v-if="localButton.linkType === 'external'"
-                    v-model="localButton.url"
+                    v-if="model.linkType === 'external'"
+                    v-model="model.url"
                     class="h-18"
                     :disabled="disabled"
                     label="Länk"
                     placeholder="https://exempel.se eller /min-sida"
                 />
                 <FSelect
-                    v-if="localButton.linkType === 'internal'"
-                    v-model="localButton.page_id"
+                    v-if="model.linkType === 'internal'"
+                    v-model="model.page_id"
                     class="h-18"
                     value-key="id"
                     label="Sida"
@@ -85,8 +85,8 @@
                 </FSelect>
 
                 <FFileInput
-                    v-if="localButton.linkType === 'file'"
-                    v-model="localButton.file"
+                    v-if="model.linkType === 'file'"
+                    v-model="model.file"
                     class="h-18"
                     :disabled="disabled"
                     label="Fil"
@@ -95,13 +95,13 @@
                 <template v-else>
                     <FColorPicker
                         v-if="color"
-                        v-model="localButton.color"
+                        v-model="model.color"
                         class="w-full"
                         :disabled="disabled"
                     />
                     <FArrowPicker
                         v-if="arrow"
-                        v-model="localButton.arrow"
+                        v-model="model.arrow"
                         class="w-full"
                         :disabled="disabled"
                     />
@@ -116,84 +116,69 @@
     </FModal>
 </template>
 
-<script>
+<script setup>
 import FArrowPicker from '@fabriq/components/forms/FArrowPicker.vue'
 import { linkTypeOptions } from '@fabriq/components/forms/FButtonItem.vue'
 import FColorPicker from '@fabriq/components/forms/FColorPicker.vue'
+import { Button } from '@fabriq/models/Button'
 import PageTree from '@fabriq/models/PageTree'
+import { ref } from 'vue'
 
-export default {
-    name: 'ButtonModal',
-    components: {
-        FArrowPicker,
-        FColorPicker,
+defineOptions({name: 'ButtonModal'})
+const model = defineModel({
+    type: Object,
+    default: () => new Button()
+})
+
+const emit = defineEmits(['saved'])
+const props = defineProps({
+    id: {
+        type: String,
+        required: true
     },
-    props: {
-        id: {
-            type: String,
-            required: true
-        },
-        value: {
-            required: true,
-            type: Object,
-        },
-        color: {
-            type: Boolean,
-            default: false,
-        },
-        arrow: {
-            type: Boolean,
-            default: false,
-        },
+    disabled: {
+        type: Boolean,
+        default: false,
     },
-
-    data () {
-        return {
-            show: false,
-            localButton: structuredClone(this.value),
-            localPages: [],
-            linkTypeOptions,
-        }
+    color: {
+        type: Boolean,
+        default: false,
     },
-
-    computed: {
-        disabled() {
-            return false
-        },
-
+    arrow: {
+        type: Boolean,
+        default: false,
     },
+})
 
-    methods: {
+const show = ref(false)
+const localPages = ref([])
 
-        saveButton () {
-            this.$emit('saved', this.localButton)
-            this.resetModal()
-        },
 
-        resetModal (){
-            this.localButton = structuredClone(this.value)
-            this.show = false
-        },
+function saveButton () {
+    resetModal()
+}
 
-        async fetchPages () {
-            try {
-                const payload = {
-                    params: {
-                        // field: 'id,name',
-                        append: 'paths',
-                        selectOptions: true
-                    }
-                }
-                const { data } = await PageTree.index(payload)
-                this.localPages = data
-            } catch (error) {
-                console.error(error)
+function resetModal (){
+    show.value = false
+}
+
+async function fetchPages () {
+    try {
+        const payload = {
+            params: {
+                // field: 'id,name',
+                append: 'paths',
+                selectOptions: true
             }
-        },
-
-        checkForPages() {
-            this.fetchPages()
         }
-    },
+        const { data } = await PageTree.index(payload)
+        localPages.value = data
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+function checkForPages() {
+    fetchPages()
 }
 </script>

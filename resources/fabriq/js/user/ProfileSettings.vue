@@ -126,13 +126,13 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import AuthenticatedUser from '@fabriq/models/AuthenticatedUser.js'
 import { useUserStore } from '@fabriq/stores';
 
 export default {
     name: 'ProfileSettings',
     beforeRouteLeave (from, to, next) {
-        this.$destroy()
         next()
     },
 
@@ -189,7 +189,7 @@ export default {
         async sendVerificationRequest () {
             try {
                 await AuthenticatedUser.sendVerificationRequest()
-                this.$toast.success({ title: 'E-postmeddelandet har skickats!', message: 'Följ instruktionerna i mailet' })
+                toast.success({ title: 'E-postmeddelandet har skickats!', message: 'Följ instruktionerna i mailet' })
             } catch (error) {
                 console.error(error)
             }
@@ -198,7 +198,7 @@ export default {
             try {
                 await AuthenticatedUser.update({ ...this.localUser, ...this.passwordFields })
                 this.fetchUser()
-                this.$toast.success({ title: 'Ändringarna har sparats!' })
+                toast.success({ title: 'Ändringarna har sparats!' })
             } catch (error) {
                 console.error(error)
             }
@@ -206,13 +206,13 @@ export default {
         async deleteUserImage () {
             await AuthenticatedUser.deleteImage()
             this.fetchUser().then(() => {
-                this.$toast.success({ title: 'Profilbild borttagen' })
+                toast.success({ title: 'Profilbild borttagen' })
             })
         },
         userImageSaved () {
             this.isUploading = false
             this.fetchUser().then(() => {
-                this.$toast.success({ title: 'Profilbild uppdaterad' })
+                toast.success({ title: 'Profilbild uppdaterad' })
             })
 
             this.$refs[this.fileUploadRef].UploadDropzone.removeAllFiles()

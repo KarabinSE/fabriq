@@ -5,16 +5,12 @@
     >
         <div
             v-if="hasHeaderSlot"
-            :class="[
+            :class="cn(
+                'flex items-center leading-none transition-colors duration-500 border-b justify-between cursor-pointer',
                 padding && 'px-4 md:px-6',
-                collapsible ? [
-                    'cursor-pointer flex justify-between border-transparent',
-                    collapsedActive ? 'border-gray-200' : 'border-transparent',
-                    open ? 'bg-white' : 'rounded-b',
-                ] : 'border-gray-200',
+                collapsedActive ? 'border-gray-200' : 'border-transparent',
                 cHeaderClasses,
-            ]"
-            class="flex items-center leading-none transition-colors duration-500 bg-white border-b border-gray-200 rounded-t justify-between"
+            )"
             @click="toggleCollapsible"
         >
             <div class="text-xl font-light text-gray-700 w-full min-w-0">
@@ -25,203 +21,161 @@
                 class="shrink-0 pl-4"
             >
                 <AngleDownIcon
-                    class="block size-5 @xl/card:size-6 text-gray-800 transition-[colors,rotate] duration-300"
+                    class="block size-4 @xl/card:size-5 text-gray-800 transition-[colors,rotate] duration-300"
                     :class="open ? '-rotate-180' : 'rotate-0'"
                 />
             </div>
         </div>
         <div
             v-if="! collapsible"
-            :class="{'p-6': padding }"
+            :class="cn(padding && 'p-6')"
         >
             <slot />
         </div>
         <SlideUpDown
             v-else
-            :active="open"
-            :duration="animationDuration"
-            class="wobbly-accordion"
-            @open-start="delayOpen = true"
-            @close-end="delayOpen = false"
+            v-model="open"
+            duration="500"
         >
-            <div
-                v-if="delayOpen"
-                :class="{'p-6': padding }"
-            >
+            <div :class="cn(padding && 'p-6')">
                 <slot />
             </div>
         </SlideUpDown>
     </div>
 </template>
 
-<script>
+<script setup>
+import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
 import { useUiStore } from '@fabriq/stores';
+import { useEventBus } from '@fabriq/services/eventBus'
+import { cn } from '@fabriq/helpers/utils';
+import { onMounted, onUnmounted, ref, useSlots } from 'vue'
+import { computed } from 'vue'
 
-export default {
-    name: 'UiCard',
-    props: {
-        padding: {
-            type: Boolean,
-            default: true,
-        },
 
-        collapsible: {
-            type: Boolean,
-            default: false,
-        },
+const uiStore = useUiStore()
+const eventBus = useEventBus()
+const slots = useSlots()
 
-        headerClasses: {
-            type: String,
-            default: '',
-        },
+const emit = defineEmits(['before-open', 'before-close'])
 
-        noShadow: {
-            type: Boolean,
-            default: false,
-        },
-
-        isChild: {
-            type: Boolean,
-            default: false,
-        },
-
-        group: {
-            type: String,
-            default: '',
-        },
-
-        syncGroups: {
-            type: Boolean,
-            default: false,
-        },
-
-        openByDefault: {
-            type: Boolean,
-            default: false,
-        },
-
-        identifier: {
-            type: String,
-            default: '',
-        },
+defineOptions({name: 'UiCard'})
+const props = defineProps({
+    padding: {
+        type: Boolean,
+        default: true,
     },
-    setup () {
-        const uiStore = useUiStore();
-
-        return { uiStore }
+    collapsible: {
+        type: Boolean,
+        default: false,
     },
-
-    data () {
-        return {
-            open: false,
-            delayOpen: false,
-            animationDuration: 500,
-        }
+    headerClasses: {
+        type: [String, Array],
+        default: null,
     },
-
-    computed: {
-        hasHeaderSlot () {
-            return !!this.$slots.header
-        },
-
-        collapsedActive () {
-            return this.open && this.collapsible
-        },
-
-        cHeaderClasses () {
-            if (this.headerClasses) {
-                return this.headerClasses
-            }
-
-            return 'py-3 md:py-4'
-        },
-
-        openCards() {
-            return this.uiStore.openCards;
-        },
+    noShadow: {
+        type: Boolean,
+        default: false,
     },
-
-    beforeDestroy () {
-        this.$eventBus.off('open-all-cards', this.openCollapsible)
-        this.$eventBus.off('close-all-cards', this.closeCollapsible)
-        this.$eventBus.off('open-synced-groups', this.matchGroupAndOpen)
-        this.$eventBus.off('close-synced-groups', this.matchGroupAndClose)
+    isChild: {
+        type: Boolean,
+        default: false,
     },
-
-    mounted () {
-        if (!this.isChild) {
-            this.$eventBus.on('open-all-cards', this.openCollapsible)
-            this.$eventBus.on('close-all-cards', this.closeCollapsible)
-        }
-
-        if (this.syncGroups) {
-            this.$eventBus.on('open-synced-groups', this.matchGroupAndOpen)
-            this.$eventBus.on('close-synced-groups', this.matchGroupAndClose)
-        }
-
-        if (this.collapsible && this.openByDefault) {
-            this.open = true
-        }
-
-        if (this.identifier && this.openCards.includes(this.identifier)) {
-            this.animationDuration = 0
-            this.open = true
-            setTimeout(() => {
-                this.animationDuration = 500
-            }, 100);
-        }
+    group: {
+        type: String,
+        default: null,
     },
-
-    methods: {
-        matchGroupAndOpen (parameters) {
-            if (this.group === parameters) {
-                this.openCollapsible(false)
-            }
-        },
-
-        matchGroupAndClose (parameters) {
-            if (this.group === parameters) {
-                this.closeCollapsible(false)
-            }
-        },
-
-        openCollapsible (emit = true) {
-            this.$emit('before-open')
-
-            if (this.syncGroups) {
-                if (emit) {
-                    this.$eventBus.emit('open-synced-groups', this.group)
-                }
-            }
-
-            this.open = true
-        },
-
-        closeCollapsible (emit = true) {
-            this.$emit('before-close')
-
-            if (this.syncGroups) {
-                if (emit) {
-                    this.$eventBus.emit('close-synced-groups', this.group)
-                }
-            }
-
-            this.open = false
-        },
-
-        toggleCollapsible () {
-            if (this.identifier) {
-                this.uiStore.toggleOpenCard(this.identifier);
-            }
-
-            if (this.open) {
-                this.closeCollapsible()
-
-                return
-            }
-
-            this.openCollapsible()
-        },
+    syncGroups: {
+        type: Boolean,
+        default: false,
     },
+    openByDefault: {
+        type: Boolean,
+        default: false,
+    },
+    identifier: {
+        type: String,
+        default: null,
+    },
+})
+
+const open = ref(false)
+const delayOpen = ref(false)
+const animationDuration = ref(500)
+
+const hasHeaderSlot = computed(() => !!slots.header)
+const collapsedActive = computed(() => props.collapsible && open.value)
+const cHeaderClasses = computed(() => props.headerClasses || 'py-3 md:py-4')
+
+onUnmounted(() => {
+    eventBus.off('open-all-cards', openCollapsible)
+    eventBus.off('close-all-cards', closeCollapsible)
+    eventBus.off('open-synced-groups', matchGroupAndOpen)
+    eventBus.off('close-synced-groups', matchGroupAndClose)
+})
+onMounted(() => {
+    if (!props.isChild) {
+        eventBus.on('open-all-cards', openCollapsible)
+        eventBus.on('close-all-cards', closeCollapsible)
+    }
+
+    if (props.syncGroups) {
+        eventBus.on('open-synced-groups', matchGroupAndOpen)
+        eventBus.on('close-synced-groups', matchGroupAndClose)
+    }
+
+    if (props.collapsible && props.openByDefault) {
+        open.value = true
+    }
+
+    if (props.identifier && uiStore.openCards.includes(props.identifier)) {
+        animationDuration.value = 0
+        open.value = true
+        setTimeout(() => {
+            animationDuration.value = 500
+        }, 100);
+    }
+})
+
+function matchGroupAndOpen (parameters) {
+    if (props.group === parameters) {
+        openCollapsible(false)
+    }
+}
+
+function matchGroupAndClose (parameters) {
+    if (props.group === parameters) {
+        closeCollapsible(false)
+    }
+}
+
+function openCollapsible (shouldEmit = true) {
+    emit('before-open')
+
+    if (props.syncGroups && shouldEmit) {
+        eventBus.emit('open-synced-groups', props.group)
+    }
+
+    open.value = true
+}
+
+function closeCollapsible (shouldEmit = true) {
+    emit('before-close')
+
+    if (props.syncGroups && shouldEmit) {
+        eventBus.emit('close-synced-groups', props.group)
+    }
+
+    open.value = false
+}
+
+function toggleCollapsible () {
+    if (props.identifier) {
+        uiStore.toggleOpenCard(props.identifier);
+    }
+
+    open.value
+        ? closeCollapsible()
+        : openCollapsible()
 }
 </script>

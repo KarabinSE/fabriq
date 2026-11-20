@@ -1,8 +1,8 @@
 <template>
     <input
         type="search"
-        :value="value"
-        @input="updateValue($event.target.value)"
+        :value="modelValue"
+        @input="updateValue($event.target.modelValue)"
         @keydown.esc="clearValue"
     >
 </template>
@@ -11,7 +11,7 @@ import { debounce } from '@fabriq/helpers/debounce.js'
 export default {
     name: 'FSearchInput',
     props: {
-        value: {
+        modelValue: {
             type: String,
             required: true,
             default: ''

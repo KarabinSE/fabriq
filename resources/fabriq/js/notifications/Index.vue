@@ -87,6 +87,8 @@ import Notification from '@fabriq/models/Notification.js'
 import PageComment from '@fabriq/notifications/PageComment.vue'
 import { useUserStore } from '@fabriq/stores/user'
 import * as formatters from '@fabriq/utils/formatters'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 
 export default {
     name: 'NotificationsIndex',
@@ -94,17 +96,18 @@ export default {
         PageComment
     },
     beforeRouteLeave(from, to, next) {
-        this.$eventBus.off('user-mentioned-echo', this.fetchItems)
+        this.eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
     },
     beforeRouteLeave(from, to, next) {
-        this.$eventBus.off('user-mentioned-echo', this.fetchItems)
+        this.eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
     },
     setup () {
         const userStore = useUserStore();
+        const eventBus = useEventBus()
 
-        return { userStore }
+        return { userStore, eventBus }
     },
     data () {
         return {
@@ -115,13 +118,13 @@ export default {
             unseenQueryParams: {
                 number: 20,
                 page: 1,
-                include: 'notifiable,notifiable.user,notifiable.page',
+                include: 'notifiable,notifiable.user',
                 'filter[unseen]': true
             },
             seenQueryParams: {
                 number: 10,
                 page: 1,
-                include: 'notifiable,notifiable.user,notifiable.page',
+                include: 'notifiable,notifiable.user',
                 'filter[seen]': true
             },
             seenPagination: {},
@@ -149,7 +152,7 @@ export default {
         }
     },
     mounted() {
-        this.$eventBus.on('user-mentioned-echo', this.fetchItems)
+        this.eventBus.on('user-mentioned-echo', this.fetchItems)
     },
     activated () {
         this.fetchUnseenItems()

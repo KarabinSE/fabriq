@@ -1,12 +1,10 @@
 <template>
     <FModal
-        v-model="show"
         name="block-type-modal"
         :click-to-close="false"
         :overflow="largeBlockPicker ? 'overflow-y-auto' : 'overflow-y-visible'"
         :width="largeBlockPicker ? 'max-w-6xl' : 'max-w-3xl'"
         @before-open="fetchBlockTypes"
-        @closed="resetCreateModal"
     >
         <template #title>
             <span
@@ -18,7 +16,7 @@
             <div class="flex justify-end space-x-4">
                 <button
                     class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                    @click="show = false"
+                    @click="closeModal"
                 >
                     Stäng
                 </button>
@@ -49,7 +47,6 @@
                     object
                     value-key="id"
                     option-label="name"
-                    @input="selectBlock"
                 />
                 <FInput
                     v-if="largeBlockPicker"
@@ -76,6 +73,7 @@
                     >
                         <FLabel>Rekommenderade block</FLabel>
                     </div>
+
                     <div
                         v-for="blockType in recommendedBlockTypes"
                         :key="'r' + blockType.id"
@@ -92,12 +90,13 @@
                             {{ blockType.name }}
                         </div>
                     </div>
+
                     <div class="col-span-4 -mb-4">
                         <FLabel>
                             {{ recommendedBlockTypes.length > 0 ? 'Övriga' : 'Välj blocktyp' }}
                         </FLabel>
                     </div>
-                    <!-- <pre>{{ recommendedBlockTypes }}</pre> -->
+
                     <div
                         v-for="blockType in computedBlockTypes"
                         :key="blockType.id"
@@ -115,6 +114,7 @@
                         </div>
                     </div>
                 </div>
+
                 <button
                     class="hidden"
                     type="submit"
@@ -125,160 +125,110 @@
     </FModal>
 </template>
 
-<script>
-import Page from '@fabriq/models/BlockType.js'
-import { useConfigStore, usePageStore, useUiStore } from '@fabriq/stores';
+<script setup>
+defineOptions({name: 'BlockTypeModal'})
 
-function defaultCreationObject () {
-    return {
-        id: 0,
-        name: '',
-        children: [],
-        blockType: {
-            id: 0,
-            name: 'Välj blocktyp',
-        },
+import Page from '@fabriq/models/BlockType.js'
+import { useConfigStore, usePageStore } from '@fabriq/stores';
+import { computed, watch, ref } from 'vue'
+
+const configStore = useConfigStore()
+const pageStore = usePageStore()
+
+const emits = defineEmits(['close-modal'])
+const closeModal = () => emits('close-modal')
+
+const props = defineProps({
+    item: {
+        type: Object,
+        default: () => {},
+    },
+})
+
+const blockTypes = ref([])
+const chosenBlock = ref({
+    name: '',
+    blockType: null,
+})
+
+const blockNames = computed(() => blockTypes.value.map(item => item.name))
+const computedBlockTypes = computed(() => {
+    const firstFilter = blockTypes.value.filter(item => {
+        if (! item.options) {
+            return true
+        }
+
+        const hiddenFor = item.options.hidden_for || []
+        const visibleFor = item.options.visible_for || []
+        const recommendedFor = item.options.recommended_for || []
+
+        if (
+            hiddenFor.length === 0 &&
+            visibleFor.length === 0 &&
+            recommendedFor.length === 0
+        ) {
+            return true
+        }
+
+        // If visible_for is defined and template slug is not present
+        if (visibleFor.length > 0 && !visibleFor.includes(pageStore.page.template.data.slug)) {
+            return false
+        }
+
+        if (hiddenFor.includes(pageStore.page.template.data.slug)) {
+            return false
+        }
+
+        if (recommendedFor.includes(pageStore.page.template.data.slug)) {
+            return false
+        }
+        return true
+    })
+
+    return firstFilter
+})
+const recommendedBlockTypes = computed(() => {
+    return blockTypes.value.filter(item => {
+        const recommendedFor = item.options?.recommended_for || []
+        return recommendedFor.includes(pageStore.page.template.data.slug)
+    })
+})
+const largeBlockPicker = computed(() => {
+    if( !configStore.config.ui ) {
+        return false
+    }
+
+    return !!configStore.config.ui.large_block_picker
+})
+
+async function fetchBlockTypes () {
+    try {
+        const payload = {
+            params: {
+                field: 'id,name,component_name,has_children,base_64_svg,options',
+            },
+        }
+        const { data } = await Page.index(payload)
+
+        blockTypes.value = data
+    } catch (error) {
+        console.error(error)
     }
 }
 
-export default {
-    name: 'BlockTypeModal',
-    props: {
-        item: {
-            type: Object,
-            default: () => {},
-        },
+async function setBlockType () {
+    // TODO: Implement new validation in Vue 3
+    pageStore.blocks.add({
+        ...chosenBlock.value.blockType,
+        name: chosenBlock.value.name
+    })
 
-    },
-
-    setup () {
-        const configStore = useConfigStore()
-        const pageStore = usePageStore()
-        const uiStore = useUiStore()
-
-        return { configStore, pageStore, uiStore }
-    },
-
-    data () {
-        return {
-            show: false,
-            blockTypes: [],
-            chosenBlock: {
-                id: 0,
-                name: '',
-                blockType: {
-                    name: '',
-                    id: 0,
-                },
-            },
-        }
-    },
-
-    computed: {
-        computedBlockTypes() {
-            const firstFilter = this.blockTypes.filter(item => {
-                if (! item.options) {
-                    return true
-                }
-
-                const hiddenFor = item.options.hidden_for || []
-                const visibleFor = item.options.visible_for || []
-                const recommendedFor = item.options.recommended_for || []
-
-                if (
-                    hiddenFor.length === 0 &&
-                    visibleFor.length === 0 &&
-                    recommendedFor.length === 0
-                ) {
-                    return true
-                }
-
-                // If visible_for is defined and template slug is not present
-                if (visibleFor.length > 0 && !visibleFor.includes(this.page.template.data.slug)) {
-                    return false
-                }
-
-                if (hiddenFor.includes(this.page.template.data.slug)) {
-                    return false
-                }
-
-                if (recommendedFor.includes(this.page.template.data.slug)) {
-                    return false
-                }
-                return true
-            })
-
-            return firstFilter
-        },
-        recommendedBlockTypes() {
-            return this.blockTypes.filter(item => {
-                const recommendedFor = item.options?.recommended_for || []
-                return recommendedFor.includes(this.page.template.data.slug)
-            })
-        },
-        largeBlockPicker() {
-            if(! this.config.ui) {
-                return false
-            }
-
-            return !!this.config.ui.large_block_picker
-        },
-
-        config() {
-            return this.configStore.config;
-        },
-
-        blockNames() {
-            return this.blockTypes.map(item => {
-                return item.name
-            })
-        },
-
-        activeLocale() {
-            return this.configStore.activeLocale;
-        },
-        page() {
-            return this.pageStore.page;
-        }
-    },
-
-    methods: {
-        async fetchBlockTypes () {
-            try {
-                const payload = {
-                    params: {
-                        field: 'id,name,component_name,has_children,base_64_svg,options',
-                    },
-                }
-                const { data } = await Page.index(payload)
-
-                this.blockTypes = data
-            } catch (error) {
-                console.error(error)
-            }
-        },
-
-        async setBlockType () {
-            // TODO: Implement new validation in Vue 3
-            this.pageStore.blocks.add(this.chosenBlock.blockType)
-
-            this.show = false
-        },
-
-        resetCreateModal () {
-            this.chosenBlock = { ...defaultCreationObject() }
-            this.$nextTick(() => {
-                this.$refs.observer.reset()
-            })
-        },
-
-        selectBlock(blockType) {
-            this.chosenBlock.blockType = blockType
-
-            if (!this.chosenBlock.name || this.blockNames.includes(this.chosenBlock.name)) {
-                this.chosenBlock.name = blockType.name
-            }
-        },
-    },
+    closeModal()
 }
+
+watch(() => chosenBlock.value.blockType, (blockType) => {
+    if (!chosenBlock.value.name || blockNames.value.includes(chosenBlock.value.name)) {
+        chosenBlock.value.name = blockType?.name
+    }
+})
 </script>

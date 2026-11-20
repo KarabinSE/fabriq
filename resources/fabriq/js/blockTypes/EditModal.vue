@@ -67,7 +67,7 @@ export default {
         resetCreateModal () {
             this.$emit('closed')
             setTimeout(() => {
-                this.$refs.observer.reset()
+                this.$refs.observer?.reset()
             }, 200)
         },
         async validateForm () {

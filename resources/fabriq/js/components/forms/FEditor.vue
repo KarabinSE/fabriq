@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="editor">
         <FLabel
             v-if="label"
             :name="name"
@@ -8,61 +8,73 @@
         </FLabel>
 
         <div
-            class="py-2 bg-gray-100 border border-gray-200 rounded-t"
+            class="py-2 bg-gray- border border-b-0 border-gray-200 rounded-t-xl"
         >
-            <div class="text-gray-800 f-menu-bar focus:outline-none ring-gray-300 focus:ring-gray-800">
+            <div class="text-gray-600 f-menu-bar focus:outline-none ring-gray-300 focus:ring-gray-800">
                 <div
                     :class="{'sticky top-0': sticky}"
-                    class="flex flex-wrap items-center px-2 space-x-2 "
+                    class="flex flex-wrap items-center px-2 gap-1 "
                 >
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Fetstil' }"
+                        v-tooltip="'Fetstil'"
                         tabindex="-1"
                         :class="{ 'is-active': editor.isActive('bold') }"
                         class="leading-none menubar__button"
                         @click="editor.chain().focus().toggleBold().run()"
                     >
-                        <BoldIcon class="w-4 h-4 text-gray-800" />
+                        <BoldIcon class="size-4" />
                     </button>
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kursiv' }"
+                        v-tooltip="'Kursiv'"
                         tabindex="-1"
                         :class="{ 'is-active': editor.isActive('italic') }"
                         class="leading-none menubar__button"
                         @click="editor.chain().focus().toggleItalic().run()"
                     >
-                        <ItalicIcon class="w-4 h-4" />
+                        <ItalicIcon class="size-4" />
                     </button>
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Genomstruken' }"
+                        v-tooltip="'Genomstruken'"
                         tabindex="-1"
                         :class="{ 'is-active': editor.isActive('strike') }"
                         class="leading-none menubar__button"
                         @click="editor.chain().focus().toggleStrike().run()"
                     >
-                        <StrikeThroughIcon class="w-4 h-4" />
+                        <StrikeThroughIcon class="size-4" />
                     </button>
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Understruken' }"
+                        v-tooltip="'Understruken'"
                         tabindex="-1"
                         :class="{ 'is-active': editor.isActive('underline') }"
                         class="leading-none menubar__button"
                         @click="editor.chain().focus().toggleUnderline().run()"
                     >
-                        <UnderlineIcon class="w-4 h-4" />
+                        <UnderlineIcon class="size-4" />
                     </button>
-                    <UiDropdown
+                    <Dropdown
                         ref="linkdropdown"
-                        :class="{ 'is-active': editor.isActive('link') }"
-                        tabindex="-1"
-                        margin-classes="mt-0"
-                        @open="getLinkUrl(editor.getAttributes('link'))"
+                        strategy="fixed"
+                        placement="bottom-start"
+                        @click="getLinkUrl(editor.getAttributes('link'))"
+                        :auto-hide="() => !pickerOpen"
+                        :hide-triggers="(triggers) => pickerOpen ? [] : triggers"
                     >
-                        <template #dropdown>
-                            <div class="px-4">
+                        <button
+                            v-tooltip="'Infoga länk'"
+                            tabindex="-1"
+                            :class="{ 'is-active': editor.isActive('link') }"
+                            class="leading-none menubar__button"
+                            type="button"
+                        >
+                            <LinkIcon class="size-5" />
+                        </button>
+
+                        <template #popper>
+                            <div class="w-72 flex flex-col gap-0.5 bg-white px-4 rounded-lg border border-gray-200 shadow-lg ">
                                 <FTabs
                                     :identifier="tabIdentifier"
                                     @change="setLinkType"
+                                    class="[&_li]:flex-1"
                                 >
                                     <FTab
                                         title="URL"
@@ -86,14 +98,14 @@
                                     >
                                         <button
                                             type="button"
-                                            class="block w-64 text-white fabriq-btn btn-royal"
+                                            class="w-64 px-4 py-2 text-white fabriq-btn btn-royal"
                                             @click="addFile"
                                         >
                                             <span class="text-white">Välj fil</span>
                                         </button>
                                         <small
                                             v-if="linkType === 'file' && attachedFileName"
-                                            class="block mt-1"
+                                            class="block mt-1 truncate"
                                         >Länkad fil: {{ attachedFileName }}</small>
                                     </FTab>
                                 </FTabs>
@@ -110,9 +122,16 @@
                                         class="fabriq-btn btn-ghost"
                                         @click="updateLink(true)"
                                     >
-                                        <TrashIcon class="w-4 h-4" />
+                                        <TrashIcon class="size-4" />
                                     </button>
-                                    <div>
+                                    <div class="flex gap-2">
+                                        <button
+                                            type="button"
+                                            class="px-4 py-2.5 fabriq-btn btn-ghost"
+                                            @click=""
+                                        >
+                                            Stäng
+                                        </button>
                                         <button
                                             class="px-4 py-2 text-white fabriq-btn btn-royal"
                                             @click="updateLink()"
@@ -125,126 +144,208 @@
                                 </div>
                             </div>
                         </template>
-
-                        <LinkIcon
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Infoga länk' }"
-                            class="w-4 h-4 text-gray-800 focus:outline-none"
-                            tabindex="-1"
-                        />
-                    </UiDropdown>
+                    </Dropdown>
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Ta bort formatering' }"
+                        v-tooltip="'Ta bort formatering'"
                         tabindex="-1"
                         :class="{ 'is-active': editor.isActive('underline') }"
                         class="leading-none menubar__button"
                         @click="editor.chain().focus().unsetAllMarks().clearNodes().run()"
                     >
-                        <TextSlashIcon class="w-4 h-4" />
+                        <TextSlashIcon class="size-4" />
                     </button>
-                    <div class="h-6 bg-gray-300 w-0.5" />
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Rubrik H1' }"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+                    <div class="h-6 bg-gray-300 w-px mx-1" />
+                    <Dropdown
+                        ref="headingDropdown"
+                        strategy="fixed"
+                        placement="bottom-start"
+                        :skidding="0"
                     >
-                        <H1Icon class="w-4 h-4 text-gray-800" />
-                    </button>
+                        <div class="group flex items-center rounded-md overflow-hidden">
+                            <button
+                                type="button"
+                                class="menubar__button text-sm! w-18! rounded-none! text-left! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                :class="editor.isActive('heading') && 'is-active'"
+                                :aria-label="currentHeadingLevel ? 'Stäng av rubrik' : 'Välj rubrik'"
+                                @click.stop="toggleCurrentHeading"
+                            >
+                                {{ headingLabel }}
+                            </button>
+                            <button
+                                type="button"
+                                class="menubar__button w-5! rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                aria-label="Välj rubriknivå"
+                            >
+                                <AngleDownIcon class="size-2.5" />
+                            </button>
+                        </div>
 
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Rubrik H2' }"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                    >
-                        <H2Icon class="w-4 h-4 text-gray-800" />
-                    </button>
+                        <template #popper="{hide}">
+                            <div class="flex flex-col gap-0.5 bg-white p-1 rounded-lg w-48 border border-gray-200 shadow-lg">
+                                <button
+                                    type="button"
+                                    :class="['w-full flex items-center justify-between text-left px-3 py-2 rounded-md hover:bg-royal-50', editor.isActive('heading', { level: 1 }) && 'bg-royal-50']"
+                                    tabindex="-1"
+                                    @click="setHeadingLevel(1);hide()"
+                                >
+                                    <span class="text-xs text-gray-500">Rubrik 1</span>
+                                    <span class="text-2xl font-bold leading-none text-gray-900">Aa</span>
+                                </button>
 
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Rubrik H3' }"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                    >
-                        <H3Icon class="w-4 h-4 text-gray-800" />
-                    </button>
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Rubrik H4' }"
-                        :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                    >
-                        <H4Icon class="w-4 h-4 text-gray-800" />
-                    </button>
-                    <div class="h-6 bg-gray-300 w-0.5" />
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Vänsterställ text' }"
-                        :class="{ 'is-active': editor.isActive({ textAlign: 'left' }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().setTextAlign('left').run()"
-                    >
-                        <AlignLeftIcon class="w-4 h-4" />
-                    </button>
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Centrera text' }"
-                        :class="{ 'is-active': editor.isActive({ textAlign: 'center' }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().setTextAlign('center').run()"
-                    >
-                        <AlignCenterIcon class="w-4 h-4" />
-                    </button>
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Högerställ text' }"
-                        :class="{ 'is-active': editor.isActive({ textAlign: 'right' }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().setTextAlign('right').run()"
-                    >
-                        <AlignRightIcon class="w-4 h-4" />
-                    </button>
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Högerställ text' }"
-                        :class="{ 'is-active': editor.isActive({ textAlign: 'justify' }) }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().setTextAlign('justify').run()"
-                    >
-                        <AlignJustifyIcon class="w-4 h-4" />
-                    </button>
-                    <div class="h-6 bg-gray-300 w-0.5" />
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Infoga punktlista' }"
-                        :class="{ 'is-active': editor.isActive('bulletList') }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleBulletList().run()"
-                    >
-                        <UlListIcon class="w-4 h-4 text-gray-800" />
-                    </button>
+                                <button
+                                    type="button"
+                                    :class="['w-full flex items-center justify-between text-left px-3 py-2 rounded-md hover:bg-royal-50', editor.isActive('heading', { level: 2 }) && 'bg-royal-50']"
+                                    tabindex="-1"
+                                    @click="setHeadingLevel(2);hide()"
+                                >
+                                    <span class="text-xs text-gray-500">Rubrik 2</span>
+                                    <span class="text-xl font-semibold leading-none text-gray-900">Aa</span>
+                                </button>
 
-                    <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Infoga numrerad lista' }"
-                        :class="{ 'is-active': editor.isActive('orderedList') }"
-                        class="menubar__button"
-                        tabindex="-1"
-                        @click="editor.chain().focus().toggleOrderedList().run()"
-                    >
-                        <OlListIcon class="w-4 h-4 text-gray-800" />
-                    </button>
+                                <button
+                                    type="button"
+                                    :class="['w-full flex items-center justify-between text-left px-3 py-2 rounded-md hover:bg-royal-50', editor.isActive('heading', { level: 3 }) && 'bg-royal-50']"
+                                    tabindex="-1"
+                                    @click="setHeadingLevel(3);hide()"
+                                >
+                                    <span class="text-xs text-gray-500">Rubrik 3</span>
+                                    <span class="text-lg font-semibold leading-none text-gray-900">Aa</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    :class="['w-full flex items-center justify-between text-left px-3 py-2 rounded-md hover:bg-royal-50', editor.isActive('heading', { level: 4 }) && 'bg-royal-50']"
+                                    tabindex="-1"
+                                    @click="setHeadingLevel(4);hide()"
+                                >
+                                    <span class="text-xs text-gray-500">Rubrik 4</span>
+                                    <span class="text-base font-semibold leading-none text-gray-900">Aa</span>
+                                </button>
+                            </div>
+                        </template>
+                    </Dropdown>
 
-                    <div class="h-6 bg-gray-300 w-0.5" />
+                    <div class="h-6 bg-gray-300 w-px mx-1" />
+                    <Dropdown
+                        strategy="fixed"
+                        placement="bottom-start"
+                        :skidding="0"
+                    >
+                        <div class="group flex items-center rounded-md overflow-hidden">
+                            <button
+                                type="button"
+                                v-tooltip="alignmentLabel"
+                                class="menubar__button rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                :class="editor.isActive({ textAlign: currentTextAlignment }) && 'is-active'"
+                                aria-label="Använd aktuell textjustering"
+                                @click.stop="editor.chain().focus().toggleTextAlign(currentTextAlignment).run()"
+                            >
+                                <component
+                                    :is="alignmentIcon"
+                                    class="size-4"
+                                />
+                            </button>
+                            <button
+                                type="button"
+                                class="menubar__button w-5! rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                aria-label="Välj textjustering"
+                            >
+                                <AngleDownIcon class="size-2.5" />
+                            </button>
+                        </div>
+                        <template #popper="{ hide }">
+                            <div class="flex flex-col gap-0.5 bg-white p-1 rounded-lg w-48 border border-gray-200 shadow-lg">
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="currentTextAlignment === 'left' && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleTextAlign('left').run(); hide()"
+                                >
+                                    <AlignLeftIcon class="size-4" /> Vänsterställ
+                                </button>
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="currentTextAlignment === 'center' && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleTextAlign('center').run(); hide()"
+                                >
+                                    <AlignCenterIcon class="size-4" /> Centrera
+                                </button>
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="currentTextAlignment === 'right' && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleTextAlign('right').run(); hide()"
+                                >
+                                    <AlignRightIcon class="size-4" /> Högerställ
+                                </button>
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="currentTextAlignment === 'justify' && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleTextAlign('justify').run(); hide()"
+                                >
+                                    <AlignJustifyIcon class="size-4" /> Justera
+                                </button>
+                            </div>
+                        </template>
+                    </Dropdown>
+                    <Dropdown
+                        strategy="fixed"
+                        placement="bottom-start"
+                        :skidding="0"
+                    >
+                        <div class="group flex items-center rounded-md overflow-hidden">
+                            <button
+                                type="button"
+                                v-tooltip="listLabel"
+                                class="menubar__button rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                :class="(editor.isActive('bulletList') || editor.isActive('orderedList')) && 'is-active'"
+                                aria-label="Växla aktuell listtyp"
+                                @click.stop="toggleCurrentList"
+                            >
+                                <component
+                                    :is="listIcon"
+                                    class="size-4"
+                                />
+                            </button>
+                            <button
+                                type="button"
+                                class="menubar__button w-5! rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
+                                aria-label="Välj listtyp"
+                            >
+                                <AngleDownIcon class="size-2.5" />
+                            </button>
+                        </div>
+                        <template #popper="{ hide }">
+                            <div class="flex flex-col gap-0.5 bg-white p-1 rounded-lg w-48 border border-gray-200 shadow-lg">
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="editor.isActive('bulletList') && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleBulletList().run(); hide()"
+                                >
+                                    <UlListIcon class="size-4" /> Punktlista
+                                </button>
+                                <button
+                                    type="button"
+                                    class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm text-gray-700 hover:bg-royal-50"
+                                    :class="editor.isActive('orderedList') && 'bg-royal-50'"
+                                    @click="editor.chain().focus().toggleOrderedList().run(); hide()"
+                                >
+                                    <OlListIcon class="size-4" /> Numrerad lista
+                                </button>
+                            </div>
+                        </template>
+                    </Dropdown>
+
+                    <div class="h-6 bg-gray-300 w-px mx-1" />
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Infoga bild' }"
+                        v-tooltip="'Infoga bild'"
                         class="menubar__button"
                         tabindex="-1"
                         @click="addImage"
                     >
-                        <ImageIcon class="w-4 h-4" />
+                        <ImageIcon class="size-4" />
                     </button>
                     <UiDropdown
                         ref="iframedropdown"
@@ -273,15 +374,15 @@
                             </div>
                         </template>
                         <span
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Infoga iframe' }"
+                            v-tooltip="'Infoga iframe'"
                             class="menubar__button"
                             tabindex="-1"
                         >
-                            <PresentationScreenIcon class="w-4 h-4" />
+                            <PresentationScreenIcon class="size-4" />
                         </span>
                     </UiDropdown>
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Skapa tabell' }"
+                        v-tooltip="'Skapa tabell'"
                         class="menubar__button"
                         :class="{ 'is-active': editor.isActive('table') }"
                         tabindex="-1"
@@ -289,7 +390,7 @@
                     >
                         <svg
                             id="icon--table"
-                            class="h-4 text-gray-800"
+                            class="h-4"
                             viewBox="0 0 24 24"
                         >
                             <path
@@ -303,11 +404,11 @@
                         v-if="editor.isActive('table')"
                         class="flex flex-wrap items-center px-2 space-x-2 table-controls"
                     >
-                        <p class="-ml-2 text-xs leading-none text-gray-800">
+                        <p class="-ml-2 text-xs leading-none">
                             Tabellkontroller
                         </p>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Ta bort tabell' }"
+                            v-tooltip="'Ta bort tabell'"
                             class="menubar__button"
                             @click="editor.chain().focus().deleteTable().run()"
                         >
@@ -332,7 +433,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Lägg till kolumn före denna' }"
+                            v-tooltip="'Lägg till kolumn före denna'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().addColumnBefore().run()"
@@ -358,7 +459,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Lägg till kolumn efter denna' }"
+                            v-tooltip="'Lägg till kolumn efter denna'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().addColumnAfter().run()"
@@ -384,7 +485,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Ta bort kolumn' }"
+                            v-tooltip="'Ta bort kolumn'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().deleteColumn().run()"
@@ -410,7 +511,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Lägg till rad innan' }"
+                            v-tooltip="'Lägg till rad innan'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().addRowBefore().run()"
@@ -438,14 +539,14 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Tabellrubrik' }"
+                            v-tooltip="'Tabellrubrik'"
                             class="menubar__button"
                             @click="editor.chain().focus().toggleHeaderRow().run()"
                         >
-                            <TableHeadIcon class="w-4 h-4" />
+                            <TableHeadIcon class="size-4" />
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Lägg till rad efer' }"
+                            v-tooltip="'Lägg till rad efer'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().addRowAfter().run()"
@@ -473,7 +574,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Ta bort rad' }"
+                            v-tooltip="'Ta bort rad'"
                             class="menubar__button"
                             tabindex="-1"
                             @click="editor.chain().focus().deleteRow().run()"
@@ -499,7 +600,7 @@
                             </svg>
                         </button>
                         <button
-                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Slå ihop celler' }"
+                            v-tooltip="'Slå ihop celler'"
                             class="menubar__button"
                             @click="editor.chain().focus().mergeCells().run()"
                         >
@@ -512,68 +613,45 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="h-6 bg-gray-300 w-0.5" />
+                    <div class="h-6 bg-gray-300 w-px mx-1" />
 
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Ångra' }"
+                        v-tooltip="'Ångra'"
                         class="menubar__button"
                         tabindex="-1"
                         @click="editor.chain().focus().undo().run()"
                     >
-                        <UndoArrowIcon class="w-4 h-4" />
+                        <UndoArrowIcon class="size-4" />
                     </button>
 
                     <button
-                        v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Upprepa' }"
+                        v-tooltip="'Upprepa'"
                         class="menubar__button"
                         tabindex="-1"
                         @click="editor.chain().focus().redo().run()"
                     >
-                        <RedoArrowIcon class="w-4 h-4" />
+                        <RedoArrowIcon class="size-4" />
                     </button>
                 </div>
             </div>
         </div>
         <EditorContent
-            v-if="isEditing"
+            :data-disabled="inputDisabled"
+            :disabled="inputDisabled"
             :editor="editor"
-            class="w-full rounded focus:outline-none focus:ring-1 f-editor"
+            :class="[
+                'f-editor w-full duration-300 ease-out border border-gray-300 rounded-b focus:outline-none hover:border-gray-400 focus-within:!border-gray-800 ring-inset ring-gray-800',
+                inputDisabled ? 'pointer-events-none bg-gray-50 cursor-not-allowed' : 'bg-white'
+            ]"
         />
-        <div
-            v-else
-            class="relative"
-        >
-            <div
-                v-if="!inputDisabled"
-                class="absolute top-0 right-0 flex items-center justify-end mt-1 mr-1"
-            >
-                <!-- <button class="flex items-center py-1 pl-3 pr-4 space-x-2 text-xs fabriq-btn btn-royal">
-                    <PencilIcon class="w-3 h-3" />
-                    <span>
-                        Klicka för att redigera
-                    </span>
-                </button> -->
-            </div>
-            <div
-                :class="!inputDisabled ? 'cursor-pointer' : 'cursor-not-allowed'"
-                class="relative min-w-full p-4 prose-sm prose border-2 border-t-0 border-dashed rounded opacity-80 border-royal-200 min-h-12"
-                @click="startEditing"
-                v-html="value"
-            />
-        </div>
         <HelpText v-if="helpText">
             {{ helpText }}
         </HelpText>
-        <FMediaPicker
-            :open="pickerOpen"
-            :media-type="pickerType"
-            @close="pickerOpen = false"
-            @item-picked="pickItem"
-        />
     </div>
 </template>
 <script>
-import CustomIframe from '@fabriq/components/forms/extensions/CustomIframe.js'
+// import CustomIframe from '@fabriq/components/forms/extensions/CustomIframe.js'
+import { toast } from '@fabriq/components/toast/toast'
 import FileAPI from '@fabriq/models/File.js'
 import ImageAPI from '@fabriq/models/Image.js'
 import Image from '@tiptap/extension-image'
@@ -586,7 +664,12 @@ import TextAlign from '@tiptap/extension-text-align'
 import Typography from '@tiptap/extension-typography'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
-import { Editor, EditorContent } from '@tiptap/vue-2'
+import { Editor, EditorContent } from '@tiptap/vue-3'
+import { useEventBus } from '@fabriq/services/eventBus'
+import { Dropdown } from 'floating-vue'
+import { createModal } from '@fabriq/helpers/utils'
+import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
+
 
 const CustomImage = Image.extend({
     addAttributes () {
@@ -653,14 +736,21 @@ const CustomLink = Link.extend({
 export default {
     name: 'FEditor',
     components: {
-        EditorContent
+        EditorContent,
+        Dropdown,
     },
+
+    setup() {
+        const eventBus = useEventBus()
+        return {eventBus}
+    },
+
     props: {
         label: {
             type: String,
             default: 'Innehåll'
         },
-        value: {
+        modelValue: {
             type: [String, null],
             default: ''
         },
@@ -679,15 +769,15 @@ export default {
         helpText: {
             type: String,
             default: ''
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     data () {
         return {
-            editor: {
-                isActive () {
-                    return false
-                }
-            },
+            editor: null,
             linkUrl: null,
             embedCode: '',
             linkMenuIsActive: false,
@@ -703,18 +793,45 @@ export default {
     },
     computed: {
         inputDisabled() {
-            if(this.disabled) {
-                return true
-            }
-
-            return false
+            return this.disabled
+        },
+        currentHeadingLevel() {
+            return [1, 2, 3, 4].find(level => this.editor?.isActive('heading', { level })) ?? null
+        },
+        headingLabel() {
+            return this.currentHeadingLevel ? `Rubrik ${this.currentHeadingLevel}` : 'Normal'
+        },
+        currentTextAlignment() {
+            return ['left', 'center', 'right', 'justify'].find(alignment => this.editor?.isActive({ textAlign: alignment })) ?? 'left'
+        },
+        alignmentLabel() {
+            return {
+                left: 'Vänsterställ text',
+                center: 'Centrera text',
+                right: 'Högerställ text',
+                justify: 'Justera text'
+            }[this.currentTextAlignment]
+        },
+        alignmentIcon() {
+            return {
+                left: 'AlignLeftIcon',
+                center: 'AlignCenterIcon',
+                right: 'AlignRightIcon',
+                justify: 'AlignJustifyIcon'
+            }[this.currentTextAlignment]
+        },
+        listIcon() {
+            return this.editor?.isActive('orderedList') ? 'OlListIcon' : 'UlListIcon'
+        },
+        listLabel() {
+            return this.editor?.isActive('orderedList') ? 'Numrerad lista' : 'Punktlista'
         },
     },
     watch: {
-        value(value) {
+        modelValue(value) {
             // HTML
-            const isSame = this.editor.getHTML() === value
 
+            const isSame = this.editor.getHTML() === value
 
             if (isSame) {
                 return
@@ -742,26 +859,45 @@ export default {
                 }),
                 Typography,
                 CustomImage,
-                CustomIframe
+                // CustomIframe
 
             ],
             onUpdate: () => {
                 // HTML
-                this.$emit('input', this.editor.getHTML())
+                this.$emit('update:model-value', this.editor.getHTML())
 
                 // JSON
-                // this.$emit('input', this.editor.getJSON())
+                // this.$emit('update:model-value', this.editor.getJSON())
             },
         })
-        // this.editor.on('update', () => {
-        //     this.$emit('input', this.editor.getHTML())
-        // })
-        this.editor.commands.setContent(this.value)
+        this.editor.commands.setContent(this.modelValue)
     },
-    beforeDestroy () {
-        this.editor.destroy()
+    unmounted () {
+        setTimeout(() => {
+            this.editor.destroy()
+        }, 1000);
     },
     methods: {
+        toggleCurrentHeading() {
+            if (this.currentHeadingLevel) {
+                this.editor.chain().focus().setParagraph().run()
+                return
+            }
+            this.$refs.headingDropdown.show()
+        },
+        setHeadingLevel(level) {
+            if (this.currentHeadingLevel === level) {
+                return
+            }
+            this.editor.chain().focus().toggleHeading({ level }).run()
+        },
+        toggleCurrentList() {
+            if (this.editor.isActive('orderedList')) {
+                this.editor.chain().focus().toggleOrderedList().run()
+                return
+            }
+            this.editor.chain().focus().toggleBulletList().run()
+        },
         startEditing() {
             if(this.inputDisabled) {
                 return
@@ -783,7 +919,7 @@ export default {
             this.linkType = attributes.download ? 'file' : 'link'
             this.attachedFileName = attributes['data-filename']
             this.linkMenuIsActive = true
-            this.$eventBus.emit('set-active-tab', {
+            this.eventBus.emit('set-active-tab', {
                 identifier: this.tabIdentifier,
                 index: this.linkType === 'link' ? 0 : 1
             })
@@ -809,13 +945,21 @@ export default {
             this.linkUrl = null
             this.linkMenuIsActive = false
         },
+        showMediaPicker() {
+            this.pickerOpen = true
+            createModal(FMediaPicker, {
+                mediaType: this.pickerType,
+                onItemPicked: this.pickItem,
+                onClosed: () => setTimeout(() => this.pickerOpen = false, 50)
+            })
+        },
         addImage () {
             this.pickerType = 'image'
-            this.pickerOpen = true
+            this.showMediaPicker()
         },
         addFile () {
             this.pickerType = 'file'
-            this.pickerOpen = true
+            this.showMediaPicker()
         },
         pickItem (itemId) {
             this.pickerType === 'image' ? this.pickImage(itemId) : this.pickFile(itemId)
@@ -830,7 +974,7 @@ export default {
                 download: data.file_name
             }
             this.editor.chain().focus().setLink(fileObject).run()
-            this.$toast.success({ title: 'Filen har blivit länkad' })
+            toast.success({ title: 'Filen har blivit länkad' })
             this.pickerOpen = false
         },
         async pickImage (imageId) {
@@ -860,7 +1004,7 @@ export default {
 
             if (!embedString.includes('iframe')) {
                 this.$refs.iframedropdown.close()
-                this.$toast.warning({ title: 'Pst!', message: 'Det verkar inte vara ett iframe-element som du klistrar in' })
+                toast.warning({ title: 'Pst!', message: 'Det verkar inte vara ett iframe-element som du klistrar in' })
                 this.embedCode = ''
                 return
             }
@@ -898,3 +1042,66 @@ export default {
     }
 }
 </script>
+
+<style>
+@reference '@fabriq/../css/fabriq.css';
+
+    .f-menu-bar button {
+        @apply focus:outline-none;
+    }
+
+    img .ProseMirror-selectednode {
+        outline: 3px solid #68cef8;
+    }
+
+    .tiptap {
+        @apply w-full p-4 focus:outline-none prose prose-sm max-w-none *:first:mt-0 *:last:mb-0;
+    }
+
+    .f-editor table {
+        @apply table-fixed w-full m-0 overflow-hidden border-collapse;
+    }
+
+    .f-editor table td p,
+    .f-editor table th p {
+        @apply p-1 text-sm;
+    }
+
+    .f-editor table td,
+    .f-editor table th {
+        @apply py-2 leading-none border border-gray-400;
+    }
+
+    .f-editor table th,
+    .f-editor table td {
+        position: relative;
+    }
+
+    .f-editor table th {
+        @apply px-4;
+    }
+
+    .f-editor table tr td:first-child {
+        @apply pl-4;
+    }
+
+    .f-menu-bar .is-active {
+        @apply bg-royal-100/40! text-gray-800!;
+    }
+
+    .f-menu-bar .menubar__button {
+        @apply inline-flex size-7 shrink-0 items-center justify-center gap-1 p-0 text-gray-600 transition-colors duration-50 rounded-md hover:bg-royal-50;
+    }
+
+    .f-menu-bar .menubar__button:focus-visible {
+        @apply outline-none ring-2 ring-royal-300;
+    }
+
+    .ProseMirror table .selectedCell:after {
+        @apply absolute z-2 inset-0 content-[''] pointer-events-none bg-royal-100/40;
+    }
+
+    .ProseMirror table .column-resize-handle {
+        @apply absolute inset-y-0 -right-0.5 w-1 z-20 bg-gold-300 pointer-events-none;
+    }
+</style>

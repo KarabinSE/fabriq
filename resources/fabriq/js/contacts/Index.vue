@@ -6,7 +6,7 @@
             <template #tools>
                 <FButton
                     without-loader
-                    :click="() => $vfm.show('sort-contact-modal')"
+                    :click="() => vfm.open('sort-contact-modal')"
                     spinner-color="text-royal-500"
                     class="px-6 py-2.5 leading-none text-sm fabriq-btn btn-outline-royal"
                 >
@@ -15,7 +15,7 @@
                 <button
                     type="button"
                     class="fabriq-btn ml-4  btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createContactModal')"
+                    @click="vfm.open('createContactModal')"
                 >
                     Lägg till kontakt
                 </button>
@@ -156,6 +156,8 @@
 <script>
 import Contact from '@fabriq/models/Contact.js'
 import SortModal from './SortModal.vue'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast.js'
 function defaultCreationObject () {
     return {
         name: ''
@@ -164,6 +166,12 @@ function defaultCreationObject () {
 export default {
     name: 'ContactsIndex',
     components: { SortModal },
+
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     data () {
         return {
             contacts: [],
@@ -242,7 +250,7 @@ export default {
         async deleteContact (contact) {
             try {
                 await Contact.destroy(contact.id)
-                this.$toast.success({ title: 'Kontakten har raderats' })
+                toast.success({ title: 'Kontakten har raderats' })
                 this.fetchContacts()
             } catch (error) {
                 console.error(error)
@@ -270,12 +278,12 @@ export default {
         async createContact () {
             try {
                 const { data } = await Contact.store(this.creationObject)
-                this.$toast.success({
+                toast.success({
                     title: 'Kontakten har skapats!',
                     buttonText: 'Gå till kontakten',
                     onClick: () => this.$router.push({ name: 'contacts.edit', params: { id: data.id } })
                 })
-                this.$vfm.hide('createContactModal')
+                this.vfm.close('createContactModal')
                 this.resetCreateModal()
                 this.fetchContacts()
             } catch (error) {

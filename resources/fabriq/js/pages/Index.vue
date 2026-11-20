@@ -6,7 +6,7 @@
                 <button
                     type="button"
                     class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createPageModal')"
+                    @click="vfm.open('createPageModal')"
                 >
                     Lägg till sida
                 </button>
@@ -63,7 +63,7 @@
                     </div>
                     <button
                         class="flex items-center text-sm link"
-                        @click="$vfm.show('createPageModal')"
+                        @click="vfm.open('createPageModal')"
                     >
                         <PlusIcon class="size-5 mr-2" />Lägg till sida
                     </button>
@@ -99,7 +99,7 @@
                                     </UiBadge>
                                 </div>
                                 <button
-                                    v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Klona sida' }"
+                                    v-tooltip="'Klona sida'"
                                     class="focus:outline-none"
                                     @click.stop="clonePage(item)"
                                 >
@@ -135,12 +135,14 @@
     </div>
 </template>
 <script>
-import { Draggable } from "@he-tree/vue/vue2";
+import { Draggable } from "@he-tree/vue";
 import "@he-tree/vue/style/default.css";
 import Page from '@fabriq/models/Page.js'
 import PageTree from '@fabriq/models/PageTree.js'
 import Template from '@fabriq/models/Template.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast'
 
 function defaultCreationObject () {
     return {
@@ -151,6 +153,12 @@ function defaultCreationObject () {
 export default {
     name: 'PagesIndex',
     components: { Draggable },
+
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     data () {
         return {
             pages: [],
@@ -251,7 +259,7 @@ export default {
                 localizedContent: localizedContent,
             }
             await Page.clone(page.id, {...payload, ...parameters})
-            this.$toast.success({ title: 'Sidan har klonats!' })
+            toast.success({ title: 'Sidan har klonats!' })
             this.fetchPageTree()
         },
         async fetchPage (id) {
@@ -265,28 +273,18 @@ export default {
             try {
                 const { data } = await Page.show(id, payload)
                 this.pageToClone = data
-                console.log(this.pageToClone)
-                // this.page = data
-                // this.fields = data.template.data.fields
-                // this.groupedFields = data.template.data.groupedFields.data
-                // localizedContent = { ...data.localizedContent.data }
-                // console.log(localizedContent)
-
-                // Object.keys(localizedContent).forEach((item) => {
-                //     this.$set(this.localizedContent, item, { ...localizedContent[item].content })
-                // })
             } catch (error) {
                 console.error(error)
             }
         },
         async deletePage (page) {
             if (page.children.length > 0) {
-                this.$toast.info({ title: 'Kunde inte radera sidan', message: 'Sidan har sidor under sig, radera eller flytta dessa först' })
+                toast.info({ title: 'Kunde inte radera sidan', message: 'Sidan har sidor under sig, radera eller flytta dessa först' })
                 return false
             }
             try {
                 await Page.destroy(page.id)
-                this.$toast.success({ title: 'Sidan har raderats ' })
+                toast.success({ title: 'Sidan har raderats ' })
                 this.fetchPageTree()
             } catch (error) {
                 console.error(error)
@@ -305,29 +303,11 @@ export default {
                 console.error(error)
             }
         },
-        // async createPage () {
-        //     try {
-        //         const { data } = await Page.store(this.newPage)
-        //         this.$toast.success({
-        //             title: 'Sidan har skapats!',
-        //             buttonText: 'Gå till sidan',
-        //             onClick: () => this.$router.push({ name: 'pages.edit', params: { id: data.id } })
-        //         })
-        //         this.$vfm.hide('createPageModal')
-        //         this.resetCreateModal()
-        //         this.fetchPageTree()
-        //     } catch (error) {
-        //         console.error(error)
-        //         if (error.response.status === 422) {
-        //             this.$refs.observer.validate()
-        //         }
-        //     }
-        // },
         async createPage () {
             try {
                 if(this.newPage.template.locked) {
                     await this.clonePage({id: this.newPage.template.source_model_id}, {name: this.newPage.name})
-                    this.$vfm.hide('createPageModal')
+                    this.vfm.close('createPageModal')
                     this.resetCreateModal()
 
                     return
@@ -336,20 +316,20 @@ export default {
                 this.newPage.template_id = this.newPage.template.id
                 const { data } = await Page.store(this.newPage)
 
-                this.$toast.success({
+                toast.success({
                     title: 'Sidan har skapats!',
                     buttonText: 'Gå till sidan',
                     onClick: () => this.$router.push({ name: 'pages.edit',
                         params: { id: data.id } }),
                 })
-                this.$vfm.hide('createPageModal')
+                this.vfm.close('createPageModal')
                 this.resetCreateModal()
                 this.fetchPageTree()
             } catch (error) {
                 console.error(error)
 
                 if (error.response.status === 422) {
-                    this.$refs.observer.validate()
+                    this.$refs.observer?.validate()
                 }
             }
         },
@@ -378,7 +358,6 @@ export default {
                     tree: this.pageTree
                 }
                 await PageTree.update(payload)
-                // this.fetchPageTree()
             } catch (error) {
                 console.error(error)
             }

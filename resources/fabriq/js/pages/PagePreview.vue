@@ -109,10 +109,12 @@
 </template>
 <script>
 import { useConfigStore, usePageStore, usePreviewStore, useUiStore } from '@fabriq/stores';
-import { getCurrentInstance } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import BlockList from '@fabriq/blocks/BlockList.vue';
 import { useStorage } from '@vueuse/core';
+import { useVfm } from 'vue-final-modal'
+import BlockTypeModal from '@fabriq/pages/BlockTypeModal.vue'
+import { createModal } from '@fabriq/helpers/utils'
 
 export default {
     name: 'PagePreview',
@@ -121,6 +123,7 @@ export default {
     },
 
     setup () {
+        const vfm = useVfm()
         const pageStore = usePageStore();
         const configStore = useConfigStore();
         const uiStore = useUiStore();
@@ -129,6 +132,7 @@ export default {
         const resizeStorage = useStorage('preview-resize-width', { width: 700 })
 
         return {
+            vfm,
             pageStore,
             configStore,
             uiStore,
@@ -217,7 +221,7 @@ export default {
         },
 
         showBlockTypeModal() {
-            this.$vfm.show('block-type-modal')
+            createModal(BlockTypeModal)
         },
 
         closePreview() {

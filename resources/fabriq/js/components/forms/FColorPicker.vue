@@ -8,13 +8,11 @@
         :clearable="false"
         :options="getColorOptions()"
         :disabled="disabled"
-        default-value="primary"
         class="w-44"
-        @input="emitValue"
     >
         <template #fop="option">
             <div
-                class="size-5 mr-4 border-gray-200 rounded-full"
+                class="size-5 mr-4 border-gray-200 rounded-full aspect-square"
                 :class="option.color"
             />
             <span>
@@ -31,6 +29,7 @@
         </template>
     </FSelect>
 </template>
+
 <script>
 export const colors = {
     buttonColors: [
@@ -47,58 +46,49 @@ export const colors = {
         { label: 'Tertiär', color: 'bg-tertiary', value: 'tertiary' },
     ]
 }
+</script>
 
-export default {
-    name: 'FColorPicker',
-    props: {
-        value: {
-            type: String,
-            default: null
-        },
-        label: {
-            type: String,
-            default: 'Färg'
-        },
-        collection: {
-            type: String,
-            default: 'buttons'
-        },
-        name: {
-            type: String,
-            default: ''
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data () {
-        return {
-            color: 'primary',
-        }
-    },
-    mounted () {
-        if (!this.value) {
-            this.$emit('input', this.color)
-        } else {
-            this.color = this.value
-        }
-    },
-    methods: {
-        emitValue (value) {
-            this.color = value
-            this.$emit('input', value)
-        },
-        getColorOptions() {
-            if(!['buttons', 'backgrounds'].includes(this.collection)) {
-                console.error(`expected buttons|backgrounds got:${this.collection}`)
-            }
-            if(this.collection === 'backgrounds'){
-                return colors.backgroundColors
-            }
+<script setup>
 
-            return colors.buttonColors
-        }
+defineOptions({name: 'FColorPicker'})
+
+const  props = defineProps({
+    value: {
+        type: String,
+        default: null
+    },
+    label: {
+        type: String,
+        default: 'Färg'
+    },
+    collection: {
+        type: String,
+        default: 'buttons'
+    },
+    name: {
+        type: String,
+        default: ''
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     }
+})
+
+const color = defineModel({
+    type: String,
+    default: 'primary'
+})
+
+function getColorOptions() {
+    if(!['buttons', 'backgrounds'].includes(props.collection)) {
+        console.error(`expected buttons|backgrounds got:${props.collection}`)
+    }
+
+    if(props.collection === 'backgrounds'){
+        return colors.backgroundColors
+    }
+
+    return colors.buttonColors
 }
 </script>

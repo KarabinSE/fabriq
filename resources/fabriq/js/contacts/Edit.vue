@@ -43,19 +43,18 @@
                                 class="w-96"
                                 name="tags"
                                 object
-                                :create-option="tag => ({ name: tag, value: null, type: 'contacts'})"
+                                :create-option="tag => ({ name: tag.name, value: null, type: 'contacts'})"
                                 value-key="name"
                                 option-label="name"
-                                :push-tags="false"
                                 :options="contactTags"
                             />
                             <FSelect
                                 v-if="localesOptions.length > 1"
                                 v-model="content.enabled_locales"
-                                mode="multiple"
+                                mode="tags"
                                 label="Aktiverade språk"
                                 class="w-96"
-                                name="tags"
+                                name="locales"
                                 value-key="iso_code"
                                 option-label="native"
                                 :options="localesOptions"
@@ -145,6 +144,7 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Contact from '@fabriq/models/Contact.js'
 import Tag from '@fabriq/models/Tag.js'
 import { useConfigStore } from '@fabriq/stores';
@@ -199,7 +199,7 @@ export default {
         mapLocalizedContent (data) {
             const localizedContent = { ...data.localizedContent }
             Object.keys(localizedContent).forEach((item, key) => {
-                this.$set(this.localizedContent, item, { ...localizedContent[item].content })
+                this.localizedContent[item] = { ...localizedContent[item].content }
             })
         },
         async fetchContact () {
@@ -224,7 +224,7 @@ export default {
                 this.contact.content = { ...this.content }
                 this.contact.localizedContent = { ...this.localizedContent }
                 await Contact.update(this.id, this.contact)
-                this.$toast.success({ title: 'Kontakten har uppdaterats!' })
+                toast.success({ title: 'Kontakten har uppdaterats!' })
             } catch (error) {
                 console.error(error)
             }

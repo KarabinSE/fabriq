@@ -6,9 +6,8 @@
         value-key="value"
         option-label="label"
         :clearable="false"
-        :options="getArrowOptions()"
+        :options="buttonArrows"
         :disabled="disabled"
-        default-value="none"
         class="w-24"
         @input="emitValue"
     >
@@ -25,58 +24,39 @@
         </template>
     </FSelect>
 </template>
-<script>
-import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
 
+<script>
 export const buttonArrows = [
     { label: 'Ingen', value: 'none' },
     { label: 'Ner', value: 'down' },
     { label: 'Höger', value: 'right' },
 ]
+</script>
 
-export default {
-    name: 'FArrowPicker',
-    components: {
-        ArrowPresenter,
+<script setup>
+import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
+
+const props = defineProps({
+    value: {
+        type: String,
+        default: ''
     },
-    props: {
-        value: {
-            type: String,
-            default: ''
-        },
-        label: {
-            type: String,
-            default: 'Pil'
-        },
-        name: {
-            type: String,
-            default: ''
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        }
+    label: {
+        type: String,
+        default: 'Pil'
     },
-    data () {
-        return {
-            arrow: 'none',
-        }
+    name: {
+        type: String,
+        default: ''
     },
-    mounted () {
-        if (!this.value) {
-            this.$emit('input', this.arrow)
-        } else {
-            this.arrow = this.value
-        }
-    },
-    methods: {
-        emitValue (value) {
-            this.arrow = value
-            this.$emit('input', value)
-        },
-        getArrowOptions() {
-            return buttonArrows
-        }
+    disabled: {
+        type: Boolean,
+        default: false
     }
-}
+})
+
+const arrow = defineModel({
+    type: String,
+    default: 'none'
+})
 </script>

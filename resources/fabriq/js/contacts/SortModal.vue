@@ -43,6 +43,7 @@
 
 <script>
 import { route } from '@/generated/helpers/route';
+import { toast } from '@fabriq/components/toast/toast'
 import Contact from '@fabriq/models/Contact'
 import axios from 'axios'
 import Draggable from 'vuedraggable'
@@ -97,11 +98,11 @@ export default {
             try {
                 await axios.post(route('contacts.sort'), { contacts: this.contacts })
                 this.$emit('updated')
-                this.$toast.success({
+                toast.success({
                     title: 'Kontakterna har sorterats!',
                 })
             } catch (error) {
-                this.$toast.error({
+                toast.error({
                     title: 'Kontakterna kunde inte sorteras',
                 })
                 console.error(error)

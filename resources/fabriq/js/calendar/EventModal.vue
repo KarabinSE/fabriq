@@ -130,6 +130,7 @@
     </FModal>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Event from '@fabriq/models/Event.js'
 import { useConfigStore } from '@fabriq/stores';
 
@@ -200,13 +201,13 @@ export default {
                 }
                 const localizedContent = { ...this.event.localizedContent.data }
                 Object.keys(localizedContent).forEach((locale, key) => {
-                    this.$set(this.createEvent, locale, { ...localizedContent[locale].content })
+                    this.createEvent[locale] = { ...localizedContent[locale].content }
                 })
             } else {
                 Object.keys(this.locales).forEach(locale => {
                     this.createEvent = { ...defaultMainCreationObject() }
                     this.$nextTick(() => {
-                        this.$set(this.createEvent, locale, { ...defaultCreationObject() })
+                        this.createEvent['locale'] = { ...defaultCreationObject() }
                     })
                 })
             }
@@ -219,14 +220,14 @@ export default {
                     this.$refs['createForm' + locale][0].reset()
                 })
                 // createForm
-                this.$refs.observer.reset()
+                this.$refs.observer?.reset()
             })
         },
         async storeEvent () {
             this.localesWithErrors = []
             const result = await this.validateForms()
             if (!result) {
-                this.$toast.warning({ title: 'Oj då!', message: 'Något är tosigt med datan du försöker skicka.' })
+                toast.warning({ title: 'Oj då!', message: 'Något är tosigt med datan du försöker skicka.' })
                 return
             }
             try {
@@ -246,11 +247,11 @@ export default {
                 }
                 if (this.creating) {
                     await Event.store(payload)
-                    this.$toast.success({ title: 'Händelsen har skapats! ' })
+                    toast.success({ title: 'Händelsen har skapats! ' })
                     this.$emit('updated')
                 } else {
                     await Event.update(this.event.id, payload)
-                    this.$toast.success({ title: 'Händelsen har uppdaterats!' })
+                    toast.success({ title: 'Händelsen har uppdaterats!' })
                     this.$emit('updated')
                 }
                 this.localShow = false
@@ -261,7 +262,7 @@ export default {
         async validateForms () {
             // const mainIsValid = false
             const formsToValidate = [
-                this.$refs.observer.validate()
+                this.$refs.observer?.validate()
             ]
             Object.keys(this.locales).forEach(locale => {
                 this.$refs['createForm' + locale][0].validate().then(result => {

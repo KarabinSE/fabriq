@@ -37,6 +37,7 @@ import FMediaInput from './forms/FMediaInput.vue'
 import FColorPicker from './forms/FColorPicker.vue'
 import FArrowPicker from './forms/FArrowPicker.vue'
 import FChildren from "./forms/FChildren.vue";
+import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
 
 const commonComponents = [
     UiLogo,
@@ -79,11 +80,12 @@ const commonComponents = [
     FColorPicker,
     FArrowPicker,
     FChildren,
+    SlideUpDown,
 ];
 
 export default {
     install: (app) => {
-        commonComponents.map((component) => {
+        commonComponents.forEach((component) => {
             app.component(component.name, component);
         });
     },

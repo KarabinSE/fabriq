@@ -62,7 +62,9 @@ export const usePreviewStore = defineStore('preview', () => {
 
             previewUrl.value = data.preview_url
 
-            postToIframe(iframeReference.value)
+            if(previewVisible.value) {
+                postToIframe(iframeReference.value)
+            }
         } catch (error) {
             console.warn(error)
         }

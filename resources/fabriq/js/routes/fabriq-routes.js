@@ -25,12 +25,16 @@ import VideosIndex from '@fabriq/videos/Index.vue'
 
 export default [
     {
+        path: '/',
+        redirect: { name: 'home.index' }
+    },
+    {
         path: '/admin',
-        redirect: '/admin/dashboard'
+        redirect: { name: 'home.index' }
     },
     {
         path: '/admin/home',
-        redirect: '/admin/dashboard'
+        redirect: { name: 'home.index' }
     },
     {
         path: '/admin/dashboard',
@@ -50,15 +54,15 @@ export default [
             roles: ['*']
         }
     },
-    {
-        path: '/admin/dashboard',
-        name: 'dashboard.index',
-        component: Dashboard,
-        meta: {
-            middleware: RolesMiddleware,
-            roles: ['admin']
-        }
-    },
+    // {
+    //     path: '/admin/dashboard',
+    //     name: 'dashboard.index',
+    //     component: Dashboard,
+    //     meta: {
+    //         middleware: RolesMiddleware,
+    //         roles: ['admin']
+    //     }
+    // },
     {
         path: '/admin/pages',
         name: 'pages.index',
@@ -234,7 +238,7 @@ export default [
     },
     {
         name: 'errors.404',
-        path: '*',
+        path: '/:pathMatch(.*)*',
         component: NotFound
     }
 ]

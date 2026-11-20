@@ -1,6 +1,5 @@
 <template>
     <FModal
-        v-model="show"
         name="video-modal"
         width="max-w-5xl"
         overflow="overflow-auto"
@@ -29,12 +28,12 @@
                 </button>
             </div>
         </template>
-        <template #actions>
+        <template #actions="{close}">
             <div class="flex justify-end space-x-4">
                 <div class="flex space-x-4">
                     <button
                         class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                        @click="show = false"
+                        @click="close"
                     >
                         Stäng
                     </button>
@@ -75,12 +74,12 @@
                         v-model="video.tags"
                         mode="tags"
                         label="Taggar"
-                        name="videoTags"
+                        name="availableTags"
                         object
-                        :create-option="tag => ({ name: tag, value: null, type: 'videos'})"
+                        :create-option="tag => ({ name: tag.name, value: null, type: 'videos'})"
                         value-key="name"
                         option-label="name"
-                        :options="videoTags"
+                        :options="availableTags"
                     />
                     <div>
                         <FButton
@@ -121,8 +120,12 @@ import Download from '@fabriq/models/Download.js'
 import Video from '@fabriq/models/Video.js'
 import Tag from '@fabriq/models/Tag.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { toast } from '@fabriq/components/toast/toast'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 export default {
-    name: 'BlockTypeModal',
+    name: 'VideoModal',
+    emits: ['item-deleted'],
     props: {
         item: {
             type: Object,
@@ -130,15 +133,19 @@ export default {
         }
 
     },
+
+    setup() {
+        const eventBus = useEventBus()
+        return {eventBus}
+    },
     data () {
         return {
-            show: false,
             video: {
                 id: 0,
                 size: 0,
                 tags: [],
             },
-            videoTags: []
+            availableTags: []
         }
     },
     computed: {
@@ -150,24 +157,23 @@ export default {
     },
     methods: {
         ...formatters,
-        async fetchVideo (parameters) {
-            const id = parameters.ref.params.id
+        async fetchVideo () {
             try {
                 const payload = {
                     params: {
                         include: 'tags'
                     }
                 }
-                const { data } = await Video.show(id, payload)
+                const { data } = await Video.show(this.item.id, payload)
                 this.video = data
             } catch (error) {
                 console.error(error)
             }
         },
-        async initModal (parameters) {
+        async initModal () {
             try {
                 const promises = [
-                    this.fetchVideo(parameters),
+                    this.fetchVideo(this.item.id),
                     this.fetchVideoTags()
                 ]
                 await Promise.all(promises)
@@ -183,7 +189,7 @@ export default {
                     }
                 }
                 const { data } = await Tag.index(payload)
-                this.videoTags = data
+                this.availableTags = data
             } catch (error) {
                 console.error(error)
             }
@@ -202,9 +208,9 @@ export default {
                     tags: this.nameTags
                 }
                 await Video.update(this.video.id, transformedVideo)
-                this.$eventBus.emit('video-updated')
-                this.$toast.success({ title: 'Videon har uppdaterats!' })
-                this.show = false
+                this.eventBus.emit('video-updated')
+                toast.success({ title: 'Videon har uppdaterats!' })
+                this.closeModal()
             } catch (error) {
                 console.error(error)
             }
@@ -212,11 +218,12 @@ export default {
         async deleteVideo () {
             try {
                 await Video.destroy(this.video.id)
-                this.$eventBus.emit('video-updated')
-                this.$toast.success({ title: 'Videon har raderats' })
-                this.show = false
+                this.eventBus.emit('video-updated')
+                toast.success({ title: 'Videon har raderats' })
+                this.$emit('item-deleted')
+                this.closeModal()
             } catch (error) {
-                this.$toast.error({ title: 'Kunde inte radera videon' })
+                toast.error({ title: 'Kunde inte radera videon' })
                 console.error(error)
             }
         },
@@ -228,6 +235,9 @@ export default {
             }
             const { data, headers } = await Download.show(this.video.id, payload)
             await Download.handleBlobDownload(data, headers)
+        },
+        closeModal() {
+            this.$vfm.close('video-modal')
         }
     }
 }

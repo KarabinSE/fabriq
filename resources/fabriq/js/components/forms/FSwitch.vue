@@ -74,8 +74,9 @@
 <script>
 export default {
     name: 'FSwitch',
+    emits: ['update:model-value'],
     props: {
-        value: {
+        modelValue: {
             type: [Number, Boolean, String],
             default: false
         },
@@ -98,7 +99,7 @@ export default {
     },
     data () {
         return {
-            newValue: this.value
+            newValue: this.modelValue
         }
     },
     computed: {
@@ -111,7 +112,7 @@ export default {
             },
             set (value) {
                 this.newValue = value
-                this.$emit('input', value)
+                this.$emit('update:model-value', value)
             }
         },
         inputDisabled() {
@@ -125,7 +126,7 @@ export default {
         /**
         * When v-model change, set internal value.
         */
-        value (value) {
+        modelValue (value) {
             this.newValue = value
         }
     },
