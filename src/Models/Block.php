@@ -53,19 +53,17 @@ class Block extends Model implements Sortable
 
         static::saved(function (Block $block) {
             app(BlockReferenceIndex::class)->sync($block);
-            $pageClass = Fabriq::getFqnModel('page');
-            if ($block->model_type === (new $pageClass)->getMorphClass()) {
-                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->model_id);
+            if ($block->model_type && $block->model_id) {
+                app(BlockReferenceInvalidator::class)->ownerBlocksChanged($block->model_type, (int) $block->model_id);
             }
-            if ($block->wasChanged(['model_type', 'model_id']) && $block->getOriginal('model_type') === (new $pageClass)->getMorphClass()) {
-                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->getOriginal('model_id'));
+            if ($block->wasChanged(['model_type', 'model_id']) && $block->getOriginal('model_type') && $block->getOriginal('model_id')) {
+                app(BlockReferenceInvalidator::class)->ownerBlocksChanged($block->getOriginal('model_type'), (int) $block->getOriginal('model_id'));
             }
         });
 
         static::deleted(function (Block $block) {
-            $pageClass = Fabriq::getFqnModel('page');
-            if ($block->model_type === (new $pageClass)->getMorphClass()) {
-                app(BlockReferenceInvalidator::class)->blockChanged((int) $block->model_id);
+            if ($block->model_type && $block->model_id) {
+                app(BlockReferenceInvalidator::class)->ownerBlocksChanged($block->model_type, (int) $block->model_id);
             }
         });
     }
@@ -105,10 +103,7 @@ class Block extends Model implements Sortable
                 ->whereNotIn('uuid', $blockUuids)
                 ->delete();
 
-            $pageClass = Fabriq::getFqnModel('page');
-            if ($page instanceof $pageClass) {
-                app(BlockReferenceInvalidator::class)->blockChanged((int) $page->getKey());
-            }
+            app(BlockReferenceInvalidator::class)->ownerBlocksChanged($page->getMorphClass(), (int) $page->getKey());
         });
     }
 
@@ -116,10 +111,7 @@ class Block extends Model implements Sortable
     {
         return app(CacheWebhookBatcher::class)->defer(function () use ($block, $model, $parent) {
             $savedBlock = self::saveBlockTree($block, $model, $parent);
-            $pageClass = Fabriq::getFqnModel('page');
-            if ($model instanceof $pageClass) {
-                app(BlockReferenceInvalidator::class)->blockChanged((int) $model->getKey());
-            }
+            app(BlockReferenceInvalidator::class)->ownerBlocksChanged($model->getMorphClass(), (int) $model->getKey());
 
             return $savedBlock;
         });

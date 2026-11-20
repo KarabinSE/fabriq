@@ -19,7 +19,7 @@ class DefinitionReferenceIndex
         if ($field !== null) {
             if ($field->repeater) {
                 $key = null;
-            } elseif (! in_array($key, ['image', 'main_image', 'meta_og_image', 'logo_image', 'file', 'video', 'smartBlock', 'button', 'buttons'], true)) {
+            } elseif (! app(ReferenceRegistry::class)->hasField((string) $key) && ! in_array($key, ['button', 'buttons'], true)) {
                 $key = $field->type;
             }
         }

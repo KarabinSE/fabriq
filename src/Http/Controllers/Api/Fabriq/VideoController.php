@@ -10,7 +10,6 @@ use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\Video;
 use Karabin\Fabriq\QueryBuilders\TagSort;
 use Karabin\Fabriq\QueryBuilders\VideoSort;
-use Karabin\Fabriq\Services\BlockReferenceInvalidator;
 use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -61,10 +60,8 @@ class VideoController extends Controller
 
         $media = $video->getFirstmedia('videos');
         $media->name = $request->name;
-        app(BlockReferenceInvalidator::class)->deferResourceChanges('video', (int) $video->getKey(), function () use ($media, $video) {
-            $media->save();
-            $video->save();
-        });
+        $media->save();
+        $video->save();
 
         return Fabriq::getDto('video')::fromModel($video)->wrap('data')->toResponse($request);
     }

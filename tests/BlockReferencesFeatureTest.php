@@ -2,14 +2,17 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Karabin\Fabriq\Actions\BustCacheWithWebhook;
 use Karabin\Fabriq\Actions\UpdateMenuItemPaths;
 use Karabin\Fabriq\Events\ContentUpdated;
+use Karabin\Fabriq\Http\Middleware\BatchCacheWebhooks;
 use Karabin\Fabriq\Models\Block;
 use Karabin\Fabriq\Models\BlockType;
 use Karabin\Fabriq\Models\ContentTemplate;
@@ -24,10 +27,12 @@ use Karabin\Fabriq\Models\Slug;
 use Karabin\Fabriq\Models\SmartBlock;
 use Karabin\Fabriq\Models\Video;
 use Karabin\Fabriq\Services\BlockReferenceIndex;
-use Karabin\Fabriq\Services\BlockReferenceInvalidator;
 use Karabin\Fabriq\Services\CacheWebhookBatcher;
 use Karabin\Fabriq\Services\DefinitionReferenceIndex;
+use Karabin\Fabriq\Services\ReferenceRegistry;
 use Karabin\Fabriq\Tests\AdminUserTestCase;
+use Karabin\Fabriq\Traits\HasContent;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
 use RuntimeException;
 use Spatie\WebhookServer\Events\DispatchingWebhookCallEvent;
 
@@ -422,6 +427,26 @@ class BlockReferencesFeatureTest extends AdminUserTestCase
         $this->assertSame([['later'], [], true], $recorder->calls[1]);
     }
 
+    public function test_custom_route_middleware_flushes_on_failure_without_leaking(): void
+    {
+        $recorder = $this->recordWebhooks();
+        Route::middleware(BatchCacheWebhooks::class)->post('/test-reference-batch', function () {
+            app(CacheWebhookBatcher::class)->send(['completed']);
+            throw new RuntimeException('request failed');
+        });
+
+        try {
+            $this->withoutExceptionHandling()->postJson('/test-reference-batch');
+            $this->fail('Expected request error.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('request failed', $exception->getMessage());
+        }
+
+        $this->assertSame([[['completed'], [], false]], $recorder->calls);
+        app(CacheWebhookBatcher::class)->send(['later']);
+        $this->assertSame([['later'], [], true], $recorder->calls[1]);
+    }
+
     public function test_resource_and_media_changes_invalidate_only_referring_pages(): void
     {
         $first = $this->pageWithSlug('first-reference');
@@ -524,7 +549,7 @@ class BlockReferencesFeatureTest extends AdminUserTestCase
         $media = $image->getFirstMedia('images');
 
         try {
-            app(BlockReferenceInvalidator::class)->deferResourceChanges('image', $image->id, function () use ($media) {
+            app(CacheWebhookBatcher::class)->defer(function () use ($media) {
                 $media->name = 'Persisted name';
                 $media->save();
                 throw new RuntimeException('save failed');
@@ -539,6 +564,141 @@ class BlockReferencesFeatureTest extends AdminUserTestCase
         $this->assertContains('fabriq_pages_slug_partial-asset-update', $recorder->calls[0][0]);
         $image->update(['alt_text' => 'Changed separately']);
         $this->assertCount(2, $recorder->calls);
+    }
+
+    public function test_custom_reference_fields_in_blocks_and_definitions_are_rebuilt_and_invalidated(): void
+    {
+        $registry = app(ReferenceRegistry::class);
+        $registry->registerField('product', 'product');
+        $registry->registerField('featured_product', 'product', fn ($value) => [$value['entity_id']]);
+
+        $product = ReferenceTestProduct::create(['alt_text' => 'old']);
+        $blockPage = $this->pageWithSlug('product-block');
+        $definitionPage = $this->pageWithSlug('product-definition');
+        $block = Block::factory()->create([
+            'model_id' => $blockPage->id, 'model_type' => $blockPage->getMorphClass(),
+            'content' => ['product' => $product->id],
+        ]);
+        ContentTemplateField::factory()->create([
+            'template_id' => $definitionPage->template_id, 'key' => 'hero_product',
+            'type' => 'featured_product', 'translated' => true,
+        ]);
+        $definitionPage->updateContent(['hero_product' => ['entity_id' => $product->id]], 'sv');
+        $definition = $definitionPage->contentDefinitions()->where('field_key', 'hero_product')->firstOrFail();
+        $this->artisan('fabriq:rebuild-block-references')->assertSuccessful();
+        $this->assertDatabaseHas('block_references', ['block_id' => $block->id, 'resource_type' => 'product', 'resource_id' => $product->id]);
+        $this->assertDatabaseHas('content_references', ['definition_id' => $definition->id, 'resource_type' => 'product', 'resource_id' => $product->id]);
+
+        $recorder = $this->recordWebhooks();
+        $product->update(['alt_text' => 'new']);
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_product-block', $recorder->calls[0][0]);
+        $this->assertContains('fabriq_pages_slug_product-definition', $recorder->calls[0][0]);
+        $this->assertContains('product_alt_text_old', $recorder->calls[0][0]);
+        $this->assertContains('product_alt_text_new', $recorder->calls[0][0]);
+    }
+
+    public function test_custom_dependencies_are_traversed_with_cycles_and_preserved_on_delete(): void
+    {
+        $registry = app(ReferenceRegistry::class);
+        $registry->registerField('product', 'product');
+        $registry->registerField('category', 'category');
+        $category = ReferenceTestCategory::create(['caption' => 'Category']);
+        $product = ReferenceTestProduct::create(['alt_text' => 'Product']);
+        $page = $this->pageWithSlug('category-product');
+        Block::factory()->create([
+            'model_id' => $page->id, 'model_type' => $page->getMorphClass(),
+            'content' => ['product' => $product->id],
+        ]);
+        $definition = I18nDefinition::create([
+            'model_type' => $product->getMorphClass(), 'model_id' => $product->id,
+            'field_key' => 'category', 'content' => ['sv' => $category->id],
+        ]);
+        $registry->registerDependencies('product', fn (int $id) => [
+            ['type' => 'category', 'id' => $category->id],
+        ]);
+        $recorder = $this->recordWebhooks();
+        $category->update(['caption' => 'Changed']);
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_category-product', $recorder->calls[0][0]);
+        $this->assertContains('product_alt_text_Product', $recorder->calls[0][0]);
+
+        $recorder->calls = [];
+        $definition->delete();
+        $registry->registerDependencies('category', fn (int $id) => ReferenceTestCategory::find($id)
+            ? [['type' => 'product', 'id' => $product->id]]
+            : []);
+        $category->delete();
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_category-product', $recorder->calls[0][0]);
+    }
+
+    public function test_reference_changes_are_resolved_after_the_batch_finishes(): void
+    {
+        app(ReferenceRegistry::class)->registerField('product', 'product');
+        $product = ReferenceTestProduct::create(['alt_text' => 'old']);
+        $page = $this->pageWithSlug('late-reference');
+        $recorder = $this->recordWebhooks();
+
+        app(CacheWebhookBatcher::class)->defer(function () use ($product, $page, $recorder) {
+            $product->update(['alt_text' => 'new']);
+            Block::factory()->create([
+                'model_id' => $page->id, 'model_type' => $page->getMorphClass(),
+                'content' => ['product' => $product->id],
+            ]);
+            $this->assertSame([], $recorder->calls);
+        });
+
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_late-reference', $recorder->calls[0][0]);
+    }
+
+    public function test_custom_block_owners_propagate_reference_and_block_changes(): void
+    {
+        $registry = app(ReferenceRegistry::class);
+        $registry->registerField('product', 'product');
+        $registry->registerField('category', 'category');
+        $category = ReferenceTestCategory::create(['caption' => 'Category']);
+        $product = ReferenceTestProduct::create(['alt_text' => 'Product']);
+        $page = $this->pageWithSlug('product-owner');
+        Block::factory()->create([
+            'model_id' => $page->id, 'model_type' => $page->getMorphClass(),
+            'content' => ['product' => $product->id],
+        ]);
+        $block = Block::factory()->create([
+            'model_id' => $product->id, 'model_type' => $product->getMorphClass(),
+            'content' => ['category' => $category->id],
+        ]);
+        $recorder = $this->recordWebhooks();
+
+        $category->update(['caption' => 'Changed']);
+        $this->assertContains('fabriq_pages_slug_product-owner', $recorder->calls[0][0]);
+        $this->assertContains('product_alt_text_Product', $recorder->calls[0][0]);
+
+        $recorder->calls = [];
+        $block->update(['content' => ['category' => $category->id, 'title' => 'Changed']]);
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_product-owner', $recorder->calls[0][0]);
+        $this->assertContains('product_alt_text_Product', $recorder->calls[0][0]);
+    }
+
+    public function test_custom_model_content_changes_invalidate_its_referrers(): void
+    {
+        app(ReferenceRegistry::class)->registerField('product', 'product');
+        $product = ReferenceTestProduct::create(['alt_text' => 'Product']);
+        $page = $this->pageWithSlug('product-content');
+        Block::factory()->create([
+            'model_id' => $page->id, 'model_type' => $page->getMorphClass(),
+            'content' => ['product' => $product->id],
+        ]);
+        ContentTemplateField::factory()->create([
+            'template_id' => $page->template_id, 'key' => 'product_summary', 'type' => 'text', 'translated' => true,
+        ]);
+        $recorder = $this->recordWebhooks();
+
+        app(CacheWebhookBatcher::class)->defer(fn () => $product->updateContent(['product_summary' => 'Changed'], 'sv'));
+        $this->assertCount(1, $recorder->calls);
+        $this->assertContains('fabriq_pages_slug_product-content', $recorder->calls[0][0]);
     }
 
     public function test_translated_page_image_references_are_indexed_and_invalidate_the_page(): void
@@ -862,5 +1022,38 @@ class BlockReferencesFeatureTest extends AdminUserTestCase
                 && in_array('fabriq_pages_slug_webhook-page', $event->payload['invalid_cache_keys'], true)
                 && $event->payload['invalid_cache_tags'] === [];
         });
+    }
+}
+
+class ReferenceTestProduct extends Model
+{
+    use HasContent, InvalidatesReferences;
+
+    protected $table = 'images';
+
+    protected $guarded = [];
+
+    public function referenceType(): string
+    {
+        return 'product';
+    }
+
+    public function getContentCacheKeys(): array
+    {
+        return ['product|alt_text'];
+    }
+}
+
+class ReferenceTestCategory extends Model
+{
+    use InvalidatesReferences;
+
+    protected $table = 'files';
+
+    protected $guarded = [];
+
+    public function referenceType(): string
+    {
+        return 'category';
     }
 }

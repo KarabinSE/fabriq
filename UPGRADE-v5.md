@@ -208,11 +208,13 @@ After running migrations, run `php artisan fabriq:rebuild-block-references` once
 
 Image, file, video and linked page changes invalidate owners whose blocks or translated content reference them, using each owner's existing cache keys. This includes page content and block updates, even when the linked page's slug is unchanged. Smart block references are followed to pages that use them. Existing content is not covered until the rebuild completes. Consumers must handle the existing `invalid_cache_keys` webhook payload, including `fabriq_pages_slug_<slug>`; Fabriq cannot invalidate a consumer's cache otherwise. Webhook delivery still depends on the configured endpoint, queue and retry settings.
 
-Image, file and video updates through Fabriq combine the media and resource saves into one notification after both saves. Independent media changes still trigger their own notification.
+Fabriq routes batch cache webhooks until their writes finish, including media and resource saves. Independent saves outside a batch still notify immediately. Userland routes can use `BatchCacheWebhooks`; jobs and commands can use `CacheWebhookBatcher::defer()`.
 
 Page content and block updates each combine their cache keys into one notification after their respective writes. The editor sends these as separate requests, so a complete page save can still send one notification per request.
 
 The indexes follow the built-in `image`, `file`, `video`, `smartBlock`, `button` and `buttons` content shapes and template field types. Save blocks and content definitions through Eloquent with events enabled; direct database writes, bulk updates and `saveQuietly()` bypass index synchronization and require a rebuild. Indexing errors are surfaced but do not roll back the saved content; rebuild the indexes after resolving such an error. Webhooks are sent after the corresponding writes, without waiting for any transaction a consuming app may have started. The database must enforce foreign keys so deleting blocks or definitions also removes their references. No Fabriq page cache is introduced by this feature.
+
+Application models can opt in using `InvalidatesReferences` and register their reference fields and dependency resolvers with `ReferenceRegistry`. See [the reference invalidation guide](docs/reference-invalidation.mdx).
 
 ### Search terms
 

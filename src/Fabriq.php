@@ -5,6 +5,7 @@ namespace Karabin\Fabriq;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 use InvalidArgumentException;
+use Karabin\Fabriq\Http\Middleware\BatchCacheWebhooks;
 use Karabin\Fabriq\Http\Middleware\LocaleMiddleware;
 
 class Fabriq
@@ -22,7 +23,7 @@ class Fabriq
         };
 
         $defaultOptions = [
-            'middleware' => [LocaleMiddleware::class],
+            'middleware' => [BatchCacheWebhooks::class, LocaleMiddleware::class],
         ];
 
         $options = array_merge_recursive($defaultOptions, $options);

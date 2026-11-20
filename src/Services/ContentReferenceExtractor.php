@@ -20,13 +20,10 @@ class ContentReferenceExtractor
             $value = (array) $value;
         }
 
-        $type = match ($key) {
-            'image', 'main_image', 'meta_og_image', 'logo_image' => 'image',
-            'file', 'video', 'smartBlock' => $key,
-            default => null,
-        };
-        if ($type !== null) {
-            $this->addIds($type, $value, $references);
+        $registry = app(ReferenceRegistry::class);
+        if ($key !== null && $registry->hasField($key)) {
+            $field = $registry->extract($key, $value);
+            $this->addExtractedIds($field['type'], $field['ids'], $references);
 
             return;
         }
@@ -69,7 +66,12 @@ class ContentReferenceExtractor
 
     private function addIds(string $type, mixed $value, array &$references): void
     {
-        foreach (ContentResourceContext::extractIds($value) as $id) {
+        $this->addExtractedIds($type, ContentResourceContext::extractIds($value), $references);
+    }
+
+    private function addExtractedIds(string $type, iterable $ids, array &$references): void
+    {
+        foreach ($ids as $id) {
             if ((! is_int($id) && ! ctype_digit($id)) || (int) $id <= 0) {
                 continue;
             }

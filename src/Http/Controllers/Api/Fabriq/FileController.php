@@ -10,7 +10,6 @@ use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Models\File;
 use Karabin\Fabriq\QueryBuilders\FileSort;
 use Karabin\Fabriq\QueryBuilders\TagSort;
-use Karabin\Fabriq\Services\BlockReferenceInvalidator;
 use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -63,10 +62,8 @@ class FileController extends Controller
         $file->fileTags = $request->tags;
         $media = $file->getFirstmedia('files');
         $media->name = $request->name;
-        app(BlockReferenceInvalidator::class)->deferResourceChanges('file', (int) $file->getKey(), function () use ($media, $file) {
-            $media->save();
-            $file->save();
-        });
+        $media->save();
+        $file->save();
 
         return Fabriq::getDto('file')::fromModel($file)->wrap('data')->toResponse($request);
     }

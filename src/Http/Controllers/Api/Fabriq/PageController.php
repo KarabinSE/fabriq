@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\Actions\DeletePage;
 use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
@@ -11,9 +12,6 @@ use Karabin\Fabriq\Http\Controllers\Controller;
 use Karabin\Fabriq\Http\Requests\CreatePageRequest;
 use Karabin\Fabriq\Models\Page;
 use Karabin\Fabriq\QueryBuilders\NoOpInclude;
-use Karabin\Fabriq\Services\BlockReferenceInvalidator;
-use Karabin\Fabriq\Services\CacheBuster;
-use Karabin\Fabriq\Services\CacheWebhookBatcher;
 use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
@@ -95,25 +93,23 @@ class PageController extends Controller
             ->firstOrFail();
 
         /** @var Page $page */
-        app(CacheWebhookBatcher::class)->defer(function () use ($request, $page) {
-            if ($request->exists('name')) {
-                $page->name = $request->name;
-            }
+        if ($request->exists('name')) {
+            $page->name = $request->name;
+        }
 
-            if ($request->exists('published')) {
-                $page->published = $request->published;
-            }
+        if ($request->exists('published')) {
+            $page->published = $request->published;
+        }
 
-            $page->touch();
+        $page->touch();
 
-            if ($request->exists('localizedContent')) {
-                $page->localizedContent = $request->localizedContent;
-            }
+        if ($request->exists('localizedContent')) {
+            $page->localizedContent = $request->localizedContent;
+        }
 
-            $page->updated_by = $request->user()->id;
+        $page->updated_by = $request->user()->id;
 
-            $page->save();
-        });
+        $page->save();
 
         return ContentResourceContext::withModelsWhenContentIsRequested($request, [$page], fn () => Fabriq::getDto('page')::fromModel($page)->wrap('data')->toResponse($request));
     }
@@ -145,15 +141,7 @@ class PageController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $query = Fabriq::getModelClass('page')->where('id', $id);
-        $page = $query->first();
-        if ($page !== null) {
-            $keys = app(CacheBuster::class)->getCacheKeys($page)->all();
-            $query->delete();
-            $invalidator = app(BlockReferenceInvalidator::class);
-            $invalidator->keysChanged($keys);
-            $invalidator->resourceChanged('page', $id);
-        }
+        app(DeletePage::class)->handle($id);
 
         return response()->json([
             'code' => ApiResponseCode::Success->value,

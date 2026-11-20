@@ -13,6 +13,10 @@ class CacheWebhookBatcher
 
     private array $tags = [];
 
+    private array $resources = [];
+
+    private bool $flushing = false;
+
     /**
      * @template T
      *
@@ -28,14 +32,43 @@ class CacheWebhookBatcher
         } finally {
             $this->depth--;
             if ($this->depth === 0) {
-                $keys = $this->keys;
-                $tags = $this->tags;
-                $this->keys = [];
-                $this->tags = [];
+                $this->flush();
+            }
+        }
+    }
 
-                if ($keys !== [] || $tags !== []) {
-                    app(BustCacheWithWebhook::class)->handle($keys, $tags, rateLimit: false);
-                }
+    public function deferResource(string $type, int $id): bool
+    {
+        if ($this->depth === 0 || $this->flushing) {
+            return false;
+        }
+
+        $this->resources[$type.':'.$id] = [$type, $id];
+
+        return true;
+    }
+
+    private function flush(): void
+    {
+        $resources = $this->resources;
+        $this->resources = [];
+        $this->flushing = true;
+        $this->depth++;
+
+        try {
+            foreach ($resources as [$type, $id]) {
+                app(BlockReferenceInvalidator::class)->resourceChanged($type, $id);
+            }
+        } finally {
+            $this->depth--;
+            $this->flushing = false;
+            $keys = $this->keys;
+            $tags = $this->tags;
+            $this->keys = [];
+            $this->tags = [];
+
+            if ($keys !== [] || $tags !== []) {
+                app(BustCacheWithWebhook::class)->handle($keys, $tags, rateLimit: false);
             }
         }
     }

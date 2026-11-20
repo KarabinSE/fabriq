@@ -11,6 +11,8 @@ use Karabin\Fabriq\Observers\BlockReferenceMenuItemObserver;
 use Karabin\Fabriq\Services\BlockReferenceInvalidator;
 use Karabin\Fabriq\Services\CacheWebhookBatcher;
 use Karabin\Fabriq\Services\DefinitionReferenceIndex;
+use Karabin\Fabriq\Services\ReferenceRegistry;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
 
 class ReferenceEventServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class ReferenceEventServiceProvider extends ServiceProvider
     {
         $this->app->scoped(BlockReferenceInvalidator::class);
         $this->app->scoped(CacheWebhookBatcher::class);
+        $this->app->singleton(ReferenceRegistry::class);
     }
 
     public function boot(): void
@@ -30,6 +33,8 @@ class ReferenceEventServiceProvider extends ServiceProvider
                 app(BlockReferenceInvalidator::class)->resourceChanged('page', (int) $event->model->getKey());
             } elseif ($event->model instanceof $smartBlockClass) {
                 app(BlockReferenceInvalidator::class)->resourceChanged('smartBlock', (int) $event->model->getKey());
+            } elseif (in_array(InvalidatesReferences::class, class_uses_recursive($event->model), true) && method_exists($event->model, 'referenceType')) {
+                app(BlockReferenceInvalidator::class)->resourceChanged($event->model->referenceType(), (int) $event->model->getKey());
             }
         });
 
@@ -38,6 +43,9 @@ class ReferenceEventServiceProvider extends ServiceProvider
 
         foreach (['image', 'file', 'video'] as $type) {
             $class = Fabriq::getFqnModel($type);
+            if (in_array(InvalidatesReferences::class, class_uses_recursive($class), true)) {
+                continue;
+            }
             $class::saved(fn (Model $model) => app(BlockReferenceInvalidator::class)->resourceChanged($type, (int) $model->getKey()));
             $class::deleted(fn (Model $model) => app(BlockReferenceInvalidator::class)->resourceChanged($type, (int) $model->getKey()));
         }
