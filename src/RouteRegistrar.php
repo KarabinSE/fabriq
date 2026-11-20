@@ -8,7 +8,6 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AcceptInvitationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ArticleController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AskToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\AuthenticatedUserController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\BlockTypeController;
@@ -20,7 +19,6 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ConfigController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContactSortController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ContentTemplateController;
-use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DeclineToLeaveNotificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\DownloadController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EmailVerificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EventController;
@@ -363,8 +361,6 @@ class RouteRegistrar
 
     public function forNotifications()
     {
-        Route::post('/notifications/ask-to-leave/{userId}', AskToLeaveNotificationController::class)->name('notifications.ask-to-leave');
-        Route::post('/notifications/decline-to-leave/{userId}', DeclineToLeaveNotificationController::class)->name('notifications.decline-to-leave');
         Route::get('/user/notifications', [NotificationController::class, 'index'])->name('user.notifications.index');
         Route::patch('/user/notifications/{id}', [NotificationController::class, 'update'])->name('user.notifications.update');
     }
