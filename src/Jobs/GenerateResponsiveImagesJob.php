@@ -3,12 +3,12 @@
 namespace Karabin\Fabriq\Jobs;
 
 use Exception;
-use Karabin\Fabriq\Events\MediaFinishedProcessing;
-use Karabin\Fabriq\Services\ResponsiveImageGenerator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Karabin\Fabriq\Events\MediaFinishedProcessing;
+use Karabin\Fabriq\Services\ResponsiveImageGenerator;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class GenerateResponsiveImagesJob implements ShouldQueue
@@ -26,16 +26,10 @@ class GenerateResponsiveImagesJob implements ShouldQueue
 
     public function handle(): bool
     {
-        /** @var \Karabin\Fabriq\Services\ResponsiveImageGenerator $responsiveImageGenerator */
+        /** @var ResponsiveImageGenerator $responsiveImageGenerator */
         $responsiveImageGenerator = app(ResponsiveImageGenerator::class);
 
         try {
-            if (config('fabriq.enable_remote_image_processing')) {
-                $responsiveImageGenerator->generateResponsiveImagesViaLambda($this->media);
-                $this->setMediaProcessingStatus(false);
-
-                return true;
-            }
             if (config('fabriq.enable_webp')) {
 
                 $responsiveImageGenerator->generateResponsiveImagesWithWebP($this->media);

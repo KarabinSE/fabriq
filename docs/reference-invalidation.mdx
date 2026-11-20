@@ -1,0 +1,117 @@
+---
+title: Reference indexing and cache invalidation
+description: Invalidate consumer caches when referenced Fabriq or application resources change.
+---
+
+# Reference indexing and cache invalidation
+
+Fabriq indexes references in block content and translated content definitions. When a referenced resource changes, Fabriq sends a cache-expiration webhook containing the affected owners' cache keys. The consuming application is responsible for caching and for handling the webhook; Fabriq does not add a page cache.
+
+Images, files, videos, internal page buttons and smart blocks are supported out of the box. Block children and translations are indexed too. Configure `FABRIQ_WEBHOOK_ENABLED`, `FABRIQ_WEBHOOK_ENDPOINT` and a secret in `FABRIQ_WEBHOOK_SECRET`, and configure webhook delivery and retries for your application.
+
+After migrating, build the indexes:
+
+```shell
+php artisan fabriq:rebuild-block-references
+```
+
+Deploy the index-writing code and reference registrations to **all writers** first, restart long-running workers, and pause block and content writes during the rebuild. Run only one rebuild at a time. Repeat it after imports, changing registered field mappings or template field types, or repairing an index.
+
+## Register an application resource
+
+Add the trait to a model and return a stable, unique resource type. IDs must be positive integers; resource types must be 1–32 characters and cannot contain `:`. The trait reports saves and deletes, and reports content changes made through `updateContent()` when the model also uses Fabriq's `HasContent` trait.
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
+
+class Product extends Model
+{
+    use InvalidatesReferences;
+
+    public function referenceType(): string
+    {
+        return 'product';
+    }
+
+    public function getContentCacheKeys(): array
+    {
+        return ['products|id'];
+    }
+}
+```
+
+`getContentCacheKeys()` is optional. Here it produces `products_id_<id>` for the product itself; keys for pages or other owners referencing it are added automatically. The trait captures old and new model-attribute keys on updates and captures keys before deletion. If your keys depend on separately updated relations or slugs, explicitly report their old keys when those relations change.
+
+In an application service provider, register the JSON keys and template field types that contain product IDs:
+
+```php
+use Karabin\Fabriq\Services\ReferenceRegistry;
+
+public function boot(): void
+{
+    $references = app(ReferenceRegistry::class);
+    $references->registerField('product', 'product');
+    $references->registerField('related_products', 'product');
+}
+```
+
+For example, `{"product": 12}` in a block or a `product`-typed translated field will be indexed. The default extractor accepts a positive integer ID, an object with an `id` property, or a list of IDs or such objects. Registration applies recursively to matching JSON keys; choose unambiguous keys. A matching field key takes precedence over its template field type. Registering an existing key replaces its mapping, including built-in mappings.
+
+For another shape, provide a callback returning IDs:
+
+```php
+$references->registerField(
+    'featured_product',
+    'product',
+    fn (mixed $value): array => is_array($value) && isset($value['entity_id'])
+        ? [$value['entity_id']]
+        : [],
+);
+```
+
+The callback runs for each matching value, including each translation and during rebuilds. It must handle empty values. Registering references controls **invalidation only**; configure your application's content getters and serialization separately if responses should contain expanded products.
+
+## Related resources
+
+If a product's indexed content references a category, changing that category automatically reaches the product and then owners that reference the product. Give both models the trait and register both reference fields. Their `getContentCacheKeys()` methods provide their own keys where needed.
+
+For relationships outside indexed content, register a resolver. For example, when a category changes, invalidate products belonging to it:
+
+```php
+use App\Models\Product;
+
+$references->registerDependencies('category', function (int $categoryId): iterable {
+    foreach (Product::query()->where('category_id', $categoryId)->pluck('id') as $id) {
+        yield ['type' => 'product', 'id' => (int) $id];
+    }
+});
+```
+
+Resolvers return resources **affected by** the changed resource, not its dependencies. They run during invalidation and must tolerate the changed row being absent. The trait also captures the directly affected resources before a model is deleted, so cascading deletion of relationship rows does not lose them. Traversal deduplicates resources and handles cycles.
+
+For relationship moves or bulk changes, explicitly notify both the old and new affected resources. For example, capture the old IDs before changing the relationship and call `app(BlockReferenceInvalidator::class)->resourceChanged('category', $id)` for each affected ID within a batch. Registering a resolver does not observe pivot table or query-builder writes by itself.
+
+## Batching writes
+
+Routes registered with `Fabriq::routes()` batch notifications automatically. Webhooks are dispatched after the route has finished its writes and before the middleware returns the response. A page editor save uses separate content and block requests, so it can still dispatch one webhook per request.
+
+For custom routes, add `Karabin\Fabriq\Http\Middleware\BatchCacheWebhooks` to the route or route group. For a job, command or other multi-write operation, use the same scoped batcher:
+
+```php
+use Karabin\Fabriq\Services\CacheWebhookBatcher;
+
+app(CacheWebhookBatcher::class)->defer(function () use ($product, $category) {
+    $category->save();
+    $product->save();
+});
+```
+
+Batches nest, combine duplicate keys and tags, and resolve referenced owners after the writes. Outside a batch, model events dispatch immediately. A batch that fails still flushes completed changes and propagates the error; it is not a database transaction. Fabriq does not wait for a transaction started by the application, so choose the batch boundary accordingly.
+
+## Limitations
+
+- Eloquent bulk updates and deletes, direct database writes, and quiet saves bypass model events. Explicitly notify affected resources and rebuild indexes after bypassing block or content indexing.
+- Indexing errors are surfaced but do not roll back content already saved. Repair the problem and rebuild the indexes.
+- Deletions require database foreign keys to be enforced so deleted block and definition index rows are removed.
+- Webhook consumers must handle `cache_expiration` payloads containing `invalid_cache_keys` and `invalid_cache_tags`. Delivery depends on the configured webhook endpoint, queue and retry settings.
