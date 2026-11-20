@@ -3,11 +3,10 @@
         <div class=" flex flex-col gap-y-3">
             <div class="flex gap-5 justify-between">
                 <FSelect
-                    v-model="localValue.type"
+                    v-model="media.type"
                     label="Mediatyp"
-                    class="grow"
+                    class="flex-1"
                     :name="name"
-                    v-bind="$attrs"
                     :clearable="false"
                     :options="[
                         {
@@ -23,64 +22,39 @@
                 <slot />
             </div>
             <FImageInput
-                v-if="localValue.type === 'image'"
-                v-model="localValue.image"
+                v-if="media.type === 'image'"
+                v-model="media.image"
                 name="firstMediaImage"
             />
             <FVideoInput
-                v-if="localValue.type === 'video'"
-                v-model="localValue.video"
+                v-if="media.type === 'video'"
+                v-model="media.video"
                 name="firstMediaVideo"
             />
         </div>
     </div>
 </template>
 
-<script>
-export default {
-    name: 'FMediaInput',
-    props: {
-        name: {
-            type: String,
-            required: true,
-        },
-        value: {
-            type: Object,
-            default: () => ({
-                type: 'image',
-                image: null,
-                video: null,
-            }),
-        },
+<script setup>
+import { Media } from '@fabriq/models/Media'
+import { watchEffect } from 'vue'
+
+defineOptions({name: 'FMediaInput'})
+const emits = defineEmits(['update:model-value'])
+const  props = defineProps({
+    name: {
+        type: String,
+        required: true,
     },
+})
 
-    emits: ['input'],
-
-    data() {
-        return {
-            localValue: { ...this.value },
-        }
-    },
-
-    watch: {
-        // value: {
-        //     handler(newValue) {
-        //         this.localValue = { ...newValue }
-        //     },
-        //     deep: true,
-        // },
-        localValue: {
-            handler(newValue) {
-                this.$emit('input', newValue)
-            },
-            deep: true,
-        },
-    },
-
-    methods: {
-        emitValue(value) {
-            this.$emit('input', value)
-        },
+const media = defineModel({
+    type: Object,
+    default: () => new Media()
+})
+watchEffect(() => {
+    if(media.value === undefined) {
+        emits('update:model-value', new Media)
     }
-}
+})
 </script>

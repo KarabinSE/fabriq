@@ -23,7 +23,7 @@
                 <button
                     type="button"
                     class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createSmartBlockModal')"
+                    @click="vfm.open('createSmartBlockModal')"
                 >
                     Lägg till smart block
                 </button>
@@ -80,8 +80,10 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import SmartBlock from '@fabriq/models/SmartBlock.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
 
 function defaultCreationObject () {
     return {
@@ -90,6 +92,12 @@ function defaultCreationObject () {
 }
 export default {
     name: 'SmartBlocksIndex',
+
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     data () {
         return {
             email: '',
@@ -149,7 +157,7 @@ export default {
         async deleteSmartBlock (block) {
             try {
                 await SmartBlock.destroy(block.id)
-                this.$toast.success({ title: 'Det smarta blocket har tagits bort' })
+                toast.success({ title: 'Det smarta blocket har tagits bort' })
                 this.fetchItems()
             } catch (error) {
                 console.error(error)
@@ -158,17 +166,17 @@ export default {
         async createSmartBlock () {
             try {
                 const { data } = await SmartBlock.store(this.newSmartBlock)
-                this.$toast.success({
+                toast.success({
                     title: 'Det smarta blocket har skapats!',
                     buttonText: 'Gå till blocket',
                     onClick: () => this.$router.push({ name: 'smartBlocks.edit', params: { id: data.id } })
                 })
-                this.$vfm.hide('createSmartBlockModal')
+                this.vfm.close('createSmartBlockModal')
                 this.resetCreateModal()
                 this.fetchItems()
             } catch (error) {
                 if (error.response.status === 422) {
-                    this.$refs.observer.validate()
+                    this.$refs.observer?.validate()
                 }
                 console.error(error)
             }

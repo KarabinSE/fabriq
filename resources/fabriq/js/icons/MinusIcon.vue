@@ -11,4 +11,3 @@
         fill="currentColor"
     /></svg>
 </template>
-<script>

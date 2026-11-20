@@ -2,12 +2,12 @@
     <div>
         <ul
             v-show="showTabs && ! hideTabs"
-            class="flex -mb-px space-x-8 border-b border-gray-200"
+            class="flex -mb-px space-x-5 border-b border-gray-200"
         >
             <li
                 v-for="(tab, index) in tabs"
                 :key="tab.title"
-                class="px-1 py-4 text-sm font-medium transition-colors duration-200 border-b-2 cursor-pointer whitespace-nowrap"
+                class="px-1 py-4 text-sm font-medium transition-colors duration-200 border-b-2 cursor-pointer whitespace-nowrap min-w-14"
                 :class="[
                     index === selectedIndex
                         ? 'border-royal-400 text-gray-800'
@@ -15,7 +15,7 @@
                 ]"
                 @click="selectTab(index)"
             >
-                <div class="flex items-center">
+                <div class="flex items-center justify-center">
                     <CircleExclamationIcon
                         v-if="tab.hasError"
                         class="size-5 mr-2 text-red-500"
@@ -28,8 +28,24 @@
     </div>
 </template>
 <script>
+const tabsContextKey = 'fabriq-tabs-context'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 export default {
     name: 'FTabs',
+    emits: ['change'],
+    provide () {
+        return {
+            [tabsContextKey]: {
+                registerTab: this.registerTab,
+                unregisterTab: this.unregisterTab
+            }
+        }
+    },
+    setup() {
+        const eventBus = useEventBus()
+        return {eventBus}
+    },
     props: {
         showWhenSingle: {
             type: Boolean,
@@ -41,13 +57,13 @@ export default {
         },
         identifier: {
             type: String,
-            default: Math.random().toString(20).substr(2, 6)
+            default: () => Math.random().toString(20).substr(2, 6)
         }
     },
     data () {
         return {
             selectedIndex: 0, // the index of the selected tab,
-            tabs: [] // all of the tabs,
+            tabs: []
         }
     },
     computed: {
@@ -63,17 +79,39 @@ export default {
             return true
         }
     },
-    created () {
-        this.tabs = this.$children
-    },
     mounted () {
         this.selectTab(0)
-        this.$eventBus.on('set-active-tab', this.handleActiveTabEvent)
+        this.eventBus.on('set-active-tab', this.handleActiveTabEvent)
     },
-    beforeDestroy () {
-        this.$eventBus.off('set-active-tab', this.handleActiveTabEvent)
+    unmounted () {
+        this.eventBus.off('set-active-tab', this.handleActiveTabEvent)
     },
     methods: {
+        registerTab (tab) {
+            const registeredTab = {
+                get title () {
+                    return tab.title
+                },
+                get hasError () {
+                    return tab.hasError
+                },
+                get valueKey () {
+                    return tab.valueKey
+                },
+                setActive (isActive) {
+                    tab.isActive = isActive
+                }
+            }
+
+            this.tabs.push(registeredTab)
+            return registeredTab
+        },
+        unregisterTab (tab) {
+            const index = this.tabs.indexOf(tab)
+            if (index !== -1) {
+                this.tabs.splice(index, 1)
+            }
+        },
         handleActiveTabEvent (payload) {
             if (payload.identifier !== this.identifier) {
                 return
@@ -81,13 +119,17 @@ export default {
             this.selectTab(payload.index)
         },
         selectTab (index_) {
+            if (!this.tabs[index_]) {
+                return
+            }
+
             this.selectedIndex = index_
 
-            this.$emit('change', this.tabs[index_].$props.valueKey)
+            this.$emit('change', this.tabs[index_].valueKey)
 
             // loop over all the tabs
             this.tabs.forEach((tab, index) => {
-                tab.isActive = (index === index_)
+                tab.setActive(index === index_)
             })
         }
     }

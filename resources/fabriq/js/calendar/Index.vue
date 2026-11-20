@@ -20,7 +20,7 @@
         <UiCard :padding="false">
             <div class="lg-cal">
                 <!-- eslint-disable-next-line -->
-                <v-calendar
+                <VCalendar
                     class="max-w-full"
                     :masks="masks"
                     :attributes="events"
@@ -40,12 +40,12 @@
                             <UiPopover
                                 v-for="(attr, index) in attributes"
                                 :key="day.id + index"
-                                offset=""
+                                :distance="0"
                                 class="w-full"
                                 :class="attr.customData.class"
-                                @show="fetchEvent(attr.customData.data.id)"
+                                @apply-show="fetchEvent(attr.customData.data.id)"
                             >
-                                <template #popover>
+                                <template #popper>
                                     <div class="text-gray-800 bg-white border border-gray-200 rounded-md shadow-lg w-96">
                                         <div class="">
                                             <div class="mb-4 border-b header">
@@ -55,7 +55,7 @@
                                                     </div>
                                                     <div class="flex items-start space-x-4 text-gray-500">
                                                         <button
-                                                            v-close-popover.all
+                                                            v-close-popper.all
                                                             class="focus:outline-none"
                                                             @click="editEvent(attr.customData.data)"
                                                         >
@@ -119,7 +119,7 @@
                             </UiPopover>
                         </div>
                     </template>
-                </v-calendar>
+                </VCalendar>
             </div>
         </UiCard>
     </div>
@@ -130,14 +130,17 @@ import Event from '@fabriq/models/Event.js'
 import { endOfMonth, format, startOfMonth } from 'date-fns'
 import { useConfigStore } from '@fabriq/stores';
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast'
 
 export default {
     name: 'CalendarIndex',
     components: { EventModal },
     setup () {
         const configStore = useConfigStore();
+        const vfm = useVfm()
 
-        return { configStore }
+        return { configStore, vfm }
     },
     data () {
         return {
@@ -238,7 +241,7 @@ export default {
             try {
                 await Event.destroy(id)
                 this.fetchEvents()
-                this.$toast.success({ title: 'Händelsen har tagits bort' })
+                toast.success({ title: 'Händelsen har tagits bort' })
             } catch (error) {
                 console.error(error)
             }
@@ -246,11 +249,11 @@ export default {
         editEvent (event) {
             this.activeEvent = { ...this.eventData }
             this.creatingEvent = false
-            this.$vfm.show('event-create-modal')
+            this.vfm.open('event-create-modal')
         },
         openCreateEventModal () {
             this.creatingEvent = true
-            this.$vfm.show('event-create-modal')
+            this.vfm.open('event-create-modal')
         }
     }
 }

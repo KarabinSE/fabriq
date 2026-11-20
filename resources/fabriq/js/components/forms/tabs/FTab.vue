@@ -9,6 +9,12 @@
 <script>
 export default {
     name: 'FTab',
+    inject: {
+        tabsContext: {
+            from: 'fabriq-tabs-context',
+            default: null
+        }
+    },
     props: {
         title: {
             required: true,
@@ -26,7 +32,18 @@ export default {
     },
     data () {
         return {
-            isActive: false
+            isActive: false,
+            registeredTab: null
+        }
+    },
+    mounted () {
+        if (this.tabsContext) {
+            this.registeredTab = this.tabsContext.registerTab(this)
+        }
+    },
+    unmounted () {
+        if (this.tabsContext && this.registeredTab) {
+            this.tabsContext.unregisterTab(this.registeredTab)
         }
     }
 }

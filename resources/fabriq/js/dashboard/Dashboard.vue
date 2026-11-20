@@ -7,20 +7,21 @@
             >
                 Gå hem
             </RouterLink>
-            <span v-tooltip="{ content: 'You have ' + 50 + ' new messages.' }">
+            <span v-tooltip="'You have ' + 50 + ' new messages.'">
                 <button>hej</button>
             </span>
             <div class="bg-gray-200">
                 lolboll
-                <VPopover
+                <UiPopover
                     id="poppy"
-                    offset="16"
-                    :open="true"
+                    :distance="16"
+                    :shown="true"
+                    :triggers="[]"
                 >
                     <!-- This will be the popover target (for the events and position) -->
 
                     <!-- This will be the content of the popover -->
-                    <template #popover>
+                    <template #popper>
                         <input
                             v-model="msg"
                             class="tooltip-content"
@@ -33,18 +34,14 @@
                     <!-- You can put other components too -->
                     <!-- <ExampleComponent char="=" /> -->
                     </template>
-                </VPopover>
+                </UiPopover>
             </div>
         </div>
     </div>
 </template>
 <script>
-import VPopover from 'v-tooltip'
 export default {
     name: 'HomeIndex',
-    components: {
-        VPopover
-    },
     data () {
         return {
             message: 'Some charts here perhaps 📈'

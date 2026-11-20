@@ -1,9 +1,9 @@
-export default function PresenceMiddleware ({ next, to, router, store }) {
+export default function PresenceMiddleware ({ app, to, store }) {
     // Check if Echo is enabled
-    if (!router.app.$echo) {
-        return next()
+    if (!app.config.globalProperties.$echo) {
+        return
     }
-    const Echo = router.app.$echo
+    const Echo = app.config.globalProperties.$echo
     const id = to.params.id
     const wsPrefix = window.fabriqCms.pusher.ws_prefix
     const roomName = to.name
@@ -22,5 +22,4 @@ export default function PresenceMiddleware ({ next, to, router, store }) {
             store.commit('echo/USER_LEAVING', { identifier: identifier, user: user })
         })
 
-    return next()
 }

@@ -16,7 +16,7 @@
                 label="Taggar"
                 name="tags"
                 object
-                :create-option="tag => ({ name: tag, value: null, type: 'images'})"
+                :create-option="tag => ({ name: tag.name, value: null, type: 'images'})"
                 value-key="name"
                 option-label="name"
                 :options="fileTags"
@@ -157,7 +157,7 @@
                         <span
                             v-if="prop == 'file'"
                             class="block"
-                            @click="$vfm.show('file-modal', {id: item.id})"
+                            @click="vfm.open('file-modal', {id: item.id})"
                         >
                             <UiImagePresenter
                                 v-if="item.thumb_src"
@@ -184,7 +184,7 @@
                             class="flex space-x-2"
                         >
                             <UiBadge
-                                v-for="(tag, index) in item.tags.data"
+                                v-for="(tag, index) in item.tags"
                                 :key="index"
                             >{{ tag.name }}</UiBadge>
                         </span>
@@ -216,16 +216,29 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
 import File from '@fabriq/models/File.js'
 import Tag from '@fabriq/models/Tag.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
+import { useEventBus } from '@fabriq/services/eventBus'
+import { createModal } from '@fabriq/helpers/utils'
+import FileModal from '@fabriq/files/FileModal.vue'
+
 export default {
     name: 'FilesIndex',
     beforeRouteLeave (from, to, next) {
-        this.$eventBus.off('file-updated', this.fetchFiles)
+        this.eventBus.off('file-updated', this.fetchFiles)
         this.uploadInit = false
         next()
+    },
+
+    setup() {
+        const vfm = useVfm()
+        const eventBus = useEventBus()
+
+        return {vfm, eventBus}
     },
     data () {
         return {
@@ -295,7 +308,7 @@ export default {
     activated () {
         this.fetchFiles()
         this.uploadInit = true
-        this.$eventBus.on('file-updated', this.fetchFiles)
+        this.eventBus.on('file-updated', this.fetchFiles)
     },
 
     methods: {
@@ -309,7 +322,7 @@ export default {
         async fetchFiles () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await File.index(payload)
                 this.files = data
@@ -322,7 +335,7 @@ export default {
             try {
                 await File.destroy(id)
                 if (!this.suppressToast) {
-                    this.$toast.success({ title: 'Filen har tagits bort' })
+                    toast.success({ title: 'Filen har tagits bort' })
                     this.fetchFiles()
                 }
             } catch (error) {
@@ -342,7 +355,13 @@ export default {
             this.fetchFiles()
         },
         openFileModal (item) {
-            this.$vfm.show('file-modal', { id: item.id })
+            const modal = createModal(FileModal, {
+                item,
+                onItemDeleted: () => {
+                    this.fetchFiles
+                    modal.close()
+                }
+            })
         },
         async fetchFileTags () {
             this.selectedTags = []
@@ -372,7 +391,7 @@ export default {
                     model_type: 'files'
                 }
                 await Tag.store(payload)
-                this.$toast.success({ title: 'Taggarna har lagts till!' })
+                toast.success({ title: 'Taggarna har lagts till!' })
                 this.fetchFiles()
                 this.showTagsModal = false
             } catch (error) {
@@ -405,8 +424,8 @@ export default {
                 })
             )
             this.suppressToast = false
-            this.$eventBus.emit('clear-checked-rows')
-            this.$toast.success({ title: 'Filerna har tagits bort' })
+            this.eventBus.emit('clear-checked-rows')
+            toast.success({ title: 'Filerna har tagits bort' })
             this.fetchFiles()
         }
     }

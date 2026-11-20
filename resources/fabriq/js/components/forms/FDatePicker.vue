@@ -1,17 +1,20 @@
 <template>
-    <!-- eslint-disable-next-line -->
-        <v-date-picker
-        :class="classes"
-        :timezone="localTimezone"
-        :value="value"
-        :popover="{visibility: 'click' }"
-        color="gray"
+    <DatePicker
+        v-model="model"
+        :popover="{
+            visibility: 'focus',
+            placement: popoverPlacement,
+            hideDelay: 30
+        }"
         :select-attribute="selectAttribute"
         :is-range="isRange"
-        :mode="mode"
+        timezone="utc"
+        :disabled-dates="disabledDates"
+        :mode
         :attributes="attributes"
+        :rules="rules"
+        :model-config="modelConfig"
         is24hr
-        @input="updateValue"
     >
         <template
             v-if="isRange"
@@ -64,6 +67,10 @@
                     </FInput>
                 </div>
             </div>
+            <slot
+                name="date"
+                v-bind="togglePopover"
+            />
         </template>
         <template
             v-else
@@ -99,127 +106,208 @@
                 </template>
             </FInput>
         </template>
-    </v-date-picker>
+    </DatePicker>
 </template>
-<script>
-import { format } from 'date-fns'
-import { useUserStore } from '@fabriq/stores';
 
-export default {
-    name: 'FDatePicker',
-    props: {
-        value: {
-            required: true,
-            type: [Object, Array, String, Date, Number]
-        },
-        isRange: {
-            type: Boolean,
-            default: false
-        },
-        label: {
-            type: String,
-            default: ''
-        },
-        formatFn: {
-            type: Function,
-            default: (date) => format(date, 'yyyy-MM-dd HH:mm')
-        },
-        clearable: {
-            type: Boolean,
-            default: false
-        },
-        mode: {
-            type: String,
-            default: 'date'
-        },
-        placeholder: {
-            type: String,
-            default: ''
-        },
-        validationMode: {
-            type: String,
-            default: 'eager'
-        },
-        absolutePosErrors: {
-            type: Boolean,
-            default: false
-        },
-        hideErrors: {
-            type: Boolean,
-            default: false
-        },
-        rules: {
-            type: String,
-            default: ''
-        },
-        name: {
-            type: String,
-            default: ''
+<script setup>
+import { DatePicker } from 'v-calendar'
+import { computed, ref } from 'vue'
+import { isPast, isToday } from 'date-fns'
+import { useUserStore } from '@fabriq/stores'
+
+const userStore = useUserStore()
+
+defineOptions({ name: 'FDatePicker' })
+const model = defineModel({
+    type: [Object, Array, String, Date, Number],
+    default: '',
+    set(value) {
+        if(props.warnOnPastDate){
+            if(isToday(value)) {
+                return value
+            }
+
+            if(isPast(value)){
+                alert('Du har valt ett passerat datum')
+            }
         }
-    },
-    setup () {
-        const userStore = useUserStore();
 
-        return { userStore }
+        return value
     },
-    data () {
-        return {
-            range: {
-                start: new Date(2020, 0, 6),
-                end: new Date(2020, 0, 23)
-            },
-            localTimezone: 'UTC',
-            attributes: [
-                {
-                    key: 'today',
-                    highlight: false,
-                    dot: {
-                        style: {
-                            'background-color': '#bd9b66'
-                        }
+})
+
+const props = defineProps({
+    isRange: {
+        type: Boolean,
+        default: false,
+    },
+    label: {
+        type: String,
+        default: '',
+    },
+    popoverPlacement: {
+        type: String,
+        default: 'bottom-start',
+    },
+    disabledDates: {
+        type: Array,
+        default: () => ([]),
+    },
+    formatFn: {
+        type: Function,
+        default: (date) => format(date, 'yyyy-MM-dd HH:mm'),
+    },
+    clearable: {
+        type: Boolean,
+        default: false,
+    },
+    mode: {
+        type: String,
+        default: 'date',
+    },
+
+    placeholder: {
+        type: String,
+        default: '',
+    },
+    validationMode: {
+        type: String,
+        default: 'eager',
+    },
+    absolutePosErrors: {
+        type: Boolean,
+        default: false,
+    },
+    hideErrors: {
+        type: Boolean,
+        default: false,
+    },
+    rules: {
+        type: [String, Object],
+        default: '',
+    },
+    name: {
+        type: String,
+        default: '',
+    },
+    inline: {
+        type: Boolean,
+        default: false,
+    },
+    modelConfig: {
+        type: Object,
+        default: () => {
+            return {
+                type: 'string',
+                mask: 'iso',
+            }
+        },
+    },
+    masks: {
+        type: Object,
+        default: () => {
+            return {
+                input: 'YYYY-ax-DD',
+                output: 'YYYY-MM-DD',
+
+            }
+        },
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
+    warnOnPastDate: {
+        type: Boolean,
+        default: false,
+    },
+    timezone: {
+        type: String,
+        default: 'UTC'
+    }
+})
+
+const attributes = computed(() => {
+    const today = new Date().toDateString()
+    let selected = null
+
+    if (model.value) {
+        selected = new Date(model.value).toDateString()
+    }
+
+    return [
+        {
+            key: 'today',
+            dates: new Date(),
+            highlight: today === selected
+                ? {
+                    fillMode: 'outline',
+                    contentClass: '!text-gray-800',
+                    style: {
+                        'border-color': '#7697E5 !important',
+                        backgroundColor: '#DDE5F8 !important',
                     },
+                }
+                : {
+                    fillMode: 'outline',
+                    contentClass: '!text-gray-800',
+                    style: { 'border-color': '#BACBF2' },
+                },
+        },
+    ]
+})
 
-                    dates: new Date()
-                }
-            ],
-            selectAttribute: {
-            }
-        }
-    },
-    computed: {
-        hasRuleRequired () {
-            return this.rules.includes('required')
+const selectAttribute = ref({
+    highlight: {
+        fillMode: 'solid',
+        contentClass: '!text-slate-800',
+        style: {
+            backgroundColor: '#DDE5F8 !important',
         },
-        timezone () {
-            return this.userStore.timezone;
-        }
     },
-    mounted () {
-        this.localTimezone = this.timezone
-    },
-    methods: {
-        clearDates () {
-            let reset = ''
-            if (this.isRange) {
-                reset = {
-                    start: null,
-                    end: null
-                }
-            }
-            this.$emit('input', reset)
-            this.$nextTick(() => {
-                this.$emit('updated')
-            })
-        },
-        updateValue (value) {
-            this.$emit('input', value)
-        },
-        convertErrorMessage (string) {
-            if (string.includes('{field}')) {
-                return string.replace('{field}', this.label.toLowerCase())
-            }
-            return string
+})
+
+const hasRuleRequired = computed(() => {
+    return props.rules.includes('required')
+})
+
+const hasDateSlot = computed(() => {
+    return !!$slots.date
+})
+
+
+function clearDates() {
+    let reset = ''
+
+    if (props.isRange) {
+        reset = {
+            start: null,
+            end: null,
         }
     }
+
+    model.value = reset
 }
+
 </script>
+
+<style>
+@reference '@fabriq/../css/fabriq.css';
+
+.vc-time-month, .vc-time-day {
+    @apply text-royal-300;
+}
+
+.vc-container .vc-weekday-1, .vc-container .vc-weekday-7 {
+    @apply text-royal-300;
+}
+.vc-container .vc-base-icon {
+    @apply text-royal-300;
+}
+.vc-attr {
+    --vc-accent-200: var('--color-royal-200');
+    --vc-accent-600: var('--color-royal-300');
+    --vc-accent-700: var('--color-royal-400');
+    --vc-accent-900: var('--color-royal-500');
+}
+</style>

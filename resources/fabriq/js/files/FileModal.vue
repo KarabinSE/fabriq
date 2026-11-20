@@ -1,6 +1,5 @@
 <template>
     <FModal
-        v-model="show"
         name="file-modal"
         width="max-w-5xl"
         overflow="overflow-auto"
@@ -29,12 +28,12 @@
                 </button>
             </div>
         </template>
-        <template #actions>
+        <template #actions="{ close }">
             <div class="flex justify-end space-x-4">
                 <div class="flex space-x-4">
                     <button
                         class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                        @click="show = false"
+                        @click="close"
                     >
                         Stäng
                     </button>
@@ -48,9 +47,9 @@
             </div>
         </template>
         <div class="relative z-40 py-2">
-            <div class="grid grid-cols-12 gap-x-6">
+            <div class="flex gap-x-6">
                 <form
-                    class="flex flex-col col-span-4 gap-y-4"
+                    class="flex flex-col w-4/12 gap-y-4"
                     @submit.prevent="updateFile"
                 >
                     <FInput
@@ -68,15 +67,15 @@
                              label="Bildtext"
                     /> -->
                     <FSelect
-                        v-model="tags"
+                        v-model="file.tags"
                         mode="tags"
                         label="Taggar"
-                        name="fileTags"
+                        name="availableTags"
                         object
-                        :create-option="tag => ({ name: tag, value: null, type: 'files'})"
+                        :create-option="tag => ({ name: tag.name, value: null, type: 'files'})"
                         value-key="name"
                         option-label="name"
-                        :options="fileTags"
+                        :options="availableTags"
                     />
                     <div>
                         <FButton
@@ -90,7 +89,10 @@
                     </div>
                     <button class="hidden" />
                 </form>
-                <div class="col-span-8">
+                <div
+                    class="col-span-8 flex flex-col flex-1  w-full overflow-hidden"
+                    v-auto-animate
+                >
                     <div class="flex justify-end mb-1 space-x-2">
                         <UiBadge>
                             {{ formatFileSize(file.size) }}
@@ -101,6 +103,7 @@
                     </div>
                     <UiImagePresenter
                         v-if="file.thumb_src"
+                        key="image-presenter"
                         :image="file"
                         thumbnail
                         class="w-full mb-2 border border-gray-100"
@@ -111,50 +114,53 @@
     </FModal>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
 import File from '@fabriq/models/File.js'
 import Tag from '@fabriq/models/Tag.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useEventBus } from '@fabriq/services/eventBus'
+
 export default {
-    name: 'BlockTypeModal',
+    name: 'FileModal',
+
+    setup() {
+        const eventBus = useEventBus()
+        return {eventBus}
+    },
+    emits: ['item-deleted'],
     props: {
         item: {
             type: Object,
-            default: () => {}
+            default: null
         }
 
     },
     data () {
         return {
-            show: false,
             file: {
                 id: 0,
                 size: 0
             },
-            tags: [],
-            fileTags: []
+            availableTags: []
         }
     },
     computed: {
-        nameTags () {
-            return this.tags.map(item => {
-                return item.name
-            })
+        tagNames () {
+            return this.file.tags.map(item => item.name)
         }
     },
     methods: {
         ...formatters,
         async fetchFile (parameters) {
-            const id = parameters.ref.params.id
             try {
                 const payload = {
                     params: {
                         include: 'tags'
                     }
                 }
-                const { data } = await File.show(id, payload)
+                const { data } = await File.show(this.item.id, payload)
                 this.file = data
-                this.tags = [...data.tags?.data ?? []]
             } catch (error) {
                 console.error(error)
             }
@@ -178,7 +184,7 @@ export default {
                     }
                 }
                 const { data } = await Tag.index(payload)
-                this.fileTags = data
+                this.availableTags = data
             } catch (error) {
                 console.error(error)
             }
@@ -191,12 +197,14 @@ export default {
         },
         async updateFile () {
             try {
-                const object = { ...this.file }
-                object.tags = [...this.nameTags]
-                await File.update(this.file.id, object)
-                this.$eventBus.emit('file-updated')
-                this.$toast.success({ title: 'Filen har uppdaterats!' })
-                this.show = false
+                const payload = {
+                    ...this.file,
+                    tags: [...this.tagNames]
+                }
+                await File.update(this.file.id, payload)
+                this.eventBus.emit('file-updated')
+                toast.success({ title: 'Filen har uppdaterats!' })
+                this.closeModal()
             } catch (error) {
                 console.error(error)
             }
@@ -204,11 +212,12 @@ export default {
         async deleteFile () {
             try {
                 await File.destroy(this.file.id)
-                this.$eventBus.emit('file-updated')
-                this.$toast.success({ title: 'Filen har raderats' })
-                this.show = false
+                this.eventBus.emit('file-updated')
+                toast.success({ title: 'Filen har raderats' })
+                this.$emit('item-deleted')
+                this.closeModal()
             } catch (error) {
-                this.$toast.error({ title: 'Kunde inte radera filen' })
+                toast.error({ title: 'Kunde inte radera filen' })
                 console.error(error)
             }
         },
@@ -220,6 +229,9 @@ export default {
             }
             const { data, headers } = await Download.show(this.file.id, payload)
             await Download.handleBlobDownload(data, headers)
+        },
+        closeModal() {
+            this.$vfm.close('file-modal')
         }
     }
 }

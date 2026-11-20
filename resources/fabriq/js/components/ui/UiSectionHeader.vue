@@ -68,7 +68,7 @@ export default {
             }
         )
     },
-    beforeDestroy () {
+    unmounted () {
         this.observer.disconnect()
     },
     methods: {

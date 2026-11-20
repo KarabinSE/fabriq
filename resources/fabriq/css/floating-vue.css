@@ -1,0 +1,26 @@
+.v-popper__popper {
+    z-index: 1000;
+}
+
+.v-popper--theme-tooltip .v-popper__inner {
+    background: var(--color-royal-800);
+    color: var(--color-white);
+    border-radius: 4px;
+    font-size: var(--text-xs);
+    padding: 5px 10px 4px;
+}
+
+.v-popper--theme-tooltip .v-popper__arrow-inner {
+    border-color: var(--color-royal-800);
+}
+
+.v-popper--theme-dropdown .v-popper__inner {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.v-popper--theme-dropdown .v-popper__arrow-inner {
+    border-color: var(--color-gray-200);
+}

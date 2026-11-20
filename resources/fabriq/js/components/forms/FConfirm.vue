@@ -1,69 +1,73 @@
 <template>
     <VueFinalModal
         :lock-scroll="false"
-        :name="name"
-        classes="flex items-start justify-center sm:mt-12 mt-4"
+        :modal-id="name"
+        class="flex items-start justify-center sm:mt-12 mt-4"
         content-class="relative flex flex-col p-6 mx-4 bg-white rounded-lg shadow modal-content sm:mx-0"
         esc-to-close
         focus-trap
         v-bind="$attrs"
         @opened="focusDismiss"
-        v-on="$listeners"
     >
-        <span class="py-0">
-            <div class="flex items-center justify-between">
-                <h2
-                    class="text-xl font-semibold text-gray-500"
-                    v-text="header ?? 'Ta bort menypunkt'"
-                />
-                <button
-                    class
-                    @click="$emit('input', false)"
-                >
-                    <XMarkIcon
-                        class="block w-6 h-6 -mt-2 -mr-2 text-gray-400 hover:text-gray-700"
+        <template #default="{ close }">
+            <span class="py-0">
+                <div class="flex items-center justify-between">
+                    <h2
+                        class="text-xl font-semibold text-gray-500"
+                        v-text="header ?? 'Ta bort menypunkt'"
                     />
-                </button>
-            </div>
-        </span>
-        <div class="w-screen max-w-sm overflow-visible">
-            <div class="w-full">
-                <div
-                    class="py-8 text-sm font-semibold"
-                    v-text="text"
-                />
-                <div
-                    v-if="htmlText"
-                    v-html="htmlText"
-                />
-                <slot />
-            </div>
-        </div>
-        <div class="rounded-b-lg">
-            <div class>
-                <div class="flex justify-between">
                     <button
-                        ref="dismissButton"
-                        class="px-8 py-2.5 transition-all fabriq-btn btn-outline-royal"
-                        @click="onDismissed"
+                        class
+                        @click="close"
                     >
-                        {{ dismissText }}
-                    </button>
-                    <button
-                        class="px-8 py-2.5 fabriq-btn btn-red"
-                        @click="onConfirm"
-                    >
-                        {{ confirmText }}
+                        <XMarkIcon
+                            class="block w-6 h-6 -mt-2 -mr-2 text-gray-400 hover:text-gray-700"
+                        />
                     </button>
                 </div>
+            </span>
+            <div class="w-screen max-w-sm overflow-visible">
+                <div class="w-full">
+                    <div
+                        class="py-8 text-sm font-semibold"
+                        v-text="text"
+                    />
+                    <div
+                        v-if="htmlText"
+                        v-html="htmlText"
+                    />
+                    <slot />
+                </div>
             </div>
-        </div>
+            <div class="rounded-b-lg">
+                <div class>
+                    <div class="flex justify-between">
+                        <button
+                            ref="dismissButton"
+                            class="px-8 py-2.5 transition-all fabriq-btn btn-outline-royal"
+                            @click="close"
+                        >
+                            {{ dismissText }}
+                        </button>
+                        <button
+                            class="px-8 py-2.5 fabriq-btn btn-red"
+                            @click="onConfirm"
+                        >
+                            {{ confirmText }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </VueFinalModal>
 </template>
 <script>
+import { VueFinalModal } from 'vue-final-modal'
+
 export default {
     name: 'FConfirm',
     inheritAttrs: false,
+    components: { VueFinalModal },
     props: {
         name: {
             type: String,
@@ -103,9 +107,6 @@ export default {
     methods: {
         focusDismiss () {
             this.$refs.dismissButton.focus()
-        },
-        onDismissed () {
-            this.$vfm.hide(this.name)
         }
     }
 }

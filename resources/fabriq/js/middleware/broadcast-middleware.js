@@ -1,11 +1,11 @@
 import { useUserStore } from "@fabriq/stores";
 
-export default function BroadcastMiddleware ({ next, to, router, store }) {
+export default function BroadcastMiddleware ({ app, to }) {
     // Check if Echo is enabled
-    if (!router.app.$echo) {
-        return next()
+    if (!app.config.globalProperties.$echo) {
+        return
     }
-    const Echo = router.app.$echo
+    const Echo = app.config.globalProperties.$echo
     const id = to.params.id
     const wsPrefix = window.fabriqCms.pusher.ws_prefix
 
@@ -18,7 +18,7 @@ export default function BroadcastMiddleware ({ next, to, router, store }) {
     Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
         .listen(`.${capitalizedBroadcastName}Updated`, (event) => {
             if (userStore.user.id !== event.model.updated_by) {
-                router.app.$eventBus.emit(
+                app.config.globalProperties.$eventBus.emit(
                     `${broadcastName}-updated-echo`,
                     event,
                 );
@@ -36,5 +36,4 @@ export default function BroadcastMiddleware ({ next, to, router, store }) {
             console.log('broadcast heard, Created ', event)
         })
 
-    return next()
 }

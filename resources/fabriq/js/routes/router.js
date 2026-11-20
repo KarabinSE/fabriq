@@ -1,97 +1,69 @@
 import routes from '@fabriq/routes/fabriq-routes'
 import { useUiStore, useRouteHistoryStore } from '@fabriq/stores'
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 
-Vue.use(VueRouter)
-
-export default createRouter
-
-let _router
-
-/**
- * Create a new router instance.
- *
- * @return {VueRouter}
- */
-function createRouter (userRoutes = []) {
-    _router = new VueRouter({
-        mode: 'history',
-        routes: [...userRoutes, ...routes]
+function createFabriqRouter (app, customRoutes = []) {
+    const router = createRouter({
+        history: createWebHistory(),
+        routes: [...customRoutes, ...routes]
     })
 
-    _router.beforeEach(beforeEach)
-    _router.afterEach(afterEach)
+    router.beforeEach(beforeEach)
+    router.afterEach(afterEach)
 
-    return _router
-}
+    function afterEach (to, from) {
+        const uiStore = useUiStore();
 
-function afterEach (to, from) {
-    const uiStore = useUiStore();
+        uiStore.closeMenu();
 
-    uiStore.closeMenu();
+        const Echo = app.config.globalProperties.$echo
+        if (Echo) {
 
-    const Echo = _router.app.$echo
-    if (Echo) {
+            const id = from.params.id
+            const roomName = from.name
+            const identifier = roomName + '.' + id
+            const wsPrefix = window.fabriqCms.pusher.ws_prefix
+            Echo.leave(wsPrefix + '.presence.' + identifier)
 
-        const id = from.params.id
-        const roomName = from.name
-        const identifier = roomName + '.' + id
-        const wsPrefix = window.fabriqCms.pusher.ws_prefix
-        Echo.leave(wsPrefix + '.presence.' + identifier)
+            if (from.meta.broadcastName) {
+                const broadcastName = from.meta.broadcastName
+                const capitalizedBroadcastName = broadcastName[0].toUpperCase() + broadcastName.slice(1)
 
-        if (from.meta.broadcastName) {
-            const broadcastName = from.meta.broadcastName
-            const capitalizedBroadcastName = broadcastName[0].toUpperCase() + broadcastName.slice(1)
+                Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
+                    .stopListening(`.${capitalizedBroadcastName}Updated`)
 
-            Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
-                .stopListening(`.${capitalizedBroadcastName}Updated`)
-
-            Echo.channel(`${wsPrefix}-${broadcastName}.`)
-                .stopListening(`.${capitalizedBroadcastName}Updated`)
-                .stopListening(`.${capitalizedBroadcastName}Deleted`)
-                .stopListening(`.${capitalizedBroadcastName}Created`)
+                Echo.channel(`${wsPrefix}-${broadcastName}.`)
+                    .stopListening(`.${capitalizedBroadcastName}Updated`)
+                    .stopListening(`.${capitalizedBroadcastName}Deleted`)
+                    .stopListening(`.${capitalizedBroadcastName}Created`)
+            }
         }
     }
-}
 
-function beforeEach (to, from, next) {
-    const routeHistoryStore = useRouteHistoryStore();
+    function beforeEach (to, from) {
+        const routeHistoryStore = useRouteHistoryStore();
 
-    routeHistoryStore.setFromRoute(from.name);
+        routeHistoryStore.setFromRoute(from.name);
 
-    if (to.meta.middleware) {
+        if (!to.meta.middleware) return
+
         const middleware = Array.isArray(to.meta.middleware) ? to.meta.middleware : [to.meta.middleware]
+        const context = { app, from, router, to }
 
-        const context = {
-            from,
-            next,
-            router: _router,
-            to,
-        }
-        const nextMiddleware = nextFactory(context, middleware, 1)
-
-        return middleware[0]({ ...context, next: nextMiddleware })
+        return runMiddleware(middleware, context)
     }
 
-    next()
-}
+    async function runMiddleware (middleware, context, index = 0) {
+        const currentMiddleware = middleware[index]
+        if (!currentMiddleware) return
 
-// Creates a `nextMiddleware()` function which not only
-// runs the default `next()` callback but also triggers
-// the subsequent Middleware function.
-function nextFactory (context, middleware, index) {
-    const subsequentMiddleware = middleware[index]
-    // If no subsequent Middleware exists,
-    // the default `next()` callback is returned.
-    if (!subsequentMiddleware) return context.next
+        const result = await currentMiddleware(context)
+        if (result !== undefined) return result
 
-    return (...parameters) => {
-        // Run the default Vue Router `next()` callback first.
-        context.next(...parameters)
-        // Then run the subsequent Middleware with a new
-        // `nextMiddleware()` callback.
-        const nextMiddleware = nextFactory(context, middleware, index + 1)
-        subsequentMiddleware({ ...context, next: nextMiddleware })
+        return runMiddleware(middleware, context, index + 1)
     }
+
+    return router
 }
+
+export default createFabriqRouter

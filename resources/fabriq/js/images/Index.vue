@@ -16,7 +16,7 @@
                 label="Taggar"
                 name="tags"
                 object
-                :create-option="tag => ({ name: tag, value: null, type: 'images'})"
+                :create-option="tag => ({ name: tag.name, value: null, type: 'images'})"
                 value-key="name"
                 option-label="name"
                 :options="imageTags"
@@ -52,7 +52,7 @@
                         <button
                             type="button"
                             class="inline-flex items-center px-2 py-1 text-xs fabriq-btn btn-gold"
-                            @click="$vfm.show('addFromUrlModal')"
+                            @click="vfm.open('addFromUrlModal')"
                         >
                             Lägg till från URL
                         </button>
@@ -173,7 +173,7 @@
                         <span
                             v-if="prop == 'image'"
                             class="block w-20"
-                            @click="$vfm.show('image-modal', {id: item.id})"
+                            @click="openImageModal(item)"
                         >
                             <UiImagePresenter
                                 :image="item"
@@ -211,7 +211,7 @@
                             class="flex space-x-2"
                         >
                             <UiBadge
-                                v-for="(tag, index) in item.tags.data"
+                                v-for="(tag, index) in item.tags"
                                 :key="index"
                             >{{ tag.name }}</UiBadge>
                         </span>
@@ -248,216 +248,223 @@
         </UiCard>
     </div>
 </template>
-<script>
+
+<script setup>
+import { toast } from '@fabriq/components/toast/toast'
 import AddImageFromUrlModal from '@fabriq/images/AddImageFromUrlModal.vue'
+import ImageModal from '@fabriq/images/ImageModal.vue'
 import Download from '@fabriq/models/Download.js'
 import Image from '@fabriq/models/Image.js'
 import Tag from '@fabriq/models/Tag.js'
-import * as formatters from '@fabriq/utils/formatters'
-export default {
-    name: 'ImagesIndex',
-    components: { AddImageFromUrlModal },
-    beforeRouteLeave (from, to, next) {
-        this.$eventBus.off('image-updated', this.fetchImages)
-        this.uploadInit = false
-        next()
-    },
-    data () {
-        return {
-            images: [],
-            search: '',
-            uploadInit: true,
-            checkedRows: [],
-            suppressToast: false,
-            showTagsModal: false,
-            showUrlModal: false,
-            imageUrl: '',
-            columns: [
-                {
-                    key: 'image',
-                    title: ''
-                    // tdClasses: 'w-36',
-                    // thClasses: 'w-36'
-                },
-                {
-                    key: 'c_name',
-                    title: 'Namn',
-                    tdClasses: 'text-gray-600 font-medium w-24',
+import { formatFileSize, formatLocalTime } from '@fabriq/utils/formatters'
+import { computed, inject } from 'vue'
+import { onActivated, ref } from 'vue'
+import { useVfm } from 'vue-final-modal'
+import { onBeforeRouteLeave } from 'vue-router'
+import { useEventBus } from '@fabriq/services/eventBus'
+import { createModal } from '@fabriq/helpers/utils'
 
-                    sortable: true
-                },
-                {
-                    key: 'created_at',
-                    title: 'Uppladdad',
-                    sortable: true
-                },
-                {
-                    key: 'alt_text',
-                    title: 'Alt-text',
-                    sortable: true
-                },
-                {
-                    key: 'tags',
-                    title: 'Taggar',
-                    sortable: true
-                },
-                {
-                    key: 'size',
-                    title: 'Filstorlek',
-                    sortable: true
-                },
-                {
-                    key: 'dimensions',
-                    title: 'Storlek',
-                    sortable: false
-                },
-                {
-                    key: 'edit',
-                    title: '',
-                    tdClasses: 'text-right',
-                    thClasses: 'text-right'
-                }
-            ],
-            pagination: {},
-            queryParams: {
-                number: 15,
-                page: 1,
-                sort: '-created_at',
-                include: 'tags',
-                'filter[search]': ''
-            },
-            imageTags: [],
-            selectedTags: []
-        }
-    },
-    computed: {
-        hasCheckedRows () {
-            return this.checkedRows.length > 0
-        },
-        nameTags () {
-            return this.selectedTags.map(item => {
-                return item.name
-            })
-        }
-    },
-    activated () {
-        this.fetchImages()
-        this.uploadInit = true
-        this.$eventBus.on('image-updated', this.fetchImages)
-        this.$eventBus.on('media-finished-processing', this.fetchImages)
-    },
-    methods: {
-        ...formatters,
-        resetSearch () {
-            this.search = ''
-            this.queryParams['filter[search]'] = ''
-            this.queryParams.page = 1
-            this.fetchImages()
-        },
-        async fetchImages () {
-            try {
-                const payload = {
-                    params: this.queryParams
-                }
-                const { data, meta } = await Image.index(payload)
-                this.images = data
-                this.pagination = meta
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        async deleteImage (id) {
-            try {
-                await Image.destroy(id)
-                if (!this.suppressToast) {
-                    this.$toast.success({ title: 'Bilden har tagits bort' })
-                    this.fetchImages()
-                }
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        setSort (sort) {
-            this.queryParams.sort = sort
-            this.fetchImages()
-        },
-        performSearch () {
-            this.queryParams.page = 1
-            this.fetchImages()
-        },
-        setPage (pageNumber) {
-            this.queryParams.page = pageNumber
-            this.fetchImages()
-        },
-        openImageModal (item) {
-            this.$vfm.show('image-modal', { id: item.id })
-        },
-        handleRowChecked (rows) {
-            this.checkedRows = rows
-        },
-        async deleteCheckedImages () {
-            this.suppressToast = true
-            const promises = []
-            this.checkedRows.forEach(row => {
-                promises.push({ deleteFunction: this.deleteImage, id: row })
-            })
-            await Promise.all(
-                promises.map(async promise => {
-                    await promise.deleteFunction(promise.id)
-                })
-            )
-            this.suppressToast = false
-            this.$eventBus.emit('clear-checked-rows')
-            this.$toast.success({ title: 'Bilderna har tagits bort' })
-            this.fetchImages()
-        },
-        async downloadCheckedItems () {
-            try {
-                const payload = {
-                    params: {
-                        items: this.checkedRows,
-                        type: 'images'
-                    }
-                }
-                const { data, headers } = await Download.index(payload)
-                Download.handleBlobDownload(data, headers)
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        showModal () {
-            this.showTagsModal = true
-        },
-        async addTagsToImages () {
-            try {
-                const payload = {
-                    models: this.checkedRows,
-                    tags: this.nameTags,
-                    model_type: 'images'
-                }
-                await Tag.store(payload)
-                this.$toast.success({ title: 'Taggarna har lagts till!' })
-                this.fetchImages()
-                this.showTagsModal = false
-            } catch (error) {
-                console.error(error)
-            }
-        },
-        async fetchImageTags () {
-            this.selectedTags = []
-            try {
-                const payload = {
-                    params: {
-                        'filter[type]': 'images'
-                    }
-                }
-                const { data } = await Tag.index(payload)
-                this.imageTags = data
-            } catch (error) {
-                console.error(error)
-            }
-        }
+const eventBus = useEventBus()
+defineOptions({name: 'ImagesIndex'})
+const vfm = useVfm()
 
+
+const images = ref([])
+const search = ref('')
+const uploadInit = ref(true)
+const checkedRows = ref([])
+const suppressToast = ref(false)
+const showTagsModal = ref(false)
+const showUrlModal = ref(false)
+const imageUrl = ref('')
+const columns = ref([
+    {
+        key: 'image',
+        title: ''
+        // tdClasses: 'w-36',
+        // thClasses: 'w-36'
+    },
+    {
+        key: 'c_name',
+        title: 'Namn',
+        tdClasses: 'text-gray-600 font-medium w-24',
+
+        sortable: true
+    },
+    {
+        key: 'created_at',
+        title: 'Uppladdad',
+        sortable: true
+    },
+    {
+        key: 'alt_text',
+        title: 'Alt-text',
+        sortable: true
+    },
+    {
+        key: 'tags',
+        title: 'Taggar',
+        sortable: true
+    },
+    {
+        key: 'size',
+        title: 'Filstorlek',
+        sortable: true
+    },
+    {
+        key: 'dimensions',
+        title: 'Storlek',
+        sortable: false
+    },
+    {
+        key: 'edit',
+        title: '',
+        tdClasses: 'text-right',
+        thClasses: 'text-right'
+    }])
+const pagination = ref({})
+const queryParams = ref({
+    number: 15,
+    page: 1,
+    sort: '-created_at',
+    include: 'tags',
+    'filter[search]': ''
+})
+const imageTags = ref([])
+const selectedTags = ref([])
+
+onActivated(() =>{
+    fetchImages()
+    uploadInit.value = true
+    eventBus.on('image-updated', fetchImages)
+    eventBus.on('media-finished-processing', fetchImages)
+})
+
+const hasCheckedRows = computed(() => {
+    return checkedRows.value.length > 0
+})
+const nameTags = computed(() => {
+    return selectedTags.value.map(item => {
+        return item.name
+    })
+})
+function resetSearch () {
+    search.value = ''
+    queryParams.value['filter[search]'] = ''
+    queryParams.value.page = 1
+    fetchImages()
+}
+async function fetchImages () {
+    try {
+        const payload = {
+            params: queryParams.value
+        }
+        const { data, meta } = await Image.index(payload)
+        images.value = data
+        pagination.value = meta
+    } catch (error) {
+        console.error(error)
     }
 }
+async function deleteImage (id) {
+    try {
+        await Image.destroy(id)
+        if (!suppressToast.value) {
+            toast.success({ title: 'Bilden har tagits bort' })
+            fetchImages()
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+function setSort (sort) {
+    queryParams.value.sort = sort
+    fetchImages()
+}
+function performSearch () {
+    queryParams.value.page = 1
+    fetchImages()
+}
+function setPage (pageNumber) {
+    queryParams.value.page = pageNumber
+    fetchImages()
+}
+function openImageModal (item) {
+    createModal(ImageModal, {
+        id: item.id,
+        onItemDeleted: fetchImages,
+    })
+}
+function handleRowChecked (rows) {
+    checkedRows.value = rows
+}
+async function deleteCheckedImages () {
+    suppressToast.value = true
+    const promises = []
+    checkedRows.value.forEach(row => {
+        promises.push({ deleteFunction: deleteImage, id: row })
+    })
+    await Promise.all(
+        promises.map(async promise => {
+            await promise.deleteFunction(promise.id)
+        })
+    )
+    suppressToast.value = false
+    eventBus.emit('clear-checked-rows')
+    toast.success({ title: 'Bilderna har tagits bort' })
+    fetchImages()
+}
+async function downloadCheckedItems () {
+    try {
+        const payload = {
+            params: {
+                items: checkedRows.value,
+                type: 'images'
+            }
+        }
+        const { data, headers } = await Download.index(payload)
+        Download.handleBlobDownload(data, headers)
+    } catch (error) {
+        console.error(error)
+    }
+}
+function showModal () {
+    showTagsModal.value = true
+}
+async function addTagsToImages () {
+    try {
+        const payload = {
+            models: checkedRows,
+            tags: nameTags,
+            model_type: 'images'
+        }
+        await Tag.store(payload)
+        toast.success({ title: 'Taggarna har lagts till!' })
+        fetchImages()
+        showTagsModal.value = false
+    } catch (error) {
+        console.error(error)
+    }
+}
+async function fetchImageTags () {
+    selectedTags.value = []
+    try {
+        const payload = {
+            params: {
+                'filter[type]': 'images'
+            }
+        }
+        const { data } = await Tag.index(payload)
+        imageTags.value = data
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+onBeforeRouteLeave((from, to, next) => {
+    eventBus.off('image-updated', fetchImages)
+    uploadInit.value = false
+    next()
+})
+
 </script>

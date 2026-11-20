@@ -116,7 +116,7 @@
                                                     <div class="flex items-center">
                                                         <!-- <ellipsis-icon class="w-6 h-6 mr-4" /> -->
                                                         <button
-                                                            v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Kopiera block-ID' }"
+                                                            v-tooltip="'Kopiera block-ID'"
                                                             class="focus:outline-none"
                                                             type="button"
                                                             @click.stop="copyBlockId(block.id)"
@@ -170,22 +170,34 @@ import SmartBlock from '@fabriq/models/SmartBlock.js'
 import Draggable from 'vuedraggable'
 import { useConfigStore } from '@fabriq/stores';
 import { useClipboard } from '@vueuse/core';
+import { toast } from '@fabriq/components/toast/toast'
+import { useEventBus } from '@fabriq/services/eventBus'
+import { createModal } from '@fabriq/helpers/utils'
+import BlockTypeModal from '@fabriq/pages/BlockTypeModal.vue'
+import { useVfm } from 'vue-final-modal'
+
 
 export default {
     name: 'SmartBlocksEdit',
     components: { Draggable },
     beforeRouteLeave (from, to, next) {
-        this.$vfm.hide('block-type-modal')
-        this.$eventBus.off('block-type-added', this.blockTypeAdded)
-        this.$destroy()
+        this.vfm.close('block-type-modal')
+        this.eventBus.off('block-type-added', this.blockTypeAdded)
         next()
     },
     setup () {
+        const vfm = useVfm()
         const configStore = useConfigStore();
+        const eventBus = useEventBus()
 
         const { copy } = useClipboard({ legacy: true });
 
-        return { configStore, copy }
+        return {
+            vfm,
+            configStore,
+            copy,
+            eventBus
+        }
     },
     data () {
         return {
@@ -230,12 +242,12 @@ export default {
     },
     activated () {
         this.id = this.$route.params.id
-        this.$eventBus.on('block-type-added', this.blockTypeAdded)
+        this.eventBus.on('block-type-added', this.blockTypeAdded)
         this.fetchSmartBlock()
     },
     methods: {
         openAllCards () {
-            this.$eventBus.emit('open-all-cards')
+            this.eventBus.emit('open-all-cards')
         },
         async updateContent () {
             try {
@@ -266,7 +278,7 @@ export default {
                     } else {
                         thing = localizedContent[item].content
                     }
-                    this.$set(this.localizedContent, item, { ...thing })
+                    this.localizedContent[item] = { ...thing }
                 })
             } catch (error) {
                 console.error(error)
@@ -276,11 +288,11 @@ export default {
             this.activeLocale = key
         },
         showBlockTypeModal () {
-            this.$vfm.show('block-type-modal')
+            createModal(BlockTypeModal)
         },
         blockTypeAdded (item) {
             if (!this.localizedContent[this.activeLocale].boxes) {
-                this.$set(this.localizedContent[this.activeLocale], 'boxes', [])
+                this.localizedContent[this.activeLocale].boxes = []
             }
             this.localizedContent[this.activeLocale].boxes.push({ ...item })
             this.$nextTick(() => {
@@ -296,7 +308,7 @@ export default {
             console.log(payload.item)
         },
         copySuccess () {
-            this.$toast.success({ title: 'Blockets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+            toast.success({ title: 'Blockets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
         },
         async copyBlockId(id) {
             await this.copy('#' + id);

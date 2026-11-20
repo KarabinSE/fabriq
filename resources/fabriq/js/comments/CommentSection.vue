@@ -1,7 +1,7 @@
 <template>
     <div
         ref="comments"
-        class="fixed bottom-0 right-0 z-10 w-4/5 bg-white border-l border-gray-200 rounded-tl bgred-100 xl:w-1/2 lg:w-2/3 min-h-10 comment-box"
+        class="fixed bottom-0 right-0 z-10 w-4/5 bg-white border-l border-gray-200 rounded-tl xl:w-1/2 lg:w-2/3 min-h-10 comment-box"
     >
         <div
             class="flex items-center justify-between text-gray-100 bg-gray-800 rounded-tl cursor-pointer min-h-10"
@@ -19,9 +19,12 @@
             />
         </div>
         <SlideUpDown
-            :active="commentSectionOpen"
-            :duration="5"
-            @open-start="scrollToLatestComment"
+            v-model="commentSectionOpen"
+            :duration="{
+                open: 200,
+                close: 0
+            }"
+            @start="scrollToLatestComment"
         >
             <div>
                 <div
@@ -43,7 +46,7 @@
                             />
                         </li>
                     </ul>
-                    <div class="relative z-20 flex items-center mx-8 mt-16 mb-8 space-x-4">
+                    <div class="relative z-20 flex items-end mx-8 mt-16 mb-8 space-x-4">
                         <FCommentEditor
                             v-if="commentSectionOpen"
                             v-model="newComment"
@@ -70,15 +73,18 @@
 import CommentItem from '@fabriq/comments/CommentItem.vue'
 import Comment from '@fabriq/models/Comment.js'
 import User from '@fabriq/models/User.js'
+import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
 import { useUserStore } from '@fabriq/stores';
+import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'CommentSection',
-    components: { CommentItem },
+    components: { CommentItem, SlideUpDown },
     setup () {
         const userStore = useUserStore();
+        const eventBus = useEventBus()
 
-        return { userStore }
+        return { userStore,eventBus}
     },
     data () {
         return {
@@ -95,13 +101,13 @@ export default {
     mounted () {
         this.fetchComments()
         this.fetchUsers()
-        this.$eventBus.on('open-comment-section', this.openCommentSection)
-        this.$eventBus.on('comment-posted-echo', this.fetchComments)
+        this.eventBus.on('open-comment-section', this.openCommentSection)
+        this.eventBus.on('comment-posted-echo', this.fetchComments)
     },
-    beforeDestroy () {
-        this.$eventBus.off('open-comment-section', this.openCommentSection)
-        this.$eventBus.off('comment-posted-echo', this.fetchComments)
-        this.$refs.comments.removeEventListener('keydown', this.listenForMetaPlusEnter)
+    unmounted () {
+        this.eventBus.off('open-comment-section', this.openCommentSection)
+        this.eventBus.off('comment-posted-echo', this.fetchComments)
+        this.$refs.comments?.removeEventListener('keydown', this.listenForMetaPlusEnter)
     },
     methods: {
         async fetchUsers () {
@@ -115,10 +121,10 @@ export default {
             }
         },
         onFocus () {
-            this.$refs.comments.addEventListener('keydown', this.listenForMetaPlusEnter)
+            this.$refs.comments?.addEventListener('keydown', this.listenForMetaPlusEnter)
         },
         onBlur () {
-            this.$refs.comments.removeEventListener('keydown', this.listenForMetaPlusEnter)
+            this.$refs.comments?.removeEventListener('keydown', this.listenForMetaPlusEnter)
         },
         openCommentSection () {
             this.commentSectionOpen = true
@@ -158,7 +164,7 @@ export default {
                 await Comment.store('pages', this.$route.params.id, payload)
                 this.newComment = ''
                 this.fetchComments()
-                this.$eventBus.emit('comment-posted')
+                this.eventBus.emit('comment-posted')
                 setTimeout(() => {
                     this.scrollToLatestComment()
                 }, 300)

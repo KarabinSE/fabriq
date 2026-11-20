@@ -46,7 +46,7 @@
                 <button
                     type="button"
                     class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createUserModal')"
+                    @click="vfm.open('createUserModal')"
                 >
                     Lägg till användare
                 </button>
@@ -181,8 +181,15 @@ function newUserObject() {
 import User from '@fabriq/models/User.js'
 import Invitation from '@fabriq/models/Invitation.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'UsersIndex',
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     data () {
         return {
             users: [],
@@ -257,7 +264,7 @@ export default {
         async deleteUser (user) {
             try {
                 await User.destroy(user.id)
-                this.$toast.success({ title: 'Användaren har raderats' })
+                toast.success({ title: 'Användaren har raderats' })
                 this.fetchUsers()
             } catch (error) {
                 console.error(error)
@@ -281,14 +288,14 @@ export default {
         async sendActivation (id) {
             await Invitation.store(id)
             // await this.$store.dispatch('Invitation/store', { userId: id })
-            this.$toast.success({ title: 'Aktivering skickad!' })
+            toast.success({ title: 'Aktivering skickad!' })
             this.fetchUsers()
         },
         async cancelActivation (id) {
             try {
                 await Invitation.destroy(id)
                 this.fetchUsers()
-                this.$toast.success({ title: 'Inbjudan har tagits bort' })
+                toast.success({ title: 'Inbjudan har tagits bort' })
             } catch (error) {
                 console.error(error)
             }
@@ -300,12 +307,12 @@ export default {
                     this.newUser.role_list.push('admin')
                 }
                 const { data } = await User.store(this.newUser)
-                this.$toast.success({
+                toast.success({
                     title: 'Användaren har skapats!',
                     buttonText: 'Gå till användaren',
                     onClick: () => this.$router.push({ name: 'users.edit', params: { id: data.id } })
                 })
-                this.$vfm.hide('createUserModal')
+                this.vfm.close('createUserModal')
                 if(shouldSendActivation) {
                     await this.sendActivation(data.id)
                 }

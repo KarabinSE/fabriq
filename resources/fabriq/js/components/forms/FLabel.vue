@@ -4,10 +4,8 @@
         :for="name"
         class="block font-sans text-sm font-medium text-gray-600 mb-1.5"
     >
-        <slot /><span
-            v-if="required"
-            class="-ml-1"
-        >*</span><span
+        <slot /><span v-if="required">*</span>
+        <span
             v-if="showOptional"
             class="italic text-gray-400"
             v-text="'('+optional+')'"

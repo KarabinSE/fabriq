@@ -12,39 +12,41 @@
     </div>
 </template>
 <script>
-import tippy from 'tippy.js'
-import 'tippy.js/themes/light-border.css'
-import { Editor, EditorContent, VueRenderer } from '@tiptap/vue-2'
+// import tippy from 'tippy.js'
+// import 'tippy.js/themes/light-border.css'
+import { Editor, EditorContent, VueRenderer } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Mention from '@tiptap/extension-mention'
 import MentionList from '@fabriq/components/forms/extensions/MentionList.vue'
 import { useUserStore } from '@fabriq/stores'
+import { useEventBus } from '@fabriq/services/eventBus'
 
-const CustomMention = Mention.extend({
-    addAttributes () {
-        return {
-            id: {
-                default: ''
-            },
-            'data-email': {
-                default: ''
-            }
-        }
-    }
-})
+// const CustomMention = Mention.extend({
+//     addAttributes () {
+//         return {
+//             id: {
+//                 default: ''
+//             },
+//             'data-email': {
+//                 default: ''
+//             }
+//         }
+//     }
+// })
 
 export default {
     name: 'FCommentEditor',
     components: {
         EditorContent
     },
+    emits: ['update:model-value'],
     props: {
         label: {
             type: String,
             default: 'Innehåll'
         },
-        value: {
+        modelValue: {
             type: [String, null],
             default: ' '
         },
@@ -74,9 +76,10 @@ export default {
         }
     },
     setup() {
+        const eventBus = useEventBus()
         const userStore = useUserStore();
 
-        return { userStore }
+        return { userStore, eventBus }
     },
     data () {
         return {
@@ -96,7 +99,7 @@ export default {
         }
     },
     watch: {
-        value (value) {
+        modelValue (value) {
             const isSame = this.editor.getHTML() === value
 
             if (isSame) {
@@ -107,13 +110,13 @@ export default {
         }
     },
     mounted () {
-        this.$eventBus.on('comment-posted', this.clearContent)
+        this.eventBus.on('comment-posted', this.clearContent)
         setTimeout(() => {
             this.initEditor()
         }, 100)
     },
-    beforeDestroy () {
-        this.$eventBus.off('comment-posted', this.clearContent)
+    unmounted () {
+        this.eventBus.off('comment-posted', this.clearContent)
         this.editor.destroy()
     },
     methods: {
@@ -133,7 +136,7 @@ export default {
                 content: this.value,
                 onUpdate: () => {
                     // HTML
-                    this.$emit('input', this.editor.getHTML())
+                    this.$emit('update:model-value', this.editor.getHTML())
 
                     // JSON
                     // this.$emit('update:modelValue', this.editor.getJSON())
@@ -144,60 +147,60 @@ export default {
                         placeholder: this.placeholder
                     }),
 
-                    CustomMention.configure({
-                        HTMLAttributes: {
-                            class: 'mention',
-                            'data-email': ''
-                        },
-                        suggestion: {
-                            items: ({ query }) => {
-                                return this.userNames.filter(item => item.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
-                            },
-                            render: () => {
-                                let component
-                                let popup
+                    // CustomMention.configure({
+                    //     HTMLAttributes: {
+                    //         class: 'mention',
+                    //         'data-email': ''
+                    //     },
+                    //     suggestion: {
+                    //         items: ({ query }) => {
+                    //             return this.userNames.filter(item => item.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
+                    //         },
+                    //         render: () => {
+                    //             let component
+                    //             let popup
 
-                                return {
-                                    onStart: properties => {
-                                        component = new VueRenderer(MentionList, {
-                                            parent: this,
-                                            propsData: properties
-                                        })
+                    //             return {
+                    //                 onStart: properties => {
+                    //                     component = new VueRenderer(MentionList, {
+                    //                         parent: this,
+                    //                         propsData: properties
+                    //                     })
 
-                                        popup = tippy('body', {
-                                            getReferenceClientRect: properties.clientRect,
-                                            appendTo: () => document.body,
-                                            content: component.element,
-                                            showOnCreate: true,
-                                            interactive: true,
-                                            trigger: 'manual',
-                                            placement: 'bottom-start'
-                                        })
-                                    },
-                                    onUpdate (properties) {
-                                        component.updateProps(properties)
+                    //                     popup = tippy('body', {
+                    //                         getReferenceClientRect: properties.clientRect,
+                    //                         appendTo: () => document.body,
+                    //                         content: component.element,
+                    //                         showOnCreate: true,
+                    //                         interactive: true,
+                    //                         trigger: 'manual',
+                    //                         placement: 'bottom-start'
+                    //                     })
+                    //                 },
+                    //                 onUpdate (properties) {
+                    //                     component.updateProps(properties)
 
-                                        popup[0].setProps({
-                                            getReferenceClientRect: properties.clientRect
-                                        })
-                                    },
-                                    onKeyDown (properties) {
-                                        if (properties.event.key === 'Escape') {
-                                            popup[0].hide()
+                    //                     popup[0].setProps({
+                    //                         getReferenceClientRect: properties.clientRect
+                    //                     })
+                    //                 },
+                    //                 onKeyDown (properties) {
+                    //                     if (properties.event.key === 'Escape') {
+                    //                         popup[0].hide()
 
-                                            return true
-                                        }
+                    //                         return true
+                    //                     }
 
-                                        return component.ref?.onKeyDown(properties)
-                                    },
-                                    onExit () {
-                                        popup[0].destroy()
-                                        component.destroy()
-                                    }
-                                }
-                            }
-                        }
-                    })
+                    //                     return component.ref?.onKeyDown(properties)
+                    //                 },
+                    //                 onExit () {
+                    //                     popup[0].destroy()
+                    //                     component.destroy()
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // })
                 ]
             })
             // this.editor.on('update', () => {

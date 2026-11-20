@@ -25,7 +25,7 @@
                 <button
                     type="button"
                     class="fabriq-btn btn-royal py-2.5 px-4 inline-flex items-center"
-                    @click="$vfm.show('createArticleModal')"
+                    @click="vfm.open('createArticleModal')"
                 >
                     Lägg till nyhet
                 </button>
@@ -117,8 +117,10 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Article from '@fabriq/models/Article.js'
 import * as formatters from '@fabriq/utils/formatters'
+import { useVfm } from 'vue-final-modal'
 
 function defaultCreationObject () {
     return {
@@ -127,6 +129,11 @@ function defaultCreationObject () {
 }
 export default {
     name: 'ArticlesIndex',
+    setup() {
+        const vfm = useVfm()
+
+        return {vfm}
+    },
     data () {
         return {
             email: '',
@@ -202,17 +209,17 @@ export default {
         async createArticle () {
             try {
                 const { data } = await Article.store(this.newArticle)
-                this.$toast.success({
+                toast.success({
                     title: 'Nyheten har skapats!',
                     buttonText: 'Gå till nyheten',
                     onClick: () => this.$router.push({ name: 'articles.edit', params: { id: data.id } })
                 })
-                this.$vfm.hide('createArticleModal')
+                this.vfm.close('createArticleModal')
                 this.resetCreateModal()
                 this.fetchArticles()
             } catch (error) {
                 if (error.response.status === 422) {
-                    this.$refs.observer.validate()
+                    this.$refs.observer?.validate()
                 }
                 console.error(error)
             }

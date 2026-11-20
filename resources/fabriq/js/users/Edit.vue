@@ -65,6 +65,7 @@
 import AuthenticatedUser from '@fabriq/models/AuthenticatedUser.js'
 import User from '@fabriq/models/User.js'
 import Role from '@fabriq/models/Role.js'
+import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'UsersEdit',
     data () {
@@ -113,7 +114,7 @@ export default {
             try {
                 this.user.role_list = this.chosenRoles
                 await User.update(this.id, { ...this.user })
-                this.$toast.success({ title: 'Användaren har uppdaterats' })
+                toast.success({ title: 'Användaren har uppdaterats' })
             } catch (error) {
                 console.error(error)
             }

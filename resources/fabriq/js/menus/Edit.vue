@@ -1,10 +1,5 @@
 <template>
     <div>
-        <MenuItemModal
-            :is-creating="isCreating"
-            @created="fetchTree"
-            @updated="fetchTree"
-        />
         <UiSectionHeader>
             Redigera meny
             <template #subtitle>
@@ -46,7 +41,7 @@
                 <div class="flex justify-between flex-1">
                     Menypunkter
                     <FButton
-                        :click="createMenuItem"
+                        :click="showMenuItemModal"
                         class="text-sm"
                         text-button
                         without-loader
@@ -66,7 +61,7 @@
                         </div>
                         <button
                             class="flex items-center text-sm link"
-                            @click="createMenuItem"
+                            @click="showMenuItemModal"
                         >
                             <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
                         </button>
@@ -92,7 +87,7 @@
                             <!-- Content -->
                             <div
                                 class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
-                                @click="editMenuItem(item)"
+                                @click="showMenuItemModal(item)"
                             >
                                 <div class="text-sm/none font-semibold truncate">
                                     {{ item.title }}
@@ -122,7 +117,7 @@
 
                                 <button
                                     class="flex text-sm focus:outline-none text-gray-500 hover:text-gray-800 duration-100"
-                                    @click="editMenuItem(item)"
+                                    @click="showMenuItemModal(item)"
                                 >
                                     <PenToSquareIcon
                                         class="size-5"
@@ -148,25 +143,28 @@
     </div>
 </template>
 <script>
-import { Draggable } from "@he-tree/vue/vue2";
+import { Draggable } from "@he-tree/vue";
 import "@he-tree/vue/style/default.css";
 import FileIcon from '@fabriq/icons/FileIcon.vue'
 import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
 import Menu from '@fabriq/models/Menu.js'
 import MenuItem from '@fabriq/models/MenuItem.js'
 import { useConfigStore } from '@fabriq/stores'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast'
+import { createModal } from '@fabriq/helpers/utils'
 export default {
     name: 'MenusEdit',
-    components: { MenuItemModal, Draggable },
+    components: { Draggable },
     beforeRouteLeave (from, to, next) {
-        this.$vfm.hide('menu-item-modal')
-        this.$destroy()
+        this.vfm.close('menu-item-modal')
         next()
     },
     setup () {
         const configStore = useConfigStore()
+        const vfm = useVfm()
 
-        return { configStore }
+        return { configStore, vfm }
     },
     data () {
         return {
@@ -175,7 +173,6 @@ export default {
             tree: [],
             show: false,
             activeItem: {},
-            isCreating: false,
             deleteQueue: [],
             confirm_id: 0
         }
@@ -239,26 +236,24 @@ export default {
                     tree: this.tree
                 }
                 await Menu.updateTree(this.id, payload)
-                this.$toast.success({ title: 'Menyn har uppdaterats!' })
+                toast.success({ title: 'Menyn har uppdaterats!' })
                 this.fetchTree()
             } catch (error) {
                 console.error(error)
             }
         },
-        async editMenuItem (item) {
-            this.isCreating = false
-            this.$vfm.show('menu-item-modal', item.id)
+        async showMenuItemModal (item = null) {
+            createModal(MenuItemModal, {
+                item: item,
+                onCreated: this.fetchTree,
+                onUpdated: this.fetchTree,
+            })
 
-        },
-        createMenuItem () {
-            this.activeItem = {}
-            this.isCreating = true
-            this.$vfm.show('menu-item-modal')
         },
         async deleteConfirmed (id) {
             try {
                 await MenuItem.destroy(id)
-                this.$toast.success({ title: 'Menypunkten har raderats' })
+                toast.success({ title: 'Menypunkten har raderats' })
                 this.fetchTree()
             } catch (error) {
                 console.error(error)

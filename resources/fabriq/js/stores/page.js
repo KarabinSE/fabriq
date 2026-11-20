@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
-import Vue, { computed, ref, toRaw } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useConfigStore } from "./config";
 import Page from "@fabriq/models/Page";
 import { useUiStore } from '@fabriq/stores/ui'
 import Blocks, { Block } from '@fabriq/models/Block'
+import { reactive } from 'vue'
 
 class PageFetchError extends Error {
     constructor(message, error){
@@ -91,7 +92,7 @@ export const usePageStore = defineStore('page', () => {
      */
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
-        localizedBlocks.value = { sv: [] }
+        localizedBlocks.value = {sv: []}
         await config.initiated
 
         const promises = Object.keys(config.supportedLocales)
@@ -118,7 +119,7 @@ export const usePageStore = defineStore('page', () => {
             const { data } = await Page.show(pageId, payload)
 
             delete data.content.data.boxes
-            Vue.set(localizedContent.value, locale, data.content.data)
+            localizedContent.value[locale] = data.content.data
             return data
         } catch (error) {
             throw new PageFetchError(`Failed to fetch page for locale: '${locale}`, error)
@@ -142,7 +143,7 @@ export const usePageStore = defineStore('page', () => {
                 if(Array.isArray(localizedBlocks.value[block.locale])) {
                     localizedBlocks.value[block.locale].push(newBlock)
                 } else {
-                    Vue.set(localizedBlocks.value, block.locale, [newBlock])
+                    localizedBlocks.value[block.locale] = newBlock
                 }
             }))
 
@@ -209,13 +210,13 @@ export const usePageStore = defineStore('page', () => {
         localizedContent,
         filteredGroupedFields,
         wasInitiallyPublished,
-        blocks: {
+        blocks: reactive({
             flat: blocks,
             index: activeLocaleBlocks,
             add: addBlock,
             clone: cloneBlock,
             remove: removeBlock,
-        },
+        }),
         update,
         publish,
         resetPage,

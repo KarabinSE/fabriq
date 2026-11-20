@@ -2,7 +2,6 @@
     <div>
         <FLabel
             v-if="label"
-            :class="classes"
             :name="name"
             :required="hasRuleRequired"
         >
@@ -10,12 +9,12 @@
         </FLabel>
         <Multiselect
             :id="name"
-            :value="value"
+            v-model="model"
             :options="options"
             :value-prop="valueKey"
             :object="object"
-            :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : inputDisabled}"
-            :disabled="inputDisabled"
+            :class="{'bg-gray-100 text-gray-500 cursor-not-allowed' : disabled}"
+            :disabled="disabled"
             :searchable="(searchable === null && mode === 'tags') ? true : !!searchable"
             :label="optionLabel"
             :name="name"
@@ -26,8 +25,7 @@
             :create-option="mode === 'tags'"
             :on-create="createOption"
             :append-new-option="pushTags"
-            @open="$emit('open')"
-            @input="emitValue"
+            @open="emit('open')"
         >
             <template #singlelabel="{ value: option }">
                 <div class="multiselect-single-label">
@@ -41,7 +39,7 @@
             </template>
             <template #option="{ option, isSelected }">
                 <div
-                    class="inline-flex items-center gap-2.5"
+                    class="inline-flex items-center gap-2.5 pr-6"
                 >
                     <div
                         :class="[
@@ -87,159 +85,104 @@
     </div>
 </template>
 
-<script>
-import Multiselect from '@vueform/multiselect/dist/multiselect.vue2.js'
+<script setup>
+import Multiselect from '@vueform/multiselect'
+import { computed, watchEffect } from 'vue'
 
-export default {
+defineOptions({
     name: 'FSelect',
-    components: {
-        Multiselect,
+})
+
+const model = defineModel({
+    type: [String, Number, Object, Array, Boolean],
+})
+
+
+const emit = defineEmits(['open', 'update:model-value'])
+const props = defineProps({
+    options: {
+        type: Array,
+        required: false,
+        default: () => [],
     },
-    props: {
-        value: {
-            type: [String, Number, Object, Array, Boolean],
-            default: '',
-        },
-
-        options: {
-            type: Array,
-            required: false,
-            default: () => [],
-        },
-
-        label: {
-            type: String,
-            default: '',
-        },
-
-        optionLabel: {
-            type: String,
-            default: 'label',
-        },
-
-        valueKey: {
-            type: String,
-            default: 'value',
-        },
-
-        mode: {
-            type: String,
-            default: 'single',
-        },
-
-        searchable: {
-            type: Boolean,
-            default: null,
-        },
-
-        object: {
-            type: Boolean,
-            default: false,
-        },
-
-        placeholder: {
-            type: String,
-            default: 'Välj',
-        },
-
-        canClear: {
-            type: Boolean,
-            default: false,
-        },
-
-        clearable: {
-            type: Boolean,
-            default: true,
-        },
-
-        rules: {
-            type: String,
-            default: '',
-        },
-
-        validationMode: {
-            type: String,
-            default: 'eager',
-        },
-
-        name: {
-            type: String,
-            required: true,
-        },
-
-        absolutePosErrors: {
-            type: Boolean,
-            default: false,
-        },
-
-        hideErrors: {
-            type: Boolean,
-            default: false,
-        },
-
-        pushTags: {
-            type: Boolean,
-            default: false,
-        },
-
-        createOption: {
-            type: Function,
-            default: null,
-        },
-
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-
-        helpText: {
-            type: String,
-            default: '',
-        },
-
-        defaultValue: {
-            type: [String, Number, Object, Array],
-            default: '',
-        },
+    label: {
+        type: String,
+        default: '',
     },
-
-    emits: ['open', 'input'],
-
-    computed: {
-        hasRuleRequired () {
-            return this.rules.includes('required')
-        },
-
-        inputDisabled() {
-            if(this.disabled) {
-                return true
-            }
-
-            return false
-        },
+    optionLabel: {
+        type: String,
+        default: 'label',
     },
-
-    mounted () {
-        if (this.defaultValue && !this.value) {
-            this.$emit('input', this.defaultValue)
-        }
+    valueKey: {
+        type: String,
+        default: 'value',
     },
-
-    methods: {
-        emitValue (value) {
-            this.$emit('input', value)
-        },
-
-        convertErrorMessage (string) {
-            if (string.includes('{field}')) {
-                return string.replace('{field}', this.label.toLowerCase())
-            }
-
-            return string
-        },
-        classes() {
-            return
-        }
+    mode: {
+        type: String,
+        default: 'single',
     },
-}
+    searchable: {
+        type: Boolean,
+        default: null,
+    },
+    object: {
+        type: Boolean,
+        default: false,
+    },
+    placeholder: {
+        type: String,
+        default: 'Välj',
+    },
+    canClear: {
+        type: Boolean,
+        default: false,
+    },
+    clearable: {
+        type: Boolean,
+        default: true,
+    },
+    rules: {
+        type: String,
+        default: '',
+    },
+    validationMode: {
+        type: String,
+        default: 'eager',
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    absolutePosErrors: {
+        type: Boolean,
+        default: false,
+    },
+    hideErrors: {
+        type: Boolean,
+        default: false,
+    },
+    pushTags: {
+        type: Boolean,
+        default: false,
+    },
+    createOption: {
+        type: Function,
+        default: null,
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
+    helpText: {
+        type: String,
+        default: '',
+    },
+})
+watchEffect(() =>{
+    if(model.value === undefined) {
+        emit('update:model-value', props.mode === 'single' ? null : [], {} )
+    }
+})
+
+const hasRuleRequired = computed(() => props.rules.includes('required'))
 </script>

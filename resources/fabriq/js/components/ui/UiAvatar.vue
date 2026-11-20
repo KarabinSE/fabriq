@@ -16,7 +16,7 @@ export default {
                     email: '',
                     image: {
                         data: {
-                            mime_type: 'image/webp'
+                            mime_type: 'image/avif'
                         }
                     }
                 }
@@ -29,7 +29,7 @@ export default {
             return {
                 thumb_src: this.src,
                 alt_text: `Profilbild för ${this.user.name}`,
-                mime_type: 'image/webp'
+                mime_type: 'image/avif'
             }
         },
         fallbackUrl () {

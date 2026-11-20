@@ -7,8 +7,8 @@
     >
         <slot name="on">
             <EyeIcon
-                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Dölj' }"
-                class="inline-flex h-6 leading-none transition-colors focus:outline-none"
+                v-tooltip="'Dölj'"
+                class="inline-flex h-5 leading-none transition-colors focus:outline-none"
                 thin
             />
         </slot>
@@ -21,8 +21,8 @@
     >
         <slot name="off">
             <EyeSlashIcon
-                v-tooltip.bottom="{ delay: { show: 300, hide: 100 }, content: 'Visa' }"
-                class="inline-flex h-6 leading-none transition-colors focus:outline-none"
+                v-tooltip="'Visa'"
+                class="inline-flex h-5 leading-none transition-colors focus:outline-none"
                 thin
             />
         </slot>

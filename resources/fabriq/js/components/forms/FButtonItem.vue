@@ -9,9 +9,9 @@
                         buttonColor ? buttonColor : 'border border-gray-300'
                     ]"
                 />
-                {{ localButton.text }}
+                {{ model.text }}
                 <span
-                    v-if="!localButton.text"
+                    v-if="!model.text"
                     class="italic text-gray-500"
                 >&lt;Knapptext&gt;</span>
 
@@ -54,146 +54,128 @@
         </div>
 
         <ButtonModal
+            v-model="model"
             :id="modalId"
             :arrow="arrow"
             :color="color"
-            :value="localButton"
-            @saved="onButtonSaved"
         />
     </div>
 </template>
 
 <script>
-import PageTree from '@fabriq/models/PageTree.js'
-import { colors } from '@fabriq/components/forms/FColorPicker.vue'
-import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
-import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
-import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
-import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
-import { Button } from '@fabriq/models/Button'
-
 export const linkTypeOptions = [
     { label: 'Intern', value: 'internal' },
     { label: 'Extern', value: 'external' },
     { label: 'Fil', value: 'file'}
 ]
+</script>
 
-export default {
-    name: 'FButtonItem',
-    components: { ArrowPresenter, ButtonModal },
-    props: {
-        pages: {
-            type: Array,
-            default: () => {
-                return []
+<script setup>
+import PageTree from '@fabriq/models/PageTree.js'
+import { colors as pallette } from '@fabriq/components/forms/FColorPicker.vue'
+import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
+import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
+import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
+import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
+import { Button } from '@fabriq/models/Button'
+import { useVfm } from 'vue-final-modal'
+import { onMounted, ref, computed } from 'vue'
+
+const vfm = useVfm()
+
+defineOptions({name: 'FButtonItem'})
+
+const model = defineModel({
+    type: Object,
+    default: () => new Button()
+})
+
+const props = defineProps({
+    pages: {
+        type: Array,
+        default: () => []
+    },
+    disabled: {
+        type: Boolean,
+        default: false
+    },
+    color: {
+        type: Boolean,
+        default: false
+    },
+    arrow: {
+        type: Boolean,
+        default: false
+    },
+    columnLayout: {
+        type: Boolean,
+        default: false
+    },
+    placeholder: {
+        type: String,
+        default: ''
+    },
+    canDelete: {
+        type: Boolean,
+        default: false
+    }
+})
+
+const modalId = ref(`button-modal-${Math.random().toString(20).substring(2,6)}`)
+const localPages = ref(props.pages)
+const colors = ref(pallette['buttonColors'])
+const arrows = ref(buttonArrows)
+
+const buttonType = computed(() => {
+    if(!model.value) return ''
+    return linkTypeOptions.find(opt => opt.value === model.value.linkType)?.label ?? ''
+})
+const buttonTarget = computed(() => {
+    if(!model.value) return ''
+
+    return {
+        'internal': localPages.value.find(page => page.id === model.value.page_id)?.name ?? '',
+        'external': model.value.url ?? '',
+        'file': model.value.file?.file_name ?? '',
+    }[model.value.linkType] ?? ''
+})
+const buttonColor = computed(() => {
+    if(!model.value || !colors.value || model.value.linkType === 'file') return ''
+    return colors.value.find(color => color.value === model.value.color)?.color ?? ''
+})
+const buttonArrow = computed(() => {
+    if(!model.value || !arrows.value) return
+    return arrows.value.find(arrow => arrow.value === model.value.arrow)
+})
+
+onMounted(() => {
+    if (localPages.value.length === 0) {
+        fetchPages()
+    }
+})
+
+async function fetchPages () {
+    try {
+        const payload = {
+            params: {
+                // field: 'id,name',
+                append: 'paths',
+                selectOptions: true
             }
-        },
-        value: {
-            type: Object,
-            default: () => {
-                return {
-                    text: '',
-                    linkType: 'internal',
-                    page_id: null,
-                    file: {}
-                }
-            }
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        color: {
-            type: Boolean,
-            default: false
-        },
-        arrow: {
-            type: Boolean,
-            default: false
-        },
-        columnLayout: {
-            type: Boolean,
-            default: false
-        },
-        placeholder: {
-            type: String,
-            default: ''
-        },
-        canDelete: {
-            type: Boolean,
-            default: false
         }
-    },
-    data () {
-        return {
-            modalId: `button-modal-${Math.random().toString(20).substring(2,6)}`,
-            localButton: this.value ?? new Button,
-            localPages: this.pages,
-            colors: colors['buttonColors'],
-            arrows: buttonArrows,
-            linkTypeOptions: linkTypeOptions,
-        }
-    },
-    computed: {
-        buttonType() {
-            if(!this.localButton) return ''
-            return this.linkTypeOptions.find(opt => opt.value === this.localButton.linkType)?.label ?? ''
-        },
-        buttonTarget() {
-            if(!this.localButton) return ''
-
-            return {
-                'internal': this.localPages.find(page => page.id === this.localButton.page_id)?.name ?? '',
-                'external': this.localButton.url ?? '',
-                'file': this.localButton.file?.file_name ?? '',
-            }[this.localButton.linkType] ?? ''
-        },
-        buttonColor() {
-            if(!this.localButton || !this.colors || this.localButton.linkType === 'file') return ''
-            return this.colors.find(color => color.value === this.localButton.color)?.color ?? ''
-        },
-        buttonArrow() {
-            if(!this.localButton || !this.arrows) return
-            return this.arrows.find(arrow => arrow.value === this.localButton.arrow)
-        },
-    },
-    mounted () {
-        if (this.pages.length === 0) {
-            this.fetchPages()
-        }
-        setTimeout(() => {
-            this.$emit('input', this.localButton)
-        }, 10)
-    },
-    methods: {
-        async fetchPages () {
-            try {
-                const payload = {
-                    params: {
-                        // field: 'id,name',
-                        append: 'paths',
-                        selectOptions: true
-                    }
-                }
-                const { data } = await PageTree.index(payload)
-                this.localPages = data
-            } catch (error) {
-                console.error(error)
-            }
-        },
-
-        checkForPages () {
-            this.fetchPages()
-        },
-
-        showModal () {
-            this.$vfm.show(this.modalId)
-        },
-
-        onButtonSaved(button) {
-            this.localButton = button
-            this.$emit('input', button)
-        }
+        const { data } = await PageTree.index(payload)
+        localPages.value = data
+    } catch (error) {
+        console.error(error)
     }
 }
+
+function checkForPages () {
+    fetchPages()
+}
+
+function showModal () {
+    vfm.open(modalId.value)
+}
+
 </script>

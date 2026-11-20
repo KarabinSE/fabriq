@@ -1,4 +1,4 @@
-import vue from '@vitejs/plugin-vue2'
+import vue from '@vitejs/plugin-vue'
 import laravel from 'laravel-vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
@@ -21,8 +21,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './resources/js'),
-            '@fabriq': path.resolve(__dirname, './resources/fabriq/js'),
+            '@': path.resolve(import.meta.dirname, './resources/js'),
+            '@fabriq': path.resolve(import.meta.dirname, './resources/fabriq/js'),
         }
     },
     build: {

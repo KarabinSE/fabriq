@@ -119,6 +119,7 @@
     </div>
 </template>
 <script>
+import { toast } from '@fabriq/components/toast/toast'
 import Article from '@fabriq/models/Article.js'
 export default {
     name: 'ArticlesEdit',
@@ -160,7 +161,7 @@ export default {
             try {
                 this.article.content = { ...this.content }
                 await Article.update(this.id, { ...this.article })
-                this.$toast.success({ title: 'Nyheten har uppdaterats' })
+                toast.success({ title: 'Nyheten har uppdaterats' })
             } catch (error) {
                 console.error(error)
             }

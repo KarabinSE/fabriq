@@ -1,35 +1,41 @@
 <template>
     <div class="flex justify-center w-full">
-        <Transition name="fade">
+        <Transition
+            v-if="!withoutLoader"
+            name="fade"
+        >
             <div
-                v-show="isUploading && ! withoutLoader"
+                v-show="isUploading"
                 class="flex items-center text-sm"
             >
                 <div>
                     Laddar upp {{ numUploads }} filer
+
                     <div
                         v-show="progress === 100"
-                        class="absolute text-xs processing-text font-semibod"
+                        class="absolute text-xs processing-text font-semibold"
                     >
                         Bearbetar filer
                     </div>
                 </div>
-                <span class="inline-block w-12 ml-1">({{ progressPercentage }}%)</span>
+
+                <span class="inline-block w-12 ml-1">
+                    ({{ progressPercentage }}%)
+                </span>
+
                 <span class="inline-flex mx-4 animate-spin">
                     <SpinIcon class="size-5 text-royal-500" />
                 </span>
+                {{ progress }}
             </div>
         </Transition>
-        <Transition name="fade">
-            {{ progress }}
-        </Transition>
-        <div
-            v-if="! withoutButton"
-            ref="uploadButton"
-        >
+
+        <div v-if="!withoutButton">
             <slot name="button">
                 <button
+                    type="button"
                     class="px-6 leading-none py-2.5 text-sm font-semibold fabriq-btn btn-royal"
+                    @click="openFileDialog()"
                 >
                     Ladda upp
                 </button>
@@ -38,186 +44,269 @@
     </div>
 </template>
 
-<script>
-import Dropzone from 'dropzone'
+<script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useDropZone, useFileDialog } from '@vueuse/core'
+import axios from 'axios'
 import Cookies from 'js-cookie'
-export default {
-    name: 'FUpload',
-    props: {
-        value: {
-            type: [String, Number, Object, Array],
-            default: ''
-        },
-        dropArea: {
-            type: Boolean,
-            default: false
-        },
-        maxItems: {
-            type: Number,
-            default: 999
-        },
-        uploadName: {
-            type: String,
-            default: 'file'
-        },
-        endpoint: {
-            type: String,
-            required: true,
-            default: ''
-        },
-        types: {
-            type: String,
-            default: ''
-        },
-        payload: {
-            type: Object,
-            required: false,
-            default () {
-                return {}
-            }
-        },
-        withoutButton: {
-            type: Boolean,
-            default: false
-        },
-        withoutLoader: {
-            type: Boolean,
-            default: false
-        },
-        dropRef: {
-            type: String,
-            default: ''
-        },
-        buttonRef: {
-            type: String,
-            default: ''
-        }
-    },
-    data () {
-        return {
-            UploadDropzone: null,
-            numUploads: 0,
-            numCompleted: 1,
-            uploadComplete: false,
-            isUploading: false,
-            progress: 0
-        }
-    },
-    computed: {
-        progressPercentage () {
-            if (this.progress === 100) {
-                return 100
-            }
-            return (this.progress).toFixed(0)
-        },
-        dropElement () {
-            if (this.dropRef) {
-                return this.$parent.$refs[this.dropRef]
-            }
-            return document.body
-        },
-        buttonElement () {
-            if (this.buttonRef) {
-                return this.$parent.$refs[this.buttonRef]
-            }
-            return this.$refs.uploadButton
-        },
-        hasGlobalDrop () {
-            if (this.dropRef) {
-                return false
-            }
-            return true
-        }
-    },
-    mounted () {
-        this.initDropzone()
-        if (this.hasGlobalDrop) {
-            document.addEventListener('paste', this.handlePaste)
-        }
-    },
-    beforeDestroy () {
-        if (this.UploadDropzone) {
-            this.UploadDropzone.destroy();
 
-            this.UploadDropzone = null;
+defineOptions({ name: 'FUpload' })
+
+const props = defineProps({
+    modelValue: {
+        type: [String, Number, Object, Array],
+        default: ''
+    },
+    dropArea: {
+        type: Boolean,
+        default: false
+    },
+    maxItems: {
+        type: Number,
+        default: 999
+    },
+    uploadName: {
+        type: String,
+        default: 'file'
+    },
+    endpoint: {
+        type: String,
+        required: true
+    },
+    types: {
+        type: String,
+        default: ''
+    },
+    payload: {
+        type: Object,
+        default: () => ({})
+    },
+    withoutButton: {
+        type: Boolean,
+        default: false
+    },
+    withoutLoader: {
+        type: Boolean,
+        default: false
+    },
+    dropRef: {
+        type: Object,
+        default: null
+    },
+    buttonRef: {
+        type: Object,
+        default: null
+    },
+})
+
+const emit = defineEmits([
+    'update:model-value',
+    'input',
+    'added-file',
+    'upload-complete',
+    'upload-queue-complete',
+    'error',
+    'is-over-dropzone'
+])
+
+const uploadButton = computed(() => props.buttonRef)
+const dropElement = computed(() => props.dropRef || document.body)
+
+const numUploads = ref(0)
+const isUploading = ref(false)
+const progress = ref(0)
+
+const progressPercentage = computed(() => {
+    return progress.value === 100 ? 100 : progress.value.toFixed(0)
+})
+
+// File dialog
+const { open: openFileDialog, onChange } = useFileDialog({
+    multiple: true,
+    accept: props.types || undefined,
+})
+
+// File picker
+onChange((files) => {
+    if (files?.length) {
+        uploadFiles(files)
+    }
+})
+
+// Validate file types
+const isValidFileType = (file) => {
+    if (!props.types) return true
+
+    const acceptedTypes = props.types
+        .split(',')
+        .map(type => type.trim().toLowerCase())
+
+    return acceptedTypes.some(type => {
+        if (type.startsWith('.')) {
+            return file.name.toLowerCase().endsWith(type)
         }
 
-        if (this.hasGlobalDrop) {
-            document.removeEventListener('paste', this.handlePaste)
+        if (type.endsWith('/*')) {
+            return file.type.startsWith(type.replace('/*', '/'))
         }
-    },
-    methods: {
-        initDropzone () {
-            const dropzoneExisting = Dropzone.instances.find(instance => instance.element === this.dropElement);
 
-            if (dropzoneExisting) {
-                dropzoneExisting.destroy();
-            }
+        return file.type.toLowerCase() === type
+    })
+}
 
-            this.UploadDropzone = new Dropzone(this.dropElement, {
-                paramName: this.uploadName,
-                maxFilesize: 6000,
-                maxFiles: this.maxItems,
-                url: this.endpoint,
-                createImageThumbnails: false,
-                parallelUploads: 5,
-                dictInvalidFileType: 'Filtypen är inte tillåten',
-                acceptedFiles: this.types,
-                autoQueue: true, // Make sure the modelFiles aren't queued until manually added
-                clickable: this.buttonElement,
-                previewsContainer: false,
-                params: this.payload,
-                withCredentials: true,
-                headers: { 'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN') }
-                // headers: {
-                // 'X-CSRF-TOKEN': window.fabriqCms.csrfToken
-                // }
+// Calculate total upload progress
+const updateProgress = (files) => {
+    const total = files.reduce((sum, file) => sum + file.size, 0)
+    const uploaded = files.reduce((sum, file) => sum + (file.uploaded || 0), 0)
+
+    progress.value = total? Math.min((uploaded / total) * 100, 100): 0
+}
+
+// Upload file with Axios
+const uploadFile = async (file, files) => {
+    const formData = new FormData()
+
+    formData.append(props.uploadName, file)
+
+    Object.entries(props.payload).forEach(([key, value]) => {
+        if (value === null || value === undefined) return
+
+        if (Array.isArray(value)) {
+            value.forEach(item => {
+                formData.append(`${key}[]`, item)
             })
-            this.UploadDropzone.on('addedfile', (file) => {
-                this.numUploads++
-                this.isUploading = true
-                this.$emit('added-file')
-            })
-            this.UploadDropzone.on('totaluploadprogress', (progress) => {
-                this.progress = progress
-            })
-            this.UploadDropzone.on('queuecomplete', (progress) => {
-                setTimeout(() => {
-                    this.numUploads = 0
-                    this.numCompleted = 1
-                    this.progress = 0
-                }, 1600)
-                setTimeout(() => {
-                    this.isUploading = 0
-                    this.$emit('upload-queue-complete')
-                }, 600)
-            })
-            this.UploadDropzone.on('error', (file, errorMessage) => {
-                this.$toast.warning({ title: 'Kunde inte ladda upp filen', message: errorMessage.message })
-                this.$emit('error', errorMessage)
-                this.UploadDropzone.removeAllFiles()
-                console.error(file, errorMessage)
-            })
-            this.UploadDropzone.on('success', (file, response) => {
-                this.errors = []
-                this.$emit('upload-complete', response)
-                this.$emit('input', response)
-            })
-            this.UploadDropzone.on('maxfilesexceeded', (file) => {
-                this.UploadDropzone.removeAllFiles()
-                this.UploadDropzone.addFile(file)
-            })
-        },
-        handlePaste (event) {
-            const items = (event.clipboardData || event.originalEvent.clipboardData).items
-            for (const index in items) {
-                const item = items[index]
-                if (item.kind === 'file') {
-                    this.UploadDropzone.addFile(item.getAsFile())
-                }
+        } else if (typeof value === 'object') {
+            formData.append(key, JSON.stringify(value))
+        } else {
+            formData.append(key, String(value))
+        }
+    })
+
+    try {
+        const token = Cookies.get('XSRF-TOKEN')
+        const config =  {
+            withCredentials: true,
+            headers: {
+                ...(token && {
+                    'X-XSRF-TOKEN': token
+                })
+            },
+            onUploadProgress: (event) => {
+                file.uploaded = event.loaded
+                updateProgress(files)
             }
         }
+
+        const { data } = await axios.post(props.endpoint, formData, config)
+
+        file.uploaded = file.size
+        updateProgress(files)
+
+        emit('upload-complete', data)
+        emit('update:model-value', data)
+        emit('input', data)
+
+        return data
+    } catch (error) {
+        const message = error.response?.data?.message || error.message || 'Upload failed'
+
+        console.error(file, error)
+
+        emit('error', error)
+
+        return null
     }
 }
 
+// Upload queue
+let isProcessing = false
+
+const uploadFiles = async (files) => {
+    if (!files?.length) {
+        return
+    }
+
+    const validFiles = [...files]
+        .filter(isValidFileType)
+        .slice(0, Math.max(0, props.maxItems - numUploads.value))
+
+    if (validFiles.length === 0) {
+        return
+    }
+
+    numUploads.value += validFiles.length
+    isUploading.value = true
+
+    validFiles.forEach(file => {
+        file.uploaded = 0
+        emit('added-file')
+    })
+
+    if (isProcessing) {
+        return
+    }
+
+    isProcessing = true
+
+    const queue = [...validFiles]
+
+    const worker = async () => {
+        while (queue.length > 0) {
+            const file = queue.shift()
+            await uploadFile(file, validFiles)
+        }
+    }
+
+    await Promise.all(
+        Array.from(
+            { length: Math.min(5, queue.length) },
+            () => worker()
+        )
+    )
+
+    isProcessing = false
+    progress.value = 100
+
+    setTimeout(() => {
+        numUploads.value = 0
+        progress.value = 0
+        isUploading.value = false
+
+        emit('upload-queue-complete')
+    }, 600)
+}
+
+// Dropzone
+const { isOverDropZone } = useDropZone(dropElement, {
+    multiple: true,
+    onDrop: uploadFiles
+})
+
+watch(isOverDropZone, () => emit('is-over-dropzone', isOverDropZone.value))
+
+// Clipboard paste
+const handlePaste = (event) => {
+    const items = event.clipboardData?.items || []
+
+    const files = [...items]
+        .filter(item => item.kind === 'file')
+        .map(item => item.getAsFile())
+        .filter(Boolean)
+
+    uploadFiles(files)
+}
+
+
+watch(uploadButton, (btn, oldBtn) => {
+    oldBtn?.removeEventListener('click', openFileDialog)
+    btn.addEventListener('click', openFileDialog)
+})
+
+onMounted(() => {
+    document.addEventListener('paste', handlePaste)
+})
+
+onUnmounted(() => {
+    document.removeEventListener('paste', handlePaste)
+})
 </script>
