@@ -45,6 +45,8 @@ Composer removes `karabinse/translatable-revisions`. If your application require
 php artisan fabriq:update
 ```
 
+The update replaces `resources/fabriq/js` assets and `resources/js/app.js` with the v5 versions. Back up or merge any custom changes in `app.js` before updating.
+
 Or run `php artisan migrate` directly. Review the output and confirm that all migrations completed (`php artisan migrate:status`).
 
 The migrations run in this order. All dates are in the 2026 migration file names.

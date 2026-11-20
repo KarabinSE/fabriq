@@ -27,6 +27,9 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
     public function test_frontend_update_assets_publish_the_api_spa_runtime(): void
     {
         File::deleteDirectory(resource_path('fabriq/js'));
+        File::ensureDirectoryExists(resource_path('fabriq/js'));
+        File::put(resource_path('fabriq/js/fabriq.js'), 'old fabriq runtime');
+        File::put(resource_path('js/app.js'), 'old app entrypoint');
 
         Artisan::call('vendor:publish', [
             '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
@@ -35,6 +38,14 @@ class FrontendAssetsPublishFeatureTest extends AdminUserTestCase
         ]);
 
         $this->assertFileExists(resource_path('fabriq/js/fabriq.js'));
+        $this->assertSame(
+            File::get(__DIR__.'/../resources/fabriq/js/fabriq.js'),
+            File::get(resource_path('fabriq/js/fabriq.js'))
+        );
+        $this->assertSame(
+            File::get(__DIR__.'/../resources/js/app.js'),
+            File::get(resource_path('js/app.js'))
+        );
         $this->assertDirectoryExists(resource_path('fabriq/js/icons'));
         $this->assertDirectoryExists(resource_path('fabriq/js/stores'));
 

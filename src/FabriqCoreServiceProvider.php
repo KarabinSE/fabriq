@@ -179,7 +179,9 @@ class FabriqCoreServiceProvider extends ServiceProvider
 
     protected function updatePaths(): array
     {
-        return $this->standardPaths();
+        return array_merge($this->standardPaths(), [
+            __DIR__.'/../resources/js/app.js' => resource_path('js/app.js'),
+        ]);
     }
 
     protected function installPaths(): array
