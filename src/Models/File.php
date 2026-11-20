@@ -2,11 +2,12 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\Fabriq\Database\Factories\FileFactory;
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Karabin\Fabriq\Database\Factories\FileFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -14,7 +15,12 @@ use Spatie\Tags\HasTags;
 
 class File extends Model implements HasMedia
 {
-    use HasFactory, HasTags, InteractsWithMedia;
+    use HasFactory, HasTags, InteractsWithMedia, InvalidatesReferences;
+
+    public function referenceType(): string
+    {
+        return 'file';
+    }
 
     public const RELATIONSHIPS = ['tags'];
 

@@ -418,7 +418,7 @@ class ContentResourceContext
         foreach ($value as $item) {
             if (is_int($item) || (is_string($item) && ctype_digit($item))) {
                 $ids[] = $item;
-            } elseif (is_array($item) && isset($item['id'])) {
+            } elseif (is_array($item) && isset($item['id']) && (is_int($item['id']) || (is_string($item['id']) && ctype_digit($item['id'])))) {
                 $ids[] = $item['id'];
             }
         }

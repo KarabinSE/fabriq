@@ -2,11 +2,12 @@
 
 namespace Karabin\Fabriq\Models;
 
-use Karabin\Fabriq\Database\Factories\VideoFactory;
-use Karabin\Fabriq\Fabriq;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Karabin\Fabriq\Database\Factories\VideoFactory;
+use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -15,7 +16,12 @@ use Spatie\Tags\HasTags;
 
 class Video extends Model implements HasMedia
 {
-    use HasFactory, HasTags, InteractsWithMedia;
+    use HasFactory, HasTags, InteractsWithMedia, InvalidatesReferences;
+
+    public function referenceType(): string
+    {
+        return 'video';
+    }
 
     public const RELATIONSHIPS = ['tags'];
 

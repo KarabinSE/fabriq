@@ -61,7 +61,6 @@ class VideoController extends Controller
         $media = $video->getFirstmedia('videos');
         $media->name = $request->name;
         $media->save();
-
         $video->save();
 
         return Fabriq::getDto('video')::fromModel($video)->wrap('data')->toResponse($request);

@@ -4,6 +4,7 @@ namespace Karabin\Fabriq\Http\Controllers\Api\Fabriq;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Karabin\Fabriq\Actions\DeletePage;
 use Karabin\Fabriq\ContentGetters\ContentResourceContext;
 use Karabin\Fabriq\Enums\ApiResponseCode;
 use Karabin\Fabriq\Fabriq;
@@ -140,9 +141,7 @@ class PageController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        Fabriq::getModelClass('page')
-            ->where('id', $id)
-            ->delete();
+        app(DeletePage::class)->handle($id);
 
         return response()->json([
             'code' => ApiResponseCode::Success->value,

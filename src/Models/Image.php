@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\UploadedFile;
 use Karabin\Fabriq\Database\Factories\ImageFactory;
 use Karabin\Fabriq\Fabriq;
+use Karabin\Fabriq\Traits\InvalidatesReferences;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -18,7 +19,12 @@ use Spatie\Tags\HasTags;
 
 class Image extends Model implements HasMedia
 {
-    use HasFactory, HasTags, InteractsWithMedia;
+    use HasFactory, HasTags, InteractsWithMedia, InvalidatesReferences;
+
+    public function referenceType(): string
+    {
+        return 'image';
+    }
 
     protected $fillable = ['alt_text', 'caption', 'custom_crop', 'x_position', 'y_position'];
 

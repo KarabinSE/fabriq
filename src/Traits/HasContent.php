@@ -213,6 +213,11 @@ trait HasContent
     /** Find a template field by key or throw if it does not exist. */
     protected function getTemplateField(string $fieldKey): ContentTemplateField
     {
+        return $this->findContentTemplateField($fieldKey) ?? throw ContentFieldNotFound::forKey($fieldKey);
+    }
+
+    public function findContentTemplateField(string $fieldKey): ?ContentTemplateField
+    {
         $cacheKey = $this->template_id.'|'.$fieldKey;
 
         if (isset($this->contentFieldCache[$cacheKey])) {
@@ -247,7 +252,7 @@ trait HasContent
         }
 
         if ($field === null) {
-            throw ContentFieldNotFound::forKey($fieldKey);
+            return null;
         }
 
         $this->contentFieldCache[$cacheKey] = $field;
