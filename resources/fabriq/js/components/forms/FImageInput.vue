@@ -105,10 +105,6 @@ defineOptions({
 
 const emit = defineEmits(['item-picked'])
 const props = defineProps({
-    modelValue: {
-        type: [String, Number, Object, Array],
-        default: null,
-    },
     label: {
         type: String,
         default: '',

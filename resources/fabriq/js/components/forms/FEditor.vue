@@ -782,7 +782,7 @@ export default {
         const eventBus = useEventBus()
 
         return {
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -810,7 +810,7 @@ export default {
 
         currentHeadingLevel() {
             return [1, 2, 3, 4].find(level => this.editor?.isActive('heading', {
-                level, 
+                level,
             })) ?? null
         },
 
@@ -820,7 +820,7 @@ export default {
 
         currentTextAlignment() {
             return ['left', 'center', 'right', 'justify'].find(alignment => this.editor?.isActive({
-                textAlign: alignment, 
+                textAlign: alignment,
             })) ?? 'left'
         },
 
@@ -921,7 +921,7 @@ export default {
             }
 
             this.editor.chain().focus().toggleHeading({
-                level, 
+                level,
             }).run()
         },
 
@@ -1028,7 +1028,7 @@ export default {
 
             this.editor.chain().focus().setLink(fileObject).run()
             toast.success({
-                title: 'Filen har blivit länkad', 
+                title: 'Filen har blivit länkad',
             })
             this.pickerOpen = false
         },
@@ -1065,7 +1065,7 @@ export default {
                 this.$refs.iframedropdown.close()
                 toast.warning({
                     title: 'Pst!',
-                    message: 'Det verkar inte vara ett iframe-element som du klistrar in', 
+                    message: 'Det verkar inte vara ett iframe-element som du klistrar in',
                 })
                 this.embedCode = ''
 
