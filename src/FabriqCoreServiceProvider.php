@@ -246,7 +246,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../pnpm-workspace.yaml' => 'pnpm-workspace.yaml',
             __DIR__.'/../package.json' => 'package.json',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
-            __DIR__.'/../.eslint.config.mjs' => '.eslint.config.mjs',
+            __DIR__.'/../eslint.config.mjs' => 'eslint.config.mjs',
             __DIR__.'/../pnpm-lock.yaml' => 'pnpm-lock.yaml',
         ];
     }
