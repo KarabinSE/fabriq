@@ -4,9 +4,11 @@ export class Button {
     text = ''
     linkType = 'internal'
     page_id = null
-    file = {}
+    file = {
+    }
 
-    constructor(data = {}) {
-        Object.entries(data).forEach(([k,v]) => this[k] = v)
+    constructor(data = {
+    }) {
+        Object.entries(data).forEach(([k, v]) => this[k] = v)
     }
 }

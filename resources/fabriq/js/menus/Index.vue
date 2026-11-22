@@ -45,8 +45,10 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import Menu from '@fabriq/models/Menu.js'
+
 export default {
     name: 'MenusIndex',
     data () {
@@ -55,46 +57,57 @@ export default {
             tableOptions: {
                 emptyText: 'Här var det tomt!',
                 clickableRows: true,
-                shadow: false
+                shadow: false,
             },
+
             columns: [
                 {
                     title: '',
                     key: 'name',
-                    tdClasses: 'font-semibold'
+                    tdClasses: 'font-semibold',
                 },
                 {
                     title: '',
                     key: 'edit',
                     thClasses: 'text-right',
-                    tdClasses: 'text-right'
-                }
+                    tdClasses: 'text-right',
+                },
 
             ],
+
             queryParams: {
                 number: 40,
-                page: 1
-            }
+                page: 1,
+            },
         }
     },
+
     activated () {
         this.fetchMenus()
     },
+
     methods: {
         handleRowClicked (row) {
-            this.$router.push({ name: 'menus.edit', params: { id: row.id } })
+            this.$router.push({
+                name: 'menus.edit',
+                params: {
+                    id: row.id, 
+                }, 
+            })
         },
+
         async fetchMenus () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data } = await Menu.index(payload)
+
                 this.menus = data
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

@@ -11,14 +11,15 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
     name: 'UsersGear',
     props: {
         thin: {
             type: Boolean,
-            default: false
-        }
-    }
+            default: false,
+        },
+    },
 }
 </script>

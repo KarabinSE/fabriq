@@ -79,6 +79,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import SmartBlock from '@fabriq/models/SmartBlock.js'
@@ -87,89 +88,112 @@ import { useVfm } from 'vue-final-modal'
 
 function defaultCreationObject () {
     return {
-        name: ''
+        name: '',
     }
 }
+
 export default {
     name: 'SmartBlocksIndex',
 
     setup() {
         const vfm = useVfm()
 
-        return {vfm}
+        return {
+            vfm, 
+        }
     },
+
     data () {
         return {
             email: '',
             blocks: [],
-            pagination: {},
-            newSmartBlock: {
-                name: ''
+            pagination: {
             },
+
+            newSmartBlock: {
+                name: '',
+            },
+
             queryParams: {
                 number: 50,
-                page: 1
+                page: 1,
             },
+
             columns: [
                 {
                     title: 'Namn',
                     key: 'name',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Uppdaterad',
                     key: 'updated_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: '',
                     key: 'edit',
-                    tdClasses: 'text-right'
-                }
-            ]
+                    tdClasses: 'text-right',
+                },
+            ],
         }
     },
+
     activated () {
         this.fetchItems()
     },
+
     methods: {
         ...formatters,
         async fetchItems () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await SmartBlock.index(payload)
+
                 this.blocks = data
                 this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchItems()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchItems()
         },
+
         async deleteSmartBlock (block) {
             try {
                 await SmartBlock.destroy(block.id)
-                toast.success({ title: 'Det smarta blocket har tagits bort' })
+                toast.success({
+                    title: 'Det smarta blocket har tagits bort', 
+                })
                 this.fetchItems()
             } catch (error) {
                 console.error(error)
             }
         },
+
         async createSmartBlock () {
             try {
                 const { data } = await SmartBlock.store(this.newSmartBlock)
+
                 toast.success({
                     title: 'Det smarta blocket har skapats!',
                     buttonText: 'Gå till blocket',
-                    onClick: () => this.$router.push({ name: 'smartBlocks.edit', params: { id: data.id } })
+                    onClick: () => this.$router.push({
+                        name: 'smartBlocks.edit',
+                        params: {
+                            id: data.id, 
+                        }, 
+                    }),
                 })
                 this.vfm.close('createSmartBlockModal')
                 this.resetCreateModal()
@@ -178,17 +202,27 @@ export default {
                 if (error.response.status === 422) {
                     this.$refs.observer?.validate()
                 }
+
                 console.error(error)
             }
         },
+
         handleRowClicked (row) {
-            this.$router.push({ name: 'smartBlocks.edit', params: { id: row.id } })
+            this.$router.push({
+                name: 'smartBlocks.edit',
+                params: {
+                    id: row.id, 
+                }, 
+            })
         },
+
         resetCreateModal () {
             setTimeout(() => {
-                this.newSmartBlock = { ...defaultCreationObject() }
+                this.newSmartBlock = {
+                    ...defaultCreationObject(), 
+                }
             }, 200)
-        }
-    }
+        },
+    },
 }
 </script>

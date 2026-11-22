@@ -36,7 +36,7 @@ import UiStatsCard from '@fabriq/components/ui/UiStatsCard.vue'
 import FMediaInput from './forms/FMediaInput.vue'
 import FColorPicker from './forms/FColorPicker.vue'
 import FArrowPicker from './forms/FArrowPicker.vue'
-import FChildren from "./forms/FChildren.vue";
+import FChildren from './forms/FChildren.vue'
 import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
 
 const commonComponents = [
@@ -81,12 +81,12 @@ const commonComponents = [
     FArrowPicker,
     FChildren,
     SlideUpDown,
-];
+]
 
 export default {
     install: (app) => {
         commonComponents.forEach((component) => {
-            app.component(component.name, component);
-        });
+            app.component(component.name, component)
+        })
     },
-};
+}

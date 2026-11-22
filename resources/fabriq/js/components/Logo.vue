@@ -6,8 +6,9 @@
         Fabriq CMS
     </div>
 </template>
+
 <script>
 export default {
-    name: 'UiLogo'
+    name: 'UiLogo',
 }
 </script>

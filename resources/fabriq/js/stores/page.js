@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
-import { computed, nextTick, ref } from "vue";
-import { useConfigStore } from "./config";
-import Page from "@fabriq/models/Page";
+import { defineStore } from 'pinia'
+import { computed, nextTick, ref } from 'vue'
+import { useConfigStore } from './config'
+import Page from '@fabriq/models/Page'
 import { useUiStore } from '@fabriq/stores/ui'
 import Blocks, { Block } from '@fabriq/models/Block'
 import { reactive } from 'vue'
@@ -36,10 +36,12 @@ const defaultPageData = {
     id: 0,
     updated_at: '2020-01-01 10:00:00',
     localizedContent: {
-        sv: {},
+        sv: {
+        },
     },
     template: {
-        data: {},
+        data: {
+        },
     },
 }
 
@@ -49,50 +51,60 @@ export const usePageStore = defineStore('page', () => {
 
     const wasInitiallyPublished = ref(true)
     const blocksLoading = ref(true)
-    const page = ref(structuredClone(defaultPageData));
+    const page = ref(structuredClone(defaultPageData))
 
     const blocks = computed(() => Object.values(localizedBlocks.value).flat())
-    const localizedContent = ref({ sv: {} })
-    const localizedBlocks = ref({ sv: [] })
+    const localizedContent = ref({
+        sv: {
+        }, 
+    })
+    const localizedBlocks = ref({
+        sv: [], 
+    })
 
-    const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {})
+    const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {
+    })
 
     const activeLocaleBlocks = computed({
         get: () => blocks.value.filter(block => block.locale === config.activeLocale),
-        set: (value) => localizedBlocks.value[config.activeLocale] = value
+        set: (value) => localizedBlocks.value[config.activeLocale] = value,
     })
     const activeLocaleContent = computed({
         get: () => localizedContent.value[config.activeLocale],
-        set: (newContent) => localizedContent.value[config.activeLocale] = newContent
+        set: (newContent) => localizedContent.value[config.activeLocale] = newContent,
     })
 
     const filteredGroupedFields = computed( () => {
         if (!groupedFields.value || typeof groupedFields.value !== 'object') {
-            return {}
+            return {
+            }
         }
 
         return Object.fromEntries(
-            Object.entries(groupedFields.value).filter(([groupKey]) => groupKey !== 'main_content')
+            Object.entries(groupedFields.value).filter(([groupKey]) => groupKey !== 'main_content'),
         )
     })
 
     function setPage (data) {
-        page.value = data;
+        page.value = data
         wasInitiallyPublished.value = data.published
     }
 
     function resetPage () {
-        page.value = structuredClone(defaultPageData);
+        page.value = structuredClone(defaultPageData)
     }
 
     let markPageLoaded
     const pageLoaded = ref(new Promise((r) => markPageLoaded = r))
+
     /**
      * fetches page content for each locale
      */
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
-        localizedBlocks.value = {sv: []}
+        localizedBlocks.value = {
+            sv: [], 
+        }
         await config.initiated
 
         const promises = Object.keys(config.supportedLocales)
@@ -100,8 +112,9 @@ export const usePageStore = defineStore('page', () => {
 
         const pages = await Promise.all([
             ...promises,
-            fetchPageBlocks(pageId)
+            fetchPageBlocks(pageId),
         ])
+
         setPage(pages[0])
 
         markPageLoaded()
@@ -115,11 +128,13 @@ export const usePageStore = defineStore('page', () => {
                 locale_override: locale,
             },
         }
+
         try {
             const { data } = await Page.show(pageId, payload)
 
             delete data.content.data.boxes
             localizedContent.value[locale] = data.content.data
+
             return data
         } catch (error) {
             throw new PageFetchError(`Failed to fetch page for locale: '${locale}`, error)
@@ -131,8 +146,9 @@ export const usePageStore = defineStore('page', () => {
             params: {
                 include: 'blockType,children',
                 // 'filter[locale]': locale,
-            }
+            },
         }
+
         try {
             blocksLoading.value = true
             const data  = await Blocks.index(pageId, payload)
@@ -168,7 +184,10 @@ export const usePageStore = defineStore('page', () => {
 
             wasInitiallyPublished.value = page.value.published
         } catch (error) {
-            throw new PageUpdateError(error, { page: pageId, payload });
+            throw new PageUpdateError(error, {
+                page: pageId,
+                payload, 
+            })
         }
     }
 
@@ -176,7 +195,9 @@ export const usePageStore = defineStore('page', () => {
         try {
             await Page.publish(pageId)
         } catch (error) {
-            throw new PagePublishError(error, { page: pageId })
+            throw new PagePublishError(error, {
+                page: pageId, 
+            })
         }
     }
 
@@ -199,6 +220,7 @@ export const usePageStore = defineStore('page', () => {
 
     function removeBlock(block) {
         const index = localizedBlocks.value[config.activeLocale].findIndex(b => b.content.id === block.content.id)
+
         localizedBlocks.value[config.activeLocale].splice(index, 1)
     }
 
@@ -223,4 +245,4 @@ export const usePageStore = defineStore('page', () => {
         blocksLoading,
         pageLoaded,
     }
-});
+})

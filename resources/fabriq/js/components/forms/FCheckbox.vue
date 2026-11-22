@@ -24,46 +24,53 @@ export default {
     props: {
         label: {
             type: String,
-            default: ''
+            default: '',
         },
+
         value: {
             type: [String, Array, Object, Boolean, Number],
-            default: ''
+            default: '',
         },
+
         checkboxValue: {
             type: [String, Array, Object, Boolean, Number],
-            default: ''
+            default: '',
         },
+
         disabled: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
 
     },
+
     data() {
         return {
-            newValue: this.value
+            newValue: this.value,
         }
     },
+
     computed: {
         computedValue: {
             get() {
                 return this.newValue
             },
+
             set(value) {
                 this.newValue = value
                 this.$emit('input', value)
-            }
-        }
+            },
+        },
     },
+
     watch: {
         /**
         * When v-model change, set internal value.
         */
         value(value) {
             this.newValue = value
-        }
-    }
+        },
+    },
 }
 </script>
 

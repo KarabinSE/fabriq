@@ -6,11 +6,11 @@
 // import '@fabriq/plugins/vue-slide-up-down'
 
 import floatingVue from '@fabriq/plugins/floating-vue'
-import { vMaska } from "maska/vue"
+import { vMaska } from 'maska/vue'
 
 export default {
     install (app) {
         app.use(floatingVue)
         app.directive('maska', vMaska)
-    }
+    },
 }

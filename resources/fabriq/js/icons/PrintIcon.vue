@@ -13,6 +13,6 @@
 
 <script>
 export default {
-    name: 'PrintIcon'
+    name: 'PrintIcon',
 }
 </script>

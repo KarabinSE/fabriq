@@ -108,35 +108,43 @@
         </div>
     </div>
 </template>
+
 <script>
-import { useUserStore, useUiStore } from '@fabriq/stores';
+import { useUserStore, useUiStore } from '@fabriq/stores'
 import LogoutForm from '@fabriq/components/LogoutForm.vue'
+
 export default {
     name: 'UiTopbar',
-    components: { LogoutForm },
-    setup () {
-        const userStore = useUserStore();
+    components: {
+        LogoutForm, 
+    },
 
-        const uiStore = useUiStore();
+    setup () {
+        const userStore = useUserStore()
+
+        const uiStore = useUiStore()
 
         return {
             userStore,
-            uiStore
+            uiStore,
         }
     },
+
     data () {
         return {
             csrfToken: '',
-            showDropdown: false
+            showDropdown: false,
         }
     },
+
     computed: {
         user () {
-            return this.userStore.user;
+            return this.userStore.user
         },
+
         menuOpen () {
-            return this.uiStore.menuOpen;
-        }
+            return this.uiStore.menuOpen
+        },
 
     },
 
@@ -144,15 +152,18 @@ export default {
         closeDropdown () {
             this.showDropdown = false
         },
+
         closeMenu () {
-            this.uiStore.closeMenu();
+            this.uiStore.closeMenu()
         },
+
         openMenu () {
-            this.uiStore.openMenu();
+            this.uiStore.openMenu()
         },
+
         toggleMenu () {
-            this.uiStore.toggleMenu();
-        }
-    }
+            this.uiStore.toggleMenu()
+        },
+    },
 }
 </script>

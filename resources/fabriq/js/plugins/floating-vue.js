@@ -10,10 +10,10 @@ export default {
                     delay: {
                         show: 300,
                         hide: 100,
-                    }
-                }
-            }
+                    },
+                },
+            },
         })
         app.component('UiPopover', Dropdown)
-    }
+    },
 }

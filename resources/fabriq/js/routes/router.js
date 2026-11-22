@@ -5,24 +5,26 @@ import { createWebHistory, createRouter } from 'vue-router'
 function createFabriqRouter (app, customRoutes = []) {
     const router = createRouter({
         history: createWebHistory(),
-        routes: [...customRoutes, ...routes]
+        routes: [...customRoutes, ...routes],
     })
 
     router.beforeEach(beforeEach)
     router.afterEach(afterEach)
 
     function afterEach (to, from) {
-        const uiStore = useUiStore();
+        const uiStore = useUiStore()
 
-        uiStore.closeMenu();
+        uiStore.closeMenu()
 
         const Echo = app.config.globalProperties.$echo
+
         if (Echo) {
 
             const id = from.params.id
             const roomName = from.name
             const identifier = roomName + '.' + id
             const wsPrefix = window.fabriqCms.pusher.ws_prefix
+
             Echo.leave(wsPrefix + '.presence.' + identifier)
 
             if (from.meta.broadcastName) {
@@ -41,23 +43,30 @@ function createFabriqRouter (app, customRoutes = []) {
     }
 
     function beforeEach (to, from) {
-        const routeHistoryStore = useRouteHistoryStore();
+        const routeHistoryStore = useRouteHistoryStore()
 
-        routeHistoryStore.setFromRoute(from.name);
+        routeHistoryStore.setFromRoute(from.name)
 
         if (!to.meta.middleware) return
 
         const middleware = Array.isArray(to.meta.middleware) ? to.meta.middleware : [to.meta.middleware]
-        const context = { app, from, router, to }
+        const context = {
+            app,
+            from,
+            router,
+            to, 
+        }
 
         return runMiddleware(middleware, context)
     }
 
     async function runMiddleware (middleware, context, index = 0) {
         const currentMiddleware = middleware[index]
+
         if (!currentMiddleware) return
 
         const result = await currentMiddleware(context)
+
         if (result !== undefined) return result
 
         return runMiddleware(middleware, context, index + 1)

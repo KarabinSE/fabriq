@@ -12,6 +12,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import * as formatters from '@fabriq/utils/formatters'
 
@@ -20,15 +21,17 @@ export default {
     props: {
         cleared: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         item: {
             type: Object,
-            default: () => {}
-        }
+            default: () => {},
+        },
     },
+
     methods: {
         ...formatters,
-    }
+    },
 }
 </script>

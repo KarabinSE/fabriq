@@ -97,61 +97,64 @@ import { createModal } from '@fabriq/helpers/utils'
 import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
 
 const eventBus = useEventBus()
-defineOptions({name: 'FVideoInput'})
+
+defineOptions({
+    name: 'FVideoInput', 
+})
 
 const emit = defineEmits(['item-picked'])
 const props = defineProps({
     modelValue: {
         type: [String, Number, Object, Array],
-        default: null
+        default: null,
     },
     label: {
         type: String,
-        default: ''
+        default: '',
     },
     modelId: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
     },
     fieldKey: {
         type: String,
         required: false,
-        default: ''
+        default: '',
     },
     multiple: {
         type: Boolean,
-        default: false
+        default: false,
     },
     modelName: {
         type: String,
-        default: ''
+        default: '',
     },
     buttonText: {
         type: String,
-        default: ''
+        default: '',
     },
     group: {
         type: String,
-        default: ''
+        default: '',
     },
     syncSimilar: {
         type: Boolean,
-        default: false
+        default: false,
     },
     name: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
+        default: false,
     },
 })
 
 const localVideo =  defineModel({
     type: Object,
-    default: null
+    default: null,
 })
 
 const instanceId =  Math.random().toString(20).substring(2, 6)
@@ -173,10 +176,12 @@ onUnmounted(() => {
     // $refs.dropElement?.removeEventListener('dragover', handleDragOver)
     // $refs.dropElement?.removeEventListener('dragleave', handleDragLeave)
 })
+
 function clearVideo () {
     localVideo.value = null
     emitVideoSelected()
 }
+
 async function pickVideo (id) {
     if (props.multiple) {
         await pickMultipleVideos(id)
@@ -184,12 +189,14 @@ async function pickVideo (id) {
         await pickSingleVideo(id)
     }
 }
+
 async function pickMultipleVideos (id) {
     try {
         const payload = {
-            model_id: props.modelId
+            model_id: props.modelId,
         }
         const { data } = await Video.attachToModel(id, modelName, payload)
+
         emit('item-picked', data)
     } catch (error) {
         console.error(error)
@@ -200,9 +207,10 @@ async function pickSingleVideo (id) {
     try {
         const payload = {
             key: props.fieldKey,
-            model_id: props.modelId
+            model_id: props.modelId,
         }
         const { data } = await Video.show(id, payload)
+
         localVideo.value = data
         emitVideoSelected()
     } catch (error) {
@@ -224,8 +232,10 @@ function emitVideoSelected () {
     if (props.group) {
         this.eventBus.emit('video-selected', {
             group: group,
-            data: { ...localVideo.value },
-            uid: instanceId
+            data: {
+                ...localVideo.value, 
+            },
+            uid: instanceId,
         })
     }
 }
@@ -235,7 +245,7 @@ function showVideoModal() {
         item: localVideo.value,
         onItemDeleted: () => {
             localVideo.value = null
-        }
+        },
     })
 }
 

@@ -45,57 +45,62 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import {
+    ref, computed, onMounted, onUnmounted, watch, 
+} from 'vue'
 import { useDropZone, useFileDialog } from '@vueuse/core'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-defineOptions({ name: 'FUpload' })
+defineOptions({
+    name: 'FUpload', 
+})
 
 const props = defineProps({
     modelValue: {
         type: [String, Number, Object, Array],
-        default: ''
+        default: '',
     },
     dropArea: {
         type: Boolean,
-        default: false
+        default: false,
     },
     maxItems: {
         type: Number,
-        default: 999
+        default: 999,
     },
     uploadName: {
         type: String,
-        default: 'file'
+        default: 'file',
     },
     endpoint: {
         type: String,
-        required: true
+        required: true,
     },
     types: {
         type: String,
-        default: ''
+        default: '',
     },
     payload: {
         type: Object,
-        default: () => ({})
+        default: () => ({
+        }),
     },
     withoutButton: {
         type: Boolean,
-        default: false
+        default: false,
     },
     withoutLoader: {
         type: Boolean,
-        default: false
+        default: false,
     },
     dropRef: {
         type: Object,
-        default: null
+        default: null,
     },
     buttonRef: {
         type: Object,
-        default: null
+        default: null,
     },
 })
 
@@ -106,7 +111,7 @@ const emit = defineEmits([
     'upload-complete',
     'upload-queue-complete',
     'error',
-    'is-over-dropzone'
+    'is-over-dropzone',
 ])
 
 const uploadButton = computed(() => props.buttonRef)
@@ -188,13 +193,13 @@ const uploadFile = async (file, files) => {
             withCredentials: true,
             headers: {
                 ...(token && {
-                    'X-XSRF-TOKEN': token
-                })
+                    'X-XSRF-TOKEN': token,
+                }),
             },
             onUploadProgress: (event) => {
                 file.uploaded = event.loaded
                 updateProgress(files)
-            }
+            },
         }
 
         const { data } = await axios.post(props.endpoint, formData, config)
@@ -253,15 +258,18 @@ const uploadFiles = async (files) => {
     const worker = async () => {
         while (queue.length > 0) {
             const file = queue.shift()
+
             await uploadFile(file, validFiles)
         }
     }
 
     await Promise.all(
         Array.from(
-            { length: Math.min(5, queue.length) },
-            () => worker()
-        )
+            {
+                length: Math.min(5, queue.length), 
+            },
+            () => worker(),
+        ),
     )
 
     isProcessing = false
@@ -279,7 +287,7 @@ const uploadFiles = async (files) => {
 // Dropzone
 const { isOverDropZone } = useDropZone(dropElement, {
     multiple: true,
-    onDrop: uploadFiles
+    onDrop: uploadFiles,
 })
 
 watch(isOverDropZone, () => emit('is-over-dropzone', isOverDropZone.value))

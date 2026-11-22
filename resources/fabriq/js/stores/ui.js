@@ -1,29 +1,29 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useUiStore = defineStore('ui', () => {
-    const menuOpen = ref(false);
-    const openCards = ref([]);
+    const menuOpen = ref(false)
+    const openCards = ref([])
 
     function toggleMenu () {
-        menuOpen.value = !menuOpen.value;
+        menuOpen.value = !menuOpen.value
     }
 
     function openMenu () {
-        menuOpen.value = true;
+        menuOpen.value = true
     }
 
     function closeMenu () {
-        menuOpen.value = false;
+        menuOpen.value = false
     }
 
     function toggleOpenCard (identifier) {
-        const index = openCards.value.indexOf(identifier);
+        const index = openCards.value.indexOf(identifier)
 
         if (index === -1) {
-            openCards.value.push(identifier);
+            openCards.value.push(identifier)
         } else {
-            openCards.value.splice(index, 1);
+            openCards.value.splice(index, 1)
         }
     }
 
@@ -33,6 +33,6 @@ export const useUiStore = defineStore('ui', () => {
         toggleMenu,
         openMenu,
         closeMenu,
-        toggleOpenCard
+        toggleOpenCard,
     }
-});
+})

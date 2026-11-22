@@ -125,10 +125,11 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import AuthenticatedUser from '@fabriq/models/AuthenticatedUser.js'
-import { useUserStore } from '@fabriq/stores';
+import { useUserStore } from '@fabriq/stores'
 
 export default {
     name: 'ProfileSettings',
@@ -137,90 +138,117 @@ export default {
     },
 
     setup () {
-        const userStore = useUserStore();
+        const userStore = useUserStore()
 
-        return { userStore }
+        return {
+            userStore, 
+        }
     },
 
     data () {
         return {
             localUser: {
                 image: {
-                    data: {}
-                }
+                    data: {
+                    },
+                },
             },
+
             passwordFields: {
                 password: '',
                 password_confirmation: '',
-                current_password: ''
+                current_password: '',
             },
+
             fileUploadRef: 'file-upload',
             imageUploadError: null,
-            isUploading: false
+            isUploading: false,
         }
     },
+
     computed: {
         user () {
-            return this.userStore.user;
+            return this.userStore.user
         },
+
         imageUrl () {
             return this.localUser.image.data.thumb_src
-        }
+        },
     },
+
     activated () {
         this.fetchUser()
     },
+
     methods: {
         handleImageUploadError (event) {
             this.isUploading = false
             this.imageUploadError = event.errors.image[0]
         },
+
         async fetchUser () {
             try {
-                const { data } = await AuthenticatedUser.index();
+                const { data } = await AuthenticatedUser.index()
 
-                this.localUser = data;
+                this.localUser = data
 
-                this.userStore.setUser(data);
+                this.userStore.setUser(data)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async sendVerificationRequest () {
             try {
                 await AuthenticatedUser.sendVerificationRequest()
-                toast.success({ title: 'E-postmeddelandet har skickats!', message: 'Följ instruktionerna i mailet' })
+                toast.success({
+                    title: 'E-postmeddelandet har skickats!',
+                    message: 'Följ instruktionerna i mailet', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         async updateUser () {
             try {
-                await AuthenticatedUser.update({ ...this.localUser, ...this.passwordFields })
+                await AuthenticatedUser.update({
+                    ...this.localUser,
+                    ...this.passwordFields, 
+                })
                 this.fetchUser()
-                toast.success({ title: 'Ändringarna har sparats!' })
+                toast.success({
+                    title: 'Ändringarna har sparats!', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteUserImage () {
             await AuthenticatedUser.deleteImage()
             this.fetchUser().then(() => {
-                toast.success({ title: 'Profilbild borttagen' })
+                toast.success({
+                    title: 'Profilbild borttagen', 
+                })
             })
         },
+
         userImageSaved () {
             this.isUploading = false
             this.fetchUser().then(() => {
-                toast.success({ title: 'Profilbild uppdaterad' })
+                toast.success({
+                    title: 'Profilbild uppdaterad', 
+                })
             })
 
             this.$refs[this.fileUploadRef].UploadDropzone.removeAllFiles()
         },
+
         fileAdded () {
             this.isUploading = true
             this.imageUploadError = null
-        }
-    }
+        },
+    },
 }
 </script>

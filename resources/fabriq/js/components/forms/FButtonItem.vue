@@ -54,8 +54,8 @@
         </div>
 
         <ButtonModal
-            v-model="model"
             :id="modalId"
+            v-model="model"
             :arrow="arrow"
             :color="color"
         />
@@ -64,9 +64,18 @@
 
 <script>
 export const linkTypeOptions = [
-    { label: 'Intern', value: 'internal' },
-    { label: 'Extern', value: 'external' },
-    { label: 'Fil', value: 'file'}
+    {
+        label: 'Intern',
+        value: 'internal', 
+    },
+    {
+        label: 'Extern',
+        value: 'external', 
+    },
+    {
+        label: 'Fil',
+        value: 'file', 
+    },
 ]
 </script>
 
@@ -83,51 +92,54 @@ import { onMounted, ref, computed } from 'vue'
 
 const vfm = useVfm()
 
-defineOptions({name: 'FButtonItem'})
+defineOptions({
+    name: 'FButtonItem', 
+})
 
 const model = defineModel({
     type: Object,
-    default: () => new Button()
+    default: () => new Button(),
 })
 
 const props = defineProps({
     pages: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     disabled: {
         type: Boolean,
-        default: false
+        default: false,
     },
     color: {
         type: Boolean,
-        default: false
+        default: false,
     },
     arrow: {
         type: Boolean,
-        default: false
+        default: false,
     },
     columnLayout: {
         type: Boolean,
-        default: false
+        default: false,
     },
     placeholder: {
         type: String,
-        default: ''
+        default: '',
     },
     canDelete: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
-const modalId = ref(`button-modal-${Math.random().toString(20).substring(2,6)}`)
+const modalId = ref(`button-modal-${Math.random().toString(20).substring(2, 6)}`)
 const localPages = ref(props.pages)
 const colors = ref(pallette['buttonColors'])
 const arrows = ref(buttonArrows)
 
 const buttonType = computed(() => {
     if(!model.value) return ''
+
     return linkTypeOptions.find(opt => opt.value === model.value.linkType)?.label ?? ''
 })
 const buttonTarget = computed(() => {
@@ -141,10 +153,12 @@ const buttonTarget = computed(() => {
 })
 const buttonColor = computed(() => {
     if(!model.value || !colors.value || model.value.linkType === 'file') return ''
+
     return colors.value.find(color => color.value === model.value.color)?.color ?? ''
 })
 const buttonArrow = computed(() => {
     if(!model.value || !arrows.value) return
+
     return arrows.value.find(arrow => arrow.value === model.value.arrow)
 })
 
@@ -160,10 +174,11 @@ async function fetchPages () {
             params: {
                 // field: 'id,name',
                 append: 'paths',
-                selectOptions: true
-            }
+                selectOptions: true,
+            },
         }
         const { data } = await PageTree.index(payload)
+
         localPages.value = data
     } catch (error) {
         console.error(error)

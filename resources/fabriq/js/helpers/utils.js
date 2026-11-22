@@ -6,12 +6,13 @@ export function cn(...inputs) {
     return twMerge(clsx(inputs))
 }
 
-export function createModal(component, props = {}) {
+export function createModal(component, props = {
+}) {
     const modal = useModal({
         component,
         attrs: {
             ...props,
-            onCloseModal: () => modal.close()
+            onCloseModal: () => modal.close(),
         },
     })
 

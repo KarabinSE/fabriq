@@ -39,13 +39,14 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'HomeIndex',
     data () {
         return {
-            message: 'Some charts here perhaps 📈'
+            message: 'Some charts here perhaps 📈',
         }
-    }
+    },
 }
 </script>

@@ -39,47 +39,55 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'UiSectionHeader',
     data () {
         return {
             observer: null,
-            showFixedTools: false
+            showFixedTools: false,
         }
     },
+
     computed: {
         hasItemSlot () {
             return !!this.$slots.item
         },
+
         hasToolsSlot () {
             return !!this.$slots.tools
-        }
+        },
     },
+
     mounted () {
         this.observer.observe(this.$refs.container)
     },
+
     created () {
         this.observer = new IntersectionObserver(
             this.onElementObserved,
             {
                 root: this.$refs.container,
-                threshold: 1.0
-            }
+                threshold: 1.0,
+            },
         )
     },
+
     unmounted () {
         this.observer.disconnect()
     },
+
     methods: {
         onElementObserved (entries) {
             entries.forEach(({ target, isIntersecting }) => {
                 this.showFixedTools = !isIntersecting
             })
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 .div-b {
   text-overflow: ellipsis;

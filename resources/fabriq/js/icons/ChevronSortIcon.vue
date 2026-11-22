@@ -16,8 +16,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'ChevronSortIcon'
+    name: 'ChevronSortIcon',
 }
 </script>

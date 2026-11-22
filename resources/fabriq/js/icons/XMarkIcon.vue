@@ -37,22 +37,25 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
     name: 'XMarkIcon',
     props: {
         thin: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         regular: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         solid: {
             type: Boolean,
-            default: false
-        }
-    }
+            default: false,
+        },
+    },
 }
 </script>

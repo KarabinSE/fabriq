@@ -37,6 +37,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import UiSidebar from '@fabriq/components/ui/UiSidebar.vue'
 import UiTopbar from '@fabriq/components/ui/UiTopbar.vue'
@@ -56,95 +57,112 @@ export default {
         UiTopbar,
         CommentSection,
         ModalsContainer,
-        ToastArea
+        ToastArea,
     },
-    setup () {
-        const userStore = useUserStore();
-        const eventBus = useEventBus()
-        const configStore = useConfigStore();
 
-        return { userStore, configStore, eventBus }
+    setup () {
+        const userStore = useUserStore()
+        const eventBus = useEventBus()
+        const configStore = useConfigStore()
+
+        return {
+            userStore,
+            configStore,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             pollingNotifications: null,
             countdown: 0,
-            cancelReload: false
+            cancelReload: false,
         }
     },
+
     computed: {
         user () {
-            return this.userStore.user;
+            return this.userStore.user
         },
+
         userRoles () {
-            return this.userStore.roles;
+            return this.userStore.roles
         },
+
         activeLocale: {
             get () {
-                return this.configStore.activeLocale;
+                return this.configStore.activeLocale
             },
+
             set (value) {
-                this.configStore.setActiveLocale(value);
+                this.configStore.setActiveLocale(value)
             },
         },
     },
+
     async created () {
         this.activeLocale = 'sv'
-        await this.userStore.index();
-        this.configStore.index();
-        this.userStore.fetchNotifications();
+        await this.userStore.index()
+        this.configStore.index()
+        this.userStore.fetchNotifications()
         this.startPoll()
     },
+
     methods: {
         startPoll () {
             if(this.$echo) {
                 // Listen to private user events
 
-                this.listenToEchoEvents();
+                this.listenToEchoEvents()
+
                 return
             }
+
             this.pollingNotifications = setInterval(() => {
-                this.userStore.fetchNotifications();
+                this.userStore.fetchNotifications()
             }, 1000 * 120)
         },
+
         listenToEchoEvents() {
             const wsPrefix = window.fabriqCms.pusher.ws_prefix
+
             this.$echo.channel(`${wsPrefix}.comments`)
-                .listen(`.comment.posted`, (event) => {
+                .listen('.comment.posted', (event) => {
                     if (this.userStore.user.id !== event.comment.user_id) {
                         this.eventBus.emit('comment-posted-echo', event)
                     }
                 })
-                .listen(`.comment.deleted`, (event) => {
+                .listen('.comment.deleted', (event) => {
                     if (this.userStore.user.id !== event.comment.user_id) {
                         this.eventBus.emit('comment-posted-echo', event)
                     }
                 })
 
             this.$echo.private(`${wsPrefix}.user.${this.userStore.user.id}`)
-                .listen(`.comment.user-mentioned`, (event) => {
+                .listen('.comment.user-mentioned', (event) => {
                     this.eventBus.emit('user-mentioned-echo', event)
-                    this.userStore.fetchNotifications();
+                    this.userStore.fetchNotifications()
                 })
-                .listen(`.notification.deleted`, (event) => {
+                .listen('.notification.deleted', (event) => {
                     this.eventBus.emit('user-mentioned-echo', event)
-                    this.userStore.fetchNotifications();
+                    this.userStore.fetchNotifications()
                 })
                 .notification((notification) => {
                     // broadcast.ask-to-leave
                     if(notification.type === 'broadcast.ask-to-leave') {
                         this.eventBus.emit('user-asked-to-leave-echo', notification)
                     }
+
                     if(notification.type === 'broadcast.leave-declined') {
                         this.eventBus.emit('user-declined-to-leave-echo', notification)
                     }
                 })
             this.$echo.channel(`${wsPrefix}.media`)
-                .listen(`.media-finished-processing`, (event) => {
+                .listen('.media-finished-processing', (event) => {
                     console.log(event)
                     this.eventBus.emit('media-finished-processing', event)
                 })
-        }
-    }
+        },
+    },
 }
 </script>

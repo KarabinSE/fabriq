@@ -12,6 +12,7 @@ const eventBus = {
             emitter.off(eventName, wrappedHandler)
             handler(payload)
         }
+
         emitter.on(eventName, wrappedHandler)
     },
 }
@@ -21,15 +22,17 @@ const eventBusPlugin = {
         app.config.globalProperties.$eventBus = eventBus
 
         app.provide('eventBus', eventBus)
-    }
+    },
 }
 
 export function useEventBus() {
     if(!hasInjectionContext()) {
-        throw new Error("Must be called within setup");
+        throw new Error('Must be called within setup')
 
     }
-    return inject('eventBus', {})
+
+    return inject('eventBus', {
+    })
 }
 
 

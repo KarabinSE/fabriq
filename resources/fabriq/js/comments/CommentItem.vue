@@ -105,10 +105,11 @@
         </div>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Comment from '@fabriq/models/Comment.js'
-import { useUserStore } from '@fabriq/stores';
+import { useUserStore } from '@fabriq/stores'
 import * as formatters from '@fabriq/utils/formatters'
 
 export default {
@@ -116,74 +117,91 @@ export default {
     props: {
         isLast: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         isChild: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         comment: {
             type: Object,
             required: true,
             default: () => {
                 return {
                     user: {
-                        data: {}
+                        data: {
+                        },
                     },
+
                     children: {
-                        data: []
-                    }
+                        data: [],
+                    },
                 }
-            }
+            },
+        },
+    },
+
+    setup () {
+        const userStore = useUserStore()
+
+        return {
+            userStore, 
         }
     },
-    setup () {
-        const userStore = useUserStore();
 
-        return { userStore }
-    },
     data () {
         return {
             isDeleting: false,
             commentText: '',
-            replyHasFocus: false
+            replyHasFocus: false,
         }
     },
+
     computed: {
         isOwnedByUser () {
             return this.user.email === this.comment.user.email
         },
+
         user () {
-            return this.userStore.user;
-        }
+            return this.userStore.user
+        },
     },
+
     methods: {
         ...formatters,
         rollBackDelete () {
             this.isDeleting = false
         },
+
         onFocus () {
             this.replyHasFocus = true
             window.addEventListener('keydown', this.listenForMetaPlusEnter)
         },
+
         onBlur () {
             this.replyHasFocus = false
             window.removeEventListener('keydown', this.listenForMetaPlusEnter)
         },
+
         listenForMetaPlusEnter (event) {
             const vm = this
+
             if (!(event.keyCode === 13 && event.metaKey)) return
             vm.postComment()
         },
+
         async postComment () {
             try {
                 const payload = {
                     comment: this.commentText,
                     parent_id: this.comment.id,
                     params: {
-                        include: 'user,children,children.user'
-                    }
+                        include: 'user,children,children.user',
+                    },
                 }
+
                 await Comment.store('pages', this.$route.params.id, payload)
                 this.$emit('refresh-comments')
                 this.commentText = ''
@@ -191,20 +209,25 @@ export default {
                 console.error(error)
             }
         },
+
         async deleteComment () {
             if (!this.isDeleting) {
                 this.isDeleting = true
+
                 return
             }
+
             try {
                 await Comment.destroy(this.comment.id)
                 this.$emit('refresh-comments')
-                toast.success({ title: 'Kommentaren har raderats!' })
+                toast.success({
+                    title: 'Kommentaren har raderats!', 
+                })
             } catch (error) {
                 console.error(error)
                 this.isDeleting = false
             }
-        }
-    }
+        },
+    },
 }
 </script>

@@ -178,9 +178,11 @@ const props = defineProps({
         default: '',
     },
 })
+
 watchEffect(() =>{
     if(model.value === undefined) {
-        emit('update:model-value', props.mode === 'single' ? null : [], {} )
+        emit('update:model-value', props.mode === 'single' ? null : [], {
+        } )
     }
 })
 

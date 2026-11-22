@@ -92,7 +92,9 @@ import { computed } from 'vue'
 import { reactive } from 'vue'
 import { Button } from '@fabriq/models/Button'
 
-defineOptions({name: 'FButtonList'})
+defineOptions({
+    name: 'FButtonList', 
+})
 
 const buttons = defineModel({
     type: Array,
@@ -103,11 +105,12 @@ const emit = defineEmits(['update:model-value'])
 const props = defineProps({
     options: {
         type: Object,
-        default: () => ({})
+        default: () => ({
+        }),
     },
     maxItems: {
         type: Number,
-        default: null
+        default: null,
     },
     placeholder: {
         type: String,
@@ -120,7 +123,7 @@ const props = defineProps({
     arrow: {
         type: Boolean,
         default: false,
-    }
+    },
 })
 
 watchEffect(() => {
@@ -131,7 +134,7 @@ watchEffect(() => {
 
 const pages = ref([])
 const defaultOptions = reactive({
-    newTab: false
+    newTab: false,
 })
 
 const noButtons = computed(() => buttons.value.length === 0)
@@ -150,10 +153,11 @@ async function fetchPages () {
         const payload = {
             params: {
                 append: 'paths',
-                selectOptions: true
-            }
+                selectOptions: true,
+            },
         }
         const { data } = await PageTree.index(payload)
+
         pages.value = data
     } catch (error) {
         console.error(error)

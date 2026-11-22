@@ -61,53 +61,64 @@
         </template>
     </VueFinalModal>
 </template>
+
 <script>
 import { VueFinalModal } from 'vue-final-modal'
 
 export default {
     name: 'FConfirm',
+    components: {
+        VueFinalModal, 
+    },
+
     inheritAttrs: false,
-    components: { VueFinalModal },
     props: {
         name: {
             type: String,
             required: false,
             default: () => {
                 return Math.random().toString(20).substr(2, 6)
-            }
+            },
         },
+
         header: {
             type: String,
             default: 'Bekräfta ditt val',
-            required: false
+            required: false,
         },
+
         text: {
             type: String,
             default: '',
-            required: false
+            required: false,
         },
+
         htmlText: {
             type: String,
             default: '',
-            required: false
+            required: false,
         },
+
         dismissText: {
             type: String,
-            default: 'Avbryt'
+            default: 'Avbryt',
         },
+
         confirmText: {
             type: String,
-            default: 'Bekräfta'
+            default: 'Bekräfta',
         },
+
         onConfirm: {
             type: Function,
-            default: () => null
-        }
+            default: () => null,
+        },
     },
+
     methods: {
         focusDismiss () {
             this.$refs.dismissButton.focus()
-        }
-    }
+        },
+    },
 }
 </script>

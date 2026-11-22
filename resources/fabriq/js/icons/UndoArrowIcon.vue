@@ -13,6 +13,6 @@
 
 <script>
 export default {
-    name: 'UndoArrowIcon'
+    name: 'UndoArrowIcon',
 }
 </script>

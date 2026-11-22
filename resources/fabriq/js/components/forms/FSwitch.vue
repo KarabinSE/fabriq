@@ -71,72 +71,86 @@
         </HelpText>
     </div>
 </template>
+
 <script>
 export default {
     name: 'FSwitch',
-    emits: ['update:model-value'],
     props: {
         modelValue: {
             type: [Number, Boolean, String],
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
-            default: 'switch'
+            default: 'switch',
         },
+
         columnLayout: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         helpText: {
             type: String,
-            default: ''
+            default: '',
         },
+
         disabled: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
+
+    emits: ['update:model-value'],
     data () {
         return {
-            newValue: this.modelValue
+            newValue: this.modelValue,
         }
     },
+
     computed: {
         hasSlot () {
             return !!this.$slots.default
         },
+
         computedValue: {
             get () {
                 return this.newValue
             },
+
             set (value) {
                 this.newValue = value
                 this.$emit('update:model-value', value)
-            }
+            },
         },
+
         inputDisabled() {
             if(this.disabled) {
                 return true
             }
+
             return false
         },
     },
+
     watch: {
         /**
         * When v-model change, set internal value.
         */
         modelValue (value) {
             this.newValue = value
-        }
+        },
     },
+
     methods: {
         toggleSwitch () {
             if(this.inputDisabled) {
                 return
             }
+
             this.computedValue = !this.computedValue
-        }
-    }
+        },
+    },
 }
 </script>

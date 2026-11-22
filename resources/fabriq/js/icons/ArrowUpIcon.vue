@@ -13,8 +13,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'ArrowUpIcon'
+    name: 'ArrowUpIcon',
 }
 </script>

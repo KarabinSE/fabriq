@@ -55,9 +55,9 @@
                         ref="linkdropdown"
                         strategy="fixed"
                         placement="bottom-start"
-                        @click="getLinkUrl(editor.getAttributes('link'))"
                         :auto-hide="() => !pickerOpen"
                         :hide-triggers="(triggers) => pickerOpen ? [] : triggers"
+                        @click="getLinkUrl(editor.getAttributes('link'))"
                     >
                         <button
                             v-tooltip="'Infoga länk'"
@@ -73,8 +73,8 @@
                             <div class="w-72 flex flex-col gap-0.5 bg-white px-4 rounded-lg border border-gray-200 shadow-lg ">
                                 <FTabs
                                     :identifier="tabIdentifier"
-                                    @change="setLinkType"
                                     class="[&_li]:flex-1"
+                                    @change="setLinkType"
                                 >
                                     <FTab
                                         title="URL"
@@ -232,8 +232,8 @@
                     >
                         <div class="group flex items-center rounded-md overflow-hidden">
                             <button
-                                type="button"
                                 v-tooltip="alignmentLabel"
+                                type="button"
                                 class="menubar__button rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
                                 :class="editor.isActive({ textAlign: currentTextAlignment }) && 'is-active'"
                                 aria-label="Använd aktuell textjustering"
@@ -296,8 +296,8 @@
                     >
                         <div class="group flex items-center rounded-md overflow-hidden">
                             <button
-                                type="button"
                                 v-tooltip="listLabel"
+                                type="button"
                                 class="menubar__button rounded-none! group-hover:bg-royal-50 hover:bg-royal-100/60!"
                                 :class="(editor.isActive('bulletList') || editor.isActive('orderedList')) && 'is-active'"
                                 aria-label="Växla aktuell listtyp"
@@ -649,6 +649,7 @@
         </HelpText>
     </div>
 </template>
+
 <script>
 // import CustomIframe from '@fabriq/components/forms/extensions/CustomIframe.js'
 import { toast } from '@fabriq/components/toast/toast'
@@ -675,62 +676,62 @@ const CustomImage = Image.extend({
     addAttributes () {
         return {
             src: {
-                default: null
+                default: null,
             },
             alt: {
-                default: null
+                default: null,
             },
             title: {
-                default: null
+                default: null,
             },
             height: {
-                default: null
+                default: null,
             },
             width: {
-                default: null
+                default: null,
             },
             srcset: {
-                default: null
+                default: null,
             },
             onload: {
-                default: null
+                default: null,
             },
             sizes: {
-                default: null
-            }
+                default: null,
+            },
         }
-    }
+    },
 })
 
 const CustomLink = Link.extend({
     addAttributes () {
         return {
             href: {
-                default: ''
+                default: '',
             },
             src: {
-                default: null
+                default: null,
             },
             alt: {
-                default: null
+                default: null,
             },
             title: {
-                default: null
+                default: null,
             },
             target: {
-                default: '_self'
+                default: '_self',
             },
             'data-filename': {
-                default: 'hehe'
+                default: 'hehe',
             },
             'data-type': {
-                default: ''
+                default: '',
             },
             download: {
-                default: null
-            }
+                default: null,
+            },
         }
-    }
+    },
 })
 
 export default {
@@ -740,41 +741,51 @@ export default {
         Dropdown,
     },
 
-    setup() {
-        const eventBus = useEventBus()
-        return {eventBus}
-    },
-
     props: {
         label: {
             type: String,
-            default: 'Innehåll'
+            default: 'Innehåll',
         },
+
         modelValue: {
             type: [String, null],
-            default: ''
+            default: '',
         },
+
         sticky: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         alignmentControls: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
-            default: 'name'
+            default: 'name',
         },
+
         helpText: {
             type: String,
-            default: ''
+            default: '',
         },
+
         disabled: {
             type: Boolean,
-            default: false
+            default: false,
+        },
+    },
+
+    setup() {
+        const eventBus = useEventBus()
+
+        return {
+            eventBus, 
         }
     },
+
     data () {
         return {
             editor: null,
@@ -788,45 +799,58 @@ export default {
             pickerType: 'image',
             attachedFileName: '',
             linkType: 'link',
-            tabIdentifier: Math.random().toString(20).substr(2, 6)
+            tabIdentifier: Math.random().toString(20).substr(2, 6),
         }
     },
+
     computed: {
         inputDisabled() {
             return this.disabled
         },
+
         currentHeadingLevel() {
-            return [1, 2, 3, 4].find(level => this.editor?.isActive('heading', { level })) ?? null
+            return [1, 2, 3, 4].find(level => this.editor?.isActive('heading', {
+                level, 
+            })) ?? null
         },
+
         headingLabel() {
             return this.currentHeadingLevel ? `Rubrik ${this.currentHeadingLevel}` : 'Normal'
         },
+
         currentTextAlignment() {
-            return ['left', 'center', 'right', 'justify'].find(alignment => this.editor?.isActive({ textAlign: alignment })) ?? 'left'
+            return ['left', 'center', 'right', 'justify'].find(alignment => this.editor?.isActive({
+                textAlign: alignment, 
+            })) ?? 'left'
         },
+
         alignmentLabel() {
             return {
                 left: 'Vänsterställ text',
                 center: 'Centrera text',
                 right: 'Högerställ text',
-                justify: 'Justera text'
+                justify: 'Justera text',
             }[this.currentTextAlignment]
         },
+
         alignmentIcon() {
             return {
                 left: 'AlignLeftIcon',
                 center: 'AlignCenterIcon',
                 right: 'AlignRightIcon',
-                justify: 'AlignJustifyIcon'
+                justify: 'AlignJustifyIcon',
             }[this.currentTextAlignment]
         },
+
         listIcon() {
             return this.editor?.isActive('orderedList') ? 'OlListIcon' : 'UlListIcon'
         },
+
         listLabel() {
             return this.editor?.isActive('orderedList') ? 'Numrerad lista' : 'Punktlista'
         },
     },
+
     watch: {
         modelValue(value) {
             // HTML
@@ -848,20 +872,21 @@ export default {
                 StarterKit,
                 Underline,
                 Table.configure({
-                    resizable: true
+                    resizable: true,
                 }),
                 TableRow,
                 TableHeader,
                 TableCell,
                 CustomLink,
                 TextAlign.configure({
-                    types: ['paragraph', 'heading']
+                    types: ['paragraph', 'heading'],
                 }),
                 Typography,
                 CustomImage,
                 // CustomIframe
 
             ],
+
             onUpdate: () => {
                 // HTML
                 this.$emit('update:model-value', this.editor.getHTML())
@@ -872,58 +897,76 @@ export default {
         })
         this.editor.commands.setContent(this.modelValue)
     },
+
     unmounted () {
         setTimeout(() => {
             this.editor.destroy()
-        }, 1000);
+        }, 1000)
     },
+
     methods: {
         toggleCurrentHeading() {
             if (this.currentHeadingLevel) {
                 this.editor.chain().focus().setParagraph().run()
+
                 return
             }
+
             this.$refs.headingDropdown.show()
         },
+
         setHeadingLevel(level) {
             if (this.currentHeadingLevel === level) {
                 return
             }
-            this.editor.chain().focus().toggleHeading({ level }).run()
+
+            this.editor.chain().focus().toggleHeading({
+                level, 
+            }).run()
         },
+
         toggleCurrentList() {
             if (this.editor.isActive('orderedList')) {
                 this.editor.chain().focus().toggleOrderedList().run()
+
                 return
             }
+
             this.editor.chain().focus().toggleBulletList().run()
         },
+
         startEditing() {
             if(this.inputDisabled) {
                 return
             }
+
             this.isEditing = true
             this.$nextTick( () => {
                 this.editor.commands.focus('end')
             })
         },
+
         setLinkType (type) {
             this.linkType = type
         },
+
         getLinkUrl (attributes) {
             this.linkUrl = attributes.href
+
             if(attributes.target === null) {
                 attributes.target  = '_self'
             }
+
             this.linkOpenNewTab = (attributes.target) !== '_self'
             this.linkType = attributes.download ? 'file' : 'link'
             this.attachedFileName = attributes['data-filename']
             this.linkMenuIsActive = true
             this.eventBus.emit('set-active-tab', {
                 identifier: this.tabIdentifier,
-                index: this.linkType === 'link' ? 0 : 1
+                index: this.linkType === 'link' ? 0 : 1,
             })
         },
+
         updateLink (remove = false) {
             if (remove) {
                 this.linkUrl = null
@@ -935,59 +978,74 @@ export default {
                     target: this.linkOpenNewTab ? '_blank' : null,
                     'data-filename': null,
                     'data-type': null,
-                    download: null
+                    download: null,
                 }
+
                 this.editor.chain().focus().setLink(linkObject).run()
             }
+
             this.$refs.linkdropdown.close()
         },
+
         hideLinkMenu () {
             this.linkUrl = null
             this.linkMenuIsActive = false
         },
+
         showMediaPicker() {
             this.pickerOpen = true
             createModal(FMediaPicker, {
                 mediaType: this.pickerType,
                 onItemPicked: this.pickItem,
-                onClosed: () => setTimeout(() => this.pickerOpen = false, 50)
+                onClosed: () => setTimeout(() => this.pickerOpen = false, 50),
             })
         },
+
         addImage () {
             this.pickerType = 'image'
             this.showMediaPicker()
         },
+
         addFile () {
             this.pickerType = 'file'
             this.showMediaPicker()
         },
+
         pickItem (itemId) {
             this.pickerType === 'image' ? this.pickImage(itemId) : this.pickFile(itemId)
         },
+
         async pickFile (fileId) {
-            const { data } = await FileAPI.show(fileId, {})
+            const { data } = await FileAPI.show(fileId, {
+            })
             const fileObject = {
                 href: data.src,
                 target: this.linkOpenNewTab ? '_blank' : '_self',
                 'data-filename': data.file_name,
                 'data-type': data.mime_type,
-                download: data.file_name
+                download: data.file_name,
             }
+
             this.editor.chain().focus().setLink(fileObject).run()
-            toast.success({ title: 'Filen har blivit länkad' })
+            toast.success({
+                title: 'Filen har blivit länkad', 
+            })
             this.pickerOpen = false
         },
+
         async pickImage (imageId) {
             try {
-                const { data } = await ImageAPI.srcSet(imageId, {})
+                const { data } = await ImageAPI.srcSet(imageId, {
+                })
                 const imageObject = {
                     src: data.src,
                     height: data.height,
                     width: data.width,
                     onload: data.onload,
                     srcset: data.srcset ?? null,
-                    alt: data.alt_text
+                    alt: data.alt_text,
                 }
+
                 console.log(imageObject)
                 this.editor.chain().focus().setImage(imageObject).run()
                 this.pickerOpen = false
@@ -999,13 +1057,18 @@ export default {
             //     this.editor.chain().focus().setImage({ src: url }).run()
             // }
         },
+
         addIframe () {
             const embedString = this.embedCode
 
             if (!embedString.includes('iframe')) {
                 this.$refs.iframedropdown.close()
-                toast.warning({ title: 'Pst!', message: 'Det verkar inte vara ett iframe-element som du klistrar in' })
+                toast.warning({
+                    title: 'Pst!',
+                    message: 'Det verkar inte vara ett iframe-element som du klistrar in', 
+                })
                 this.embedCode = ''
+
                 return
             }
 
@@ -1024,7 +1087,7 @@ export default {
                 height: iframeElement.getAttribute('height'),
                 allow: iframeElement.getAttribute('allow'),
                 embedContainerClasses: classes,
-                class: ''
+                class: '',
             }
             const iframeObject = {
                 src: data.src,
@@ -1032,14 +1095,15 @@ export default {
                 width: data.width,
                 class: data.class,
                 allow: data.allow,
-                embedContainerClasses: classes
+                embedContainerClasses: classes,
             }
+
             this.editor.chain().focus().setIframe(iframeObject).run()
             this.$refs.iframedropdown.close()
             this.embedCode = ''
-        }
+        },
 
-    }
+    },
 }
 </script>
 

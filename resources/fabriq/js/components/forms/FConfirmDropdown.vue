@@ -42,45 +42,53 @@
         <slot />
     </UiDropdown>
 </template>
+
 <script>
 export default {
     name: 'FConfirmDropdown',
     props: {
         dismissText: {
             type: String,
-            default: 'Nej'
+            default: 'Nej',
         },
+
         confirmText: {
             type: String,
-            default: 'Ja'
+            default: 'Ja',
         },
+
         confirmQuestion: {
             type: String,
-            default: 'Vill du ta bort?'
+            default: 'Vill du ta bort?',
         },
+
         alignment: {
             type: String,
-            default: 'top-right'
+            default: 'top-right',
         },
+
         disabled: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
+
     methods: {
         focusDismiss () {
             setTimeout(() => {
                 this.$refs.dismiss.focus()
             }, 150)
         },
+
         dismiss () {
             this.$refs.dropdown.close()
             this.$emit('dismissed')
         },
+
         confirm () {
             this.$refs.dropdown.close()
             this.$emit('confirmed')
-        }
-    }
+        },
+    },
 }
 </script>

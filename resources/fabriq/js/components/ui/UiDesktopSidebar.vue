@@ -97,66 +97,81 @@
         </div>
     </div>
 </template>
+
 <script>
 import UiLogo from '@fabriq/components/Logo.vue'
 import LogoutForm from '@fabriq/components/LogoutForm.vue'
 import { toast } from '@fabriq/components/toast/toast'
 import Developer from '@fabriq/models/Developer.js'
-import { useConfigStore, useUserStore, useRouteHistoryStore, useMenuStore } from '@fabriq/stores';
+import { useConfigStore, useUserStore, useRouteHistoryStore, useMenuStore } from '@fabriq/stores'
 
 export default {
     name: 'UiDesktopSidebar',
-    components: { UiLogo, LogoutForm },
+    components: {
+        UiLogo,
+        LogoutForm, 
+    },
+
     setup() {
-        const configStore = useConfigStore();
+        const configStore = useConfigStore()
 
-        const userStore = useUserStore();
+        const userStore = useUserStore()
 
-        const menuStore = useMenuStore();
+        const menuStore = useMenuStore()
 
-        const routeHistoryStore = useRouteHistoryStore();
+        const routeHistoryStore = useRouteHistoryStore()
 
         return {
             configStore,
             userStore,
             menuStore,
-            routeHistoryStore
+            routeHistoryStore,
         }
     },
+
     computed: {
         devMode: {
             get () {
-                return this.configStore.devMode;
+                return this.configStore.devMode
             },
+
             set (value) {
-                this.configStore.setDevMode(value);
-            }
+                this.configStore.setDevMode(value)
+            },
         },
+
         isDev () {
-            return this.userStore.isDev;
+            return this.userStore.isDev
         },
+
         lastRoute () {
-            return this.routeHistoryStore.lastRoute;
+            return this.routeHistoryStore.lastRoute
         },
+
         menuItems () {
-            return this.menuStore.fullMenuItems;
+            return this.menuStore.fullMenuItems
         },
+
         user () {
-            return this.userStore.user;
+            return this.userStore.user
         },
+
         notifications () {
             return this.userStore.notifications
-        }
+        },
     },
+
     methods: {
         async bustCache () {
             try {
                 await Developer.bustCache()
-                toast.success({ title: 'Cache was nuked successfully! 😵' })
+                toast.success({
+                    title: 'Cache was nuked successfully! 😵', 
+                })
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

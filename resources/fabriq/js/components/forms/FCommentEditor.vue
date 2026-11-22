@@ -11,6 +11,7 @@
         </HelpText>
     </div>
 </template>
+
 <script>
 // import tippy from 'tippy.js'
 // import 'tippy.js/themes/light-border.css'
@@ -38,66 +39,86 @@ import { useEventBus } from '@fabriq/services/eventBus'
 export default {
     name: 'FCommentEditor',
     components: {
-        EditorContent
+        EditorContent,
     },
-    emits: ['update:model-value'],
+
     props: {
         label: {
             type: String,
-            default: 'Innehåll'
+            default: 'Innehåll',
         },
+
         modelValue: {
             type: [String, null],
-            default: ' '
+            default: ' ',
         },
+
         sticky: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         alignmentControls: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
-            default: 'name'
+            default: 'name',
         },
+
         placeholder: {
             type: String,
-            default: ''
+            default: '',
         },
+
         helpText: {
             type: String,
-            default: ''
+            default: '',
         },
+
         rows: {
             type: Number,
-            default: 3
-        }
+            default: 3,
+        },
     },
+
+    emits: ['update:model-value'],
+
     setup() {
         const eventBus = useEventBus()
-        const userStore = useUserStore();
+        const userStore = useUserStore()
 
-        return { userStore, eventBus }
+        return {
+            userStore,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             editor: null,
             isEditing: true,
-            pop: ''
+            pop: '',
         }
     },
+
     computed: {
         users () {
-            return this.userStore.users;
+            return this.userStore.users
         },
+
         userNames () {
             return this.users.map(item => {
-                return { name: item.name, email: item.email }
+                return {
+                    name: item.name,
+                    email: item.email, 
+                }
             })
-        }
+        },
     },
+
     watch: {
         modelValue (value) {
             const isSame = this.editor.getHTML() === value
@@ -107,32 +128,37 @@ export default {
             }
 
             this.editor.commands.setContent(value, false)
-        }
+        },
     },
+
     mounted () {
         this.eventBus.on('comment-posted', this.clearContent)
         setTimeout(() => {
             this.initEditor()
         }, 100)
     },
+
     unmounted () {
         this.eventBus.off('comment-posted', this.clearContent)
         this.editor.destroy()
     },
+
     methods: {
 
         clearContent () {
             this.editor.commands.clearContent(true)
         },
+
         initEditor () {
             this.editor = new Editor({
                 editorProps: {
                     handleDOMEvents: {
                         keydown: (view, event) => {
                             return event.keyCode === 13 && event.metaKey
-                        }
-                    }
+                        },
+                    },
                 },
+
                 content: this.value,
                 onUpdate: () => {
                     // HTML
@@ -141,10 +167,11 @@ export default {
                     // JSON
                     // this.$emit('update:modelValue', this.editor.getJSON())
                 },
+
                 extensions: [
                     StarterKit,
                     Placeholder.configure({
-                        placeholder: this.placeholder
+                        placeholder: this.placeholder,
                     }),
 
                     // CustomMention.configure({
@@ -201,7 +228,7 @@ export default {
                     //         }
                     //     }
                     // })
-                ]
+                ],
             })
             // this.editor.on('update', () => {
             //     this.$emit('input', this.editor.getHTML())
@@ -214,10 +241,11 @@ export default {
                 this.$emit('blur', event)
             })
             // this.editor.commands.setContent(this.value)
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 @reference 'tailwindcss';
 

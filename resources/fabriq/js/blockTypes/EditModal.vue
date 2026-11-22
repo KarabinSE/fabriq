@@ -41,28 +41,33 @@
         </form>
     </FModal>
 </template>
+
 <script>
 export default {
     name: 'CreateModal',
     props: {
         show: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
-            required: true
+            required: true,
         },
+
         width: {
             type: String,
-            default: 'max-w-xl'
-        }
+            default: 'max-w-xl',
+        },
     },
+
     data () {
         return {
-            showModal: false
+            showModal: false,
         }
     },
+
     methods: {
         resetCreateModal () {
             this.$emit('closed')
@@ -70,16 +75,19 @@ export default {
                 this.$refs.observer?.reset()
             }, 200)
         },
+
         async validateForm () {
             // TODO: Implement new validation in Vue 3
             this.$emit('validated')
         },
+
         emitOpened () {
             this.$emit('opened')
         },
+
         emitBeforeOpen () {
             this.$emit('before-open')
-        }
-    }
+        },
+    },
 }
 </script>

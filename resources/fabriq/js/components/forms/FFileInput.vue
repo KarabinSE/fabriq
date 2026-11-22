@@ -56,98 +56,131 @@ import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
 export default {
     name: 'FFileInput',
 
-    setup() {
-        const eventBus = useEventBus()
-        return {eventBus}
-    },
-
     props: {
         value: {
             type: [String, Number, Object, Array],
-            default: null
+            default: null,
         },
+
         label: {
             type: String,
-            default: ''
+            default: '',
         },
+
         modelId: {
             type: Number,
             required: false,
-            default: 0
+            default: 0,
         },
+
         fieldKey: {
             type: String,
             required: false,
-            default: ''
+            default: '',
         },
+
         multiple: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         modelName: {
             type: String,
-            default: ''
+            default: '',
         },
+
         buttonText: {
             type: String,
-            default: ''
+            default: '',
         },
+
         group: {
             type: String,
-            default: ''
+            default: '',
         },
+
         syncSimilar: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
             default: '',
         },
+
         validationMode: {
             type: String,
             default: 'eager',
         },
+
         rules: {
             type: String,
             default: '',
         },
+
         absolutePosErrors: {
             type: Boolean,
             default: false,
         },
+
         hideErrors: {
             type: Boolean,
             default: false,
         },
 
     },
+
+    setup() {
+        const eventBus = useEventBus()
+
+        return {
+            eventBus, 
+        }
+    },
+
+    setup() {
+        const vfm = useVfm()
+
+        return {
+            vfm, 
+        }
+    },
+
     data () {
         return {
             pickerOpen: false,
             localFile: null,
-            isDraggingOver: false
+            isDraggingOver: false,
         }
     },
+
     computed: {
         randomRef () {
             return Math.random().toString(20).substr(2, 6)
         },
+
         randomButtonRef () {
             return Math.random().toString(20).substr(2, 6)
         },
+
         hasFile () {
             return this.localFile.id
         },
+
         hasRuleRequired () {
             return this.rules.includes('required')
         },
 
     },
+
     created () {
-        this.localFile = { ...this.value }
+        this.localFile = {
+            ...this.value, 
+        }
         this.$emit('input', this.localFile)
     },
+
     mounted () {
         // add the needed event listeners to the container
 
@@ -156,46 +189,50 @@ export default {
             this.eventBus.on('file-selected', this.setFile)
         }
     },
-    setup() {
-        const vfm = useVfm()
 
-        return {vfm}
-    },
     methods: {
         clearFile () {
             this.$emit('input', null)
-            this.localFile = {}
+            this.localFile = {
+            }
             this.isDraggingOver = false
             this.emitFileSelected()
         },
+
         pickFile (id) {
             if (!this.multiple) {
                 this.pickSingleFile(id)
             }
+
             if (this.multiple) {
                 this.pickMultipleFiles(id)
             }
+
             this.isDraggingOver = false
         },
+
         async pickMultipleFiles (id) {
             try {
                 const payload = {
-                    model_id: this.modelId
+                    model_id: this.modelId,
                 }
                 const { data } = await File.attachToModel(id, this.modelName, payload)
+
                 this.$emit('file-picked', data)
                 this.pickerOpen = false
             } catch (error) {
                 console.error(error)
             }
         },
+
         async pickSingleFile (id) {
             try {
                 const payload = {
                     key: this.fieldKey,
-                    model_id: this.modelId
+                    model_id: this.modelId,
                 }
                 const { data } = await File.show(id, payload)
+
                 this.localFile = data
                 this.$emit('input', data)
                 this.emitFileSelected()
@@ -204,15 +241,18 @@ export default {
                 console.error(error)
             }
         },
+
         async handleNewFile (item) {
             await this.pickFile(item.id)
         },
+
         setFile (payload) {
             if (this.group === payload.group && this.randomRef !== payload.randomRef) {
                 this.localFile = payload.data
                 this.$emit('input', payload.data)
             }
         },
+
         emitFileSelected () {
             // If a group is specified we want to sync the input with
             // all other inputs in the same group. Useful when having multiple
@@ -220,11 +260,14 @@ export default {
             if (this.group) {
                 this.eventBus.emit('file-selected', {
                     group: this.group,
-                    data: { ...this.localFile },
-                    randomRef: this.randomRef
+                    data: {
+                        ...this.localFile, 
+                    },
+                    randomRef: this.randomRef,
                 })
             }
         },
+
         convertErrorMessage (string) {
             if (string.includes('{field}')) {
                 return string.replace('{field}', this.label.toLowerCase())
@@ -232,6 +275,7 @@ export default {
 
             return string
         },
+
         showMediaPicker() {
             const modal = createModal(FMediaPicker, {
                 mediaType: 'file',
@@ -241,6 +285,6 @@ export default {
                 },
             })
         },
-    }
+    },
 }
 </script>

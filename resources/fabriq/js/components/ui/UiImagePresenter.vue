@@ -22,6 +22,7 @@
         class="bg-checkered-sm"
     >
 </template>
+
 <script>
 
 export default {
@@ -33,51 +34,61 @@ export default {
             default () {
                 return {
                     srcset: '',
-                    src: ''
+                    src: '',
                 }
-            }
+            },
         },
+
         imageClasses: {
             type: String,
-            default: ''
+            default: '',
         },
+
         thumbnail: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         disableCustomCrop: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
+
     computed: {
         imageSrc () {
             if (this.image.mime_type.includes('image/svg') && this.thumbnail) {
                 return this.image.src
             }
+
             return this.image.thumb_src
         },
+
         customCrop () {
             if (!this.image.custom_crop || this.disableCustomCrop) {
                 return ''
             }
 
             return {
-                objectPosition: `${this.image.x_position} ${this.image.y_position}`
+                objectPosition: `${this.image.x_position} ${this.image.y_position}`,
             }
-        }
+        },
     },
+
     mounted () {
         if (this.thumbnail) {
             return
         }
+
         const image = this.$refs.image
+
         window.requestAnimationFrame(() => {
             if (!(image.size = image.getBoundingClientRect().width)) return
             image.sizes = Math.ceil(image.size / window.innerWidth * 100) + 'vw'
         })
-    }
+    },
 }
 </script>
+
 <style>
 </style>

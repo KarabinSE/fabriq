@@ -1,18 +1,21 @@
 import axios from 'axios'
-import { route } from "@/generated/helpers/route"
+import { route } from '@/generated/helpers/route'
 import { useConfigStore } from '@fabriq/stores'
 
 export class Block {
     isBlock = true
     locale  = 'sv'
     hidden  = false
-    block_type = {}
+    block_type = {
+    }
 
     name  = ''
-    content =  {}
+    content =  {
+    }
     children = []
 
-    constructor(data = {}) {
+    constructor(data = {
+    }) {
         if(data.isBlock) {
             return data
         }
@@ -53,13 +56,19 @@ export class Block {
 
 export default {
     async index (pageId, payload) {
-        const { data } = await axios.get(route('pages.blocks.index', { id: pageId }), payload)
+        const { data } = await axios.get(route('pages.blocks.index', {
+            id: pageId, 
+        }), payload)
 
         return data
     },
     async put (pageId, blocks) {
-        const { data } = await axios.put(route('blocks.update', { id: pageId }), { blocks: blocks })
+        const { data } = await axios.put(route('blocks.update', {
+            id: pageId, 
+        }), {
+            blocks: blocks, 
+        })
 
         return data
-    }
+    },
 }

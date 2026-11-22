@@ -12,8 +12,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'DocumentTextIcon'
+    name: 'DocumentTextIcon',
 }
 </script>

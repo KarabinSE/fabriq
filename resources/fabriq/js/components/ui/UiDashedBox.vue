@@ -13,14 +13,15 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'UiDashedBox',
     props: {
         size: {
             type: String,
-            default: 'min-h-[150px]'
-        }
-    }
+            default: 'min-h-[150px]',
+        },
+    },
 }
 </script>

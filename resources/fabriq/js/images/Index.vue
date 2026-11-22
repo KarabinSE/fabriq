@@ -265,7 +265,10 @@ import { useEventBus } from '@fabriq/services/eventBus'
 import { createModal } from '@fabriq/helpers/utils'
 
 const eventBus = useEventBus()
-defineOptions({name: 'ImagesIndex'})
+
+defineOptions({
+    name: 'ImagesIndex', 
+})
 const vfm = useVfm()
 
 
@@ -280,7 +283,7 @@ const imageUrl = ref('')
 const columns = ref([
     {
         key: 'image',
-        title: ''
+        title: '',
         // tdClasses: 'w-36',
         // thClasses: 'w-36'
     },
@@ -289,46 +292,47 @@ const columns = ref([
         title: 'Namn',
         tdClasses: 'text-gray-600 font-medium w-24',
 
-        sortable: true
+        sortable: true,
     },
     {
         key: 'created_at',
         title: 'Uppladdad',
-        sortable: true
+        sortable: true,
     },
     {
         key: 'alt_text',
         title: 'Alt-text',
-        sortable: true
+        sortable: true,
     },
     {
         key: 'tags',
         title: 'Taggar',
-        sortable: true
+        sortable: true,
     },
     {
         key: 'size',
         title: 'Filstorlek',
-        sortable: true
+        sortable: true,
     },
     {
         key: 'dimensions',
         title: 'Storlek',
-        sortable: false
+        sortable: false,
     },
     {
         key: 'edit',
         title: '',
         tdClasses: 'text-right',
-        thClasses: 'text-right'
+        thClasses: 'text-right',
     }])
-const pagination = ref({})
+const pagination = ref({
+})
 const queryParams = ref({
     number: 15,
     page: 1,
     sort: '-created_at',
     include: 'tags',
-    'filter[search]': ''
+    'filter[search]': '',
 })
 const imageTags = ref([])
 const selectedTags = ref([])
@@ -348,113 +352,142 @@ const nameTags = computed(() => {
         return item.name
     })
 })
+
 function resetSearch () {
     search.value = ''
     queryParams.value['filter[search]'] = ''
     queryParams.value.page = 1
     fetchImages()
 }
+
 async function fetchImages () {
     try {
         const payload = {
-            params: queryParams.value
+            params: queryParams.value,
         }
         const { data, meta } = await Image.index(payload)
+
         images.value = data
         pagination.value = meta
     } catch (error) {
         console.error(error)
     }
 }
+
 async function deleteImage (id) {
     try {
         await Image.destroy(id)
+
         if (!suppressToast.value) {
-            toast.success({ title: 'Bilden har tagits bort' })
+            toast.success({
+                title: 'Bilden har tagits bort', 
+            })
             fetchImages()
         }
     } catch (error) {
         console.error(error)
     }
 }
+
 function setSort (sort) {
     queryParams.value.sort = sort
     fetchImages()
 }
+
 function performSearch () {
     queryParams.value.page = 1
     fetchImages()
 }
+
 function setPage (pageNumber) {
     queryParams.value.page = pageNumber
     fetchImages()
 }
+
 function openImageModal (item) {
     createModal(ImageModal, {
         id: item.id,
         onItemDeleted: fetchImages,
     })
 }
+
 function handleRowChecked (rows) {
     checkedRows.value = rows
 }
+
 async function deleteCheckedImages () {
     suppressToast.value = true
     const promises = []
+
     checkedRows.value.forEach(row => {
-        promises.push({ deleteFunction: deleteImage, id: row })
+        promises.push({
+            deleteFunction: deleteImage,
+            id: row, 
+        })
     })
     await Promise.all(
         promises.map(async promise => {
             await promise.deleteFunction(promise.id)
-        })
+        }),
     )
     suppressToast.value = false
     eventBus.emit('clear-checked-rows')
-    toast.success({ title: 'Bilderna har tagits bort' })
+    toast.success({
+        title: 'Bilderna har tagits bort', 
+    })
     fetchImages()
 }
+
 async function downloadCheckedItems () {
     try {
         const payload = {
             params: {
                 items: checkedRows.value,
-                type: 'images'
-            }
+                type: 'images',
+            },
         }
         const { data, headers } = await Download.index(payload)
+
         Download.handleBlobDownload(data, headers)
     } catch (error) {
         console.error(error)
     }
 }
+
 function showModal () {
     showTagsModal.value = true
 }
+
 async function addTagsToImages () {
     try {
         const payload = {
             models: checkedRows,
             tags: nameTags,
-            model_type: 'images'
+            model_type: 'images',
         }
+
         await Tag.store(payload)
-        toast.success({ title: 'Taggarna har lagts till!' })
+        toast.success({
+            title: 'Taggarna har lagts till!', 
+        })
         fetchImages()
         showTagsModal.value = false
     } catch (error) {
         console.error(error)
     }
 }
+
 async function fetchImageTags () {
     selectedTags.value = []
+
     try {
         const payload = {
             params: {
-                'filter[type]': 'images'
-            }
+                'filter[type]': 'images',
+            },
         }
         const { data } = await Tag.index(payload)
+
         imageTags.value = data
     } catch (error) {
         console.error(error)

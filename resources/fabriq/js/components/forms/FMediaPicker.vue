@@ -1,5 +1,6 @@
 <template>
     <VueFinalModal
+        v-slot="{close}"
         modal-id="media-picker-modal"
         :lock-scroll="false"
         :click-to-close="true"
@@ -15,7 +16,6 @@
         }"
         content-class="h-full pt-16 lg:pt-0 fixed right-0 w-[90vw] max-w-7xl"
         @before-open="fetchItems"
-        v-slot="{close}"
     >
         <div
             class="flex flex-col h-full py-6 overflow-y-scroll bg-white shadow-xl"
@@ -184,13 +184,16 @@ import AddImageFromUrlModal from '@fabriq/images/AddImageFromUrlModal.vue'
 import File from '@fabriq/models/File.js'
 import Image from '@fabriq/models/Image.js'
 import Video from '@fabriq/models/Video.js'
-import { formatFileSize, formatLocalTime} from '@fabriq/utils/formatters'
+import { formatFileSize, formatLocalTime } from '@fabriq/utils/formatters'
 import { ref, watch } from 'vue'
 import { useVfm, VueFinalModal } from 'vue-final-modal'
 
 const vfm = useVfm()
 const emit = defineEmits([ 'close', 'item-picked' ])
-defineOptions({name: 'FMediaPicker'})
+
+defineOptions({
+    name: 'FMediaPicker', 
+})
 const props = defineProps({
     mediaType: {
         type: String,
@@ -244,7 +247,8 @@ const columns = ref([
     },
 ])
 
-const pagination = ref({})
+const pagination = ref({
+})
 const queryParams = ref({
     number: 10,
     page: 1,

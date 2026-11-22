@@ -10,8 +10,8 @@ export default Node.create({
             allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
             width: '560',
             height: '315',
-            src: 'https://golfair.dk/player/kristiansstads-golfklubb/ostra/'
-        }
+            src: 'https://golfair.dk/player/kristiansstads-golfklubb/ostra/',
+        },
     },
 
     atom: true,
@@ -19,34 +19,37 @@ export default Node.create({
     selectable: false,
 
     parseHTML () {
-        return [{ tag: 'iframe[src]' }]
+        return [{
+            tag: 'iframe[src]', 
+        }]
     },
 
     renderHTML ({ HTMLAttributes }) {
         const videoClasses = HTMLAttributes.src.includes('youtube') ? 'aspect-video' : ''
+
         return [
             'div',
             {
-                class: 'embed-container ' + videoClasses
+                class: 'embed-container ' + videoClasses,
             },
-            ['iframe', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
+            ['iframe', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)],
         ]
     },
 
     addAttributes () {
         return {
             src: {
-                default: ''
+                default: '',
             },
             height: {
-                default: 'auto'
+                default: 'auto',
             },
             width: {
-                default: '100%'
+                default: '100%',
             },
             class: {
-                default: ''
-            }
+                default: '',
+            },
         }
     },
 
@@ -60,10 +63,11 @@ export default Node.create({
                 if (dispatch) {
                     tr.replaceSelectionWith(this.type.create(options)).scrollIntoView()
                 }
+
                 return true
-            }
+            },
         }
-    }
+    },
     // addInputRules () {
     //     return [
     //         nodeInputRule(inputRegex, this.type, match => {

@@ -15,10 +15,11 @@ const echo = {
             auth: {
                 withCredentials: true,
                 headers: {
-                    'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN')
-                }
-            }
+                    'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+                },
+            },
         })
-    }
+    },
 }
+
 Vue.use(echo)

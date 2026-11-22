@@ -178,6 +178,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import EditModal from '@fabriq/blockTypes/EditModal.vue'
 import FBlockTypeImageInput from '@fabriq/components/forms/FBlockTypeImageInput.vue'
@@ -193,6 +194,7 @@ function defaultCreationObject () {
         has_children: false,
     }
 }
+
 function defaultOptionsStructure () {
     return {
         recommended_for: [],
@@ -200,15 +202,30 @@ function defaultOptionsStructure () {
         visible_for: [],
     }
 }
+
 export default {
     name: 'BlockTypesIndex',
-    components: { EditModal, FBlockTypeImageInput },
+    components: {
+        EditModal,
+        FBlockTypeImageInput, 
+    },
+
+    setup() {
+        const vfm = useVfm()
+
+        return {
+            vfm, 
+        }
+    },
+
     data () {
         return {
             showEditModal: false,
             activeItem: {
-                options: {}
+                options: {
+                },
             },
+
             templates: [],
             blockTypes: [],
             queryParams: {
@@ -216,51 +233,51 @@ export default {
                 page: 1,
                 sort: 'name',
             },
+
             showCreate: false,
             newItem: {
                 name: '',
                 has_children: false,
             },
+
             tableOptions: {
                 defaultSort: 'name',
                 sortDescending: true,
                 clickableRows: true,
-                shadow: false
+                shadow: false,
             },
+
             columns: [
                 {
                     sortable: true,
                     title: 'Namn',
-                    key: 'name'
+                    key: 'name',
                 },
                 {
                     title: 'Skapad',
                     key: 'created_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: '',
                     key: 'edit',
                     tdClasses: 'text-right',
-                    thClasses: 'text-right'
-                }
+                    thClasses: 'text-right',
+                },
             ],
         }
     },
-    setup() {
-        const vfm = useVfm()
 
-        return {vfm}
-    },
     activated () {
         this.fetchItems()
     },
+
     methods: {
         ...formatters,
         async fetchItems () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await BlockType.index(payload)
 
@@ -269,6 +286,7 @@ export default {
                 console.error(error)
             }
         },
+
         async deleteItem (item) {
             try {
                 await BlockType.destroy(item.id)
@@ -277,13 +295,15 @@ export default {
                 console.error(error)
             }
         },
+
         async createItem () {
             try {
                 const { data } = await BlockType.store(this.newItem)
+
                 toast.success({
                     title: 'Blocktypen har skapats!',
                     buttonText: 'Redigera till objektet',
-                    onClick: () => this.handleRowClick(data)
+                    onClick: () => this.handleRowClick(data),
                 })
                 this.vfm.close('createBlockTypeModal')
                 this.resetCreateModal()
@@ -292,17 +312,21 @@ export default {
                 if (error.response.status === 422) {
                     this.$refs.observer?.validate()
                 }
+
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchItems()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchItems()
         },
+
         handleRowClick (item) {
             this.activeItem = null
             this.$nextTick(() => {
@@ -310,26 +334,36 @@ export default {
                 this.openEditModal()
             })
         },
+
         async openEditModal() {
-            this.activeItem.options = {...defaultOptionsStructure, ...this.activeItem.options}
+            this.activeItem.options = {
+                ...defaultOptionsStructure,
+                ...this.activeItem.options, 
+            }
             const payload = {
                 params: {
-                    'filter[type]': 'page'
-                }
+                    'filter[type]': 'page',
+                },
             }
             const { data } = await Template.index(payload)
+
             this.templates = data
             this.showEditModal = true
             this.vfm.open('blockTypeEditModal')
         },
+
         clearSearch () {
             this.queryParams['filter[search]'] = ''
             this.queryParams.page = 1
             this.fetchItems()
         },
+
         resetCreateModal () {
-            this.newItem = { ...defaultCreationObject() }
+            this.newItem = {
+                ...defaultCreationObject(), 
+            }
         },
+
         async updateBlockTypeImage() {
             const formData = new FormData()
 
@@ -351,6 +385,7 @@ export default {
                 console.error(error)
             }
         },
+
         async updateBlockTypeData() {
             try {
                 await BlockType.update(this.activeItem.id, {
@@ -361,13 +396,16 @@ export default {
                 console.error(error)
             }
         },
+
         async updateBlockType() {
             await this.updateBlockTypeImage()
             await this.updateBlockTypeData()
-            toast.success({title: 'Blocktypen har uppdaterats!'})
+            toast.success({
+                title: 'Blocktypen har uppdaterats!', 
+            })
             this.vfm.close('blockTypeEditModal')
             this.fetchItems()
-        }
-    }
+        },
+    },
 }
 </script>

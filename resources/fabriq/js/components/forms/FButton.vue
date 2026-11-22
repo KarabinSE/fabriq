@@ -24,8 +24,9 @@
         </span>
     </button>
 </template>
+
 <script>
-import { useRouteHistoryStore } from '@fabriq/stores';
+import { useRouteHistoryStore } from '@fabriq/stores'
 
 export default {
     name: 'FButton',
@@ -33,55 +34,68 @@ export default {
         click: {
             required: false,
             type: Function,
-            default: () => {}
+            default: () => {},
         },
+
         validate: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
+
         delay: {
             required: false,
             type: Number,
-            default: 500
+            default: 500,
         },
+
         arguments: {
             required: false,
             type: Array,
-            default: () => []
+            default: () => [],
         },
+
         textButton: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         withoutLoader: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         backButton: {
             type: [Boolean, String],
-            default: false
+            default: false,
         },
+
         spinnerColor: {
             type: String,
-            default: 'text-white'
+            default: 'text-white',
+        },
+    },
+
+    setup () {
+        const routeHistoryStore = useRouteHistoryStore()
+
+        return {
+            routeHistoryStore, 
         }
     },
-    setup () {
-        const routeHistoryStore = useRouteHistoryStore();
 
-        return { routeHistoryStore }
-    },
     data () {
         return {
-            loading: false
+            loading: false,
         }
     },
+
     computed: {
         lastRoute () {
-            return this.routeHistoryStore.lastRoute;
-        }
+            return this.routeHistoryStore.lastRoute
+        },
     },
+
     methods: {
         // /**
         //   * When the button is clicked we start the Ladda button then pass all the
@@ -96,11 +110,13 @@ export default {
 
             if (this.backButton) {
                 this.handleBackClick()
+
                 return
             }
 
             if (this.withoutLoader) {
                 this.click(...this.arguments)
+
                 return
             }
 
@@ -122,6 +138,7 @@ export default {
                     })
             })
         },
+
         stop () {
             const parameters = arguments
 
@@ -132,15 +149,19 @@ export default {
                 }, this.delay)
             })
         },
+
         handleBackClick () {
             const fallback = this.backButton
+
             if (!this.lastRoute) {
-                this.$router.push({ name: fallback })
+                this.$router.push({
+                    name: fallback, 
+                })
             } else {
                 this.$router.back()
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

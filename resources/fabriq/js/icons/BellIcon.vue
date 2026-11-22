@@ -15,6 +15,6 @@
 
 <script>
 export default {
-    name: 'BellIcon'
+    name: 'BellIcon',
 }
 </script>

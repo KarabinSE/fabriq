@@ -94,38 +94,43 @@
 </template>
 
 <script>
-import { useUiStore, useMenuStore } from '@fabriq/stores';
+import { useUiStore, useMenuStore } from '@fabriq/stores'
 
 export default {
     name: 'UiSidebar',
     setup() {
-        const uiStore = useUiStore();
+        const uiStore = useUiStore()
 
-        const menuStore = useMenuStore();
+        const menuStore = useMenuStore()
 
         return {
             uiStore,
-            menuStore
+            menuStore,
         }
     },
+
     computed: {
         menuOpen () {
-            return this.uiStore.menuOpen;
+            return this.uiStore.menuOpen
         },
+
         menuItems () {
-            return this.menuStore.fullMenuItems;
-        }
+            return this.menuStore.fullMenuItems
+        },
     },
+
     methods: {
         closeMenu () {
-            this.uiStore.closeMenu();
+            this.uiStore.closeMenu()
         },
+
         openMenu () {
-            this.uiStore.openMenu();
+            this.uiStore.openMenu()
         },
+
         toggleMenu () {
-            this.uiStore.toggleMenu();
-        }
-    }
+            this.uiStore.toggleMenu()
+        },
+    },
 }
 </script>

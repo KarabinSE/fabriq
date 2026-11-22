@@ -134,9 +134,10 @@
         </UiCard>
     </div>
 </template>
+
 <script>
-import { Draggable } from "@he-tree/vue";
-import "@he-tree/vue/style/default.css";
+import { Draggable } from '@he-tree/vue'
+import '@he-tree/vue/style/default.css'
 import Page from '@fabriq/models/Page.js'
 import PageTree from '@fabriq/models/PageTree.js'
 import Template from '@fabriq/models/Template.js'
@@ -147,166 +148,218 @@ import { toast } from '@fabriq/components/toast/toast'
 function defaultCreationObject () {
     return {
         name: '',
-        template: null
+        template: null,
     }
 }
+
 export default {
     name: 'PagesIndex',
-    components: { Draggable },
+    components: {
+        Draggable, 
+    },
 
     setup() {
         const vfm = useVfm()
 
-        return {vfm}
+        return {
+            vfm, 
+        }
     },
+
     data () {
         return {
             pages: [],
             pageTree: [],
-            pagination: {},
-            pageToClone: {},
+            pagination: {
+            },
+
+            pageToClone: {
+            },
+
             newPage: {
                 name: '',
-                template: null
+                template: null,
             },
+
             templates: [],
             queryParams: {
                 number: 10,
                 page: 1,
                 include: 'template',
                 'filter[search]': '',
-                sort: 'name'
+                sort: 'name',
             },
+
             tableOptions: {
                 clickableRows: false,
                 defaultSort: 'name',
                 sortDescending: false,
-                shadow: false
+                shadow: false,
             },
+
             columns: [
                 {
                     sortable: true,
                     title: 'ID',
                     key: 'id',
-                    tdClasses: 'w-20'
+                    tdClasses: 'w-20',
                 },
                 {
                     title: 'Namn',
                     key: 'name',
                     tdClasses: 'text-gray-900 font-medium',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Sidmall',
-                    key: 'template_name'
+                    key: 'template_name',
                 },
                 {
                     title: 'Uppdaterad',
                     key: 'updated_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: '',
                     key: 'edit',
-                    tdClasses: 'text-right '
-                }
+                    tdClasses: 'text-right ',
+                },
             ],
-            localizedContent: {}
+
+            localizedContent: {
+            },
         }
     },
+
     activated () {
         // this.fetchPages()
         this.fetchPageTree()
     },
+
     methods: {
         ...formatters,
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchPages()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchPages()
         },
+
         async fetchPageTree () {
             try {
                 const { data } = await PageTree.index()
+
                 this.pageTree = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchPages () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await Page.index(payload)
+
                 this.pages = data
                 this.pagination = meta
             } catch (error) {
                 console.log(error)
             }
         },
-        async clonePage(page, parameters = {}) {
+
+        async clonePage(page, parameters = {
+        }) {
             await this.fetchPage(page.id)
 
-            let localizedContent = {}
+            let localizedContent = {
+            }
+
             Object.keys(this.pageToClone.localizedContent.data).forEach((item) => {
-                localizedContent[item] = { ...this.pageToClone.localizedContent.data[item].content }
+                localizedContent[item] = {
+                    ...this.pageToClone.localizedContent.data[item].content, 
+                }
             })
             const payload = {
                 localizedContent: localizedContent,
             }
-            await Page.clone(page.id, {...payload, ...parameters})
-            toast.success({ title: 'Sidan har klonats!' })
+
+            await Page.clone(page.id, {
+                ...payload,
+                ...parameters, 
+            })
+            toast.success({
+                title: 'Sidan har klonats!', 
+            })
             this.fetchPageTree()
         },
+
         async fetchPage (id) {
             const payload = {
                 params: {
                     include: 'localizedContent',
                     locale: 'all',
-                    append: 'paths'
-                }
+                    append: 'paths',
+                },
             }
+
             try {
                 const { data } = await Page.show(id, payload)
+
                 this.pageToClone = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deletePage (page) {
             if (page.children.length > 0) {
-                toast.info({ title: 'Kunde inte radera sidan', message: 'Sidan har sidor under sig, radera eller flytta dessa först' })
+                toast.info({
+                    title: 'Kunde inte radera sidan',
+                    message: 'Sidan har sidor under sig, radera eller flytta dessa först', 
+                })
+
                 return false
             }
+
             try {
                 await Page.destroy(page.id)
-                toast.success({ title: 'Sidan har raderats ' })
+                toast.success({
+                    title: 'Sidan har raderats ', 
+                })
                 this.fetchPageTree()
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchTemplates () {
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'page'
-                    }
+                        'filter[type]': 'page',
+                    },
                 }
                 const { data } = await Template.index(payload)
+
                 this.templates = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async createPage () {
             try {
                 if(this.newPage.template.locked) {
-                    await this.clonePage({id: this.newPage.template.source_model_id}, {name: this.newPage.name})
+                    await this.clonePage({
+                        id: this.newPage.template.source_model_id, 
+                    }, {
+                        name: this.newPage.name, 
+                    })
                     this.vfm.close('createPageModal')
                     this.resetCreateModal()
 
@@ -319,8 +372,12 @@ export default {
                 toast.success({
                     title: 'Sidan har skapats!',
                     buttonText: 'Gå till sidan',
-                    onClick: () => this.$router.push({ name: 'pages.edit',
-                        params: { id: data.id } }),
+                    onClick: () => this.$router.push({
+                        name: 'pages.edit',
+                        params: {
+                            id: data.id, 
+                        }, 
+                    }),
                 })
                 this.vfm.close('createPageModal')
                 this.resetCreateModal()
@@ -333,6 +390,7 @@ export default {
                 }
             }
         },
+
         getSubItems (item, items = []) {
             if (item.children) {
                 item.children.forEach((index_, index) => {
@@ -345,8 +403,10 @@ export default {
 
             return items
         },
+
         async updateTree () {
             let items = []
+
             this.pageTree.forEach((item, index) => {
                 item.sortindex = index * 10
                 items.push(item)
@@ -355,26 +415,32 @@ export default {
 
             try {
                 const payload = {
-                    tree: this.pageTree
+                    tree: this.pageTree,
                 }
+
                 await PageTree.update(payload)
             } catch (error) {
                 console.error(error)
             }
         },
+
         clearSearch () {
             this.queryParams['filter[search]'] = ''
             this.queryParams.page = 1
             this.fetchPages()
         },
+
         resetCreateModal () {
             setTimeout(() => {
-                this.newPage = { ...defaultCreationObject() }
+                this.newPage = {
+                    ...defaultCreationObject(), 
+                }
             }, 200)
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 @reference 'tailwindcss';
  .tree-hline {

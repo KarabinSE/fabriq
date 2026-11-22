@@ -30,8 +30,8 @@
                 class="flex items-center"
             >
                 <input
-                    v-model="modelValue"
                     :id="id + radioOption.value"
+                    v-model="modelValue"
                     :name="id + name"
                     type="radio"
                     :checked="radioOption.value == modelValue"
@@ -57,9 +57,9 @@
         </div>
 
         <textarea
-            v-model="modelValue"
             v-else-if="type === 'textarea'"
             ref="textarea"
+            v-model="modelValue"
             :class="$attrs.class"
             :disabled="disabled"
             :name="name"
@@ -130,8 +130,8 @@ import { computed, onMounted, useSlots, watchEffect } from 'vue'
 import { useId } from 'vue'
 
 defineOptions({
-    name:'FInput',
-    inheritAttrs: false
+    name: 'FInput',
+    inheritAttrs: false,
 })
 
 const emits = defineEmits(['update:model-value'])

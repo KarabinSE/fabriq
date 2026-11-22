@@ -82,13 +82,14 @@ export default {
     props: {
         data: {
             type: Object,
-            default: () => ({})
-        }
+            default: () => ({
+            }),
+        },
     },
 
     data () {
         return {
-            itemLimit: 15
+            itemLimit: 15,
         }
     },
 
@@ -96,7 +97,7 @@ export default {
         breakdowns () {
             const toRows = (items, labelKey = 'name') => (items || []).map(item => ({
                 name: item[labelKey] ?? '—',
-                visits: item.visits ?? 0
+                visits: item.visits ?? 0,
             }))
 
             return [
@@ -104,32 +105,32 @@ export default {
                     title: 'Hänvisningar',
                     items: toRows(this.data.referers).map(item => ({
                         ...item,
-                        name: item.name || 'Direkt'
-                    }))
+                        name: item.name || 'Direkt',
+                    })),
                 },
                 {
                     title: 'Sökvägar',
-                    items: toRows(this.data.paths)
+                    items: toRows(this.data.paths),
                 },
                 {
                     title: 'Länder',
-                    items: toRows(this.data.countries, 'code')
+                    items: toRows(this.data.countries, 'code'),
                 },
                 {
                     title: 'Webbläsare',
-                    items: toRows(this.data.browsers)
+                    items: toRows(this.data.browsers),
                 },
                 {
                     title: 'Operativsystem',
-                    items: toRows(this.data.operatingSystems)
+                    items: toRows(this.data.operatingSystems),
                 },
                 {
                     title: 'Enhetstyper',
-                    items: toRows(this.data.devices)
-                }
+                    items: toRows(this.data.devices),
+                },
             ]
 
-        }
+        },
     },
 
     methods: {
@@ -141,7 +142,7 @@ export default {
             }
 
             return `${Math.min((item.visits / totalVisits) * 100, 100)}%`
-        }
-    }
+        },
+    },
 }
 </script>

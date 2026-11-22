@@ -10,8 +10,9 @@
         fill="currentColor"
     /></svg>
 </template>
+
 <script>
 export default {
-    name: 'RedoArrowIcon'
+    name: 'RedoArrowIcon',
 }
 </script>

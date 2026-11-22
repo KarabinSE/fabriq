@@ -126,10 +126,12 @@
 </template>
 
 <script setup>
-defineOptions({name: 'BlockTypeModal'})
+defineOptions({
+    name: 'BlockTypeModal', 
+})
 
 import Page from '@fabriq/models/BlockType.js'
-import { useConfigStore, usePageStore } from '@fabriq/stores';
+import { useConfigStore, usePageStore } from '@fabriq/stores'
 import { computed, watch, ref } from 'vue'
 
 const configStore = useConfigStore()
@@ -182,6 +184,7 @@ const computedBlockTypes = computed(() => {
         if (recommendedFor.includes(pageStore.page.template.data.slug)) {
             return false
         }
+
         return true
     })
 
@@ -190,6 +193,7 @@ const computedBlockTypes = computed(() => {
 const recommendedBlockTypes = computed(() => {
     return blockTypes.value.filter(item => {
         const recommendedFor = item.options?.recommended_for || []
+
         return recommendedFor.includes(pageStore.page.template.data.slug)
     })
 })
@@ -220,7 +224,7 @@ async function setBlockType () {
     // TODO: Implement new validation in Vue 3
     pageStore.blocks.add({
         ...chosenBlock.value.blockType,
-        name: chosenBlock.value.name
+        name: chosenBlock.value.name,
     })
 
     closeModal()

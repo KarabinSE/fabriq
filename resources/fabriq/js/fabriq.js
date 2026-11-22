@@ -2,9 +2,9 @@ import axiosSetup from '@fabriq/config/api.js'
 
 import 'vue-final-modal/style.css'
 import '@fabriq/../css/fabriq.css'
-import 'v-calendar/style.css';
+import 'v-calendar/style.css'
 
-import VCalendar from 'v-calendar';
+import VCalendar from 'v-calendar'
 import BlockTypes from '@fabriq/block-types/index.js'
 import commonComponents from '@fabriq/components/common-components.js'
 import clickOutside from '@fabriq/directives/click-outside'
@@ -22,7 +22,7 @@ import Notifications from 'notiwind'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 
 const fabriqPlugin = {
-    install(app, {customRoutes = []}) {
+    install(app, { customRoutes = [] }) {
         const pinia = createPinia()
         const router = createFabriqRouter(app, customRoutes)
         const vfm = createVfm()
@@ -43,9 +43,7 @@ const fabriqPlugin = {
             .use(autoAnimatePlugin)
             .directive('maska', vMaska)
             .directive('click-outside', clickOutside)
-    }
+    },
 }
 
-export {
-    fabriqPlugin,
-}
+export { fabriqPlugin }

@@ -21,30 +21,35 @@
         </slot>
     </form>
 </template>
+
 <script>
 import Cookies from 'js-cookie'
 import axios from 'axios'
-import { route } from '@/generated/helpers/route';
+import { route } from '@/generated/helpers/route'
+
 export default {
     name: 'LogoutForm',
     data () {
         return {
-            csrfToken: ''
+            csrfToken: '',
         }
     },
+
     mounted () {
         // this.csrfToken = window.fabriqCms.csrfToken
     },
+
     methods: {
         async logout () {
             const payload = {
                 headers: {
-                    'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN')
-                }
+                    'X-XSRF-TOKEN': Cookies.get('XSRF-TOKEN'),
+                },
             }
+
             await axios.post(route('logout'), payload)
             window.location.reload()
-        }
-    }
+        },
+    },
 }
 </script>

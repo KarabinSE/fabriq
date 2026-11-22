@@ -215,6 +215,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
@@ -238,8 +239,12 @@ export default {
         const vfm = useVfm()
         const eventBus = useEventBus()
 
-        return {vfm, eventBus}
+        return {
+            vfm,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             files: [],
@@ -252,18 +257,18 @@ export default {
                     key: 'file',
                     title: '',
                     thClasses: 'w-5',
-                    tdClasses: 'w-5'
+                    tdClasses: 'w-5',
                 },
                 {
                     key: 'file_name',
                     title: 'Namn',
                     tdClasses: 'text-gray-600 font-medium w-24',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'created_at',
                     title: 'Uppladdad',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'tags',
@@ -273,38 +278,45 @@ export default {
                 {
                     key: 'size',
                     title: 'Storlek',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'edit',
                     title: '',
                     tdClasses: 'text-right',
-                    thClasses: 'text-right'
-                }
+                    thClasses: 'text-right',
+                },
             ],
-            pagination: {},
+
+            pagination: {
+            },
+
             queryParams: {
                 number: 15,
                 page: 1,
                 sort: '-created_at',
                 include: 'tags',
-                'filter[search]': ''
+                'filter[search]': '',
             },
+
             checkedRows: [],
             fileTags: [],
-            selectedTags: []
+            selectedTags: [],
         }
     },
+
     computed: {
         hasCheckedRows () {
             return this.checkedRows.length > 0
         },
+
         nameTags () {
             return this.selectedTags.map(item => {
                 return item.name
             })
-        }
+        },
     },
+
     activated () {
         this.fetchFiles()
         this.uploadInit = true
@@ -319,115 +331,143 @@ export default {
             this.queryParams.page = 1
             this.fetchFiles()
         },
+
         async fetchFiles () {
             try {
                 const payload = {
                     params: this.queryParams,
                 }
                 const { data, meta } = await File.index(payload)
+
                 this.files = data
                 this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteFile (id) {
             try {
                 await File.destroy(id)
+
                 if (!this.suppressToast) {
-                    toast.success({ title: 'Filen har tagits bort' })
+                    toast.success({
+                        title: 'Filen har tagits bort', 
+                    })
                     this.fetchFiles()
                 }
             } catch (error) {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchFiles()
         },
+
         performSearch () {
             this.queryParams.page = 1
             this.fetchFiles()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchFiles()
         },
+
         openFileModal (item) {
             const modal = createModal(FileModal, {
                 item,
                 onItemDeleted: () => {
                     this.fetchFiles
                     modal.close()
-                }
+                },
             })
         },
+
         async fetchFileTags () {
             this.selectedTags = []
+
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'files'
-                    }
+                        'filter[type]': 'files',
+                    },
                 }
                 const { data } = await Tag.index(payload)
+
                 this.fileTags = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         handleRowChecked (rows) {
             this.checkedRows = rows
         },
+
         showModal () {
             this.showTagsModal = true
         },
+
         async addTagsToFiles () {
             try {
                 const payload = {
                     models: this.checkedRows,
                     tags: this.nameTags,
-                    model_type: 'files'
+                    model_type: 'files',
                 }
+
                 await Tag.store(payload)
-                toast.success({ title: 'Taggarna har lagts till!' })
+                toast.success({
+                    title: 'Taggarna har lagts till!', 
+                })
                 this.fetchFiles()
                 this.showTagsModal = false
             } catch (error) {
                 console.error(error)
             }
         },
+
         async downloadCheckedItems () {
             try {
                 const payload = {
                     params: {
                         items: this.checkedRows,
-                        type: 'files'
-                    }
+                        type: 'files',
+                    },
                 }
                 const { data, headers } = await Download.index(payload)
+
                 Download.handleBlobDownload(data, headers)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteCheckedFiles () {
             this.suppressToast = true
             const promises = []
+
             this.checkedRows.forEach(row => {
-                promises.push({ deleteFunction: this.deleteFile, id: row })
+                promises.push({
+                    deleteFunction: this.deleteFile,
+                    id: row, 
+                })
             })
             await Promise.all(
                 promises.map(async promise => {
                     await promise.deleteFunction(promise.id)
-                })
+                }),
             )
             this.suppressToast = false
             this.eventBus.emit('clear-checked-rows')
-            toast.success({ title: 'Filerna har tagits bort' })
+            toast.success({
+                title: 'Filerna har tagits bort', 
+            })
             this.fetchFiles()
-        }
-    }
+        },
+    },
 }
 </script>

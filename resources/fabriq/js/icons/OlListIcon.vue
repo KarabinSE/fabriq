@@ -10,8 +10,9 @@
         fill="currentColor"
     /></svg>
 </template>
+
 <script>
 export default {
-    name: 'OlListIcon'
+    name: 'OlListIcon',
 }
 </script>

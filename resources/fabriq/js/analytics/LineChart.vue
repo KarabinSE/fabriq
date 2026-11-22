@@ -6,6 +6,7 @@
         />
     </div>
 </template>
+
 <script>
 import {
     CategoryScale,
@@ -14,7 +15,7 @@ import {
     LineElement,
     LinearScale,
     PointElement,
-    Tooltip
+    Tooltip,
 } from 'chart.js'
 import { Line as VueChartLine } from 'vue-chartjs'
 
@@ -24,20 +25,21 @@ export default {
     name: 'VisitsChart',
 
     components: {
-        VueChartLine
+        VueChartLine,
     },
 
     props: {
         data: {
             type: Array,
-            required: true
+            required: true,
         },
 
         options: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     },
+
     computed: {
         chartData () {
             return {
@@ -48,25 +50,26 @@ export default {
                         data: this.data.map(row => row.visits),
                         borderColor: '#bd9b66',
                         backgroundColor: '#bd9b66',
-                        tension: 0.2
+                        tension: 0.2,
                     },
                     {
                         label: 'Sidvisningar',
                         data: this.data.map(row => row.pageViews),
                         borderColor: '#0b3b5b',
                         backgroundColor: '#0b3b5b',
-                        tension: 0.2
-                    }
-                ]
+                        tension: 0.2,
+                    },
+                ],
             }
         },
+
         chartOptions () {
             return {
                 responsive: true,
                 maintainAspectRatio: false,
-                ...this.options
+                ...this.options,
             }
-        }
-    }
+        },
+    },
 }
 </script>

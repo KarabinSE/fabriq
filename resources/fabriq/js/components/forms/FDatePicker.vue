@@ -117,7 +117,9 @@ import { useUserStore } from '@fabriq/stores'
 
 const userStore = useUserStore()
 
-defineOptions({ name: 'FDatePicker' })
+defineOptions({
+    name: 'FDatePicker', 
+})
 const model = defineModel({
     type: [Object, Array, String, Date, Number],
     default: '',
@@ -223,8 +225,8 @@ const props = defineProps({
     },
     timezone: {
         type: String,
-        default: 'UTC'
-    }
+        default: 'UTC',
+    },
 })
 
 const attributes = computed(() => {
@@ -251,7 +253,9 @@ const attributes = computed(() => {
                 : {
                     fillMode: 'outline',
                     contentClass: '!text-gray-800',
-                    style: { 'border-color': '#BACBF2' },
+                    style: {
+                        'border-color': '#BACBF2', 
+                    },
                 },
         },
     ]

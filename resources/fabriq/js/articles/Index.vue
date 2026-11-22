@@ -116,6 +116,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Article from '@fabriq/models/Article.js'
@@ -124,71 +125,82 @@ import { useVfm } from 'vue-final-modal'
 
 function defaultCreationObject () {
     return {
-        name: ''
+        name: '',
     }
 }
+
 export default {
     name: 'ArticlesIndex',
     setup() {
         const vfm = useVfm()
 
-        return {vfm}
+        return {
+            vfm, 
+        }
     },
+
     data () {
         return {
             email: '',
             articles: [],
-            pagination: {},
+            pagination: {
+            },
+
             queryParams: {
                 number: 20,
                 page: 1,
                 sort: '-publishes_at',
-                'filter[search]': ''
+                'filter[search]': '',
             },
+
             showCreate: false,
             newArticle: {
-                name: ''
+                name: '',
             },
+
             tableOptions: {
                 defaultSort: 'publishes_at',
                 sortDescending: true,
                 clickableRows: true,
-                shadow: false
+                shadow: false,
             },
+
             columns: [
                 {
                     sortable: true,
                     title: 'Namn',
-                    key: 'name'
+                    key: 'name',
                 },
                 {
                     title: 'Publiceringstid',
                     key: 'publishes_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Uppdaterad',
                     key: 'updated_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: '',
                     key: 'edit',
                     tdClasses: 'text-right',
-                    thClasses: 'text-right'
-                }
-            ]
+                    thClasses: 'text-right',
+                },
+            ],
         }
     },
+
     activated () {
         this.fetchArticles()
     },
+
     methods: {
         ...formatters,
         async fetchArticles () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await Article.index(payload)
 
@@ -198,6 +210,7 @@ export default {
                 console.error(error)
             }
         },
+
         async deleteArticle (article) {
             try {
                 await Article.destroy(article.id)
@@ -206,13 +219,20 @@ export default {
                 console.error(error)
             }
         },
+
         async createArticle () {
             try {
                 const { data } = await Article.store(this.newArticle)
+
                 toast.success({
                     title: 'Nyheten har skapats!',
                     buttonText: 'Gå till nyheten',
-                    onClick: () => this.$router.push({ name: 'articles.edit', params: { id: data.id } })
+                    onClick: () => this.$router.push({
+                        name: 'articles.edit',
+                        params: {
+                            id: data.id, 
+                        }, 
+                    }),
                 })
                 this.vfm.close('createArticleModal')
                 this.resetCreateModal()
@@ -221,30 +241,43 @@ export default {
                 if (error.response.status === 422) {
                     this.$refs.observer?.validate()
                 }
+
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchArticles()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchArticles()
         },
+
         handleRowClick (item) {
-            this.$router.push({ name: 'articles.edit', params: { id: item.id } })
+            this.$router.push({
+                name: 'articles.edit',
+                params: {
+                    id: item.id, 
+                }, 
+            })
         },
+
         clearSearch () {
             this.queryParams['filter[search]'] = ''
             this.queryParams.page = 1
             this.fetchArticles()
         },
+
         resetCreateModal () {
             setTimeout(() => {
-                this.newArticle = { ...defaultCreationObject() }
+                this.newArticle = {
+                    ...defaultCreationObject(), 
+                }
             }, 200)
-        }
-    }
+        },
+    },
 }
 </script>

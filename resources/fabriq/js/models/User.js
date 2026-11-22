@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { route } from "@/generated/helpers/route"
+import { route } from '@/generated/helpers/route'
 
 export default {
     async index (payload) {
@@ -9,13 +9,17 @@ export default {
     },
 
     async show (id, payload) {
-        const { data } = await axios.get(route('users.show', { user: id }), payload)
+        const { data } = await axios.get(route('users.show', {
+            user: id, 
+        }), payload)
 
         return data
     },
 
     async update (id, object) {
-        const { data } = await axios.patch(route('users.update', { user: id }), object)
+        const { data } = await axios.patch(route('users.update', {
+            user: id, 
+        }), object)
 
         return data
     },
@@ -27,9 +31,11 @@ export default {
     },
 
     async destroy (id) {
-        const { data } = await axios.delete(route('users.destroy', { user: id }))
+        const { data } = await axios.delete(route('users.destroy', {
+            user: id, 
+        }))
 
         return data
-    }
+    },
 
 }

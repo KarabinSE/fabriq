@@ -15,15 +15,10 @@
 </template>
 
 <script>
-import { useConfigStore } from '@fabriq/stores';
+import { useConfigStore } from '@fabriq/stores'
 
 export default {
     name: 'FLabel',
-    setup () {
-        const configStore = useConfigStore();
-
-        return { configStore }
-    },
     props: {
         label: {
             type: String,
@@ -51,9 +46,17 @@ export default {
         },
     },
 
+    setup () {
+        const configStore = useConfigStore()
+
+        return {
+            configStore, 
+        }
+    },
+
     computed: {
         devMode () {
-            return this.configStore.devMode;
+            return this.configStore.devMode
         },
 
         showOptional () {

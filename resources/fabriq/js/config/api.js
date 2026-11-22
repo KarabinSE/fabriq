@@ -5,13 +5,13 @@ import { toast } from '@fabriq/components/toast/toast'
 export default function setup (vm) {
     axios.interceptors.request.use(request => {
 
-        const configStore = useConfigStore();
+        const configStore = useConfigStore()
 
-        const userStore = useUserStore();
+        const userStore = useUserStore()
 
-        request.headers['X-LOCALE'] = configStore.activeLocale;
+        request.headers['X-LOCALE'] = configStore.activeLocale
 
-        request.headers['X-TIMEZONE'] = userStore.timezone;
+        request.headers['X-TIMEZONE'] = userStore.timezone
 
         // Important: request interceptors **must** return the request.
         return request
@@ -22,33 +22,55 @@ export default function setup (vm) {
     }, async error => {
         if (error.response) {
             const { status, data } = error.response
+
             if (status >= 500) {
                 console.error('Serverfel - ' + error.response.status)
                 toast.error({
                     title: `Serverfel - ${status}`,
-                    message: `${data.message}`
+                    message: `${data.message}`,
                 })
             }
+
             if (status === 422) {
-                toast.warning({ title: 'Oj då!', message: 'Något är tosigt med datan du försöker skicka.' })
+                toast.warning({
+                    title: 'Oj då!',
+                    message: 'Något är tosigt med datan du försöker skicka.', 
+                })
             }
+
             if (status === 400) {
-                toast.info({ title: 'Pst!', message: data.error.message })
+                toast.info({
+                    title: 'Pst!',
+                    message: data.error.message, 
+                })
             }
+
             if (status === 404) {
-                toast.warning({ title: 'Hmm!', message: 'Kunde inte hitta det du letade efter' })
+                toast.warning({
+                    title: 'Hmm!',
+                    message: 'Kunde inte hitta det du letade efter', 
+                })
             }
+
             if (status === 405) {
-                toast.warning({ title: 'Oj!', message: 'Det var ingen tillåten handling' })
+                toast.warning({
+                    title: 'Oj!',
+                    message: 'Det var ingen tillåten handling', 
+                })
             }
+
             if (status === 403) {
-                toast.error({ title: 'Stopp!', message: 'Du saknar behörighet för att göra detta.' })
+                toast.error({
+                    title: 'Stopp!',
+                    message: 'Du saknar behörighet för att göra detta.', 
+                })
             }
         }
+
         return Promise.reject(error)
     })
 
     axios.create({
-        withCredentials: true
+        withCredentials: true,
     })
 }

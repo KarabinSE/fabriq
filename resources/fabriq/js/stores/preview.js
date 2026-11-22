@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
-import { computed, readonly, ref, watch } from "vue";
-import { usePageStore } from "./page";
-import axios from "axios";
+import { defineStore } from 'pinia'
+import { computed, readonly, ref, watch } from 'vue'
+import { usePageStore } from './page'
+import axios from 'axios'
 import { route } from '@/generated/helpers/route'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -33,6 +33,7 @@ export const usePreviewStore = defineStore('preview', () => {
     const loaded = ref(false)
 
     const debouncedUpdatePreview = useDebounceFn(updatePreview, 500)
+
     watch(previewPayload, async () => {
         if(!loaded.value) {
             return
@@ -40,7 +41,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
         debouncedUpdatePreview()
     }, {
-        deep: true
+        deep: true,
     })
 
     /**
@@ -58,7 +59,9 @@ export const usePreviewStore = defineStore('preview', () => {
 
     async function updatePreview () {
         try {
-            const { data } = await axios.put(route('previews.update', { id: pageStore.page.id }), previewPayload.value)
+            const { data } = await axios.put(route('previews.update', {
+                id: pageStore.page.id, 
+            }), previewPayload.value)
 
             previewUrl.value = data.preview_url
 
@@ -77,7 +80,10 @@ export const usePreviewStore = defineStore('preview', () => {
 
         const targetOrigin = new URL(previewUrl.value).origin
 
-        iframeReference.value.contentWindow.postMessage({ type: 'fabriq-preview-ready', url: previewUrl.value }, targetOrigin)
+        iframeReference.value.contentWindow.postMessage({
+            type: 'fabriq-preview-ready',
+            url: previewUrl.value, 
+        }, targetOrigin)
     }
 
     function locateBlock(blockId) {
@@ -86,7 +92,12 @@ export const usePreviewStore = defineStore('preview', () => {
         }
 
         const targetOrigin = new URL(previewUrl.value).origin
-        iframeReference.value.contentWindow.postMessage({ type: 'fabriq-locate-block', url: previewUrl.value, block: blockId }, targetOrigin)
+
+        iframeReference.value.contentWindow.postMessage({
+            type: 'fabriq-locate-block',
+            url: previewUrl.value,
+            block: blockId, 
+        }, targetOrigin)
     }
 
 
@@ -120,4 +131,4 @@ export const usePreviewStore = defineStore('preview', () => {
         locateBlock,
         postToIframe,
     }
-});
+})

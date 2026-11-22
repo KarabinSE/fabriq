@@ -95,6 +95,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import StatsBox from '@fabriq/dashboard/StatsBox.vue'
 import Article from '@fabriq/models/Article.js'
@@ -106,16 +107,23 @@ import axios from 'axios'
 import AnalyticsStats from './analytics/AnalyticsStats.vue'
 import { useConfigStore } from './stores'
 import { route } from '@/generated/helpers/route'
+
 export default {
     name: 'HomeIndex',
     components: {
-        StatsBox, LineChart, AnalyticsStats
+        StatsBox,
+        LineChart,
+        AnalyticsStats,
     },
+
     setup () {
         const configStore = useConfigStore()
 
-        return { configStore }
+        return {
+            configStore, 
+        }
     },
+
     data () {
         return {
             pageCount: 0,
@@ -125,32 +133,58 @@ export default {
             chartData: null,
             analyticsPeriod: '7d',
             analyticsPeriods: [
-                { label: 'Senaste 7 dagarna', value: '7d' },
-                { label: 'Senaste 30 dagarna', value: '30d' },
-                { label: 'Senaste 90 dagarna', value: '3m' }
+                {
+                    label: 'Senaste 7 dagarna',
+                    value: '7d', 
+                },
+                {
+                    label: 'Senaste 30 dagarna',
+                    value: '30d', 
+                },
+                {
+                    label: 'Senaste 90 dagarna',
+                    value: '3m', 
+                },
             ],
+
             analyticsLoading: false,
             searchConsoleData: null,
             searchConsoleLoading: true,
             searchConsoleColumns: [
-                { key: 'query', title: 'Vanligaste frågorna' },
-                { key: 'clicks', title: 'Klick', thClasses: 'text-right', tdClasses: 'text-right' },
-                { key: 'impressions', title: 'Exponeringar', thClasses: 'text-right', tdClasses: 'text-right' }
-            ]
+                {
+                    key: 'query',
+                    title: 'Vanligaste frågorna', 
+                },
+                {
+                    key: 'clicks',
+                    title: 'Klick',
+                    thClasses: 'text-right',
+                    tdClasses: 'text-right', 
+                },
+                {
+                    key: 'impressions',
+                    title: 'Exponeringar',
+                    thClasses: 'text-right',
+                    tdClasses: 'text-right', 
+                },
+            ],
         }
     },
+
     computed: {
         config() {
-            return this.configStore.config;
+            return this.configStore.config
         },
+
         searchTermsRows () {
             return (this.searchConsoleData?.rows ?? []).map(row => ({
                 query: row.keys?.[0] ?? '',
                 clicks: row.clicks,
-                impressions: row.impressions
+                impressions: row.impressions,
             }))
-        }
+        },
     },
+
     activated () {
         this.fetchPageCount()
         this.fetchArticleCount()
@@ -159,56 +193,69 @@ export default {
         this.fetchAnalytics()
         this.fetchSearchConsole()
     },
+
     methods: {
         async fetchPageCount () {
             const { data } = await Page.count()
+
             this.pageCount = data.count
         },
+
         async fetchArticleCount () {
             const { data } = await Article.count()
+
             this.articleCount = data.count
         },
+
         async fetchImageCount () {
             const { data } = await Image.count()
+
             this.imageCount = data.count
         },
+
         async fetchFileCount () {
             const { data } = await File.count()
+
             this.fileCount = data.count
         },
+
         async changeAnalyticsPeriod (period) {
             this.analyticsPeriod = period
             await this.fetchAnalytics()
             await this.fetchSearchConsole()
         },
+
         async fetchAnalytics () {
             this.analyticsLoading = true
 
             try {
                 const { data } = await axios.get(route('analytics.web-analytics'), {
                     params: {
-                        period: this.analyticsPeriod
-                    }
+                        period: this.analyticsPeriod,
+                    },
                 })
+
                 this.chartData = data
             } finally {
                 this.analyticsLoading = false
             }
         },
+
         async fetchSearchConsole () {
             this.searchConsoleLoading = true
 
             try {
                 const { data } = await axios.get(route('analytics.search-console'), {
                     params: {
-                        period: this.analyticsPeriod
-                    }
+                        period: this.analyticsPeriod,
+                    },
                 })
+
                 this.searchConsoleData = data
             } finally {
                 this.searchConsoleLoading = false
             }
-        }
-    }
+        },
+    },
 }
 </script>

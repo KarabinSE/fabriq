@@ -153,29 +153,39 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import Contact from '@fabriq/models/Contact.js'
 import SortModal from './SortModal.vue'
 import { useVfm } from 'vue-final-modal'
 import { toast } from '@fabriq/components/toast/toast.js'
+
 function defaultCreationObject () {
     return {
-        name: ''
+        name: '',
     }
 }
+
 export default {
     name: 'ContactsIndex',
-    components: { SortModal },
+    components: {
+        SortModal, 
+    },
 
     setup() {
         const vfm = useVfm()
 
-        return {vfm}
+        return {
+            vfm, 
+        }
     },
+
     data () {
         return {
             contacts: [],
-            pagination: {},
+            pagination: {
+            },
+
             searchQuery: '',
             showCreate: false,
             creationObject: defaultCreationObject(),
@@ -184,104 +194,131 @@ export default {
                 sort: 'sortindex',
                 'filter[search]': '',
                 include: 'tags,content',
-                append: 'image'
+                append: 'image',
             },
+
             columns: [
                 {
                     title: 'Namn',
                     key: 'name',
                     sortable: true,
-                    tdClasses: 'font-medium'
+                    tdClasses: 'font-medium',
                 },
                 {
                     title: 'E-post',
                     key: 'email',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Telefonnummer',
                     key: 'phone',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Sorteringsindex',
                     key: 'sortindex',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Visas',
                     key: 'published',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Taggar',
-                    key: 'tags'
+                    key: 'tags',
                     // thClasses: 'text-right'
                 },
                 {
                     title: '',
                     key: 'edit',
-                    tdClasses: 'text-right'
-                }
-            ]
+                    tdClasses: 'text-right',
+                },
+            ],
         }
     },
+
     activated () {
         this.fetchContacts()
     },
+
     methods: {
         resetSearch () {
             this.queryParams['filter[search]'] = ''
             this.queryParams.page = 1
             this.fetchContacts()
         },
+
         async fetchContacts () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await Contact.index(payload)
+
                 this.contacts = data
                 this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteContact (contact) {
             try {
                 await Contact.destroy(contact.id)
-                toast.success({ title: 'Kontakten har raderats' })
+                toast.success({
+                    title: 'Kontakten har raderats', 
+                })
                 this.fetchContacts()
             } catch (error) {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchContacts()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchContacts()
         },
+
         editContact (row) {
-            this.$router.push({ name: 'contacts.edit', params: { id: row.id } })
+            this.$router.push({
+                name: 'contacts.edit',
+                params: {
+                    id: row.id, 
+                }, 
+            })
         },
+
         setSearch (value) {
             this.searchQuery = value
         },
+
         resetCreateModal () {
             setTimeout(() => {
-                this.creationObject = { ...defaultCreationObject() }
+                this.creationObject = {
+                    ...defaultCreationObject(), 
+                }
             }, 200)
         },
+
         async createContact () {
             try {
                 const { data } = await Contact.store(this.creationObject)
+
                 toast.success({
                     title: 'Kontakten har skapats!',
                     buttonText: 'Gå till kontakten',
-                    onClick: () => this.$router.push({ name: 'contacts.edit', params: { id: data.id } })
+                    onClick: () => this.$router.push({
+                        name: 'contacts.edit',
+                        params: {
+                            id: data.id, 
+                        }, 
+                    }),
                 })
                 this.vfm.close('createContactModal')
                 this.resetCreateModal()
@@ -289,10 +326,11 @@ export default {
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 
 input::-webkit-search-cancel-button {

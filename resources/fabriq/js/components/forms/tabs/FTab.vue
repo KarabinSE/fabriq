@@ -6,45 +6,52 @@
         <slot />
     </div>
 </template>
+
 <script>
 export default {
     name: 'FTab',
     inject: {
         tabsContext: {
             from: 'fabriq-tabs-context',
-            default: null
-        }
+            default: null,
+        },
     },
+
     props: {
         title: {
             required: true,
             type: String,
-            default: 'Tab'
+            default: 'Tab',
         },
+
         valueKey: {
             type: String,
-            default: ''
+            default: '',
         },
+
         hasError: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
+
     data () {
         return {
             isActive: false,
-            registeredTab: null
+            registeredTab: null,
         }
     },
+
     mounted () {
         if (this.tabsContext) {
             this.registeredTab = this.tabsContext.registerTab(this)
         }
     },
+
     unmounted () {
         if (this.tabsContext && this.registeredTab) {
             this.tabsContext.unregisterTab(this.registeredTab)
         }
-    }
+    },
 }
 </script>

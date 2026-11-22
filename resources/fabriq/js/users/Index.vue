@@ -168,6 +168,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 function newUserObject() {
     return {
@@ -175,54 +176,65 @@ function newUserObject() {
         email: '',
         admin: false,
         sendActivation: true,
-        role_list: []
+        role_list: [],
     }
 }
+
 import User from '@fabriq/models/User.js'
 import Invitation from '@fabriq/models/Invitation.js'
 import * as formatters from '@fabriq/utils/formatters'
 import { useVfm } from 'vue-final-modal'
 import { toast } from '@fabriq/components/toast/toast'
+
 export default {
     name: 'UsersIndex',
     setup() {
         const vfm = useVfm()
 
-        return {vfm}
+        return {
+            vfm, 
+        }
     },
+
     data () {
         return {
             users: [],
-            pagination: {},
+            pagination: {
+            },
+
             searchQuery: '',
             queryParams: {
                 number: 50,
                 include: 'roles,invitation',
                 sort: 'name',
-                'filter[search]': ''
+                'filter[search]': '',
             },
-            newUser: {...newUserObject()},
+
+            newUser: {
+                ...newUserObject(), 
+            },
+
             columns: [
                 {
                     title: 'Namn',
                     key: 'name',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'E-post',
                     key: 'email',
                     sortable: true,
-                    tdClasses: 'font-medium'
+                    tdClasses: 'font-medium',
                 },
                 {
                     title: 'Roller',
                     key: 'roles',
-                    sortable: false
+                    sortable: false,
                 },
                 {
                     title: 'Uppdaterad',
                     key: 'updated_at',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     title: 'Aktiverad',
@@ -234,14 +246,16 @@ export default {
                 {
                     title: '',
                     key: 'edit',
-                    tdClasses: 'text-right'
-                }
-            ]
+                    tdClasses: 'text-right',
+                },
+            ],
         }
     },
+
     activated () {
         this.fetchUsers()
     },
+
     methods: {
         ...formatters,
         resetSearch () {
@@ -249,38 +263,52 @@ export default {
             this.queryParams.page = 1
             this.fetchUsers()
         },
+
         async fetchUsers () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await User.index(payload)
+
                 this.users = data
                 this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteUser (user) {
             try {
                 await User.destroy(user.id)
-                toast.success({ title: 'Användaren har raderats' })
+                toast.success({
+                    title: 'Användaren har raderats', 
+                })
                 this.fetchUsers()
             } catch (error) {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchUsers()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchUsers()
         },
+
         editUser (row) {
-            this.$router.push({ name: 'users.edit', params: { id: row.id } })
+            this.$router.push({
+                name: 'users.edit',
+                params: {
+                    id: row.id, 
+                }, 
+            })
         },
+
         setSearch (value) {
             this.searchQuery = value
         },
@@ -288,48 +316,68 @@ export default {
         async sendActivation (id) {
             await Invitation.store(id)
             // await this.$store.dispatch('Invitation/store', { userId: id })
-            toast.success({ title: 'Aktivering skickad!' })
+            toast.success({
+                title: 'Aktivering skickad!', 
+            })
             this.fetchUsers()
         },
+
         async cancelActivation (id) {
             try {
                 await Invitation.destroy(id)
                 this.fetchUsers()
-                toast.success({ title: 'Inbjudan har tagits bort' })
+                toast.success({
+                    title: 'Inbjudan har tagits bort', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         async createUser () {
             try {
                 const shouldSendActivation = this.newUser.sendActivation
+
                 if(this.newUser.admin) {
                     this.newUser.role_list.push('admin')
                 }
+
                 const { data } = await User.store(this.newUser)
+
                 toast.success({
                     title: 'Användaren har skapats!',
                     buttonText: 'Gå till användaren',
-                    onClick: () => this.$router.push({ name: 'users.edit', params: { id: data.id } })
+                    onClick: () => this.$router.push({
+                        name: 'users.edit',
+                        params: {
+                            id: data.id, 
+                        }, 
+                    }),
                 })
                 this.vfm.close('createUserModal')
+
                 if(shouldSendActivation) {
                     await this.sendActivation(data.id)
                 }
+
                 this.resetCreateModal()
                 this.fetchUsers()
             } catch (error) {
                 console.error(error)
             }
         },
+
         resetCreateModal () {
             setTimeout(() => {
-                this.newUser = { ...newUserObject() }
+                this.newUser = {
+                    ...newUserObject(), 
+                }
             }, 200)
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 
 input::-webkit-search-cancel-button {

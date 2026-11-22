@@ -61,72 +61,91 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import AuthenticatedUser from '@fabriq/models/AuthenticatedUser.js'
 import User from '@fabriq/models/User.js'
 import Role from '@fabriq/models/Role.js'
 import { toast } from '@fabriq/components/toast/toast'
+
 export default {
     name: 'UsersEdit',
     data () {
         return {
             id: 0,
             user: {
-                name: ''
+                name: '',
             },
+
             roles: [],
             chosenRoles: [],
             currentUser: {
-                id: 0
-            }
+                id: 0,
+            },
         }
     },
+
     activated () {
         this.id = this.$route.params.id
         this.fetchUser()
         this.fetchCurrentUser()
         this.fetchRoles()
     },
+
     methods: {
         async fetchCurrentUser () {
             try {
-                const { data } = await AuthenticatedUser.index({ params: { field: 'id' } })
+                const { data } = await AuthenticatedUser.index({
+                    params: {
+                        field: 'id', 
+                    }, 
+                })
+
                 this.currentUser = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchUser () {
             try {
                 const payload = {
                     params: {
-                        include: 'roles'
-                    }
+                        include: 'roles',
+                    },
                 }
                 const { data } = await User.show(this.id, payload)
+
                 this.user = data
                 this.chosenRoles = this.user.role_list
             } catch (error) {
                 console.error(error)
             }
         },
+
         async updateUser () {
             try {
                 this.user.role_list = this.chosenRoles
-                await User.update(this.id, { ...this.user })
-                toast.success({ title: 'Användaren har uppdaterats' })
+                await User.update(this.id, {
+                    ...this.user, 
+                })
+                toast.success({
+                    title: 'Användaren har uppdaterats', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchRoles () {
             try {
                 const { data } = await Role.index()
+
                 this.roles = data
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

@@ -20,52 +20,67 @@
         </FInput>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Page from '@fabriq/models/Page.js'
-import { useClipboard } from '@vueuse/core';
+import { useClipboard } from '@vueuse/core'
 import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'PagePaths',
     setup() {
-        const { copy } = useClipboard({ legacy: true });
+        const { copy } = useClipboard({
+            legacy: true, 
+        })
         const eventBus = useEventBus()
 
-        return { copy, eventBus }
-    },
-    data() {
         return {
-            paths: {},
-            pathLabelMap: {
-                absolute_path: 'Absolut sökväg',
-                permalink: 'Permalänk'
-            }
+            copy,
+            eventBus, 
         }
     },
+
+    data() {
+        return {
+            paths: {
+            },
+
+            pathLabelMap: {
+                absolute_path: 'Absolut sökväg',
+                permalink: 'Permalänk',
+            },
+        }
+    },
+
     unmounted() {
         this.eventBus.off('page-updated', this.fetchPaths)
     },
+
     mounted() {
         this.fetchPaths()
         this.eventBus.on('page-updated', this.fetchPaths)
     },
+
     methods: {
         async fetchPaths () {
             const { data } = await Page.paths(this.$route.params.id)
+
             this.paths = data
         },
 
         copySuccess () {
-            toast.success({ title: 'Länken har kopierats'})
+            toast.success({
+                title: 'Länken har kopierats', 
+            })
         },
 
         async copyPath (id) {
             console.log(id)
-            await this.copy(id);
+            await this.copy(id)
 
             this.copySuccess()
-        }
-    }
+        },
+    },
 }
 </script>

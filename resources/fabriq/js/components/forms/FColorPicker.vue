@@ -33,51 +33,89 @@
 <script>
 export const colors = {
     buttonColors: [
-        { label: 'Primär', color: 'bg-btn-primary border-btn-primary', value: 'primary' },
-        { label: 'Primär kontur', color: 'border-btn-primary', value: 'primary-outline' },
-        { label: 'Sekundär', color: 'bg-btn-secondary border-btn-secondary', value: 'secondary' },
-        { label: 'Sekundär kontur', color: 'border-btn-secondary', value: 'secondary-outline' },
-        { label: 'Tertiär', color: 'bg-btn-tertiary border-btn-tertiary', value: 'tertiary' },
-        { label: 'Tertiär kontur', color: 'border-btn-tertiary', value: 'tertiary-outline' },
+        {
+            label: 'Primär',
+            color: 'bg-btn-primary border-btn-primary',
+            value: 'primary', 
+        },
+        {
+            label: 'Primär kontur',
+            color: 'border-btn-primary',
+            value: 'primary-outline', 
+        },
+        {
+            label: 'Sekundär',
+            color: 'bg-btn-secondary border-btn-secondary',
+            value: 'secondary', 
+        },
+        {
+            label: 'Sekundär kontur',
+            color: 'border-btn-secondary',
+            value: 'secondary-outline', 
+        },
+        {
+            label: 'Tertiär',
+            color: 'bg-btn-tertiary border-btn-tertiary',
+            value: 'tertiary', 
+        },
+        {
+            label: 'Tertiär kontur',
+            color: 'border-btn-tertiary',
+            value: 'tertiary-outline', 
+        },
     ],
     backgroundColors: [
-        { label: 'Primär', color: 'bg-primary', value: 'primary' },
-        { label: 'Sekundär', color: 'bg-secondary', value: 'secondary' },
-        { label: 'Tertiär', color: 'bg-tertiary', value: 'tertiary' },
-    ]
+        {
+            label: 'Primär',
+            color: 'bg-primary',
+            value: 'primary', 
+        },
+        {
+            label: 'Sekundär',
+            color: 'bg-secondary',
+            value: 'secondary', 
+        },
+        {
+            label: 'Tertiär',
+            color: 'bg-tertiary',
+            value: 'tertiary', 
+        },
+    ],
 }
 </script>
 
 <script setup>
 
-defineOptions({name: 'FColorPicker'})
+defineOptions({
+    name: 'FColorPicker', 
+})
 
 const  props = defineProps({
     value: {
         type: String,
-        default: null
+        default: null,
     },
     label: {
         type: String,
-        default: 'Färg'
+        default: 'Färg',
     },
     collection: {
         type: String,
-        default: 'buttons'
+        default: 'buttons',
     },
     name: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
 const color = defineModel({
     type: String,
-    default: 'primary'
+    default: 'primary',
 })
 
 function getColorOptions() {

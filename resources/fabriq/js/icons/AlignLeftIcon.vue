@@ -12,8 +12,9 @@
         fill="currentColor"
     /></svg>
 </template>
+
 <script>
 export default {
-    name: 'AlignLeftIcon'
+    name: 'AlignLeftIcon',
 }
 </script>

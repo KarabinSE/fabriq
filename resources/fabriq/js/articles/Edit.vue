@@ -118,9 +118,11 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Article from '@fabriq/models/Article.js'
+
 export default {
     name: 'ArticlesEdit',
     data () {
@@ -129,43 +131,59 @@ export default {
             article: {
                 id: 0,
                 name: '',
-                publishes_at: ''
+                publishes_at: '',
             },
+
             content: {
                 publishes_at: '',
-                image: { id: 0 }
+                image: {
+                    id: 0, 
+                },
             },
+
             queryParams: {
-                include: 'content,template'
+                include: 'content,template',
             },
         }
     },
+
     activated () {
         this.id = this.$route.params.id
         this.fetchArticle()
     },
+
     methods: {
         async fetchArticle () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data } = await Article.show(this.id, payload)
+
                 this.article = data
-                this.content = { ...this.article.content }
+                this.content = {
+                    ...this.article.content, 
+                }
             } catch (error) {
                 console.error(error)
             }
         },
+
         async updateArticle () {
             try {
-                this.article.content = { ...this.content }
-                await Article.update(this.id, { ...this.article })
-                toast.success({ title: 'Nyheten har uppdaterats' })
+                this.article.content = {
+                    ...this.content, 
+                }
+                await Article.update(this.id, {
+                    ...this.article, 
+                })
+                toast.success({
+                    title: 'Nyheten har uppdaterats', 
+                })
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

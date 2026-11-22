@@ -19,8 +19,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'SpinIcon'
+    name: 'SpinIcon',
 }
 </script>

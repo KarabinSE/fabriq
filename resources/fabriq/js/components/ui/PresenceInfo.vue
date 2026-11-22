@@ -79,6 +79,7 @@
         </Transition>
     </div>
 </template>
+
 <script>
 import RefreshObjectModal from '@fabriq/components/modals/RefreshObjectModal.vue'
 import { toast } from '@fabriq/components/toast/toast'
@@ -88,18 +89,23 @@ import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'PresenceInfo',
-    components: { RefreshObjectModal },
+    components: {
+        RefreshObjectModal, 
+    },
 
     setup() {
         const vfm = useVfm()
         const eventBus = useEventBus()
 
-        return {vfm, eventBus}
+        return {
+            vfm,
+            eventBus, 
+        }
     },
 
     data() {
         return {
-            hasAskedToEdit: false
+            hasAskedToEdit: false,
         }
     },
 
@@ -107,74 +113,89 @@ export default {
         authenticatedUser () {
             return this.$store.getters['user/user']
         },
+
         usersIdle () {
             return this.$store.getters['echo/usersIdle']
         },
+
         usersIdleWithoutKey () {
             return Object.values(this.usersIdle)[0]
         },
+
         moreThanOne () {
             if(!this.usersIdleWithoutKey) {
                 return false
             }
+
             return this.usersIdleWithoutKey.length > 1
         },
+
         firstUser() {
             if(this.moreThanOne) {
                 return this.usersIdleWithoutKey[0]
             }
+
             return null
         },
+
         currentUserIsFirst() {
             if(! this.moreThanOne) {
                 return true
             }
 
             return this.authenticatedUser.id !== this.usersIdleWithoutKey[0].id
-        }
+        },
     },
+
     created() {
         this.eventBus.on('user-asked-to-leave-echo', this.notifyUser)
         this.eventBus.on('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },
+
     unmounted() {
         this.eventBus.off('user-asked-to-leave-echo', this.notifyUser)
         this.eventBus.off('user-declined-to-leave-echo', this.notifyUserLeaveDeclined)
     },
+
     methods: {
         async askToEdit() {
             await axios.post('/api/notifications/ask-to-leave/' + this.firstUser.id, {
-                path: this.$route.path
+                path: this.$route.path,
             })
             this.hasAskedToEdit = true
         },
+
         async refreshPage() {
             window.location.reload()
         },
+
         async declineEdit(parameters) {
             await axios.post('/api/notifications/decline-to-leave/' + parameters.causer.id, {
-                path: this.$route.path
+                path: this.$route.path,
             })
             this.vfm.close('askToLeaveModal')
         },
+
         notifyUserLeaveDeclined(event) {
             if(this.$route.path !== event.identifier) {
                 return
             }
+
             toast.declined({
                 position: 'top-right',
                 title: 'Överlämning nekad',
                 message: event.text,
                 countdown: false,
-                duration: 10 * 1000
+                duration: 10 * 1000,
             })
             this.hasAskedToEdit = false
         },
+
         notifyUser(event) {
             if(event.identifier === this.$route.path) {
                 this.vfm.open('askToLeaveModal', event)
             }
         },
-    }
+    },
 }
 </script>

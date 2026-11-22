@@ -192,18 +192,21 @@ import { reactive } from 'vue'
 const eventBus = useEventBus()
 
 const emit = defineEmits(['item-delete'])
-defineOptions({name: 'BlockTypeModal'})
+
+defineOptions({
+    name: 'BlockTypeModal', 
+})
 const props  =defineProps({
     id: {
         type: Number,
-        required: true
-    }
+        required: true,
+    },
 })
 
 const vfm = useVfm()
 const image = ref({
     id: 0,
-    size: 0
+    size: 0,
 })
 
 const crop = reactive({
@@ -219,67 +222,79 @@ async function fetchImage () {
     try {
         const payload = {
             params: {
-                include: 'tags'
-            }
+                include: 'tags',
+            },
         }
         const { data } = await Image.show(props.id, payload)
+
         image.value = data
 
-        crop.x = parseInt(image.value.x_position.slice(0,-1))
-        crop.y = parseInt(image.value.y_position.slice(0,-1))
+        crop.x = parseInt(image.value.x_position.slice(0, -1))
+        crop.y = parseInt(image.value.y_position.slice(0, -1))
     } catch (error) {
         console.error(error)
     }
 }
+
 async function initModal (parameters) {
     eventBus.on('media-finished-processing', evaluateNewStatus)
+
     try {
         await Promise.all([
             fetchImage(parameters),
-            fetchImageTags()
+            fetchImageTags(),
         ])
     } catch (error) {
         console.error(error)
     }
 }
+
 function evaluateNewStatus(event) {
     if(event.image_id !== image.value.id) {
         return
     }
+
     image.value.processing = event.processing
     image.value.processing_failed = event.processing_failed
 }
+
 async function fetchImageTags () {
     try {
         const payload = {
             params: {
-                'filter[type]': 'images'
-            }
+                'filter[type]': 'images',
+            },
         }
         const { data } = await Tag.index(payload)
+
         imageTags.value = data
     } catch (error) {
         console.error(error)
     }
 }
+
 function resetImage () {
     eventBus.off('media-finished-processing', evaluateNewStatus)
     image.value = {
         id: 0,
-        size: 0
+        size: 0,
     }
 }
+
 async function updateImage () {
     try {
         const payload = {
             ...image.value,
             x_position: `${Math.round(crop.x)}%`,
             y_position: `${Math.round(crop.y)}%`,
-            tags: image.value.tags.map(tag => tag.name)
+            tags: image.value.tags.map(tag => tag.name),
         }
+
         await Image.update(image.value.id, payload)
         eventBus.emit('image-updated')
-        toast.success({ title: 'Bilden har uppdaterats!' })
+        toast.success({
+            title: 'Bilden har uppdaterats!', 
+        })
         closeModal()
     } catch (error) {
         console.error(error)
@@ -290,11 +305,15 @@ async function deleteImage () {
     try {
         await Image.destroy(image.value.id)
         eventBus.emit('image-updated')
-        toast.success({ title: 'Bilden har raderats' })
+        toast.success({
+            title: 'Bilden har raderats', 
+        })
         emit('item-delete')
         closeModal()
     } catch (error) {
-        toast.error({ title: 'Kunde inte radera bilden' })
+        toast.error({
+            title: 'Kunde inte radera bilden', 
+        })
         console.error(error)
     }
 }
@@ -302,10 +321,11 @@ async function deleteImage () {
 async function downloadFile () {
     const payload = {
         params: {
-            type: 'images'
-        }
+            type: 'images',
+        },
     }
     const { data, headers } = await Download.show(image.value.id, payload)
+
     await Download.handleBlobDownload(data, headers)
 }
 
@@ -313,9 +333,11 @@ function getCoords (event) {
     if (!image.value.custom_crop) {
         return
     }
+
     const rect = imageRef.value.getBoundingClientRect()
     const x = event.clientX - rect.left // x position within the element.
     const y = event.clientY - rect.top // y position within the element.
+
     crop.x = ((x / imageRef.value.offsetWidth) * 100)
     crop.y = ((y / imageRef.value.offsetHeight) * 100)
 }
@@ -336,7 +358,7 @@ const drag = reactive({
     move(event){
         if(!this.dragging) return
         getCoords(event)
-    }
+    },
 })
 
 function closeModal() {

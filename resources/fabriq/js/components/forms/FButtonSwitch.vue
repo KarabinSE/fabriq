@@ -28,38 +28,43 @@
         </slot>
     </button>
 </template>
+
 <script>
 export default {
     name: 'FButtonSwitch',
     props: {
         value: {
             type: [Number, Boolean, String],
-            default: false
-        }
+            default: false,
+        },
     },
+
     data () {
         return {
-            newValue: this.value
+            newValue: this.value,
         }
     },
+
     computed: {
         computedValue: {
             get () {
                 return this.newValue
             },
+
             set (value) {
                 this.newValue = value
                 this.$emit('input', value)
-            }
-        }
+            },
+        },
     },
+
     watch: {
         /**
         * When v-model change, set internal value.
         */
         value (value) {
             this.newValue = value
-        }
-    }
+        },
+    },
 }
 </script>

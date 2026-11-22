@@ -39,7 +39,9 @@
 import { Media } from '@fabriq/models/Media'
 import { watchEffect } from 'vue'
 
-defineOptions({name: 'FMediaInput'})
+defineOptions({
+    name: 'FMediaInput', 
+})
 const emits = defineEmits(['update:model-value'])
 const  props = defineProps({
     name: {
@@ -50,8 +52,9 @@ const  props = defineProps({
 
 const media = defineModel({
     type: Object,
-    default: () => new Media()
+    default: () => new Media(),
 })
+
 watchEffect(() => {
     if(media.value === undefined) {
         emits('update:model-value', new Media)

@@ -11,25 +11,26 @@ export const useUserStore = defineStore('user', () => {
         updated_at: '',
         role_list: [],
         image: {
-            data: {}
+            data: {
+            },
         },
-        timezone: 'Europe/Stockholm'
-    });
+        timezone: 'Europe/Stockholm',
+    })
 
-    const notifications = ref([]);
+    const notifications = ref([])
 
-    const users = ref([]);
+    const users = ref([])
 
-    const roles = computed(() => user.value.role_list);
+    const roles = computed(() => user.value.role_list)
 
-    const isDev = computed(() => user.value.role_list.includes('dev'));
+    const isDev = computed(() => user.value.role_list.includes('dev'))
 
-    const timezone = computed(() => user.value.timezone);
+    const timezone = computed(() => user.value.timezone)
 
     async function index () {
-        const { data } = await AuthenticatedUser.index();
+        const { data } = await AuthenticatedUser.index()
 
-        user.value = data;
+        user.value = data
     }
 
     async function fetchNotifications () {
@@ -38,24 +39,24 @@ export const useUserStore = defineStore('user', () => {
                 params: {
                     'filter[unseen]': true,
                     number: 300,
-                    field: 'id'
-                }
+                    field: 'id',
+                },
             }
 
-            const { data } = await Notification.index(payload);
+            const { data } = await Notification.index(payload)
 
-            notifications.value = data;
+            notifications.value = data
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 
     function setUser (data) {
-        user.value = data;
+        user.value = data
     }
 
     function setUsers ( data ) {
-        users.value = data;
+        users.value = data
     }
 
     return {
@@ -68,6 +69,6 @@ export const useUserStore = defineStore('user', () => {
         index,
         fetchNotifications,
         setUser,
-        setUsers
+        setUsers,
     }
 })

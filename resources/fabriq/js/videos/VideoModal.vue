@@ -115,6 +115,7 @@
         </div>
     </FModal>
 </template>
+
 <script>
 import Download from '@fabriq/models/Download.js'
 import Video from '@fabriq/models/Video.js'
@@ -125,19 +126,24 @@ import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'VideoModal',
-    emits: ['item-deleted'],
     props: {
         item: {
             type: Object,
-            default: () => {}
-        }
+            default: () => {},
+        },
 
     },
+
+    emits: ['item-deleted'],
 
     setup() {
         const eventBus = useEventBus()
-        return {eventBus}
+
+        return {
+            eventBus, 
+        }
     },
+
     data () {
         return {
             video: {
@@ -145,100 +151,121 @@ export default {
                 size: 0,
                 tags: [],
             },
-            availableTags: []
+
+            availableTags: [],
         }
     },
+
     computed: {
         nameTags () {
             return this.video.tags?.map(item => {
                 return item.name
             })
-        }
+        },
     },
+
     methods: {
         ...formatters,
         async fetchVideo () {
             try {
                 const payload = {
                     params: {
-                        include: 'tags'
-                    }
+                        include: 'tags',
+                    },
                 }
                 const { data } = await Video.show(this.item.id, payload)
+
                 this.video = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async initModal () {
             try {
                 const promises = [
                     this.fetchVideo(this.item.id),
-                    this.fetchVideoTags()
+                    this.fetchVideoTags(),
                 ]
+
                 await Promise.all(promises)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchVideoTags () {
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'videos'
-                    }
+                        'filter[type]': 'videos',
+                    },
                 }
                 const { data } = await Tag.index(payload)
+
                 this.availableTags = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         resetVideo () {
             this.video = {
                 id: 0,
                 size: 0,
-                tags: []
+                tags: [],
             }
         },
+
         async updateVideo () {
             try {
                 const transformedVideo = {
                     ...this.video,
-                    tags: this.nameTags
+                    tags: this.nameTags,
                 }
+
                 await Video.update(this.video.id, transformedVideo)
                 this.eventBus.emit('video-updated')
-                toast.success({ title: 'Videon har uppdaterats!' })
+                toast.success({
+                    title: 'Videon har uppdaterats!', 
+                })
                 this.closeModal()
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteVideo () {
             try {
                 await Video.destroy(this.video.id)
                 this.eventBus.emit('video-updated')
-                toast.success({ title: 'Videon har raderats' })
+                toast.success({
+                    title: 'Videon har raderats', 
+                })
                 this.$emit('item-deleted')
                 this.closeModal()
             } catch (error) {
-                toast.error({ title: 'Kunde inte radera videon' })
+                toast.error({
+                    title: 'Kunde inte radera videon', 
+                })
                 console.error(error)
             }
         },
+
         async downloadFile () {
             const payload = {
                 params: {
-                    type: 'videos'
-                }
+                    type: 'videos',
+                },
             }
             const { data, headers } = await Download.show(this.video.id, payload)
+
             await Download.handleBlobDownload(data, headers)
         },
+
         closeModal() {
             this.$vfm.close('video-modal')
-        }
-    }
+        },
+    },
 }
 </script>

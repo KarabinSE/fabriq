@@ -124,17 +124,19 @@ import { Button } from '@fabriq/models/Button'
 import PageTree from '@fabriq/models/PageTree'
 import { ref } from 'vue'
 
-defineOptions({name: 'ButtonModal'})
+defineOptions({
+    name: 'ButtonModal', 
+})
 const model = defineModel({
     type: Object,
-    default: () => new Button()
+    default: () => new Button(),
 })
 
 const emit = defineEmits(['saved'])
 const props = defineProps({
     id: {
         type: String,
-        required: true
+        required: true,
     },
     disabled: {
         type: Boolean,
@@ -168,10 +170,11 @@ async function fetchPages () {
             params: {
                 // field: 'id,name',
                 append: 'paths',
-                selectOptions: true
-            }
+                selectOptions: true,
+            },
         }
         const { data } = await PageTree.index(payload)
+
         localPages.value = data
     } catch (error) {
         console.error(error)

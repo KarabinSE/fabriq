@@ -1,5 +1,6 @@
 <template>
     <VueFinalModal
+        v-slot="api"
         :lock-scroll="false"
         class="flex items-start justify-center sm:pt-12 pt-4"
         content-class="relative flex flex-col mx-4 bg-white rounded-lg shadow modal-content sm:mx-0"
@@ -15,7 +16,6 @@
             leaveFromClass: 'opacity-100 scale-100',
         }"
         :modal-id="name"
-        v-slot="api"
     >
         <span class="py-6 border-b border-gray-200">
             <div class="flex items-center justify-between px-6">
@@ -58,32 +58,34 @@
 <script setup>
 import { VueFinalModal } from 'vue-final-modal'
 
-defineOptions({ name: 'FModal' })
+defineOptions({
+    name: 'FModal', 
+})
 const props = defineProps ({
     name: {
         type: String,
-        required: true
+        required: true,
     },
     width: {
         type: String,
-        default: 'max-w-3xl'
+        default: 'max-w-3xl',
     },
     overflow: {
         type: String,
-        default: 'overflow-visible'
+        default: 'overflow-visible',
     },
     clickToClose: {
         type: Boolean,
-        default: true
+        default: true,
     },
     escToClose: {
         type: Boolean,
-        default: true
+        default: true,
     },
     hideCloseButton: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
 </script>

@@ -1,10 +1,11 @@
-import { useUserStore } from "@fabriq/stores";
+import { useUserStore } from '@fabriq/stores'
 
 export default function BroadcastMiddleware ({ app, to }) {
     // Check if Echo is enabled
     if (!app.config.globalProperties.$echo) {
         return
     }
+
     const Echo = app.config.globalProperties.$echo
     const id = to.params.id
     const wsPrefix = window.fabriqCms.pusher.ws_prefix
@@ -12,7 +13,7 @@ export default function BroadcastMiddleware ({ app, to }) {
     const broadcastName = to.meta.broadcastName
     const capitalizedBroadcastName = broadcastName[0].toUpperCase() + broadcastName.slice(1)
 
-    const userStore = useUserStore();
+    const userStore = useUserStore()
 
     // Listen to model events
     Echo.channel(`${wsPrefix}-${broadcastName}.${id}`)
@@ -21,7 +22,7 @@ export default function BroadcastMiddleware ({ app, to }) {
                 app.config.globalProperties.$eventBus.emit(
                     `${broadcastName}-updated-echo`,
                     event,
-                );
+                )
             }
         })
 

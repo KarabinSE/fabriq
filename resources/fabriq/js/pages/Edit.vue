@@ -282,9 +282,9 @@ export default {
     },
 
     setup () {
-        const pageStore = usePageStore();
-        const configStore = useConfigStore();
-        const uiStore = useUiStore();
+        const pageStore = usePageStore()
+        const configStore = useConfigStore()
+        const uiStore = useUiStore()
         const previewStore = usePreviewStore()
         const vfm = useVfm()
         const eventBus = useEventBus()
@@ -311,19 +311,19 @@ export default {
 
     computed: {
         page() {
-            return this.pageStore.page;
+            return this.pageStore.page
         },
 
         openCards() {
-            return this.uiStore.openCards;
+            return this.uiStore.openCards
         },
 
         locales () {
-            return this.configStore.supportedLocales;
+            return this.configStore.supportedLocales
         },
 
         devMode () {
-            return this.configStore.devMode;
+            return this.configStore.devMode
         },
 
         filteredGroupedFields () {
@@ -340,7 +340,7 @@ export default {
             }
 
             return 'Spara'
-        }
+        },
     },
 
     async activated () {
@@ -371,7 +371,9 @@ export default {
         async updateContent () {
             try {
                 await this.pageStore.update(this.pageId)
-                toast.success({ title: 'Utkastet har sparats' })
+                toast.success({
+                    title: 'Utkastet har sparats', 
+                })
                 this.eventBus.emit('page-updated')
             } catch (error) {
                 console.error(error)

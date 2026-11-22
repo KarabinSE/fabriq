@@ -37,38 +37,45 @@
         </template>
     </FModal>
 </template>
+
 <script>
 export default {
     name: 'RefreshObjectModal',
     props: {
         show: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         name: {
             type: String,
             default: 'RefreshObjectModal',
         },
+
         width: {
             type: String,
-            default: 'max-w-md'
-        }
+            default: 'max-w-md',
+        },
     },
+
     data () {
         return {
-            showModal: false
+            showModal: false,
         }
     },
+
     methods: {
         async refreshPage() {
             window.location.reload()
         },
+
         emitOpened () {
             this.$emit('opened')
         },
+
         emitBeforeOpen () {
             this.$emit('before-open')
-        }
-    }
+        },
+    },
 }
 </script>

@@ -231,10 +231,10 @@
                                 <KeepAlive>
                                     <Component
                                         :is="block.block_type.component_name"
-                                        :block
                                         v-model:name="block.name"
                                         v-model:content="block.content"
                                         v-model:children="block.content"
+                                        :block
                                         :index="blockIndex"
                                     />
                                 </KeepAlive>
@@ -248,11 +248,11 @@
 </template>
 
 <script setup>
-import ImageIcon from '@fabriq/icons/ImageIcon.vue';
-import BlockType from '@fabriq/models/BlockType';
-import { useConfigStore, usePageStore, usePreviewStore } from '@fabriq/stores';
-import { useClipboard } from '@vueuse/core';
-import CrosshairsIcon from '@fabriq/icons/CrosshairsIcon.vue';
+import ImageIcon from '@fabriq/icons/ImageIcon.vue'
+import BlockType from '@fabriq/models/BlockType'
+import { useConfigStore, usePageStore, usePreviewStore } from '@fabriq/stores'
+import { useClipboard } from '@vueuse/core'
+import CrosshairsIcon from '@fabriq/icons/CrosshairsIcon.vue'
 import { toast } from '@fabriq/components/toast/toast'
 import { onBeforeMount, ref } from 'vue'
 import { computed } from 'vue'
@@ -260,21 +260,24 @@ import BlockTypeModal from '@fabriq/pages/BlockTypeModal.vue'
 import Draggable from 'vuedraggable'
 import { cn, createModal } from '@fabriq/helpers/utils'
 
-const configStore = useConfigStore();
+const configStore = useConfigStore()
 const pageStore = usePageStore()
 const previewStore = usePreviewStore()
 
 const props = defineProps({
     withPreviewBlockLocator: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
 
-const { copy } = useClipboard({ legacy: true });
+const { copy } = useClipboard({
+    legacy: true, 
+})
 
-const blockTypes = ref({})
+const blockTypes = ref({
+})
 const dragging = ref(false)
 
 const dragOptions = computed(() => ({
@@ -332,13 +335,15 @@ async function fetchBlockTypes() {
 
 async function copyBlockId(id) {
     try {
-        await copy('#' + id);
+        await copy('#' + id)
         toast.success({
             title: 'Blockets ID har kopierats',
-            message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.'
+            message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.',
         })
     } catch (error) {
-        toast.error({title: 'Ojdå! Det gick inte att kopiera ID'})
+        toast.error({
+            title: 'Ojdå! Det gick inte att kopiera ID', 
+        })
         console.error(error)
     }
 }
@@ -347,6 +352,7 @@ function onDragStart() {
     dragging.value = true
     document.body.classList.add('cursor-grabbing')
 }
+
 function onDragEnd() {
     dragging.value = false
     document.body.classList.remove('cursor-grabbing')

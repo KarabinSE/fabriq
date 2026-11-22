@@ -1,14 +1,15 @@
 import Link from '@tiptap/extension-link'
+
 export default class CustomLink extends Link {
     get schema () {
         return {
             attrs: {
                 href: {
-                    default: null
+                    default: null,
                 },
                 target: {
-                    default: null
-                }
+                    default: null,
+                },
             },
             inclusive: false,
             parseDOM: [
@@ -16,14 +17,14 @@ export default class CustomLink extends Link {
                     tag: 'a[href]',
                     getAttrs: dom => ({
                         href: dom.getAttribute('href'),
-                        target: dom.getAttribute('target')
-                    })
-                }
+                        target: dom.getAttribute('target'),
+                    }),
+                },
             ],
             toDOM: node => ['a', {
                 ...node.attrs,
-                rel: 'noopener noreferrer nofollow'
-            }, 0]
+                rel: 'noopener noreferrer nofollow',
+            }, 0],
         }
     }
 }

@@ -1,1 +1,1 @@
-import "./click-outside";
+import './click-outside'

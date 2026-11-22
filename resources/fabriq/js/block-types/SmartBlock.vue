@@ -55,24 +55,28 @@
         </div>
     </div>
 </template>
+
 <script>
 import SmartBlock from '@fabriq/models/SmartBlock'
+
 export default {
     name: 'SmartBlock',
     props: {
         index: {
             type: Number,
-            default: 0
+            default: 0,
         },
+
         value: {
             type: [String, Number, Object, Array],
             default: () => {
                 return {
                     name: '',
-                    header: ''
+                    header: '',
                 }
-            }
+            },
         },
+
         content: {
             type: [Array, Object],
             required: true,
@@ -80,35 +84,39 @@ export default {
                 return {
                     name: '',
                     headerType: {
-                        name: ''
-                    }
+                        name: '',
+                    },
                     // repeaters: []
                 }
-            }
-        }
+            },
+        },
     },
+
     data () {
         return {
 
             // repeaters: this.content.repeaters,
             localContent: this.content,
-            smartBlocks: []
+            smartBlocks: [],
         }
     },
+
     activated () {
         this.id = this.$route.params.id
         this.fetchSmartBlocks()
     },
+
     methods: {
         async fetchSmartBlocks () {
             try {
                 const { data } = await SmartBlock.index()
+
                 this.smartBlocks = data
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 
 }
 </script>

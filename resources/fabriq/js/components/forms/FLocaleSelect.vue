@@ -17,28 +17,34 @@
         </select>
     </div>
 </template>
+
 <script>
-import { useConfigStore } from '@fabriq/stores';
+import { useConfigStore } from '@fabriq/stores'
 
 export default {
     name: 'FLocaleSelect',
     setup() {
-        const configStore = useConfigStore();
+        const configStore = useConfigStore()
 
-        return { configStore }
+        return {
+            configStore, 
+        }
     },
+
     computed: {
         locales () {
-            return this.configStore.supportedLocales;
+            return this.configStore.supportedLocales
         },
+
         activeLocale: {
             get () {
-                return this.configStore.activeLocale;
+                return this.configStore.activeLocale
             },
+
             set (value) {
-                this.configStore.setActiveLocale(value);
-            }
-        }
-    }
+                this.configStore.setActiveLocale(value)
+            },
+        },
+    },
 }
 </script>

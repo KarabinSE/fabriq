@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { route } from '@/generated/helpers/route';
+import { route } from '@/generated/helpers/route'
 import { toast } from '@fabriq/components/toast/toast'
 import Contact from '@fabriq/models/Contact'
 import axios from 'axios'
@@ -51,20 +51,23 @@ import Draggable from 'vuedraggable'
 export default {
     name: 'SortModal',
     components: {
-        Draggable
+        Draggable,
     },
+
     props: {
         item: {
             type: Object,
-            default: () => { }
-        }
+            default: () => { },
+        },
     },
+
     data()  {
         return {
             show: false,
-            contacts: []
+            contacts: [],
         }
     },
+
     computed: {
         dragOptions () {
             return {
@@ -74,6 +77,7 @@ export default {
             }
         },
     },
+
     methods: {
         async fetchContacts () {
             try {
@@ -81,22 +85,27 @@ export default {
                     params: {
                         sort: 'sortindex',
                         number: 1500,
-                    }
+                    },
                 }
 
                 const { data, meta } = await Contact.index(payload)
+
                 this.contacts = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async saveSortOrder(stuff) {
             console.log(stuff, this.contacts)
             this.contacts.forEach((item, index) => {
                 item.sortindex = (index + 1) * 10
             })
+
             try {
-                await axios.post(route('contacts.sort'), { contacts: this.contacts })
+                await axios.post(route('contacts.sort'), {
+                    contacts: this.contacts, 
+                })
                 this.$emit('updated')
                 toast.success({
                     title: 'Kontakterna har sorterats!',
@@ -108,16 +117,18 @@ export default {
                 console.error(error)
             }
         },
+
         async initModal (parameters) {
             try {
                 const promises = [
-                    this.fetchContacts()
+                    this.fetchContacts(),
                 ]
+
                 await Promise.all(promises)
             } catch (error) {
                 console.error(error)
             }
         },
-    }
+    },
 }
 </script>

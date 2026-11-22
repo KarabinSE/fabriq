@@ -12,8 +12,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'H4Icon'
+    name: 'H4Icon',
 }
 </script>

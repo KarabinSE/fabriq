@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { route } from "@/generated/helpers/route"
+import { route } from '@/generated/helpers/route'
 
 export default {
     async index (payload) {
@@ -12,5 +12,5 @@ export default {
         const { data } = await axios.post(route('tags.store'), payload)
 
         return data
-    }
+    },
 }

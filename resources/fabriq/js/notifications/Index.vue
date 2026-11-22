@@ -82,6 +82,7 @@
         </FTable>
     </div>
 </template>
+
 <script>
 import Notification from '@fabriq/models/Notification.js'
 import PageComment from '@fabriq/notifications/PageComment.vue'
@@ -93,114 +94,146 @@ import { useEventBus } from '@fabriq/services/eventBus'
 export default {
     name: 'NotificationsIndex',
     components: {
-        PageComment
+        PageComment,
     },
+
     beforeRouteLeave(from, to, next) {
         this.eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
     },
+
     beforeRouteLeave(from, to, next) {
         this.eventBus.off('user-mentioned-echo', this.fetchItems)
         next()
     },
+
     setup () {
-        const userStore = useUserStore();
+        const userStore = useUserStore()
         const eventBus = useEventBus()
 
-        return { userStore, eventBus }
+        return {
+            userStore,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             email: '',
             unseenNotifications: [],
             seenNotifications: [],
-            unseenPagination: {},
+            unseenPagination: {
+            },
+
             unseenQueryParams: {
                 number: 20,
                 page: 1,
                 include: 'notifiable,notifiable.user',
-                'filter[unseen]': true
+                'filter[unseen]': true,
             },
+
             seenQueryParams: {
                 number: 10,
                 page: 1,
                 include: 'notifiable,notifiable.user',
-                'filter[seen]': true
+                'filter[seen]': true,
             },
-            seenPagination: {},
+
+            seenPagination: {
+            },
+
             unseenNotificationColumns: [
                 {
                     title: 'Nya notiser',
                     key: 'commentInfo',
                     tdClasses: 'w-full ',
-                    thClasses: 'w-full bg-royal-500 rounded-tl text-neutral-100'
+                    thClasses: 'w-full bg-royal-500 rounded-tl text-neutral-100',
                 },
                 {
                     title: '',
                     key: 'controls',
-                    thClasses: 'w-full bg-royal-500 text-neutral-100 rounded-tr'
-                }
+                    thClasses: 'w-full bg-royal-500 text-neutral-100 rounded-tr',
+                },
             ],
+
             seenNotificationColumns: [
                 {
                     title: 'Hanterade notiser',
                     key: 'commentInfo',
                     tdClasses: 'w-full',
-                    thClasses: 'w-full bg-royal-500 rounded-t text-neutral-100'
-                }
-            ]
+                    thClasses: 'w-full bg-royal-500 rounded-t text-neutral-100',
+                },
+            ],
         }
     },
+
     mounted() {
         this.eventBus.on('user-mentioned-echo', this.fetchItems)
     },
+
     activated () {
         this.fetchUnseenItems()
         this.fetchSeenItems()
     },
+
     methods: {
         ...formatters,
         async fetchItems () {
             await this.fetchUnseenItems()
             await this.fetchSeenItems()
         },
+
         async fetchUnseenItems () {
             try {
                 const payload = {
-                    params: this.unseenQueryParams
+                    params: this.unseenQueryParams,
                 }
                 const { data, meta } = await Notification.index(payload)
+
                 this.unseenNotifications = data
                 this.unseenPagination = meta.pagination
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchSeenItems () {
             try {
                 const payload = {
-                    params: this.seenQueryParams
+                    params: this.seenQueryParams,
                 }
                 const { data, meta } = await Notification.index(payload)
+
                 this.seenNotifications = data
                 this.seenPagination = meta.pagination
             } catch (error) {
                 console.error(error)
             }
         },
+
         handleRowClicked (row) {
             if (row.notifiable.data.commentable_type.includes('Page')) {
                 this.clearNotification(row.id)
-                this.$router.push({ name: 'pages.edit', params: { id: row.notifiable.data.commentable_id }, query: { openComments: true, commentId: row.notifiable_id } })
+                this.$router.push({
+                    name: 'pages.edit',
+                    params: {
+                        id: row.notifiable.data.commentable_id, 
+                    },
+                    query: {
+                        openComments: true,
+                        commentId: row.notifiable_id, 
+                    }, 
+                })
             }
         },
+
         async clearNotification (id, refresh = false) {
             try {
                 await Notification.update(id, {
-                    clear: true
+                    clear: true,
                 })
 
-                this.userStore.fetchNotifications();
+                this.userStore.fetchNotifications()
 
                 if (refresh) {
                     this.fetchItems()
@@ -209,21 +242,25 @@ export default {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchSeenItems()
         },
+
         setPage (pageNumber) {
             this.unseenQueryParams.page = pageNumber
             this.fetchUnseenItems()
         },
+
         setSeenPage (pageNumber) {
             this.seenQueryParams.page = pageNumber
             this.fetchSeenItems()
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 blockquote {
     overflow: hidden;

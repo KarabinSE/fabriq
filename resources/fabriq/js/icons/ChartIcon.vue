@@ -46,6 +46,6 @@
 
 <script>
 export default {
-    name: 'ChartIcon'
+    name: 'ChartIcon',
 }
 </script>

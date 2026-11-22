@@ -39,8 +39,8 @@
                     </div>
                     <div class="absolute inset-0 transition-opacity duration-300 bg-black rounded-md opacity-0 group-hover:opacity-50 " />
                     <UiImagePresenter
-                        thumbnail
                         v-if="localImage"
+                        thumbnail
                         :image="localImage"
                         class="block object-cover w-full h-full rounded-md"
                     />
@@ -98,61 +98,64 @@ import { createModal } from '@fabriq/helpers/utils'
 import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
 
 const eventBus = useEventBus()
-defineOptions({name: 'FImageInput'})
+
+defineOptions({
+    name: 'FImageInput',
+})
 
 const emit = defineEmits(['item-picked'])
 const props = defineProps({
     modelValue: {
         type: [String, Number, Object, Array],
-        default: null
+        default: null,
     },
     label: {
         type: String,
-        default: ''
+        default: '',
     },
     modelId: {
         type: Number,
         required: false,
-        default: 0
+        default: 0,
     },
     fieldKey: {
         type: String,
         required: false,
-        default: ''
+        default: '',
     },
     multiple: {
         type: Boolean,
-        default: false
+        default: false,
     },
     modelName: {
         type: String,
-        default: ''
+        default: '',
     },
     buttonText: {
         type: String,
-        default: ''
+        default: '',
     },
     group: {
         type: String,
-        default: ''
+        default: '',
     },
     syncSimilar: {
         type: Boolean,
-        default: false
+        default: false,
     },
     name: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
+        default: false,
     },
 })
 
 const localImage =  defineModel({
     type: Object,
-    default: null
+    default: null,
 })
 
 const instanceId =  Math.random().toString(20).substring(2, 6)
@@ -174,10 +177,12 @@ onUnmounted(() => {
     // $refs.dropElement?.removeEventListener('dragover', handleDragOver)
     // $refs.dropElement?.removeEventListener('dragleave', handleDragLeave)
 })
+
 function clearImage () {
     localImage.value = null
     emitImageSelected()
 }
+
 async function pickImage (id) {
     if (props.multiple) {
         await pickMultipleImages(id)
@@ -185,12 +190,14 @@ async function pickImage (id) {
         await pickSingleImage(id)
     }
 }
+
 async function pickMultipleImages (id) {
     try {
         const payload = {
-            model_id: props.modelId
+            model_id: props.modelId,
         }
         const { data } = await Image.attachToModel(id, modelName, payload)
+
         emit('item-picked', data)
     } catch (error) {
         console.error(error)
@@ -201,9 +208,10 @@ async function pickSingleImage (id) {
     try {
         const payload = {
             key: props.fieldKey,
-            model_id: props.modelId
+            model_id: props.modelId,
         }
         const { data } = await Image.show(id, payload)
+
         localImage.value = data
         emitImageSelected()
     } catch (error) {
@@ -225,8 +233,10 @@ function emitImageSelected () {
     if (props.group) {
         this.eventBus.emit('image-selected', {
             group: group,
-            data: { ...localImage.value },
-            uid: instanceId
+            data: {
+                ...localImage.value,
+            },
+            uid: instanceId,
         })
     }
 }

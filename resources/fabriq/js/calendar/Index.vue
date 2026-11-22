@@ -124,51 +124,70 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import EventModal from '@fabriq/calendar/EventModal.vue'
 import Event from '@fabriq/models/Event.js'
 import { endOfMonth, format, startOfMonth } from 'date-fns'
-import { useConfigStore } from '@fabriq/stores';
+import { useConfigStore } from '@fabriq/stores'
 import * as formatters from '@fabriq/utils/formatters'
 import { useVfm } from 'vue-final-modal'
 import { toast } from '@fabriq/components/toast/toast'
 
 export default {
     name: 'CalendarIndex',
-    components: { EventModal },
+    components: {
+        EventModal, 
+    },
+
     setup () {
-        const configStore = useConfigStore();
+        const configStore = useConfigStore()
         const vfm = useVfm()
 
-        return { configStore, vfm }
+        return {
+            configStore,
+            vfm, 
+        }
     },
+
     data () {
         return {
             calendarItems: [],
-            pagination: {},
-            show: {
-                eventCreateModal: false
+            pagination: {
             },
+
+            show: {
+                eventCreateModal: false,
+            },
+
             queryParams: {
                 number: 300,
                 page: 1,
                 'filter[dateRange]': '1999-02-24,2021-03-04',
-                append: 'title'
+                append: 'title',
             },
+
             masks: {
-                weekdays: 'WWWW'
+                weekdays: 'WWWW',
             },
+
             eventsData: [],
             localesWithErrors: [],
-            eventData: {},
-            activeEvent: {},
-            creatingEvent: true
+            eventData: {
+            },
+
+            activeEvent: {
+            },
+
+            creatingEvent: true,
         }
     },
+
     computed: {
         locales () {
-            return this.configStore.supportedLocales;
+            return this.configStore.supportedLocales
         },
+
         events () {
             // Attributes for todos
             return [
@@ -176,7 +195,7 @@ export default {
                 ...this.eventsData.map(eventItem => ({
                     dates: {
                         start: formatLocalTime(eventItem.start),
-                        end: formatLocalTime(eventItem.end)
+                        end: formatLocalTime(eventItem.end),
                         // dailyInterval: eventItem.daily_interval ? eventItem.daily_interval : 1
                         // months: 2,
                         // ordinalWeekdays: { 2: 1 }
@@ -186,9 +205,9 @@ export default {
                     customData: {
                         title: eventItem.title,
                         data: eventItem,
-                        class: ''
-                    }
-                }))
+                        class: '',
+                    },
+                })),
                 // {
                 //     customData: {
                 //         title: 'TEST',
@@ -198,12 +217,14 @@ export default {
                 //     // dates: { ordinalWeekdays: { 1: 3 } }
                 // }
             ]
-        }
+        },
 
     },
+
     activated () {
         this.fetchEvents()
     },
+
     methods: {
         ...formatters,
         setCurrentMonthFilter (payload) {
@@ -213,50 +234,62 @@ export default {
             this.queryParams['filter[dateRange]'] = `${format(start, 'yyyy-MM-dd')},${format(end, 'yyyy-MM-dd')}`
             this.fetchEvents()
         },
+
         async fetchEvents () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data } = await Event.index(payload)
+
                 this.eventsData = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchEvent (id) {
             try {
                 const payload = {
                     params: {
-                        include: 'content,localizedContent'
-                    }
+                        include: 'content,localizedContent',
+                    },
                 }
                 const { data } = await Event.show(id, payload)
+
                 this.eventData = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteEvent (id) {
             try {
                 await Event.destroy(id)
                 this.fetchEvents()
-                toast.success({ title: 'Händelsen har tagits bort' })
+                toast.success({
+                    title: 'Händelsen har tagits bort', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         editEvent (event) {
-            this.activeEvent = { ...this.eventData }
+            this.activeEvent = {
+                ...this.eventData, 
+            }
             this.creatingEvent = false
             this.vfm.open('event-create-modal')
         },
+
         openCreateEventModal () {
             this.creatingEvent = true
             this.vfm.open('event-create-modal')
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 </style>

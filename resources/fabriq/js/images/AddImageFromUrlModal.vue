@@ -31,39 +31,49 @@
         </FModal>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Image from '@fabriq/models/Image.js'
+
 export default {
     name: 'AddImageFromUrlModal',
     props: {
         name: {
             type: String,
-            required: true
+            required: true,
         },
+
         width: {
             type: String,
-            default: 'max-w-xl'
-        }
+            default: 'max-w-xl',
+        },
     },
+
     data () {
         return {
             show: false,
-            imageUrl: ''
+            imageUrl: '',
         }
     },
+
     methods: {
         async addImage () {
             const result = await this.$refs.observer?.validate()
+
             if (!result) {
                 return
             }
+
             const payload = {
-                url: this.imageUrl
+                url: this.imageUrl,
             }
+
             await Image.store(payload)
             this.$emit('image-added')
-            toast.success({ title: 'Bilden har lagts till!' })
+            toast.success({
+                title: 'Bilden har lagts till!', 
+            })
             this.vfm.close(this.name)
             setTimeout(() => {
                 this.imageUrl = ''
@@ -71,7 +81,7 @@ export default {
                     this.$refs.observer?.reset()
                 })
             }, 300)
-        }
-    }
+        },
+    },
 }
 </script>

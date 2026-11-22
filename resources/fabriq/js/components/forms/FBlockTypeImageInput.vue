@@ -72,46 +72,55 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'FImageInput',
     props: {
         value: {
             type: [File],
-            default: null
+            default: null,
         },
+
         label: {
             type: String,
-            default: ''
+            default: '',
         },
+
         name: {
             type: String,
-            default: ''
+            default: '',
         },
+
         previewSrc: {
             type: String,
-            default: null
-        }
+            default: null,
+        },
     },
+
     data () {
         return {
             isDraggingOver: false,
             selectedFilePreview: null,
         }
     },
+
     computed: {
         randomRef () {
             return Math.random().toString(20).substr(2, 6)
         },
+
         hasImage () {
             return this.selectedFilePreview
         },
     },
+
     mounted () {
         this.selectedFilePreview = this.previewSrc
         // this.$refs[this.randomRef].addEventListener('dragover', this.handleDragOver)
         // this.$refs[this.randomRef].addEventListener('dragleave', this.handleDragLeave)
     },
+
     unmounted () {
         // this.$refs[this.randomRef].removeEventListener('dragover', this.handleDragOver)
         // this.$refs[this.randomRef].removeEventListener('dragleave', this.handleDragLeave)
@@ -120,16 +129,20 @@ export default {
             window.URL.revokeObjectURL(this.selectedFilePreview)
         }
     },
+
     methods: {
         selectImage() {
             this.$refs['fileInput']?.click()
         },
+
         handleDragOver () {
             this.isDraggingOver = true
         },
+
         handleDragLeave () {
             this.isDraggingOver = false
         },
+
         clearImage () {
             this.isDraggingOver = false
 
@@ -137,13 +150,15 @@ export default {
             this.selectedFilePreview = null
             this.$emit('input', null)
         },
+
         onImageSelected(file) {
             if(this.selectedFilePreview) {
                 window.URL.revokeObjectURL(this.selectedFilePreview)
             }
+
             this.selectedFilePreview = window.URL.createObjectURL(file)
             this.$emit('input', file)
         },
-    }
+    },
 }
 </script>

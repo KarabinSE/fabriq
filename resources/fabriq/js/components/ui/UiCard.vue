@@ -46,9 +46,9 @@
 
 <script setup>
 import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
-import { useUiStore } from '@fabriq/stores';
+import { useUiStore } from '@fabriq/stores'
 import { useEventBus } from '@fabriq/services/eventBus'
-import { cn } from '@fabriq/helpers/utils';
+import { cn } from '@fabriq/helpers/utils'
 import { onMounted, onUnmounted, ref, useSlots } from 'vue'
 import { computed } from 'vue'
 
@@ -59,7 +59,9 @@ const slots = useSlots()
 
 const emit = defineEmits(['before-open', 'before-close'])
 
-defineOptions({name: 'UiCard'})
+defineOptions({
+    name: 'UiCard', 
+})
 const props = defineProps({
     padding: {
         type: Boolean,
@@ -133,7 +135,7 @@ onMounted(() => {
         open.value = true
         setTimeout(() => {
             animationDuration.value = 500
-        }, 100);
+        }, 100)
     }
 })
 
@@ -171,7 +173,7 @@ function closeCollapsible (shouldEmit = true) {
 
 function toggleCollapsible () {
     if (props.identifier) {
-        uiStore.toggleOpenCard(props.identifier);
+        uiStore.toggleOpenCard(props.identifier)
     }
 
     open.value

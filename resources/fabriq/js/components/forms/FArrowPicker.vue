@@ -27,9 +27,18 @@
 
 <script>
 export const buttonArrows = [
-    { label: 'Ingen', value: 'none' },
-    { label: 'Ner', value: 'down' },
-    { label: 'Höger', value: 'right' },
+    {
+        label: 'Ingen',
+        value: 'none', 
+    },
+    {
+        label: 'Ner',
+        value: 'down', 
+    },
+    {
+        label: 'Höger',
+        value: 'right', 
+    },
 ]
 </script>
 
@@ -39,24 +48,24 @@ import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
 const props = defineProps({
     value: {
         type: String,
-        default: ''
+        default: '',
     },
     label: {
         type: String,
-        default: 'Pil'
+        default: 'Pil',
     },
     name: {
         type: String,
-        default: ''
+        default: '',
     },
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 })
 
 const arrow = defineModel({
     type: String,
-    default: 'none'
+    default: 'none',
 })
 </script>

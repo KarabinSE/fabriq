@@ -107,11 +107,12 @@
         </div>
     </Transition>
 </template>
+
 <script>
-import { useConfigStore, usePageStore, usePreviewStore, useUiStore } from '@fabriq/stores';
-import { useDebounceFn } from '@vueuse/core';
-import BlockList from '@fabriq/blocks/BlockList.vue';
-import { useStorage } from '@vueuse/core';
+import { useConfigStore, usePageStore, usePreviewStore, useUiStore } from '@fabriq/stores'
+import { useDebounceFn } from '@vueuse/core'
+import BlockList from '@fabriq/blocks/BlockList.vue'
+import { useStorage } from '@vueuse/core'
 import { useVfm } from 'vue-final-modal'
 import BlockTypeModal from '@fabriq/pages/BlockTypeModal.vue'
 import { createModal } from '@fabriq/helpers/utils'
@@ -124,12 +125,14 @@ export default {
 
     setup () {
         const vfm = useVfm()
-        const pageStore = usePageStore();
-        const configStore = useConfigStore();
-        const uiStore = useUiStore();
-        const previewStore = usePreviewStore();
+        const pageStore = usePageStore()
+        const configStore = useConfigStore()
+        const uiStore = useUiStore()
+        const previewStore = usePreviewStore()
 
-        const resizeStorage = useStorage('preview-resize-width', { width: 700 })
+        const resizeStorage = useStorage('preview-resize-width', {
+            width: 700, 
+        })
 
         return {
             vfm,
@@ -137,35 +140,40 @@ export default {
             configStore,
             uiStore,
             previewStore,
-            resizeStorage
+            resizeStorage,
         }
     },
 
     data() {
         return {
             previewStyles: {
-                width: this.resizeStorage.width + 'px'
+                width: this.resizeStorage.width + 'px',
             },
+
             popoutWindow: null,
-            dragging: false
+            dragging: false,
         }
     },
 
     computed: {
         page() {
-            return this.pageStore.page;
+            return this.pageStore.page
         },
+
         previewUrl() {
             return this.previewStore.url
         },
+
         previewVisible() {
             return this.previewStore.visible
         },
+
         localizedContent() {
             return this.pageStore.localizedContent
         },
+
         devMode() {
-            return this.configStore.devMode;
+            return this.configStore.devMode
         },
 
         showModal() {
@@ -182,7 +190,7 @@ export default {
             }
 
             return 'Spara'
-        }
+        },
     },
 
     methods: {
@@ -240,9 +248,10 @@ export default {
             // this.previewStore.setIframe(this.popoutWindow)
             // this.previewStore.toggleVisible()
         },
-    }
+    },
 }
 </script>
+
 <style scoped>
 .preview-shell-enter-active {
     transition: opacity 200ms ease;

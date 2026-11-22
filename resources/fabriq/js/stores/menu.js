@@ -4,31 +4,31 @@ import { ref, computed } from 'vue'
 
 export const useMenuStore = defineStore('menu', () => {
 
-    const menuItems = ref([]);
+    const menuItems = ref([])
 
-    const fullMenuItems = computed(() => [...menuItems.value, ...SidebarItems()]);
+    const fullMenuItems = computed(() => [...menuItems.value, ...SidebarItems()])
 
     function setSidebarItems (data) {
-        const userRoles = window.fabriqCms.userRoles;
+        const userRoles = window.fabriqCms.userRoles
 
         // Filter if enabled
         menuItems.value = data.filter(item => {
-            return item.enabled;
+            return item.enabled
         }).filter(item => {
             // Filter user roles
             if (item.roles.includes('*')) {
-                return true;
+                return true
             }
 
-            const matchedRoles = userRoles.filter(element => item.roles.includes(element));
+            const matchedRoles = userRoles.filter(element => item.roles.includes(element))
 
-            return matchedRoles.length > 0;
-        });
+            return matchedRoles.length > 0
+        })
     }
 
     return {
         menuItems,
         fullMenuItems,
-        setSidebarItems
+        setSidebarItems,
     }
-});
+})

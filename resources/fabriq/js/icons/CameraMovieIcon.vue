@@ -13,14 +13,15 @@
         fill="currentColor"
     /></svg>
 </template>
+
 <script>
 export default {
     name: 'CameraMovieIcon',
     props: {
         thin: {
             type: Boolean,
-            default: false
-        }
-    }
+            default: false,
+        },
+    },
 }
 </script>

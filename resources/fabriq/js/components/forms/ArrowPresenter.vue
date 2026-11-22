@@ -12,12 +12,15 @@
 import ArrowRightLongIcon from '@fabriq/icons/ArrowRightLongIcon.vue'
 
 export default {
-    components: { ArrowRightLongIcon },
+    components: {
+        ArrowRightLongIcon, 
+    },
+
     props: {
         arrow: {
             type: Object,
-            default: null
+            default: null,
         },
-    }
+    },
 }
 </script>

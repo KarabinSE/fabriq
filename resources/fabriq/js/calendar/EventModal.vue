@@ -129,49 +129,59 @@
         </template>
     </FModal>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Event from '@fabriq/models/Event.js'
-import { useConfigStore } from '@fabriq/stores';
+import { useConfigStore } from '@fabriq/stores'
 
 function defaultCreationObject () {
     return {
         title: '',
         location: '',
-        description: ''
+        description: '',
     }
 }
+
 function defaultMainCreationObject () {
     return {
         date: '',
         start_time: '',
         end_time: '',
-        daily_interval: 0
+        daily_interval: 0,
     }
 }
+
 export default {
     name: 'EventModal',
     props: {
         show: {
             type: Boolean,
-            default: false
+            default: false,
         },
+
         creating: {
             type: Boolean,
-            default: true
+            default: true,
         },
+
         event: {
             type: Object,
             default: () => {
-                return {}
-            }
+                return {
+                }
+            },
+        },
+    },
+
+    setup () {
+        const configStore = useConfigStore()
+
+        return {
+            configStore, 
         }
     },
-    setup () {
-        const configStore = useConfigStore();
 
-        return { configStore }
-    },
     data () {
         return {
             localShow: false,
@@ -179,39 +189,54 @@ export default {
                 date: '',
                 start_time: '',
                 end_time: '',
-                daily_interval: 0
+                daily_interval: 0,
             },
+
             overflow: 'overflow-y-auto',
-            localesWithErrors: []
+            localesWithErrors: [],
 
         }
     },
+
     computed: {
         locales () {
-            return this.configStore.supportedLocales;
-        }
+            return this.configStore.supportedLocales
+        },
     },
+
     methods: {
         prepareData () {
             if (!this.creating) {
-                this.createEvent = { ...this.event }
+                this.createEvent = {
+                    ...this.event, 
+                }
                 this.createEvent.date = {
                     start: this.createEvent.start,
-                    end: this.createEvent.end
+                    end: this.createEvent.end,
                 }
-                const localizedContent = { ...this.event.localizedContent.data }
+                const localizedContent = {
+                    ...this.event.localizedContent.data, 
+                }
+
                 Object.keys(localizedContent).forEach((locale, key) => {
-                    this.createEvent[locale] = { ...localizedContent[locale].content }
+                    this.createEvent[locale] = {
+                        ...localizedContent[locale].content, 
+                    }
                 })
             } else {
                 Object.keys(this.locales).forEach(locale => {
-                    this.createEvent = { ...defaultMainCreationObject() }
+                    this.createEvent = {
+                        ...defaultMainCreationObject(), 
+                    }
                     this.$nextTick(() => {
-                        this.createEvent['locale'] = { ...defaultCreationObject() }
+                        this.createEvent['locale'] = {
+                            ...defaultCreationObject(), 
+                        }
                     })
                 })
             }
         },
+
         resetCreateModal () {
             this.$nextTick(() => {
                 // this.$o
@@ -223,47 +248,65 @@ export default {
                 this.$refs.observer?.reset()
             })
         },
+
         async storeEvent () {
             this.localesWithErrors = []
             const result = await this.validateForms()
+
             if (!result) {
-                toast.warning({ title: 'Oj då!', message: 'Något är tosigt med datan du försöker skicka.' })
+                toast.warning({
+                    title: 'Oj då!',
+                    message: 'Något är tosigt med datan du försöker skicka.', 
+                })
+
                 return
             }
+
             try {
-                const localizedContent = {}
+                const localizedContent = {
+                }
+
                 Object.keys(this.locales).forEach(locale => {
                     localizedContent[locale] = this.createEvent[locale]
                 })
                 const payload = {
                     date: {
                         start: this.createEvent.date.start,
-                        end: this.createEvent.date.end
+                        end: this.createEvent.date.end,
                     },
+
                     start_time: this.createEvent.start_time,
                     end_time: this.createEvent.end_time,
                     daily_interval: this.createEvent.daily_interval,
-                    localizedContent: localizedContent
+                    localizedContent: localizedContent,
                 }
+
                 if (this.creating) {
                     await Event.store(payload)
-                    toast.success({ title: 'Händelsen har skapats! ' })
+                    toast.success({
+                        title: 'Händelsen har skapats! ', 
+                    })
                     this.$emit('updated')
                 } else {
                     await Event.update(this.event.id, payload)
-                    toast.success({ title: 'Händelsen har uppdaterats!' })
+                    toast.success({
+                        title: 'Händelsen har uppdaterats!', 
+                    })
                     this.$emit('updated')
                 }
+
                 this.localShow = false
             } catch (error) {
                 console.error(error)
             }
         },
+
         async validateForms () {
             // const mainIsValid = false
             const formsToValidate = [
-                this.$refs.observer?.validate()
+                this.$refs.observer?.validate(),
             ]
+
             Object.keys(this.locales).forEach(locale => {
                 this.$refs['createForm' + locale][0].validate().then(result => {
                     if (!result) {
@@ -276,12 +319,13 @@ export default {
             })
 
             const result = await Promise.all(formsToValidate)
+
             if (!result.includes(false)) {
                 return true
             }
 
             return false
-        }
-    }
+        },
+    },
 }
 </script>

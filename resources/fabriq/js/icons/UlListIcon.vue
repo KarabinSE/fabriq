@@ -10,8 +10,9 @@
         fill="currentColor"
     /></svg>
 </template>
+
 <script>
 export default {
-    name: 'UlListIcon'
+    name: 'UlListIcon',
 }
 </script>

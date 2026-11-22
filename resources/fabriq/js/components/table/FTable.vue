@@ -129,38 +129,42 @@
         </div>
     </div>
 </template>
+
 <script>
 import FPaginator from '@fabriq/components/table/FPaginator.vue'
 import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'FTable',
-
-    setup() {
-        const eventBus = useEventBus()
-        return {eventBus}
+    components: {
+        FPaginator, 
     },
-    components: { FPaginator },
+
     props: {
         columns: {
             type: Array,
-            required: true
+            required: true,
         },
+
         rows: {
             type: Array,
             required: true,
-            default: () => []
+            default: () => [],
         },
+
         options: {
             required: false,
             type: Object,
-            default: () => ({})
+            default: () => ({
+            }),
         },
+
         paginated: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
+
         pagination: {
             type: Object,
             required: false,
@@ -168,14 +172,25 @@ export default {
                 return {
                     count: 0,
                     current_page: 1,
-                    links: {},
+                    links: {
+                    },
+
                     per_page: 0,
                     total: 0,
-                    total_pages: 0
+                    total_pages: 0,
                 }
-            }
+            },
+        },
+    },
+
+    setup() {
+        const eventBus = useEventBus()
+
+        return {
+            eventBus, 
         }
     },
+
     data () {
         return {
             defaultOptions: {
@@ -191,53 +206,65 @@ export default {
                 search: false,
                 paginationPosition: 'right',
             },
+
             currentSortable: '',
             descending: true,
             checkedRows: [],
-            parentCheck: false
+            parentCheck: false,
         }
     },
+
     computed: {
         mergedOptions () {
             return {
                 ...this.defaultOptions,
-                ...this.options
+                ...this.options,
             }
         },
+
         allRowsChecked: {
             get () {
                 if (this.rows.length === 0) {
                     return false
                 }
+
                 if (!this.mergedOptions.checkableRows) {
                     return false
                 }
+
                 if (this.checkedRows.length === this.rows.length) {
                     return true
                 }
+
                 return false
             },
+
             set () {
 
-            }
+            },
         },
+
         hasTableFooterSlot () {
             return !!this.$slots.footer
-        }
+        },
     },
+
     mounted () {
         this.currentSortable = this.mergedOptions.defaultSort
         this.currentDirection = this.mergedOptions.sortDescending
         this.descending = this.mergedOptions.sortDescending
         this.eventBus.on('clear-checked-rows', this.clearCheckedRows)
     },
+
     unmounted () {
         this.eventBus.off('clear-checked-rows', this.clearCheckedRows)
     },
+
     methods: {
         emitChangePage (pageNumber) {
             this.$emit('change-page', pageNumber)
         },
+
         toggleAllRows () {
             if (this.allRowsChecked) {
                 this.clearCheckedRows()
@@ -248,10 +275,12 @@ export default {
                 this.$emit('check-row', this.checkedRows)
             }
         },
+
         clearCheckedRows () {
             this.checkedRows = []
             this.$emit('check-row', this.checkedRows)
         },
+
         thClicked (column) {
             const sortKey = column.sortKey ?? column.key
 
@@ -266,16 +295,19 @@ export default {
 
             this.currentSortable = sortKey
             const emitData = this.descending ? '-' + sortKey : sortKey
+
             this.$emit('sort', emitData)
         },
+
         rowClicked (row) {
             if (this.options.clickableRows) {
                 this.$emit('row-clicked', row)
             }
         },
+
         checkRow (row) {
             this.$emit('check-row', this.checkedRows)
-        }
-    }
+        },
+    },
 }
 </script>

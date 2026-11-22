@@ -211,27 +211,34 @@
         </div>
     </div>
 </template>
+
 <script>
 import Draggable from 'vuedraggable'
-import { useClipboard } from '@vueuse/core';
+import { useClipboard } from '@vueuse/core'
 import { toast } from '@fabriq/components/toast/toast'
+
 export default {
     name: 'CardBlock',
-    components: { Draggable },
+    components: {
+        Draggable, 
+    },
+
     props: {
         index: {
             type: Number,
-            default: 0
+            default: 0,
         },
+
         value: {
             type: [String, Number, Object, Array],
             default: () => {
                 return {
                     name: '',
-                    header: ''
+                    header: '',
                 }
-            }
+            },
         },
+
         content: {
             type: [Array, Object],
             required: true,
@@ -239,59 +246,70 @@ export default {
                 return {
                     name: '',
                     headerType: {
-                        name: ''
-                    }
+                        name: '',
+                    },
                 }
-            }
+            },
+        },
+    },
+
+    setup() {
+        const { copy } = useClipboard({
+            legacy: true, 
+        })
+
+        return {
+            copy, 
         }
     },
-    setup() {
-        const { copy } = useClipboard({ legacy: true });
 
-        return { copy }
-    },
     data() {
         return {
             headerTypes: [
                 {
                     text: 'Heading 1',
-                    value: 'h1'
+                    value: 'h1',
                 },
                 {
                     text: 'Heading 2',
-                    value: 'h2'
+                    value: 'h2',
                 },
                 {
                     text: 'Heading 3',
-                    value: 'h3'
-                }
+                    value: 'h3',
+                },
             ],
+
             // repeaters: this.content.repeaters,
             localContent: {
                 ...this.content,
-                size: 'large'
+                size: 'large',
 
-            }
+            },
         }
     },
+
     computed: {
         dragOptions() {
             return {
                 animation: 200,
                 group: 'description',
                 disabled: false,
-                ghostClass: 'ghost'
+                ghostClass: 'ghost',
             }
-        }
+        },
     },
+
     methods: {
         addCard(item) {
-            let newItem = {}
+            let newItem = {
+            }
+
             if (!item.name) {
                 newItem = {
                     id: 'i' + Math.random().toString(20).substr(2, 6),
                     name: 'Kort ' + (this.localContent.children.length + 1),
-                    newlyAdded: true
+                    newlyAdded: true,
                 }
             } else {
                 newItem = JSON.parse(JSON.stringify(item))
@@ -299,22 +317,29 @@ export default {
                 newItem.id = 'i' + Math.random().toString(20).substr(2, 6)
                 newItem.name = 'Kopia av ' + newItem.name
             }
+
             this.localContent.children.push(newItem)
             this.$nextTick(() => {
                 newItem.newlyAdded = false
             })
         },
+
         deleteChild(index) {
             this.localContent.children.splice(index, 1)
         },
+
         copySuccess() {
-            toast.success({ title: 'Kortets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+            toast.success({
+                title: 'Kortets ID har kopierats',
+                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+            })
         },
+
         async copyBlockId(id) {
-            await this.copy('#' + id);
+            await this.copy('#' + id)
 
             this.copySuccess()
         },
-    }
+    },
 }
 </script>

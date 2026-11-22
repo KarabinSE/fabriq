@@ -90,8 +90,8 @@
                     <button class="hidden" />
                 </form>
                 <div
-                    class="col-span-8 flex flex-col flex-1  w-full overflow-hidden"
                     v-auto-animate
+                    class="col-span-8 flex flex-col flex-1  w-full overflow-hidden"
                 >
                     <div class="flex justify-end mb-1 space-x-2">
                         <UiBadge>
@@ -113,6 +113,7 @@
         </div>
     </FModal>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
@@ -123,116 +124,142 @@ import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'FileModal',
-
-    setup() {
-        const eventBus = useEventBus()
-        return {eventBus}
-    },
-    emits: ['item-deleted'],
     props: {
         item: {
             type: Object,
-            default: null
-        }
+            default: null,
+        },
 
     },
+
+    emits: ['item-deleted'],
+
+    setup() {
+        const eventBus = useEventBus()
+
+        return {
+            eventBus, 
+        }
+    },
+
     data () {
         return {
             file: {
                 id: 0,
-                size: 0
+                size: 0,
             },
-            availableTags: []
+
+            availableTags: [],
         }
     },
+
     computed: {
         tagNames () {
             return this.file.tags.map(item => item.name)
-        }
+        },
     },
+
     methods: {
         ...formatters,
         async fetchFile (parameters) {
             try {
                 const payload = {
                     params: {
-                        include: 'tags'
-                    }
+                        include: 'tags',
+                    },
                 }
                 const { data } = await File.show(this.item.id, payload)
+
                 this.file = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async initModal (parameters) {
             try {
                 const promises = [
                     this.fetchFile(parameters),
-                    this.fetchFileTags()
+                    this.fetchFileTags(),
                 ]
+
                 await Promise.all(promises)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchFileTags () {
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'files'
-                    }
+                        'filter[type]': 'files',
+                    },
                 }
                 const { data } = await Tag.index(payload)
+
                 this.availableTags = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         resetFile () {
             this.file = {
                 id: 0,
-                size: 0
+                size: 0,
             }
         },
+
         async updateFile () {
             try {
                 const payload = {
                     ...this.file,
-                    tags: [...this.tagNames]
+                    tags: [...this.tagNames],
                 }
+
                 await File.update(this.file.id, payload)
                 this.eventBus.emit('file-updated')
-                toast.success({ title: 'Filen har uppdaterats!' })
+                toast.success({
+                    title: 'Filen har uppdaterats!', 
+                })
                 this.closeModal()
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteFile () {
             try {
                 await File.destroy(this.file.id)
                 this.eventBus.emit('file-updated')
-                toast.success({ title: 'Filen har raderats' })
+                toast.success({
+                    title: 'Filen har raderats', 
+                })
                 this.$emit('item-deleted')
                 this.closeModal()
             } catch (error) {
-                toast.error({ title: 'Kunde inte radera filen' })
+                toast.error({
+                    title: 'Kunde inte radera filen', 
+                })
                 console.error(error)
             }
         },
+
         async downloadFile () {
             const payload = {
                 params: {
-                    type: 'files'
-                }
+                    type: 'files',
+                },
             }
             const { data, headers } = await Download.show(this.file.id, payload)
+
             await Download.handleBlobDownload(data, headers)
         },
+
         closeModal() {
             this.$vfm.close('file-modal')
-        }
-    }
+        },
+    },
 }
 </script>

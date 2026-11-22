@@ -69,98 +69,130 @@
         </SlideUpDown>
     </div>
 </template>
+
 <script>
 import CommentItem from '@fabriq/comments/CommentItem.vue'
 import Comment from '@fabriq/models/Comment.js'
 import User from '@fabriq/models/User.js'
 import SlideUpDown from '@fabriq/plugins/SlideUpDown.vue'
-import { useUserStore } from '@fabriq/stores';
+import { useUserStore } from '@fabriq/stores'
 import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'CommentSection',
-    components: { CommentItem, SlideUpDown },
+    components: {
+        CommentItem,
+        SlideUpDown, 
+    },
+
     setup () {
-        const userStore = useUserStore();
+        const userStore = useUserStore()
         const eventBus = useEventBus()
 
-        return { userStore,eventBus}
+        return {
+            userStore,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             commentSectionOpen: false,
             newComment: '',
-            comments: []
+            comments: [],
         }
     },
+
     computed: {
         user () {
-            return this.userStore.user;
-        }
+            return this.userStore.user
+        },
     },
+
     mounted () {
         this.fetchComments()
         this.fetchUsers()
         this.eventBus.on('open-comment-section', this.openCommentSection)
         this.eventBus.on('comment-posted-echo', this.fetchComments)
     },
+
     unmounted () {
         this.eventBus.off('open-comment-section', this.openCommentSection)
         this.eventBus.off('comment-posted-echo', this.fetchComments)
         this.$refs.comments?.removeEventListener('keydown', this.listenForMetaPlusEnter)
     },
+
     methods: {
         async fetchUsers () {
             try {
                 const { data } = await User.index()
 
-                this.userStore.setUsers(data);
+                this.userStore.setUsers(data)
                 // this.users = data
             } catch (error) {
                 console.log(error)
             }
         },
+
         onFocus () {
             this.$refs.comments?.addEventListener('keydown', this.listenForMetaPlusEnter)
         },
+
         onBlur () {
             this.$refs.comments?.removeEventListener('keydown', this.listenForMetaPlusEnter)
         },
+
         openCommentSection () {
             this.commentSectionOpen = true
         },
+
         scrollToLatestComment () {
             if (this.$route.query.commentId) {
                 setTimeout(() => {
                     this.scrollToComment(this.$route.query.commentId)
                 }, 300)
+
                 return
             }
+
             const container = this.$refs.flow
+
             setTimeout(() => {
-                container.scrollTo({ top: container.scrollHeight })
+                container.scrollTo({
+                    top: container.scrollHeight, 
+                })
             }, 100)
         },
+
         scrollToComment (id) {
             const element = document.getElementById('comment' + id)
+
             if(!element) {
                 return
             }
-            element.scrollIntoView({ behavior: 'smooth', top: 10 })
+
+            element.scrollIntoView({
+                behavior: 'smooth',
+                top: 10, 
+            })
         },
+
         listenForMetaPlusEnter (event) {
             const vm = this
+
             if (!(event.keyCode === 13 && event.metaKey)) return
             vm.postComment()
         },
+
         async postComment () {
             try {
                 const payload = {
                     comment: this.newComment,
                     params: {
-                        include: 'user,children,children.user'
-                    }
+                        include: 'user,children,children.user',
+                    },
                 }
+
                 await Comment.store('pages', this.$route.params.id, payload)
                 this.newComment = ''
                 this.fetchComments()
@@ -172,19 +204,21 @@ export default {
                 console.error(error)
             }
         },
+
         async fetchComments () {
             try {
                 const payload = {
                     params: {
-                        include: 'user,children,children.user'
-                    }
+                        include: 'user,children,children.user',
+                    },
                 }
                 const { data } = await Comment.index('pages', this.$route.params.id, payload)
+
                 this.comments = data
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

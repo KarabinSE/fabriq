@@ -87,6 +87,7 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'FPaginator',
@@ -96,22 +97,25 @@ export default {
             required: true,
             default () {
                 return {
-                    last_page: 1
+                    last_page: 1,
                 }
-            }
+            },
         },
+
         position: {
             type: String,
-            default: 'left'
-        }
+            default: 'left',
+        },
     },
+
     data () {
         return {
             config: {
-                delta: 1
-            }
+                delta: 1,
+            },
         }
     },
+
     computed: {
         numberBoxes () {
             const range = Array(this.pagination.last_page)
@@ -137,13 +141,16 @@ export default {
                 return pages
             }, [])
         },
+
         currentPageIsFirst () {
             return this.pagination.current_page === 1
         },
+
         currentPageIsLast () {
             return this.pagination.last_page === this.pagination.current_page
-        }
+        },
     },
+
     methods: {
         stepForward () {
             if (this.currentPageIsLast) {
@@ -152,6 +159,7 @@ export default {
 
             this.changePage(this.pagination.current_page + 1)
         },
+
         stepBackwards () {
             if (this.currentPageIsFirst) {
                 return
@@ -159,12 +167,14 @@ export default {
 
             this.changePage(this.pagination.current_page - 1)
         },
+
         changePage (pageNumber) {
             this.$emit('change-page', pageNumber)
         },
+
         getRange (start, end) {
             return Array(end - start + 1).fill().map((v, index) => index + start)
-        }
-    }
+        },
+    },
 }
 </script>

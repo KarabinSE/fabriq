@@ -54,8 +54,8 @@
                                     v-if="canClone"
                                     v-tooltip="'Klona'"
                                     class="focus:outline-none"
-                                    @click.stop="cloneChild(child)"
                                     :disabled="children.length >= max"
+                                    @click.stop="cloneChild(child)"
                                 >
                                     <CloneIcon
                                         thin
@@ -123,73 +123,93 @@
 </template>
 
 <script>
-import Draggable from 'vuedraggable';
-import { useClipboard } from '@vueuse/core';
+import Draggable from 'vuedraggable'
+import { useClipboard } from '@vueuse/core'
 import { Block } from '@fabriq/models/Block'
 import { toast } from '@fabriq/components/toast/toast'
 
 export default {
     name: 'FChildren',
-    components: { Draggable },
+    components: {
+        Draggable, 
+    },
+
     inheritAttrs: false,
     props: {
         modelValue: {
             type: Array,
-            default: () => []
+            default: () => [],
         },
+
         parent: {
             type: Object,
-            default: () => ({})
+            default: () => ({
+            }),
         },
+
         labels: {
             type: Object,
             default: () => ({
                 title: 'Låda',
                 add: 'Lägg till låda',
                 empty: 'Ingen låda har lagts till ännu',
-                max: 'Max antal uppnått'
-            })
+                max: 'Max antal uppnått',
+            }),
         },
+
         canClone: {
             type: Boolean,
             default: true,
         },
+
         canCopy: {
             type: Boolean,
             default: true,
         },
+
         canHide: {
             type: Boolean,
             default: true,
         },
+
         max: {
             type: Number,
-            default: Infinity
+            default: Infinity,
         },
+
         itemContent: {
             type: Object,
-            default: () => ({})
+            default: () => ({
+            }),
         },
+
         dragOptions: {
             type: Object,
             default: () => ({
                 animation: 200,
                 group: 'description',
                 disabled: false,
-                ghostClass: 'ghost'
-            })
+                ghostClass: 'ghost',
+            }),
+        },
+    },
+
+    setup() {
+        const { copy } = useClipboard({
+            legacy: true, 
+        })
+
+        return {
+            copy, 
         }
     },
-    setup() {
-        const { copy } = useClipboard({ legacy: true });
 
-        return { copy }
-    },
     computed: {
         children() {
             return this.parent.children
-        }
+        },
     },
+
     methods: {
         addChild () {
             const child = new Block({
@@ -199,17 +219,23 @@ export default {
 
             this.parent.addChild(child)
         },
+
         cloneChild(child) {
             this.parent.addChild(child.clone())
         },
+
         deleteChild (index) {
             this.parent.removeChild(index)
         },
-        async copyChildId(id) {
-            await this.copy('#' + id);
 
-            toast.success({ title: `${this.labels.title}-ID har kopierats`, message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
-        }
-    }
+        async copyChildId(id) {
+            await this.copy('#' + id)
+
+            toast.success({
+                title: `${this.labels.title}-ID har kopierats`,
+                message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+            })
+        },
+    },
 }
 </script>

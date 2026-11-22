@@ -8,8 +8,9 @@
         </dd>
     </div>
 </template>
+
 <script>
 export default {
-    name: 'UiStatsCard'
+    name: 'UiStatsCard',
 }
 </script>

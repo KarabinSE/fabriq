@@ -210,6 +210,7 @@
         </UiCard>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Download from '@fabriq/models/Download.js'
@@ -233,8 +234,12 @@ export default {
         const vfm = useVfm()
         const eventBus = useEventBus()
 
-        return {vfm, eventBus}
+        return {
+            vfm,
+            eventBus, 
+        }
     },
+
     data () {
         return {
             videos: [],
@@ -245,18 +250,18 @@ export default {
             columns: [
                 {
                     key: 'file',
-                    title: ''
+                    title: '',
                 },
                 {
                     key: 'file_name',
                     title: 'Namn',
                     tdClasses: 'text-gray-600 font-medium w-24',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'created_at',
                     title: 'Uppladdad',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'tags',
@@ -266,38 +271,45 @@ export default {
                 {
                     key: 'size',
                     title: 'Storlek',
-                    sortable: true
+                    sortable: true,
                 },
                 {
                     key: 'edit',
                     title: '',
                     tdClasses: 'text-right',
-                    thClasses: 'text-right'
-                }
+                    thClasses: 'text-right',
+                },
             ],
-            pagination: {},
+
+            pagination: {
+            },
+
             queryParams: {
                 number: 15,
                 page: 1,
                 sort: '-created_at',
                 include: 'tags',
-                'filter[search]': ''
+                'filter[search]': '',
             },
+
             checkedRows: [],
             fileTags: [],
-            selectedTags: []
+            selectedTags: [],
         }
     },
+
     computed: {
         hasCheckedRows () {
             return this.checkedRows.length > 0
         },
+
         nameTags () {
             return this.selectedTags.map(item => {
                 return item.name
             })
-        }
+        },
     },
+
     activated () {
         this.fetchVideos()
         this.uploadInit = true
@@ -312,112 +324,140 @@ export default {
             this.queryParams.page = 1
             this.fetchVideos()
         },
+
         async fetchVideos () {
             try {
                 const payload = {
-                    params: this.queryParams
+                    params: this.queryParams,
                 }
                 const { data, meta } = await Video.index(payload)
+
                 this.videos = data
                 this.pagination = meta
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteVideo (id) {
             try {
                 await Video.destroy(id)
+
                 if (!this.suppressToast) {
-                    toast.success({ title: 'Videon har tagits bort' })
+                    toast.success({
+                        title: 'Videon har tagits bort', 
+                    })
                     this.fetchVideos()
                 }
             } catch (error) {
                 console.error(error)
             }
         },
+
         setSort (sort) {
             this.queryParams.sort = sort
             this.fetchVideos()
         },
+
         performSearch () {
             this.queryParams.page = 1
             this.fetchVideos()
         },
+
         setPage (pageNumber) {
             this.queryParams.page = pageNumber
             this.fetchVideos()
         },
+
         openVideoModal (item) {
             createModal(VideoModal, {
                 item,
                 onItemDeleted: this.fetchVideos,
             })
         },
+
         async fetchVideoTags () {
             this.selectedTags = []
+
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'videos'
-                    }
+                        'filter[type]': 'videos',
+                    },
                 }
                 const { data } = await Tag.index(payload)
+
                 this.fileTags = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         handleRowChecked (rows) {
             this.checkedRows = rows
         },
+
         showModal () {
             this.showTagsModal = true
         },
+
         async addTagsToVideos () {
             try {
                 const payload = {
                     models: this.checkedRows,
                     tags: this.nameTags,
-                    model_type: 'videos'
+                    model_type: 'videos',
                 }
+
                 await Tag.store(payload)
-                toast.success({ title: 'Taggarna har lagts till!' })
+                toast.success({
+                    title: 'Taggarna har lagts till!', 
+                })
                 this.fetchVideos()
                 this.showTagsModal = false
             } catch (error) {
                 console.error(error)
             }
         },
+
         async downloadCheckedItems () {
             try {
                 const payload = {
                     params: {
                         items: this.checkedRows,
-                        type: 'videos'
-                    }
+                        type: 'videos',
+                    },
                 }
                 const { data, headers } = await Download.index(payload)
+
                 Download.handleBlobDownload(data, headers)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async deleteCheckedVideos () {
             this.suppressToast = true
             const promises = []
+
             this.checkedRows.forEach(row => {
-                promises.push({ deleteFunction: this.deleteVideo, id: row })
+                promises.push({
+                    deleteFunction: this.deleteVideo,
+                    id: row, 
+                })
             })
             await Promise.all(
                 promises.map(async promise => {
                     await promise.deleteFunction(promise.id)
-                })
+                }),
             )
             this.suppressToast = false
             this.eventBus.emit('clear-checked-rows')
-            toast.success({ title: 'Videorna har tagits bort' })
+            toast.success({
+                title: 'Videorna har tagits bort', 
+            })
             this.fetchVideos()
-        }
-    }
+        },
+    },
 }
 </script>

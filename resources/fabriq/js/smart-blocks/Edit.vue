@@ -165,11 +165,12 @@
         </FTabs>
     </div>
 </template>
+
 <script>
 import SmartBlock from '@fabriq/models/SmartBlock.js'
 import Draggable from 'vuedraggable'
-import { useConfigStore } from '@fabriq/stores';
-import { useClipboard } from '@vueuse/core';
+import { useConfigStore } from '@fabriq/stores'
+import { useClipboard } from '@vueuse/core'
 import { toast } from '@fabriq/components/toast/toast'
 import { useEventBus } from '@fabriq/services/eventBus'
 import { createModal } from '@fabriq/helpers/utils'
@@ -179,26 +180,33 @@ import { useVfm } from 'vue-final-modal'
 
 export default {
     name: 'SmartBlocksEdit',
-    components: { Draggable },
+    components: {
+        Draggable, 
+    },
+
     beforeRouteLeave (from, to, next) {
         this.vfm.close('block-type-modal')
         this.eventBus.off('block-type-added', this.blockTypeAdded)
         next()
     },
+
     setup () {
         const vfm = useVfm()
-        const configStore = useConfigStore();
+        const configStore = useConfigStore()
         const eventBus = useEventBus()
 
-        const { copy } = useClipboard({ legacy: true });
+        const { copy } = useClipboard({
+            legacy: true, 
+        })
 
         return {
             vfm,
             configStore,
             copy,
-            eventBus
+            eventBus,
         }
     },
+
     data () {
         return {
             active: false,
@@ -206,115 +214,158 @@ export default {
             queryParams: {
                 include: 'localizedContent',
                 locale: 'all',
-                append: 'paths'
+                append: 'paths',
             },
+
             smartBlock: {
                 id: 0,
                 updated_at: '2020-01-01 10:00:00',
                 localizedContent: {
-                    sv: {}
+                    sv: {
+                    },
                 },
+
                 template: {
-                    data: {}
-                }
+                    data: {
+                    },
+                },
             },
-            content: {},
+
+            content: {
+            },
+
             drag: false,
             activeLocale: 'sv',
-            localizedContent: {}
+            localizedContent: {
+            },
         }
     },
+
     computed: {
         config () {
-            return this.configStore.config;
+            return this.configStore.config
         },
+
         dragOptions () {
             return {
                 animation: 200,
                 group: 'description',
                 disabled: false,
-                ghostClass: 'ghost'
+                ghostClass: 'ghost',
             }
         },
+
         locales () {
-            return this.configStore.supportedLocales;
-        }
+            return this.configStore.supportedLocales
+        },
     },
+
     activated () {
         this.id = this.$route.params.id
         this.eventBus.on('block-type-added', this.blockTypeAdded)
         this.fetchSmartBlock()
     },
+
     methods: {
         openAllCards () {
             this.eventBus.emit('open-all-cards')
         },
+
         async updateContent () {
             try {
                 const payload = {
                     name: this.smartBlock.name,
-                    localizedContent: { ...this.localizedContent }
+                    localizedContent: {
+                        ...this.localizedContent, 
+                    },
                 }
+
                 await SmartBlock.update(this.id, payload)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchSmartBlock () {
             const payload = {
-                params: this.queryParams
+                params: this.queryParams,
             }
+
             try {
                 this.smartBlock.id = 0
                 const { data } = await SmartBlock.show(this.id, payload)
+
                 this.smartBlock = data
-                const localizedContent = { ...data.localizedContent.data }
+                const localizedContent = {
+                    ...data.localizedContent.data, 
+                }
+
                 Object.keys(localizedContent).forEach((item) => {
                     // if (!localizedContent[item].content.boxes) {
                     // }
-                    let thing = {}
+                    let thing = {
+                    }
+
                     if (!localizedContent[item].content.boxes) {
                         thing.boxes = []
                     } else {
                         thing = localizedContent[item].content
                     }
-                    this.localizedContent[item] = { ...thing }
+
+                    this.localizedContent[item] = {
+                        ...thing, 
+                    }
                 })
             } catch (error) {
                 console.error(error)
             }
         },
+
         setLanguage (key) {
             this.activeLocale = key
         },
+
         showBlockTypeModal () {
             createModal(BlockTypeModal)
         },
+
         blockTypeAdded (item) {
             if (!this.localizedContent[this.activeLocale].boxes) {
                 this.localizedContent[this.activeLocale].boxes = []
             }
-            this.localizedContent[this.activeLocale].boxes.push({ ...item })
+
+            this.localizedContent[this.activeLocale].boxes.push({
+                ...item, 
+            })
             this.$nextTick(() => {
                 this.localizedContent[this.activeLocale].boxes[this.localizedContent[this.activeLocale].boxes.length - 1].newlyAdded = false
             })
         },
+
         deleteBlock (index) {
             // this.content.boxes.splice(index, 1)
             this.localizedContent[this.activeLocale].boxes.splice(index, 1)
         },
+
         refreshBlock (payload) {
-            this.localizedContent[this.activeLocale].boxes[payload.index] = { ...payload.item }
+            this.localizedContent[this.activeLocale].boxes[payload.index] = {
+                ...payload.item, 
+            }
             console.log(payload.item)
         },
+
         copySuccess () {
-            toast.success({ title: 'Blockets ID har kopierats', message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.' })
+            toast.success({
+                title: 'Blockets ID har kopierats',
+                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+            })
         },
+
         async copyBlockId(id) {
-            await this.copy('#' + id);
+            await this.copy('#' + id)
 
             this.copySuccess()
-        }
-    }
+        },
+    },
 }
 </script>

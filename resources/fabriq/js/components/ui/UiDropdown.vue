@@ -28,50 +28,59 @@
         </Transition>
     </div>
 </template>
+
 <script>
 export default {
     name: 'UiDropdown',
     props: {
         alignment: {
             type: String,
-            default: 'top-left'
+            default: 'top-left',
         },
+
         marginClasses: {
             type: String,
-            default: 'mt-3'
+            default: 'mt-3',
         },
+
         disabled: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
+
     data () {
         return {
-            show: false
+            show: false,
         }
     },
+
     watch: {
         show (value) {
             if (value) {
                 this.$emit('open')
             }
+
             if (!value) {
                 this.$emit('close')
             }
-        }
+        },
     },
+
     methods: {
         close () {
             this.show = false
         },
+
         open () {
             this.show = true
         },
+
         toggleShow () {
             if (!this.disabled) {
                 this.show = !this.show
             }
-        }
-    }
+        },
+    },
 }
 </script>

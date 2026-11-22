@@ -9,22 +9,25 @@
         </template>
     </UiStatsCard>
 </template>
+
 <script>
 export default {
     name: 'StatsBox',
     props: {
         number: {
             type: Number,
-            default: 0
+            default: 0,
         },
+
         delay: {
             type: Number,
-            default: 1
+            default: 1,
         },
+
         title: {
             type: String,
-            default: ''
-        }
+            default: '',
+        },
     },
 }
 </script>

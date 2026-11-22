@@ -142,9 +142,10 @@
         </UiCard>
     </div>
 </template>
+
 <script>
-import { Draggable } from "@he-tree/vue";
-import "@he-tree/vue/style/default.css";
+import { Draggable } from '@he-tree/vue'
+import '@he-tree/vue/style/default.css'
 import FileIcon from '@fabriq/icons/FileIcon.vue'
 import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
 import Menu from '@fabriq/models/Menu.js'
@@ -153,64 +154,85 @@ import { useConfigStore } from '@fabriq/stores'
 import { useVfm } from 'vue-final-modal'
 import { toast } from '@fabriq/components/toast/toast'
 import { createModal } from '@fabriq/helpers/utils'
+
 export default {
     name: 'MenusEdit',
-    components: { Draggable },
+    components: {
+        Draggable, 
+    },
+
     beforeRouteLeave (from, to, next) {
         this.vfm.close('menu-item-modal')
         next()
     },
+
     setup () {
         const configStore = useConfigStore()
         const vfm = useVfm()
 
-        return { configStore, vfm }
+        return {
+            configStore,
+            vfm, 
+        }
     },
+
     data () {
         return {
-            menu: {},
+            menu: {
+            },
+
             id: 0,
             tree: [],
             show: false,
-            activeItem: {},
+            activeItem: {
+            },
+
             deleteQueue: [],
-            confirm_id: 0
+            confirm_id: 0,
         }
     },
+
     computed: {
         locales () {
             return this.configStore.supportedLocales
-        }
+        },
     },
+
     activated () {
         this.id = this.$route.params.id
         this.fetchMenu()
         this.fetchTree()
     },
+
     methods: {
         setLanguage (locale) {
             this.configStore.setActiveLocale(locale)
             this.fetchTree()
         },
+
         async fetchTree () {
             try {
                 const { data } = await Menu.showTree(this.id)
+
                 this.tree = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchMenu () {
             try {
                 const payload = {
-                    include: 'menuItems'
+                    include: 'menuItems',
                 }
                 const { data } = await Menu.show(this.id, payload)
+
                 this.menu = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         getSubItems (item, items = []) {
             if (item.children) {
                 item.children.forEach((index_, index) => {
@@ -223,8 +245,10 @@ export default {
 
             return items
         },
+
         async updateTree () {
             let items = []
+
             this.tree.forEach((item, index) => {
                 item.sortindex = index * 10
                 items.push(item)
@@ -233,15 +257,19 @@ export default {
 
             try {
                 const payload = {
-                    tree: this.tree
+                    tree: this.tree,
                 }
+
                 await Menu.updateTree(this.id, payload)
-                toast.success({ title: 'Menyn har uppdaterats!' })
+                toast.success({
+                    title: 'Menyn har uppdaterats!', 
+                })
                 this.fetchTree()
             } catch (error) {
                 console.error(error)
             }
         },
+
         async showMenuItemModal (item = null) {
             createModal(MenuItemModal, {
                 item: item,
@@ -250,18 +278,22 @@ export default {
             })
 
         },
+
         async deleteConfirmed (id) {
             try {
                 await MenuItem.destroy(id)
-                toast.success({ title: 'Menypunkten har raderats' })
+                toast.success({
+                    title: 'Menypunkten har raderats', 
+                })
                 this.fetchTree()
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>
+
 <style>
 @reference 'tailwindcss';
 .menu-tree .drag-placeholder {

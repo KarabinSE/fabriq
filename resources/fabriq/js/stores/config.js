@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useMenuStore } from './menu';
-import Config from '@fabriq/models/Config';
+import { useMenuStore } from './menu'
+import Config from '@fabriq/models/Config'
 
 export const useConfigStore = defineStore('config', () => {
 
@@ -16,34 +16,35 @@ export const useConfigStore = defineStore('config', () => {
                 name: 'Swedish',
                 script: 'Latn',
                 native: 'Svenska',
-                regional: 'sv_SE'
-            }
-        }
-    });
+                regional: 'sv_SE',
+            },
+        },
+    })
 
-    const activeLocale = ref('sv');
+    const activeLocale = ref('sv')
 
-    const developmentMode = ref(false);
+    const developmentMode = ref(false)
 
-    const supportedLocales = computed(() => config.value.supported_locales);
+    const supportedLocales = computed(() => config.value.supported_locales)
 
     async function index() {
-        const { data } = await Config.index();
+        const { data } = await Config.index()
+
         resolve()
 
-        config.value = data;
+        config.value = data
 
-        const menuStore = useMenuStore();
+        const menuStore = useMenuStore()
 
-        menuStore.setSidebarItems(data.modules);
+        menuStore.setSidebarItems(data.modules)
     }
 
     function setActiveLocale (locale) {
-        activeLocale.value = locale;
+        activeLocale.value = locale
     }
 
     function setDevelopmentMode (value) {
-        developmentMode.value = value;
+        developmentMode.value = value
     }
 
     return {
@@ -56,4 +57,4 @@ export const useConfigStore = defineStore('config', () => {
         setDevMode: setDevelopmentMode,
         initiated,
     }
-});
+})

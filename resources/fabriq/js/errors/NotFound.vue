@@ -14,13 +14,14 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'ErrorFourZeroFour',
     data () {
         return {
-            message: 'Sidan kunde inte hittas...tyvärr 🤦‍♀️'
+            message: 'Sidan kunde inte hittas...tyvärr 🤦‍♀️',
         }
-    }
+    },
 }
 </script>

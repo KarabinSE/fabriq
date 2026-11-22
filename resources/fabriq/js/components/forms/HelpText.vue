@@ -5,8 +5,9 @@
         <slot />
     </p>
 </template>
+
 <script>
 export default {
-    name: 'HelpText'
+    name: 'HelpText',
 }
 </script>

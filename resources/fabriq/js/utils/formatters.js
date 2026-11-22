@@ -9,23 +9,30 @@ export function formatLocalTime(value, dateFormat = null, formatDistanceEnabled 
         date = value
     } else {
         date = parseISO(value)
+
         if (!isValid(date)) {
             return value
         }
     }
 
     if (formatDistanceEnabled) {
-        return formatDistance(date, new Date(), { locale: sv, addSuffix: true })
+        return formatDistance(date, new Date(), {
+            locale: sv,
+            addSuffix: true, 
+        })
     }
 
     if (dateFormat) {
-        return format(date, dateFormat, { locale: sv })
+        return format(date, dateFormat, {
+            locale: sv, 
+        })
     }
 
     return format(date, 'yyyy-MM-dd HH:mm')
 }
 
-export function formatFileSize(value, options = {}) {
+export function formatFileSize(value, options = {
+}) {
     if (!value) {
         return '0 B'
     }
@@ -38,12 +45,14 @@ export function formatFileSize(value, options = {}) {
     return filesize(value, mergedOptions)
 }
 
-export function formatCurrency(value, options = {}) {
+export function formatCurrency(value, options = {
+}) {
     if (!value && value !== 0) {
         return ''
     }
 
     const numberValue = parseFloat(value)
+
     if (isNaN(numberValue)) {
         return value
     }

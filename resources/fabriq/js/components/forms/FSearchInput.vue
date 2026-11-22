@@ -6,38 +6,44 @@
         @keydown.esc="clearValue"
     >
 </template>
+
 <script>
 import { debounce } from '@fabriq/helpers/debounce.js'
+
 export default {
     name: 'FSearchInput',
     props: {
         modelValue: {
             type: String,
             required: true,
-            default: ''
-        }
+            default: '',
+        },
     },
+
     data () {
         return {
-            search: ''
+            search: '',
         }
     },
+
     watch: {
         search: debounce(function (newValue) {
             this.$emit('perform-search')
-        }, 250)
+        }, 250),
     },
+
     methods: {
         clearValue () {
             this.$emit('clear-search')
             this.$emit('input', '')
         },
+
         updateValue (value) {
             console.log('updating')
             this.search = value
             this.$emit('input', value)
-        }
-    }
+        },
+    },
 
 }
 </script>

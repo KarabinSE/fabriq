@@ -68,86 +68,102 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'FFileList',
     props: {
         value: {
             type: Array,
-            default: () => []
+            default: () => [],
         },
+
         options: {
             required: false,
             type: Object,
-            default: () => ({})
+            default: () => ({
+            }),
         },
+
         maxItems: {
             type: Number,
             required: false,
-            default: null
+            default: null,
         },
+
         placeholder: {
             type: String,
             required: false,
-            default: ''
+            default: '',
         },
+
         color: {
             type: Boolean,
             default: false,
         },
+
         arrow: {
             type: Boolean,
             default: false,
-        }
+        },
     },
+
     data () {
         return {
             files: [],
             defaultOptions: {
-                newTab: false
+                newTab: false,
             },
-            pages: []
+
+            pages: [],
         }
     },
+
     computed: {
         noFiles () {
             return this.files.length === 0
         },
+
         mergedOptions () {
             return {
                 ...this.defaultOptions,
-                ...this.options
+                ...this.options,
             }
         },
+
         addLocked() {
             return this.maxItems && this.maxItems <= this.files.length
-        }
+        },
     },
+
     created () {
         if (!this.value) {
             this.$emit('input', this.files)
         }
+
         this.files = this.value
     },
+
     methods: {
         addFile () {
             this.files.push({
-                type:'internal',
+                type: 'internal',
                 title: '',
                 url: '',
                 newTab: false,
                 file: {
-                    id: 0
-                }
+                    id: 0,
+                },
             })
             this.$emit('input', this.files)
 
             // this.fetchPages()
             // this.fetchTree()
         },
+
         spliceFile (index) {
             this.files.splice(index, 1)
-        }
-    }
+        },
+    },
 }
 </script>

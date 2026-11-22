@@ -31,8 +31,9 @@
         />
     </svg>
 </template>
+
 <script>
 export default {
-    name: 'GripVerticalIcon'
+    name: 'GripVerticalIcon',
 }
 </script>

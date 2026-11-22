@@ -143,11 +143,12 @@
         </div>
     </div>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import Contact from '@fabriq/models/Contact.js'
 import Tag from '@fabriq/models/Tag.js'
-import { useConfigStore } from '@fabriq/stores';
+import { useConfigStore } from '@fabriq/stores'
 
 export default {
     name: 'ContactsEdit',
@@ -157,91 +158,124 @@ export default {
         }, 300)
         next()
     },
-    setup () {
-        const configStore = useConfigStore();
 
-        return { configStore }
+    setup () {
+        const configStore = useConfigStore()
+
+        return {
+            configStore, 
+        }
     },
+
     data () {
         return {
             id: 0,
             contact: {
                 name: '',
-                hidden: false
+                hidden: false,
             },
+
             tags: [],
             contactTags: [],
-            content: {},
-            localizedContent: {}
+            content: {
+            },
+
+            localizedContent: {
+            },
         }
     },
+
     computed: {
         locales () {
-            return this.configStore.supportedLocales;
+            return this.configStore.supportedLocales
         },
+
         localesOptions() {
             return Object.keys(this.locales).map((key) => {
                 return this.locales[key]
             })
         },
+
         nameTags () {
             return this.tags.map(item => {
                 return item.name
             })
-        }
+        },
     },
+
     activated () {
         this.id = this.$route.params.id
         this.fetchContact()
         this.fetchTags()
     },
+
     methods: {
         mapLocalizedContent (data) {
-            const localizedContent = { ...data.localizedContent }
+            const localizedContent = {
+                ...data.localizedContent, 
+            }
+
             Object.keys(localizedContent).forEach((item, key) => {
-                this.localizedContent[item] = { ...localizedContent[item].content }
+                this.localizedContent[item] = {
+                    ...localizedContent[item].content, 
+                }
             })
         },
+
         async fetchContact () {
             try {
                 const payload = {
                     params: {
-                        include: 'localizedContent,content,tags'
-                    }
+                        include: 'localizedContent,content,tags',
+                    },
                 }
                 const { data } = await Contact.show(this.id, payload)
+
                 this.contact = data
-                this.content = { ...data.content }
+                this.content = {
+                    ...data.content, 
+                }
                 this.tags = [...data.tags]
                 this.mapLocalizedContent(data)
             } catch (error) {
                 console.error(error)
             }
         },
+
         async updateContact () {
             try {
-                this.contact.tags = { ...this.nameTags }
-                this.contact.content = { ...this.content }
-                this.contact.localizedContent = { ...this.localizedContent }
+                this.contact.tags = {
+                    ...this.nameTags, 
+                }
+                this.contact.content = {
+                    ...this.content, 
+                }
+                this.contact.localizedContent = {
+                    ...this.localizedContent, 
+                }
                 await Contact.update(this.id, this.contact)
-                toast.success({ title: 'Kontakten har uppdaterats!' })
+                toast.success({
+                    title: 'Kontakten har uppdaterats!', 
+                })
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchTags () {
             try {
                 const payload = {
                     params: {
-                        'filter[type]': 'contacts'
-                    }
+                        'filter[type]': 'contacts',
+                    },
                 }
                 const { data } = await Tag.index(payload)
+
                 this.contactTags = data
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        },
+    },
 }
 </script>

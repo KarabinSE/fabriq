@@ -34,8 +34,8 @@ export default {
     props: {
         thin: {
             type: Boolean,
-            default: false
-        }
-    }
+            default: false,
+        },
+    },
 }
 </script>
