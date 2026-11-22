@@ -1,385 +1,302 @@
 <template>
-    <FModal
-        v-model="show"
-        name="menu-item-modal"
-        width="max-w-2xl"
-        :click-to-close="false"
-        @closed="resetModal"
-        @before-open="initModal"
-    >
-        <template #title>
-            <span
-                class="text-gray-700"
-                v-text="isCreating ? 'Skapa menypunkt' : 'Redigera menypunkt'"
-            /> {{ show }}
-        </template>
-
-        <template #actions="{ close }">
-            <div class="flex justify-end space-x-4">
-                <button
-                    class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                    @click="close"
-                >
-                    Stäng
-                </button>
-                <FButton
-                    v-if="! isCreating"
-                    :click="updateMenuItem"
-                    class="px-8 py-2.5 leading-none fabriq-btn btn-royal"
-                >
-                    Spara
-                </FButton>
-                <FButton
-                    v-else
-                    :click="createMenuItem"
-                    class="px-8 py-2.5 leading-none fabriq-btn btn-royal"
-                >
-                    Skapa menypunkt
-                </FButton>
-            </div>
-        </template>
-
-        <div class="relative py-2 duration-300">
-            <!-- Menu item type -->
-            <div class="flex flex-col gap-6">
-                <div>
-                    <FLabel>Länktyp</FLabel>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div
-                            tabindex="0"
-                            role="radio"
-                            :data-checked="mItem.type === 'internal' || undefined"
-                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
-                            @click="mItem.type = 'internal'"
-                            @keydown.space="mItem.type = 'internal'"
-                        >
-                            <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
-                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
-                                </div>
-                                Intern
-                            </div>
-                            <div class="text-gray-500 text-sm mt-2">
-                                Välj en sida att länka till
-                            </div>
-                        </div>
-                        <div
-                            tabindex="0"
-                            role="radio"
-                            :data-checked="mItem.type === 'external' || undefined"
-                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
-                            @click="mItem.type = 'external'"
-                            @keydown.space="mItem.type = 'external'"
-                        >
-                            <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
-                                    <span class="rounded-full size-full group-data-checked:bg-royal-500 aspect-square duration-200" />
-                                </div>
-                                Extern
-                            </div>
-                            <div class="text-gray-500 text-sm mt-2">
-                                Ange en relativ URL eller en extern webbadress
-                            </div>
-                        </div>
-                        <div
-                            tabindex="0"
-                            role="radio"
-                            :data-checked="mItem.type === 'file' || undefined"
-                            class="group rounded-md ring focus:outline-none ring-gray-300 data-checked:ring-royal-500 border-b border-transparent data-checked:border-royal-500 p-3 data-checked:shadow transition duration-200"
-                            @click="mItem.type = 'file'"
-                            @keydown.space="mItem.type = 'file'"
-                        >
-                            <div class="flex gap-2 items-center">
-                                <div class="p-1 size-4 border ring-gray-300 flex justify-center items-center rounded-full group-focus:outline-2 outline-offset-2 outline-gray-300!">
-                                    <span class="rounded-full size-full group-data-checked:bg-gray-800 aspect-square duration-200" />
-                                </div>
-                                Fil
-                            </div>
-                            <div class="text-gray-500 text-sm mt-2">
-                                Välj en fil som besökare kan ladda ner
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Conditional inputs -->
-                <div class="h-22">
-                    <FSelect
-                        v-if="mItem.type === 'internal'"
-                        v-model="mItem.page_id"
-                        value-key="id"
-                        label="Länkas till sidan"
-                        :options="pages"
-                        option-label="name"
-                        rules="required"
-                        name="pageSelect"
-                        @input="onPageChange"
+    <div>
+        <UiSectionHeader>
+            Redigera meny
+            <template #subtitle>
+                {{ menu.name }}
+            </template>
+            <template #tools>
+                <div class="space-x-4 whitespace-nowrap">
+                    <RouterLink
+                        :to="{name: 'menus.index'}"
+                        class="inline-flex px-6 py-2.5 my-0 leading-none fabriq-btn btn-link"
                     >
-                        <template #prefix="option">
-                            <div
-                                v-for="index in option.depth"
-                                :key="index"
-                            >
-                                <div class="mr-3" />
-                            </div>
-                        </template>
-                    </FSelect>
-
-                    <FInput
-                        v-if="mItem.type === 'external'"
-                        v-model="content.external_url"
-                        label="URL"
-                        placeholder="https://exempel.se"
-                        help-text="Ange en relativ URL för att länka till en sida på webbplatsen."
-                        name="URL"
-                        :rules="isCreating ? '' : 'required'"
-                        type="url"
-                        class="w-full"
-                    />
-
-                    <FFileInput
-                        v-if="mItem.type === 'file'"
-                        v-model="content.file"
-                        label="Fil"
-                        name="Fil"
-                        rules="required"
-                    />
-                </div>
-
-                <div class="rounded-md border border-gray-200 p-4">
-                    <div class="flex items-start justify-between gap-6">
-                        <div>
-                            <div class="text-sm font-medium text-gray-700">
-                                Menytitel
-                            </div>
-                            <p class="mt-1 text-sm text-gray-500">
-                                {{ mItem.type === 'internal' ? 'Sidans översatta titel används automatiskt.' : 'Ange texten som ska visas i menyn.' }}
-                            </p>
-                        </div>
-                        <FSwitch
-                            v-if="mItem.type === 'internal'"
-                            v-model="useCustomTitle"
-                            name="custom-title"
-                        >
-                            Egen titel
-                        </FSwitch>
-                    </div>
-                    <div
-                        v-if="mItem.type === 'internal' && !useCustomTitle"
-                        class="mt-4 rounded ring ring-gray-100 bg-gray-50 min-h-10 px-4 py-2.5 text-sm h-10 text-gray-600"
+                        Avbryt
+                    </RouterLink>
+                    <FButton
+                        :click="updateTree"
+                        class="px-6 py-2.5 leading-none fabriq-btn btn-royal"
                     >
-                        {{ placeholder || 'Välj en sida för att se dess titel.' }}
-                    </div>
-                    <div
-                        v-else
-                        class="mt-4"
-                    >
-                        <FInput
-                            v-model="content.title"
-                            :placeholder="placeholder"
-                            :help-text="mItem.type === 'internal' ? 'Ange en egen titel för den här menypunkten.' : 'Texten visas i menyer.'"
-                            name="title"
-                            :rules="mItem.type === 'internal' || isCreating ? '' : 'required'"
-                        />
-                    </div>
+                        Spara
+                    </FButton>
                 </div>
-
-                <FEditor
-                    :key="'html' + mItem.Id"
-                    v-model="content.body"
-                    label="Menytext"
+            </template>
+        </UiSectionHeader>
+        <div class="min-h-[55px]">
+            <FTabs
+                v-if="Object.keys(locales).length > 0"
+                @change="setLanguage"
+            >
+                <FTab
+                    v-for="(locale, code) in locales"
+                    :key="code"
+                    :value-key="code"
+                    :title="locale.native"
+                    class="py-0!"
                 />
-
-                <Transition name="menu-item-spinner">
-                    <div
-                        v-if="!ready"
-                        key="spinner"
-                        class="absolute z-10 inset-0 flex justify-center items-center bg-white"
-                    >
-                        <SpinIcon class="animate-spin size-10" />
-                    </div>
-                </Transition>
-            </div>
+            </FTabs>
         </div>
-    </FModal>
+        <UiCard>
+            <template #header>
+                <div class="flex justify-between flex-1">
+                    Menypunkter
+                    <FButton
+                        :click="showMenuItemModal"
+                        class="text-sm"
+                        text-button
+                        without-loader
+                    >
+                        <PlusIcon class="w-4 h-4 mr-1" />Lägg till menypunkt
+                    </FButton>
+                </div>
+            </template>
+            <div>
+                <div
+                    v-if="tree.length === 0"
+                    class="flex items-center justify-center h-48 border-2 border-dashed rounded border-royal-200"
+                >
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-xl font-light">
+                            Inga menypunkter har lagts till ännu
+                        </div>
+                        <button
+                            class="flex items-center text-sm link"
+                            @click="showMenuItemModal"
+                        >
+                            <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
+                        </button>
+                    </div>
+                </div>
+                <Draggable
+                    v-model="tree"
+                    tree-line
+                    class="menu-tree"
+                    trigger-class="drag-item"
+                >
+                    <template
+                        #default="{ node: item }"
+                    >
+                        <div
+                            v-show="! deleteQueue.includes(item.id)"
+                            class="flex items-center h-14 p-2 border border-gray-300 rounded group"
+                        >
+                            <div class="h-full flex justify-center items-center px-2 -ml-2 drag-item cursor-grab">
+                                <GripVerticalIcon class="size-4 text-gray-300" />
+                            </div>
+
+                            <!-- Content -->
+                            <div
+                                class="flex-1 text-gray-700 flex flex-col gap-1 cursor-pointer overflow-hidden pr-3"
+                                @click="showMenuItemModal(item)"
+                            >
+                                <div class="text-sm/none font-semibold truncate">
+                                    {{ item.title }}
+                                </div>
+                                <div class="text-xs/none pb-px text-gray-400/80 group-hover:text-gray-600 duration-100 truncate">
+                                    <span v-if="item.type === 'internal'">{{ item.page?.name }}</span>
+                                    <span v-if="item.type === 'external'">{{ item.path }}</span>
+                                    <span v-if="item.type === 'file'">{{ item.content?.data?.file?.file_name ?? 'Ej angivet' }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-3">
+                                <div
+                                    v-if="item.type !== 'internal'"
+                                >
+                                    <UiBadge>
+                                        <template v-if="item.type === 'external'">
+                                            <ExternalLinkIcon class="size-3 mr-1" />
+                                            Extern länk
+                                        </template>
+                                        <template v-if="item.type === 'file'">
+                                            <FileIcon class="size-3 mr-1" />
+                                            Fil
+                                        </template>
+                                    </UiBadge>
+                                </div>
+
+                                <button
+                                    class="flex text-sm focus:outline-none text-gray-500 hover:text-gray-800 duration-100"
+                                    @click="showMenuItemModal(item)"
+                                >
+                                    <PenToSquareIcon
+                                        class="size-5"
+                                    />
+                                </button>
+                                <div class="pr-2">
+                                    <FConfirmDropdown
+                                        confirm-question="Vill du ta bort menypunkten?"
+                                        class="text-gray-500 hover:text-gray-800 duration-100"
+                                        @confirmed="deleteConfirmed(item.id)"
+                                    >
+                                        <TrashIcon
+                                            class="size-5"
+                                        />
+                                    </FConfirmDropdown>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </Draggable>
+            </div>
+        </UiCard>
+    </div>
 </template>
+
 <script>
-import { toast } from '@fabriq/components/toast/toast'
+import { Draggable } from '@he-tree/vue'
+import '@he-tree/vue/style/default.css'
+import FileIcon from '@fabriq/icons/FileIcon.vue'
+import MenuItemModal from '@fabriq/menus/MenuItemModal.vue'
+import Menu from '@fabriq/models/Menu.js'
 import MenuItem from '@fabriq/models/MenuItem.js'
-import PageTree from '@fabriq/models/PageTree.js'
-function defaultCreationObject () {
-    return {
-        id: 0,
-        type: 'internal',
-        content: {
-            title: ''
-        }
-    }
-}
+import { useConfigStore } from '@fabriq/stores'
+import { useVfm } from 'vue-final-modal'
+import { toast } from '@fabriq/components/toast/toast'
+import { createModal } from '@fabriq/helpers/utils'
 
 export default {
-    name: 'MenuItemModal',
-    props: {
-        item: {
-            type: [null, Object],
-            default: null
+    name: 'MenusEdit',
+    components: {
+        Draggable,
+    },
+
+    beforeRouteLeave (from, to, next) {
+        this.vfm.close('menu-item-modal')
+        next()
+    },
+
+    setup () {
+        const configStore = useConfigStore()
+        const vfm = useVfm()
+
+        return {
+            configStore,
+            vfm,
         }
     },
+
     data () {
         return {
-            show: true,
-            pages: [],
-            content: {},
-            ready: false,
-            placeholder: null,
-            useCustomTitle: false,
-            mItem: {
-                id: 0,
-                type: 'internal',
-                content: {
-                    title: ''
-                }
-            }
+            menu: {
+            },
+
+            id: 0,
+            tree: [],
+            show: false,
+            activeItem: {
+            },
+
+            deleteQueue: [],
+            confirm_id: 0,
         }
     },
+
     computed: {
-        isCreating() {
-            return !this.item
-        }
+        locales () {
+            return this.configStore.supportedLocales
+        },
     },
+
+    activated () {
+        this.id = this.$route.params.id
+        this.fetchMenu()
+        this.fetchTree()
+    },
+
     methods: {
-        async initModal () {
-            if (this.item) {
-                this.mItem.id = this.item.id
-                await Promise.all([
-                    this.fetchPages(),
-                    this.fetchMenuItem()
-                ])
-            } else {
-                this.fetchPages()
-                this.content = {
-                    title: null,
-                    url: null,
-                    external_url: null,
-                    body: null
-                }
-            }
+        setLanguage (locale) {
+            this.configStore.setActiveLocale(locale)
+            this.fetchTree()
+        },
 
-            this.ready = true
-        },
-        async validate() {
-            // TODO: Implement new validation in Vue 3
-            return true;
-        },
-        async fetchPages () {
+        async fetchTree () {
             try {
-                const payload = {
-                    params: {
-                        // field: 'id,name',
-                        selectOptions: true
-                    }
-                }
-                const { data } = await PageTree.index(payload)
-                this.pages = data
+                const { data } = await Menu.showTree(this.id)
+
+                this.tree = data
             } catch (error) {
                 console.error(error)
             }
         },
-        async createMenuItem () {
-            try {
-                await this.validate()
 
+        async fetchMenu () {
+            try {
                 const payload = {
-                    item: this.mItem,
-                    has_custom_title: this.useCustomTitle,
-                    content: {
-                        ...this.content,
-                        title: this.content.title ?? this.placeholder
-                    }
+                    include: 'menuItems',
                 }
-                await MenuItem.store(this.$route.params.id, payload)
-                toast.success({ title: 'Menypunkten har skapats!' })
-                this.$vfm.close('menu-item-modal')
-                this.show = false
+                const { data } = await Menu.show(this.id, payload)
+
+                this.menu = data
             } catch (error) {
                 console.error(error)
             }
         },
-        async updateMenuItem () {
-            try {
-                await this.validate()
-            } catch (error) {
-                toast.warning({ title: 'Kontrollera uppgifterna', message: 'Fyll i alla obligatoriska fält korrekt.' })
-                return
+
+        getSubItems (item, items = []) {
+            if (item.children) {
+                item.children.forEach((index_, index) => {
+                    index_.parent_id = item.id
+                    index_.sortindex = index * 10
+                    items.push(index_)
+                    this.getSubItems(index_, items)
+                })
             }
+
+            return items
+        },
+
+        async updateTree () {
+            let items = []
+
+            this.tree.forEach((item, index) => {
+                item.sortindex = index * 10
+                items.push(item)
+                items = [...items, ...this.getSubItems(item)]
+            })
 
             try {
                 const payload = {
-                    item: this.mItem,
-                    has_custom_title: this.useCustomTitle,
-                    content: {
-                        ...this.content,
-                        title: this.content.title ?? this.placeholder,
-                    }
+                    tree: this.tree,
                 }
-                await MenuItem.update(this.mItem.id, payload)
-                toast.success({ title: 'Menypunkten har uppdaterats!' })
-                this.$vfm.close('menu-item-modal')
+
+                await Menu.updateTree(this.id, payload)
+                toast.success({
+                    title: 'Menyn har uppdaterats!',
+                })
+                this.fetchTree()
             } catch (error) {
                 console.error(error)
             }
         },
-        async fetchMenuItem () {
+
+        async showMenuItemModal (item = null) {
+            createModal(MenuItemModal, {
+                item: item,
+                onCreated: this.fetchTree,
+                onUpdated: this.fetchTree,
+            })
+
+        },
+
+        async deleteConfirmed (id) {
             try {
-                const payload = {
-                    params: {
-                        include: 'content'
-                    }
-                }
-                const { data } = await MenuItem.show(this.mItem.id, payload)
-                this.mItem = { ...data }
-                this.useCustomTitle = Boolean(data.has_custom_title)
-                if(!Array.isArray(data.content.data)) {
-                    this.content = data.content.data
-                }
-                if (this.mItem.type === 'internal' && !this.useCustomTitle) {
-                    this.content.title = null
-                    this.placeholder = data.title
-                } else if (!this.content.title) {
-                    this.placeholder = data.title || this.pages.find(page => page.id === this.mItem.page_id)?.name || ''
-                }
+                await MenuItem.destroy(id)
+                toast.success({
+                    title: 'Menypunkten har raderats',
+                })
+                this.fetchTree()
             } catch (error) {
                 console.error(error)
             }
         },
-        resetModal () {
-            this.ready = false
-            this.useCustomTitle = false
-            this.placeholder = null
-            this.mItem = { ...defaultCreationObject() }
-            this.content = {}
-        },
-        onPageChange(pageId) {
-            const pageTitle = this.pages.find(page => page.id === pageId)?.page_title ?? ''
-            this.placeholder = pageTitle
-        }
-    }
+    },
 }
 </script>
 
 <style>
-.menu-item-spinner-enter-active {
-    transition: all 150ms ease;
-}
-.menu-item-spinner-leave-active {
-    transition: all 150ms cubic-bezier(1, 0.5, 0.8, 1);
-}
-.menu-item-spinner-enter
-/* .menu-item-spinner-leave-active below version 2.1.8 */ {
-    opacity: 0;
-}
-.menu-item-spinner-leave-to
-/* .menu-item-spinner-leave-active below version 2.1.8 */ {
-    opacity: 0;
+@reference 'tailwindcss';
+.menu-tree .drag-placeholder {
+    height: 56px;
 }
 </style>
