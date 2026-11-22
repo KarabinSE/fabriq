@@ -67,9 +67,16 @@ return [
             'route' => 'pages.index',
         ],
         [
+            'title' => 'Globala inställningar',
+            'enabled' => env('FABRIQ_GLOBALS', false),
+            'roles' => ['admin'],
+            'icon' => 'GlobeIcon',
+            'route' => 'globals.index',
+        ],
+        [
             'title' => 'Smarta block',
             'route' => 'smartBlocks.index',
-            'enabled' => env('FABRIQ_SMART_BLOCKS', true),
+            'enabled' => env('FABRIQ_SMART_BLOCKS', false),
             'icon' => 'BrushFineIcon',
             'roles' => ['admin'],
         ],

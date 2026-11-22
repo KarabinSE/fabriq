@@ -6,9 +6,11 @@ use Dyrynda\Artisan\Console\Commands\MakeUser;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Karabin\Fabriq\Console\AddGlobalFieldCommand;
 use Karabin\Fabriq\Console\AddRoleToUserCommand;
 use Karabin\Fabriq\Console\BackfillTinySvgCommand;
 use Karabin\Fabriq\Console\ControllerMakeCommand;
+use Karabin\Fabriq\Console\CreateGlobalSectionCommand;
 use Karabin\Fabriq\Console\CreateMenuCommand;
 use Karabin\Fabriq\Console\CreatePageRootCommand;
 use Karabin\Fabriq\Console\CreatePageTemplate;
@@ -23,6 +25,7 @@ use Karabin\Fabriq\Console\VueApiModelMakeCommand;
 use Karabin\Fabriq\Console\VueEditTemplateMakeCommand;
 use Karabin\Fabriq\Console\VueIndexTemplateMakeCommand;
 use Karabin\Fabriq\Console\VueResourceMakeCommand;
+use Karabin\Fabriq\Models\GlobalSection;
 use Karabin\Fabriq\Repositories\Decorators\CachingMenuRepository;
 use Karabin\Fabriq\Repositories\Decorators\CachingPageRepository;
 use Karabin\Fabriq\Repositories\EloquentMenuRepository;
@@ -43,6 +46,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
+            'fabriq_global' => GlobalSection::class,
             'fabriq_article' => Fabriq::getFqnModel('article'),
             'fabriq_blockType' => Fabriq::getFqnModel('blockType'),
             'fabriq_comment' => Fabriq::getFqnModel('comment'),
@@ -69,6 +73,10 @@ class FabriqCoreServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/fabriq.php' => config_path('fabriq.php'),
             ], 'config');
+
+            $this->publishes([
+                __DIR__.'/../resources/fabriq/js/globals' => resource_path('fabriq/js/globals'),
+            ], 'fabriq-globals-assets');
 
             $this->publishes([
                 __DIR__.'/../config/fortify.php' => config_path('fortify.php'),
@@ -142,10 +150,12 @@ class FabriqCoreServiceProvider extends ServiceProvider
         );
 
         $this->commands([
+            AddGlobalFieldCommand::class,
             AddRoleToUserCommand::class,
             BackfillTinySvgCommand::class,
             ControllerMakeCommand::class,
             CreateMenuCommand::class,
+            CreateGlobalSectionCommand::class,
             CreatePageRootCommand::class,
             MakeTemplateField::class,
             InstallFabriqCommand::class,
@@ -236,12 +246,8 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../pnpm-workspace.yaml' => 'pnpm-workspace.yaml',
             __DIR__.'/../package.json' => 'package.json',
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
-            // __DIR__.'/../.eslintrc' => '.eslintrc',
-            __DIR__.'/../.babelrc' => '.babelrc',
-            __DIR__.'/../.styleci.yml' => '.styleci.yml',
+            __DIR__.'/../eslint.config.mjs' => 'eslint.config.mjs',
             __DIR__.'/../pnpm-lock.yaml' => 'pnpm-lock.yaml',
-            __DIR__.'/../.npmrc' => '.npmrc',
-            __DIR__.'/../.php-cs-fixer.stub' => '.php-cs-fixer.php',
         ];
     }
 }
