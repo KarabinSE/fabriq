@@ -28,7 +28,7 @@ class FlushTagCacheListener
             ? $event->model->getContentCacheKeys()
             : [];
 
-        if (! $tagsToFlush) {
+        if (! $tagsToFlush || ! Cache::supportsTags()) {
             return;
         }
 

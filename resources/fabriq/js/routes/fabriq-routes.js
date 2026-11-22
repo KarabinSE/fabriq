@@ -9,6 +9,8 @@ import NotFound from '@fabriq/errors/NotFound.vue'
 import FilesIndex from '@fabriq/files/Index.vue'
 import Home from '@fabriq/Home.vue'
 import ImagesIndex from '@fabriq/images/Index.vue'
+import GlobalsIndex from '@fabriq/globals/Index.vue'
+import GlobalsEdit from '@fabriq/globals/Edit.vue'
 import MenusEdit from '@fabriq/menus/Edit.vue'
 import MenusIndex from '@fabriq/menus/Index.vue'
 import BroadcastMiddleware from '@fabriq/middleware/broadcast-middleware'
@@ -71,6 +73,18 @@ export default [
             middleware: RolesMiddleware,
             roles: ['admin']
         }
+    },
+    {
+        path: '/admin/globals',
+        name: 'globals.index',
+        component: GlobalsIndex,
+        meta: { middleware: RolesMiddleware, roles: ['admin'] }
+    },
+    {
+        path: '/admin/globals/:handle/edit',
+        name: 'globals.edit',
+        component: GlobalsEdit,
+        meta: { middleware: RolesMiddleware, roles: ['admin'] }
     },
     {
         path: '/admin/pages/:id/edit',

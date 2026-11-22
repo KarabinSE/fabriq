@@ -24,6 +24,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EmailVerificationController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\EventController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\FileController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\FileUploadController;
+use Karabin\Fabriq\Http\Controllers\Api\Fabriq\GlobalSectionController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ImageableController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ImageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\ImageSourceSetController;
@@ -51,6 +52,7 @@ use Karabin\Fabriq\Http\Controllers\Api\Fabriq\UserImageController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\VideoUploadController;
 use Karabin\Fabriq\Http\Controllers\Api\Fabriq\WebAnalyticsController;
+use Karabin\Fabriq\Http\Controllers\Api\GlobalSectionController as PublicGlobalSectionController;
 use Karabin\Fabriq\Http\Controllers\PermalinksRedirectController;
 use Karabin\Fabriq\Http\Controllers\SpaController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
@@ -117,6 +119,7 @@ class RouteRegistrar
      */
     public function all(): void
     {
+        $this->forGlobalSections();
         $this->forMiscRoutes();
         $this->forArticles();
         $this->forContacts();
@@ -153,6 +156,7 @@ class RouteRegistrar
 
     public function forApiAdminProtected()
     {
+        $this->forGlobalSections();
         $this->forMiscRoutes();
         $this->forArticles();
         $this->forContacts();
@@ -179,6 +183,7 @@ class RouteRegistrar
 
     public function forPublicApi()
     {
+        $this->forPublicGlobalSections();
         $this->forPageSlugs();
         $this->forImageSrcSet();
         Route::get('previews/{uuid}', [PagePreviewController::class, 'show'])->name('previews.show');
@@ -187,6 +192,18 @@ class RouteRegistrar
     public function forDevProtected()
     {
         Route::post('bust-cache', [BustCacheController::class, 'store'])->name('bust-cache.store');
+    }
+
+    public function forGlobalSections(): void
+    {
+        Route::get('globals', [GlobalSectionController::class, 'index'])->name('globals.index');
+        Route::get('globals/{handle}', [GlobalSectionController::class, 'show'])->name('globals.show');
+        Route::put('globals/{handle}', [GlobalSectionController::class, 'update'])->name('globals.update');
+    }
+
+    public function forPublicGlobalSections(): void
+    {
+        Route::get('globals/{handle}', [PublicGlobalSectionController::class, 'show'])->name('globals.public.show');
     }
 
     public function forArticles(): void
