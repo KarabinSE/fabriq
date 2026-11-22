@@ -2,21 +2,7 @@
     <div>
         <UiSectionHeader>Globala inställningar</UiSectionHeader>
         <UiCard>
-            <p
-                v-if="error"
-                class="text-red-600"
-                role="alert"
-            >
-                {{ error }}
-            </p>
-            <p v-else-if="loading">
-                Laddar...
-            </p>
-            <p v-else-if="sections.length === 0">
-                Inga globala inställningar har skapats.
-            </p>
             <ul
-                v-else
                 class="divide-y divide-gray-200"
             >
                 <li
@@ -32,6 +18,7 @@
                     </RouterLink>
                 </li>
             </ul>
+            <pre>{{ sections }}</pre>
         </UiCard>
     </div>
 </template>
