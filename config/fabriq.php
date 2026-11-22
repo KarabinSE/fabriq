@@ -76,7 +76,7 @@ return [
         [
             'title' => 'Smarta block',
             'route' => 'smartBlocks.index',
-            'enabled' => env('FABRIQ_SMART_BLOCKS', true),
+            'enabled' => env('FABRIQ_SMART_BLOCKS', false),
             'icon' => 'BrushFineIcon',
             'roles' => ['admin'],
         ],

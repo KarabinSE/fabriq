@@ -1,7 +1,7 @@
 <template>
     <div>
         <UiSectionHeader>{{ section?.name ?? 'Globala inställningar' }}</UiSectionHeader>
-        <UiCard>
+        <UiCard class="max-w-2xl">
             <p
                 v-if="error"
                 class="mb-4 text-red-600"
@@ -60,15 +60,16 @@
                         :name="field.key"
                         @update:model-value="value => setFieldValue(field, value)"
                     />
-                    <FImageInput
-                        v-else-if="field.type === 'image'"
-                        :model-value="contents[activeLocale]?.[field.key]"
-                        :label="field.name"
-                        :name="field.key"
-                        :field-key="field.key"
-                        :model-id="section.id"
-                        @update:model-value="value => setFieldValue(field, value)"
-                    />
+                    <div v-else-if="field.type === 'image'" class="w-3/4">
+                        <FImageInput
+                            :model-value="contents[activeLocale]?.[field.key]"
+                            :label="field.name"
+                            :name="field.key"
+                            :field-key="field.key"
+                            :model-id="section.id"
+                            @update:model-value="value => setFieldValue(field, value)"
+                        />
+                    </div>
                 </div>
                 <button
                     type="button"
@@ -93,7 +94,8 @@ import { toast } from '@fabriq/components/toast/toast'
 const route = useRoute()
 const config = useConfigStore()
 const section = ref(null)
-const contents = ref({})
+const contents = ref({
+})
 const activeLocale = ref('')
 const activeGroup = ref('')
 const loading = ref(true)
@@ -106,20 +108,28 @@ const visibleFields = computed(() => section.value.fields.filter(field => (field
 onActivated(async () => {
     loading.value = true
     section.value = null
-    contents.value = {}
+    contents.value = {
+    }
     error.value = ''
+
     try {
         await config.initiated
         const localeKeys = Object.keys(locales.value)
+
         if (!localeKeys.length) {
             throw new Error('No enabled locales')
         }
+
         const results = await Promise.all(localeKeys.map(async locale => {
             const response = await axios.get(`/api/admin/globals/${encodeURIComponent(route.params.handle)}`, {
-                params: { locale_override: locale },
+                params: {
+                    locale_override: locale,
+                },
             })
+
             return [locale, response.data.data]
         }))
+
         section.value = results[0][1]
         contents.value = Object.fromEntries(results.map(([locale, data]) => [locale, data.content]))
         activeLocale.value = localeKeys.includes(config.activeLocale) ? config.activeLocale : localeKeys[0]
@@ -134,6 +144,7 @@ onActivated(async () => {
 
 function setFieldValue(field, value) {
     const localeKeys = field.translated ? [activeLocale.value] : Object.keys(contents.value)
+
     for (const locale of localeKeys) {
         contents.value[locale][field.key] = value
     }
@@ -142,16 +153,21 @@ function setFieldValue(field, value) {
 async function save() {
     saving.value = true
     error.value = ''
+
     try {
         const content = Object.fromEntries(section.value.fields.map(field => {
             const value = contents.value[activeLocale.value][field.key]
+
             return [field.key, field.type === 'image' ? value?.id ?? null : value ?? null]
         }))
+
         await axios.put(`/api/admin/globals/${encodeURIComponent(section.value.handle)}`, {
             locale: activeLocale.value,
             content,
         })
-        toast.success({ title: 'Globala inställningar har sparats' })
+        toast.success({
+            title: 'Globala inställningar har sparats',
+        })
     } catch (exception) {
         console.error(exception)
         error.value = exception.response?.data?.message ?? 'Kunde inte spara globala inställningar.'

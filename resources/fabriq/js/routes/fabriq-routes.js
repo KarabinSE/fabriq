@@ -28,15 +28,21 @@ import VideosIndex from '@fabriq/videos/Index.vue'
 export default [
     {
         path: '/',
-        redirect: { name: 'home.index' }
+        redirect: {
+            name: 'home.index',
+        },
     },
     {
         path: '/admin',
-        redirect: { name: 'home.index' }
+        redirect: {
+            name: 'home.index',
+        },
     },
     {
         path: '/admin/home',
-        redirect: { name: 'home.index' }
+        redirect: {
+            name: 'home.index',
+        },
     },
     {
         path: '/admin/dashboard',
@@ -44,8 +50,8 @@ export default [
         component: Home,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['*', 'restaurant']
-        }
+            roles: ['*', 'restaurant'],
+        },
     },
     {
         path: '/admin/profile/settings',
@@ -53,8 +59,8 @@ export default [
         component: ProfileSettings,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['*']
-        }
+            roles: ['*'],
+        },
     },
     // {
     //     path: '/admin/dashboard',
@@ -71,20 +77,26 @@ export default [
         component: PagesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/globals',
         name: 'globals.index',
         component: GlobalsIndex,
-        meta: { middleware: RolesMiddleware, roles: ['admin'] }
+        meta: {
+            middleware: RolesMiddleware,
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/globals/:handle/edit',
         name: 'globals.edit',
         component: GlobalsEdit,
-        meta: { middleware: RolesMiddleware, roles: ['admin'] }
+        meta: {
+            middleware: RolesMiddleware,
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/pages/:id/edit',
@@ -94,8 +106,8 @@ export default [
             middleware: [RolesMiddleware, BroadcastMiddleware],
             roles: ['admin'],
             commentable: true,
-            broadcastName: 'page'
-        }
+            broadcastName: 'page',
+        },
     },
     {
         path: '/admin/users',
@@ -103,8 +115,8 @@ export default [
         component: UsersIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/users/:id/edit',
@@ -112,8 +124,8 @@ export default [
         component: UsersEdit,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/notifications',
@@ -121,8 +133,8 @@ export default [
         component: NotificationIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/menus',
@@ -130,8 +142,8 @@ export default [
         component: MenusIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/menus/:id/edit',
@@ -139,8 +151,8 @@ export default [
         component: MenusEdit,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/media/images',
@@ -148,8 +160,8 @@ export default [
         component: ImagesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/articles',
@@ -157,8 +169,8 @@ export default [
         component: ArticlesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/articles/:id/edit',
@@ -166,8 +178,8 @@ export default [
         component: ArticlesEdit,
         meta: {
             middleware: [RolesMiddleware],
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/calendar',
@@ -175,8 +187,8 @@ export default [
         component: CalendarIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/contacts',
@@ -184,8 +196,8 @@ export default [
         component: ContactIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/contacts/:id/edit',
@@ -193,8 +205,8 @@ export default [
         component: ContactEdit,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/media/files',
@@ -202,8 +214,8 @@ export default [
         component: FilesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/media/videos',
@@ -211,8 +223,8 @@ export default [
         component: VideosIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/smart-blocks',
@@ -220,8 +232,8 @@ export default [
         component: SmartBlocksIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/smart-blocks/:id/edit',
@@ -229,8 +241,8 @@ export default [
         component: SmartBlocksEdit,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['admin']
-        }
+            roles: ['admin'],
+        },
     },
     {
         path: '/admin/block-types',
@@ -238,8 +250,8 @@ export default [
         component: BlockTypesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['dev']
-        }
+            roles: ['dev'],
+        },
     },
     {
         path: '/admin/block-types/:id/edit',
@@ -247,12 +259,12 @@ export default [
         component: BlockTypesIndex,
         meta: {
             middleware: RolesMiddleware,
-            roles: ['dev']
-        }
+            roles: ['dev'],
+        },
     },
     {
         name: 'errors.404',
         path: '/:pathMatch(.*)*',
-        component: NotFound
-    }
+        component: NotFound,
+    },
 ]
