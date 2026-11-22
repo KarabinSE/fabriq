@@ -36,4 +36,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run ESLint
-        run: pnpm lint
+        run: pnpm eslint  --ext .js,.vue resources/fabriq/js
