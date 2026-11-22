@@ -11,7 +11,9 @@
             <span
                 class="text-gray-700"
                 v-text="isCreating ? 'Skapa menypunkt' : 'Redigera menypunkt'"
-            /> {{ show }}
+            />
+            <pre>{{ item }}</pre>
+            <pre>{{ isCreating }}</pre>
         </template>
 
         <template #actions="{ close }">
@@ -203,17 +205,19 @@
         </div>
     </FModal>
 </template>
+
 <script>
 import { toast } from '@fabriq/components/toast/toast'
 import MenuItem from '@fabriq/models/MenuItem.js'
 import PageTree from '@fabriq/models/PageTree.js'
+
 function defaultCreationObject () {
     return {
         id: 0,
         type: 'internal',
         content: {
-            title: ''
-        }
+            title: '',
+        },
     }
 }
 
@@ -222,14 +226,17 @@ export default {
     props: {
         item: {
             type: [null, Object],
-            default: null
-        }
+            default: null,
+        },
     },
+
     data () {
         return {
             show: true,
             pages: [],
-            content: {},
+            content: {
+            },
+
             ready: false,
             placeholder: null,
             useCustomTitle: false,
@@ -237,23 +244,25 @@ export default {
                 id: 0,
                 type: 'internal',
                 content: {
-                    title: ''
-                }
-            }
+                    title: '',
+                },
+            },
         }
     },
+
     computed: {
         isCreating() {
             return !this.item
-        }
+        },
     },
+
     methods: {
         async initModal () {
             if (this.item) {
                 this.mItem.id = this.item.id
                 await Promise.all([
                     this.fetchPages(),
-                    this.fetchMenuItem()
+                    this.fetchMenuItem(),
                 ])
             } else {
                 this.fetchPages()
@@ -261,30 +270,34 @@ export default {
                     title: null,
                     url: null,
                     external_url: null,
-                    body: null
+                    body: null,
                 }
             }
 
             this.ready = true
         },
+
         async validate() {
             // TODO: Implement new validation in Vue 3
-            return true;
+            return true
         },
+
         async fetchPages () {
             try {
                 const payload = {
                     params: {
                         // field: 'id,name',
-                        selectOptions: true
-                    }
+                        selectOptions: true,
+                    },
                 }
                 const { data } = await PageTree.index(payload)
+
                 this.pages = data
             } catch (error) {
                 console.error(error)
             }
         },
+
         async createMenuItem () {
             try {
                 await this.validate()
@@ -294,22 +307,30 @@ export default {
                     has_custom_title: this.useCustomTitle,
                     content: {
                         ...this.content,
-                        title: this.content.title ?? this.placeholder
-                    }
+                        title: this.content.title ?? this.placeholder,
+                    },
                 }
+
                 await MenuItem.store(this.$route.params.id, payload)
-                toast.success({ title: 'Menypunkten har skapats!' })
+                toast.success({
+                    title: 'Menypunkten har skapats!',
+                })
                 this.$vfm.close('menu-item-modal')
                 this.show = false
             } catch (error) {
                 console.error(error)
             }
         },
+
         async updateMenuItem () {
             try {
                 await this.validate()
             } catch (error) {
-                toast.warning({ title: 'Kontrollera uppgifterna', message: 'Fyll i alla obligatoriska fält korrekt.' })
+                toast.warning({
+                    title: 'Kontrollera uppgifterna',
+                    message: 'Fyll i alla obligatoriska fält korrekt.',
+                })
+
                 return
             }
 
@@ -320,28 +341,37 @@ export default {
                     content: {
                         ...this.content,
                         title: this.content.title ?? this.placeholder,
-                    }
+                    },
                 }
+
                 await MenuItem.update(this.mItem.id, payload)
-                toast.success({ title: 'Menypunkten har uppdaterats!' })
+                toast.success({
+                    title: 'Menypunkten har uppdaterats!',
+                })
                 this.$vfm.close('menu-item-modal')
             } catch (error) {
                 console.error(error)
             }
         },
+
         async fetchMenuItem () {
             try {
                 const payload = {
                     params: {
-                        include: 'content'
-                    }
+                        include: 'content',
+                    },
                 }
                 const { data } = await MenuItem.show(this.mItem.id, payload)
-                this.mItem = { ...data }
+
+                this.mItem = {
+                    ...data,
+                }
                 this.useCustomTitle = Boolean(data.has_custom_title)
+
                 if(!Array.isArray(data.content.data)) {
                     this.content = data.content.data
                 }
+
                 if (this.mItem.type === 'internal' && !this.useCustomTitle) {
                     this.content.title = null
                     this.placeholder = data.title
@@ -352,18 +382,24 @@ export default {
                 console.error(error)
             }
         },
+
         resetModal () {
             this.ready = false
             this.useCustomTitle = false
             this.placeholder = null
-            this.mItem = { ...defaultCreationObject() }
-            this.content = {}
+            this.mItem = {
+                ...defaultCreationObject(),
+            }
+            this.content = {
+            }
         },
+
         onPageChange(pageId) {
             const pageTitle = this.pages.find(page => page.id === pageId)?.page_title ?? ''
+
             this.placeholder = pageTitle
-        }
-    }
+        },
+    },
 }
 </script>
 
