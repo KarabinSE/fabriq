@@ -30,61 +30,9 @@
     </FSelect>
 </template>
 
-<script>
-export const colors = {
-    buttonColors: [
-        {
-            label: 'Primär',
-            color: 'bg-btn-primary border-btn-primary',
-            value: 'primary',
-        },
-        {
-            label: 'Primär kontur',
-            color: 'border-btn-primary',
-            value: 'primary-outline',
-        },
-        {
-            label: 'Sekundär',
-            color: 'bg-btn-secondary border-btn-secondary',
-            value: 'secondary',
-        },
-        {
-            label: 'Sekundär kontur',
-            color: 'border-btn-secondary',
-            value: 'secondary-outline',
-        },
-        {
-            label: 'Tertiär',
-            color: 'bg-btn-tertiary border-btn-tertiary',
-            value: 'tertiary',
-        },
-        {
-            label: 'Tertiär kontur',
-            color: 'border-btn-tertiary',
-            value: 'tertiary-outline',
-        },
-    ],
-    backgroundColors: [
-        {
-            label: 'Primär',
-            color: 'bg-primary',
-            value: 'primary',
-        },
-        {
-            label: 'Sekundär',
-            color: 'bg-secondary',
-            value: 'secondary',
-        },
-        {
-            label: 'Tertiär',
-            color: 'bg-tertiary',
-            value: 'tertiary',
-        },
-    ],
-}
-</script>
-
 <script setup>
+import { useFabriq } from '@fabriq/fabriq'
+
 
 defineOptions({
     name: 'FColorPicker',
@@ -101,7 +49,7 @@ const  props = defineProps({
     },
     collection: {
         type: String,
-        default: 'buttons',
+        default: 'button',
     },
     name: {
         type: String,
@@ -113,20 +61,19 @@ const  props = defineProps({
     },
 })
 
+const fabriq = useFabriq()
+
 const color = defineModel({
     type: String,
     default: 'primary',
 })
 
 function getColorOptions() {
-    if(!['buttons', 'backgrounds'].includes(props.collection)) {
-        console.error(`expected buttons|backgrounds got:${props.collection}`)
+    try {
+        return fabriq.colors[props.collection]
+    } catch (error) {
+        console.error(`found no color pallette for ${props.collection}` )
+        console.error(`found collections: ${Object.keys(fabriq.colors).join(', ')}`)
     }
-
-    if(props.collection === 'backgrounds'){
-        return colors.backgroundColors
-    }
-
-    return colors.buttonColors
 }
 </script>

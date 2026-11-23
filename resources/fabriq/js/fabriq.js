@@ -20,9 +20,69 @@ import { createPinia } from 'pinia'
 import { createVfm } from 'vue-final-modal'
 import Notifications from 'notiwind'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import { hasInjectionContext, inject, provide } from 'vue'
+import { reactive } from 'vue'
+
+const defaultColorsSchema = {
+    button: [
+        {
+            label: 'Primär',
+            color: 'bg-btn-primary border-btn-primary',
+            value: 'primary',
+        },
+        {
+            label: 'Primär kontur',
+            color: 'border-btn-primary',
+            value: 'primary-outline',
+        },
+        {
+            label: 'Sekundär',
+            color: 'bg-btn-secondary border-btn-secondary',
+            value: 'secondary',
+        },
+        {
+            label: 'Sekundär kontur',
+            color: 'border-btn-secondary',
+            value: 'secondary-outline',
+        },
+        {
+            label: 'Tertiär',
+            color: 'bg-btn-tertiary border-btn-tertiary',
+            value: 'tertiary',
+        },
+        {
+            label: 'Tertiär kontur',
+            color: 'border-btn-tertiary',
+            value: 'tertiary-outline',
+        },
+    ],
+    background: [
+        {
+            label: 'Primär',
+            color: 'bg-primary',
+            value: 'primary',
+        },
+        {
+            label: 'Sekundär',
+            color: 'bg-secondary',
+            value: 'secondary',
+        },
+        {
+            label: 'Tertiär',
+            color: 'bg-tertiary',
+            value: 'tertiary',
+        },
+    ],
+}
+
+const fabriqPluginSymbol = 'fabriq-plugin'
 
 const fabriqPlugin = {
-    install(app, { customRoutes = [] }) {
+    install(app, {
+        customRoutes = [],
+        colors = {
+        },
+    }) {
         const pinia = createPinia()
         const router = createFabriqRouter(app, customRoutes)
         const vfm = createVfm()
@@ -43,7 +103,27 @@ const fabriqPlugin = {
             .use(autoAnimatePlugin)
             .directive('maska', vMaska)
             .directive('click-outside', clickOutside)
+
+        const fabriqSettings = reactive({
+            colors: {
+                ...Object.assign(defaultColorsSchema, colors),
+            },
+        })
+
+        app.provide(fabriqPluginSymbol, fabriqSettings)
     },
 }
 
-export { fabriqPlugin }
+function useFabriq() {
+    if(!hasInjectionContext()) {
+        throw new Error('Must be called within setup')
+
+    }
+
+    return inject(fabriqPluginSymbol, {
+    })
+}
+
+export { fabriqPlugin, useFabriq }
+
+

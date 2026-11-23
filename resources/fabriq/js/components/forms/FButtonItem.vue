@@ -52,6 +52,7 @@
                 </span>
             </div>
         </div>
+        <pre>{{ fabriq.colors }}</pre>
     </div>
 </template>
 
@@ -74,7 +75,6 @@ export const linkTypeOptions = [
 
 <script setup>
 import PageTree from '@fabriq/models/PageTree.js'
-import { colors as pallette } from '@fabriq/components/forms/FColorPicker.vue'
 import { buttonArrows } from '@fabriq/components/forms/FArrowPicker.vue'
 import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
 import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
@@ -82,6 +82,9 @@ import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
 import { Button } from '@fabriq/models/Button'
 import { onMounted, ref, computed } from 'vue'
 import { createModal } from '@fabriq/helpers/utils'
+import { useFabriq } from '@fabriq/fabriq'
+
+const fabriq = useFabriq()
 
 defineOptions({
     name: 'FButtonItem',
@@ -127,7 +130,7 @@ const props = defineProps({
 
 const modalId = ref(`button-modal-${Math.random().toString(20).substring(2, 6)}`)
 const localPages = ref(props.pages)
-const colors = ref(pallette['buttonColors'])
+const colors = ref(fabriq.colors.button)
 const arrows = ref(buttonArrows)
 
 const buttonType = computed(() => {
