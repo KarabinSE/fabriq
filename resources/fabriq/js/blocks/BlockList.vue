@@ -233,7 +233,7 @@
                                         :is="block.block_type.component_name"
                                         v-model:name="block.name"
                                         v-model:content="block.content"
-                                        v-model:children="block.content"
+                                        v-model:children="block.children"
                                         :block
                                         :index="blockIndex"
                                     />
