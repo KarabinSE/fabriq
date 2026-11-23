@@ -38,6 +38,9 @@ import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'FCommentEditor',
+
+    emits: ['focus', 'blur', 'update:model-value'],
+
     components: {
         EditorContent,
     },
@@ -92,7 +95,7 @@ export default {
 
         return {
             userStore,
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -113,7 +116,7 @@ export default {
             return this.users.map(item => {
                 return {
                     name: item.name,
-                    email: item.email, 
+                    email: item.email,
                 }
             })
         },

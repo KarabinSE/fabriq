@@ -46,6 +46,9 @@
 <script>
 export default {
     name: 'FConfirmDropdown',
+
+    emits: ['dismissed', 'confirmed'],
+
     props: {
         dismissText: {
             type: String,

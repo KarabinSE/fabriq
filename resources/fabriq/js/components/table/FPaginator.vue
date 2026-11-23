@@ -91,6 +91,9 @@
 <script>
 export default {
     name: 'FPaginator',
+
+    emits: ['change-page'],
+
     props: {
         pagination: {
             type: Object,

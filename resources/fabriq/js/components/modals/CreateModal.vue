@@ -45,6 +45,14 @@
 <script>
 export default {
     name: 'CreateModal',
+
+    emits: [
+        'closed',
+        'validated',
+        'opened',
+        'before-open',
+    ],
+
     props: {
         show: {
             type: Boolean,

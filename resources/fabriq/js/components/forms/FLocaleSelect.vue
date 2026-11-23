@@ -23,11 +23,14 @@ import { useConfigStore } from '@fabriq/stores'
 
 export default {
     name: 'FLocaleSelect',
+
+    emits: ['change'],
+
     setup() {
         const configStore = useConfigStore()
 
         return {
-            configStore, 
+            configStore,
         }
     },
 

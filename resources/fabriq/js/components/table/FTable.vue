@@ -136,8 +136,18 @@ import { useEventBus } from '@fabriq/services/eventBus'
 
 export default {
     name: 'FTable',
+
+    emits: [
+        'change-page',
+        'check-row',
+        'check-row',
+        'sort',
+        'row-clicked',
+        'check-row',
+    ],
+
     components: {
-        FPaginator, 
+        FPaginator,
     },
 
     props: {
@@ -187,7 +197,7 @@ export default {
         const eventBus = useEventBus()
 
         return {
-            eventBus, 
+            eventBus,
         }
     },
 

@@ -741,6 +741,8 @@ export default {
         Dropdown,
     },
 
+    emits: ['update:model-value'],
+
     props: {
         label: {
             type: String,

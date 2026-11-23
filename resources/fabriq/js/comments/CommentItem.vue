@@ -114,6 +114,9 @@ import * as formatters from '@fabriq/utils/formatters'
 
 export default {
     name: 'CommentItem',
+
+    emits: ['refresh-comments'],
+
     props: {
         isLast: {
             type: Boolean,
@@ -147,7 +150,7 @@ export default {
         const userStore = useUserStore()
 
         return {
-            userStore, 
+            userStore,
         }
     },
 
@@ -221,7 +224,7 @@ export default {
                 await Comment.destroy(this.comment.id)
                 this.$emit('refresh-comments')
                 toast.success({
-                    title: 'Kommentaren har raderats!', 
+                    title: 'Kommentaren har raderats!',
                 })
             } catch (error) {
                 console.error(error)

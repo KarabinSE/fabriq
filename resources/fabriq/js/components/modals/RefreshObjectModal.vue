@@ -41,6 +41,9 @@
 <script>
 export default {
     name: 'RefreshObjectModal',
+
+    emits: ['opened', 'before-open'],
+
     props: {
         show: {
             type: Boolean,

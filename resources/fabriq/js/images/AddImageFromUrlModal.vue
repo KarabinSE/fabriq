@@ -38,6 +38,7 @@ import Image from '@fabriq/models/Image.js'
 
 export default {
     name: 'AddImageFromUrlModal',
+    emits: ['image-added'],
     props: {
         name: {
             type: String,
@@ -72,7 +73,7 @@ export default {
             await Image.store(payload)
             this.$emit('image-added')
             toast.success({
-                title: 'Bilden har lagts till!', 
+                title: 'Bilden har lagts till!',
             })
             this.vfm.close(this.name)
             setTimeout(() => {

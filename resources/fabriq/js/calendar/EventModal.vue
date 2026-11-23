@@ -154,6 +154,9 @@ function defaultMainCreationObject () {
 
 export default {
     name: 'EventModal',
+
+    emits: ['updated'],
+
     props: {
         show: {
             type: Boolean,
@@ -178,7 +181,7 @@ export default {
         const configStore = useConfigStore()
 
         return {
-            configStore, 
+            configStore,
         }
     },
 
@@ -208,29 +211,29 @@ export default {
         prepareData () {
             if (!this.creating) {
                 this.createEvent = {
-                    ...this.event, 
+                    ...this.event,
                 }
                 this.createEvent.date = {
                     start: this.createEvent.start,
                     end: this.createEvent.end,
                 }
                 const localizedContent = {
-                    ...this.event.localizedContent.data, 
+                    ...this.event.localizedContent.data,
                 }
 
                 Object.keys(localizedContent).forEach((locale, key) => {
                     this.createEvent[locale] = {
-                        ...localizedContent[locale].content, 
+                        ...localizedContent[locale].content,
                     }
                 })
             } else {
                 Object.keys(this.locales).forEach(locale => {
                     this.createEvent = {
-                        ...defaultMainCreationObject(), 
+                        ...defaultMainCreationObject(),
                     }
                     this.$nextTick(() => {
                         this.createEvent['locale'] = {
-                            ...defaultCreationObject(), 
+                            ...defaultCreationObject(),
                         }
                     })
                 })
@@ -256,7 +259,7 @@ export default {
             if (!result) {
                 toast.warning({
                     title: 'Oj då!',
-                    message: 'Något är tosigt med datan du försöker skicka.', 
+                    message: 'Något är tosigt med datan du försöker skicka.',
                 })
 
                 return
@@ -284,13 +287,13 @@ export default {
                 if (this.creating) {
                     await Event.store(payload)
                     toast.success({
-                        title: 'Händelsen har skapats! ', 
+                        title: 'Händelsen har skapats! ',
                     })
                     this.$emit('updated')
                 } else {
                     await Event.update(this.event.id, payload)
                     toast.success({
-                        title: 'Händelsen har uppdaterats!', 
+                        title: 'Händelsen har uppdaterats!',
                     })
                     this.$emit('updated')
                 }

@@ -32,6 +32,7 @@
 <script>
 export default {
     name: 'UiDropdown',
+    emits: ['open', 'close'],
     props: {
         alignment: {
             type: String,

@@ -31,7 +31,7 @@
                 <button
                     type="button"
                     class=""
-                    @click="$emit('delete')"
+                    @click="emit('delete')"
                 >
                     <TrashIcon class="size-5 text-gray-500 hover:text-red-800" />
                 </button>
@@ -66,15 +66,15 @@
 export const linkTypeOptions = [
     {
         label: 'Intern',
-        value: 'internal', 
+        value: 'internal',
     },
     {
         label: 'Extern',
-        value: 'external', 
+        value: 'external',
     },
     {
         label: 'Fil',
-        value: 'file', 
+        value: 'file',
     },
 ]
 </script>
@@ -93,8 +93,9 @@ import { onMounted, ref, computed } from 'vue'
 const vfm = useVfm()
 
 defineOptions({
-    name: 'FButtonItem', 
+    name: 'FButtonItem',
 })
+const emit = defineEmits(['delete'])
 
 const model = defineModel({
     type: Object,

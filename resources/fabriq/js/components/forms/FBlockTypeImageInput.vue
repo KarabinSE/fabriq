@@ -76,6 +76,9 @@
 <script>
 export default {
     name: 'FImageInput',
+
+    emits: ['input'],
+
     props: {
         value: {
             type: [File],

@@ -123,6 +123,8 @@ export default {
         BlockList,
     },
 
+    emits: ['save'],
+
     setup () {
         const vfm = useVfm()
         const pageStore = usePageStore()
@@ -131,7 +133,7 @@ export default {
         const previewStore = usePreviewStore()
 
         const resizeStorage = useStorage('preview-resize-width', {
-            width: 700, 
+            width: 700,
         })
 
         return {

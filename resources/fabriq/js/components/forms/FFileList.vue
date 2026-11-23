@@ -72,6 +72,9 @@
 <script>
 export default {
     name: 'FFileList',
+
+    emits: ['input'],
+
     props: {
         value: {
             type: Array,

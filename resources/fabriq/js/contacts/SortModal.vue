@@ -50,6 +50,9 @@ import Draggable from 'vuedraggable'
 
 export default {
     name: 'SortModal',
+
+    emits: ['updated'],
+
     components: {
         Draggable,
     },
@@ -104,7 +107,7 @@ export default {
 
             try {
                 await axios.post(route('contacts.sort'), {
-                    contacts: this.contacts, 
+                    contacts: this.contacts,
                 })
                 this.$emit('updated')
                 toast.success({
