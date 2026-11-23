@@ -3,6 +3,8 @@
 namespace Karabin\Fabriq\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use RuntimeException;
 
 class InstallFabriqCommand extends Command
 {
@@ -37,7 +39,8 @@ class InstallFabriqCommand extends Command
      */
     public function handle()
     {
-        $this->info('Installing front end assets');
+        $this->info('Installing...');
+
         $this->call('vendor:publish', [
             '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
             '--tag' => 'fabriq-frontend-install-assets',
@@ -58,6 +61,28 @@ class InstallFabriqCommand extends Command
             '--tag' => 'fabriq-translations',
         ]);
 
+        if ($this->call('vendor:publish', [
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
+            '--tag' => 'fabriq-public-images',
+            '--force' => true,
+        ]) !== self::SUCCESS) {
+            return self::FAILURE;
+        }
+
+        $this->info('Installing config');
+        if ($this->call('vendor:publish', [
+            '--provider' => 'Karabin\Fabriq\FabriqCoreServiceProvider',
+            '--tag' => 'config',
+            '--force' => true,
+        ]) !== self::SUCCESS) {
+            return self::FAILURE;
+        }
+
+        $this->info('Copying assets to public directory');
+        if (! File::copyDirectory(__DIR__.'/../../resources/fabriq/images', public_path('fabriq/images'))) {
+            throw new RuntimeException('Unable to copy Fabriq images to the public directory.');
+        }
+
         $this->info('Translations has been installed');
 
         $this->info('Migrating...');
@@ -69,15 +94,30 @@ class InstallFabriqCommand extends Command
             $this->call('fabriq:create-page-root', [
                 '--silent' => true,
             ]);
-            $answer = $this->ask('Do you want to create a new user?', 'yes');
+
+            $answer = $this->ask('Do you want install default menus and a start page?', 'yes');
 
             if ($answer === 'yes') {
+                $this->call('fabriq:default-setup');
+            }
+
+            $userAnswer = $this->ask('Do you want to create a new user?', 'yes');
+
+            if ($userAnswer === 'yes') {
                 $this->call('fabriq:make-user');
                 $this->call('fabriq:add-role-to-user');
             }
+
+            $typescriptAnswer = $this->ask('Do you want to generate routes (typescript:transform)', 'yes');
+
+            if ($typescriptAnswer === 'yes') {
+                $this->call('typescript:transform');
+            }
+
         }
 
-        $this->info('Fabriq has been installed');
+        $this->output->title('Fabriq has been installed');
+        $this->info('A new .example file has been published with Fabriq specific config options');
 
         return 0;
     }

@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Karabin\Fabriq\Console\AddGlobalFieldCommand;
 use Karabin\Fabriq\Console\AddRoleToUserCommand;
 use Karabin\Fabriq\Console\BackfillTinySvgCommand;
+use Karabin\Fabriq\Console\Commands\FabriqDefaultSetup;
 use Karabin\Fabriq\Console\Commands\MakeUser;
 use Karabin\Fabriq\Console\ControllerMakeCommand;
 use Karabin\Fabriq\Console\CreateGlobalSectionCommand;
@@ -77,10 +78,6 @@ class FabriqCoreServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../resources/fabriq/js/globals' => resource_path('fabriq/js/globals'),
             ], 'fabriq-globals-assets');
-
-            $this->publishes([
-                __DIR__.'/../config/fortify.php' => config_path('fortify.php'),
-            ], 'fortify-config');
 
             $this->loadMigrationsFrom([realpath(__DIR__.'/../database/migrations')]);
 
@@ -170,6 +167,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             MakeUser::class,
             UpdateFabriqCommand::class,
             CreatePageTemplate::class,
+            FabriqDefaultSetup::class,
         ]);
 
         $this->app->singleton(PageRepositoryInterface::class, function () {
@@ -248,6 +246,7 @@ class FabriqCoreServiceProvider extends ServiceProvider
             __DIR__.'/../jsconfig.json' => 'jsconfig.json',
             __DIR__.'/../eslint.config.mjs' => 'eslint.config.mjs',
             __DIR__.'/../pnpm-lock.yaml' => 'pnpm-lock.yaml',
+            __DIR__.'/../.env.example' => '.env.example',
         ];
     }
 }
