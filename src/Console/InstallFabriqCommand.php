@@ -72,7 +72,7 @@ class InstallFabriqCommand extends Command
             $answer = $this->ask('Do you want to create a new user?', 'yes');
 
             if ($answer === 'yes') {
-                $this->call('make:user');
+                $this->call('fabriq:make-user');
                 $this->call('fabriq:add-role-to-user');
             }
         }

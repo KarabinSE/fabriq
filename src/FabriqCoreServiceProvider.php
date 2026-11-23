@@ -2,13 +2,13 @@
 
 namespace Karabin\Fabriq;
 
-use Dyrynda\Artisan\Console\Commands\MakeUser;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Karabin\Fabriq\Console\AddGlobalFieldCommand;
 use Karabin\Fabriq\Console\AddRoleToUserCommand;
 use Karabin\Fabriq\Console\BackfillTinySvgCommand;
+use Karabin\Fabriq\Console\Commands\MakeUser;
 use Karabin\Fabriq\Console\ControllerMakeCommand;
 use Karabin\Fabriq\Console\CreateGlobalSectionCommand;
 use Karabin\Fabriq\Console\CreateMenuCommand;
