@@ -52,7 +52,6 @@
                 </span>
             </div>
         </div>
-        <pre>{{ fabriq.colors }}</pre>
     </div>
 </template>
 
