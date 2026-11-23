@@ -69,7 +69,7 @@
                             <LinkIcon class="size-5" />
                         </button>
 
-                        <template #popper>
+                        <template #popper="{ hide }">
                             <div class="w-72 flex flex-col gap-0.5 bg-white px-4 rounded-lg border border-gray-200 shadow-lg ">
                                 <FTabs
                                     :identifier="tabIdentifier"
@@ -128,7 +128,7 @@
                                         <button
                                             type="button"
                                             class="px-4 py-2.5 fabriq-btn btn-ghost"
-                                            @click=""
+                                            @click="hide"
                                         >
                                             Stäng
                                         </button>
