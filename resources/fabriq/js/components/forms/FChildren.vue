@@ -93,7 +93,10 @@
                         </div>
                     </template>
 
-                    <slot :child="child" />
+                    <slot
+                        :child="child"
+                        :index="childIndex"
+                    />
                 </UiCard>
             </template>
         </Draggable>
