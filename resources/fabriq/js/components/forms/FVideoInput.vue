@@ -56,7 +56,7 @@
                             type="button"
                             class="flex px-6 py-2.5 mb-2 text-sm leading-none fabriq-btn btn-royal"
                         >
-                            Ladda upp bild
+                            Ladda upp video
                         </button>
                         <span>eller</span>
                         <button
