@@ -61,7 +61,7 @@
                         </div>
                         <button
                             class="flex items-center text-sm link"
-                            @click="showMenuItemModal"
+                            @click="showMenuItemModal(null)"
                         >
                             <PlusIcon class="size-5 mr-2" />Lägg till menypunkt
                         </button>
