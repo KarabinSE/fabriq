@@ -39,8 +39,6 @@ import { useEventBus } from '@fabriq/services/eventBus'
 export default {
     name: 'FCommentEditor',
 
-    emits: ['focus', 'blur', 'update:model-value'],
-
     components: {
         EditorContent,
     },
@@ -86,6 +84,8 @@ export default {
             default: 3,
         },
     },
+
+    emits: ['focus', 'blur', 'update:model-value'],
 
     emits: ['update:model-value'],
 

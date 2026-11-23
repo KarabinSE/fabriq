@@ -138,7 +138,7 @@ export default {
         const eventBus = useEventBus()
 
         return {
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -221,7 +221,7 @@ export default {
                 await File.update(this.file.id, payload)
                 this.eventBus.emit('file-updated')
                 toast.success({
-                    title: 'Filen har uppdaterats!', 
+                    title: 'Filen har uppdaterats!',
                 })
                 this.closeModal()
             } catch (error) {
@@ -234,13 +234,13 @@ export default {
                 await File.destroy(this.file.id)
                 this.eventBus.emit('file-updated')
                 toast.success({
-                    title: 'Filen har raderats', 
+                    title: 'Filen har raderats',
                 })
                 this.$emit('item-deleted')
                 this.closeModal()
             } catch (error) {
                 toast.error({
-                    title: 'Kunde inte radera filen', 
+                    title: 'Kunde inte radera filen',
                 })
                 console.error(error)
             }

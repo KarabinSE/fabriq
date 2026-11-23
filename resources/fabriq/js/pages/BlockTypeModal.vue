@@ -127,7 +127,7 @@
 
 <script setup>
 defineOptions({
-    name: 'BlockTypeModal', 
+    name: 'BlockTypeModal',
 })
 
 import Page from '@fabriq/models/BlockType.js'

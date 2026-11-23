@@ -79,7 +79,7 @@ export default {
             if (item) {
                 this.command({
                     id: item.name,
-                    'data-email': item.email, 
+                    'data-email': item.email,
                 })
             }
         },

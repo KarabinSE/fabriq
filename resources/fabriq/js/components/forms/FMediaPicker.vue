@@ -192,7 +192,7 @@ const vfm = useVfm()
 const emit = defineEmits([ 'close', 'item-picked' ])
 
 defineOptions({
-    name: 'FMediaPicker', 
+    name: 'FMediaPicker',
 })
 const props = defineProps({
     mediaType: {

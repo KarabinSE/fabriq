@@ -741,8 +741,6 @@ export default {
         Dropdown,
     },
 
-    emits: ['update:model-value'],
-
     props: {
         label: {
             type: String,
@@ -779,6 +777,8 @@ export default {
             default: false,
         },
     },
+
+    emits: ['update:model-value'],
 
     setup() {
         const eventBus = useEventBus()

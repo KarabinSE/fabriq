@@ -82,7 +82,7 @@ export default {
     name: 'CommentSection',
     components: {
         CommentItem,
-        SlideUpDown, 
+        SlideUpDown,
     },
 
     setup () {
@@ -91,7 +91,7 @@ export default {
 
         return {
             userStore,
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -159,7 +159,7 @@ export default {
 
             setTimeout(() => {
                 container.scrollTo({
-                    top: container.scrollHeight, 
+                    top: container.scrollHeight,
                 })
             }, 100)
         },
@@ -173,7 +173,7 @@ export default {
 
             element.scrollIntoView({
                 behavior: 'smooth',
-                top: 10, 
+                top: 10,
             })
         },
 

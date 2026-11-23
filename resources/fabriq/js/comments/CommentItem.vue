@@ -115,8 +115,6 @@ import * as formatters from '@fabriq/utils/formatters'
 export default {
     name: 'CommentItem',
 
-    emits: ['refresh-comments'],
-
     props: {
         isLast: {
             type: Boolean,
@@ -145,6 +143,8 @@ export default {
             },
         },
     },
+
+    emits: ['refresh-comments'],
 
     setup () {
         const userStore = useUserStore()

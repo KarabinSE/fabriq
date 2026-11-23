@@ -192,7 +192,7 @@ export default {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -211,7 +211,7 @@ export default {
             },
 
             newUser: {
-                ...newUserObject(), 
+                ...newUserObject(),
             },
 
             columns: [
@@ -282,7 +282,7 @@ export default {
             try {
                 await User.destroy(user.id)
                 toast.success({
-                    title: 'Användaren har raderats', 
+                    title: 'Användaren har raderats',
                 })
                 this.fetchUsers()
             } catch (error) {
@@ -304,8 +304,8 @@ export default {
             this.$router.push({
                 name: 'users.edit',
                 params: {
-                    id: row.id, 
-                }, 
+                    id: row.id,
+                },
             })
         },
 
@@ -317,7 +317,7 @@ export default {
             await Invitation.store(id)
             // await this.$store.dispatch('Invitation/store', { userId: id })
             toast.success({
-                title: 'Aktivering skickad!', 
+                title: 'Aktivering skickad!',
             })
             this.fetchUsers()
         },
@@ -327,7 +327,7 @@ export default {
                 await Invitation.destroy(id)
                 this.fetchUsers()
                 toast.success({
-                    title: 'Inbjudan har tagits bort', 
+                    title: 'Inbjudan har tagits bort',
                 })
             } catch (error) {
                 console.error(error)
@@ -350,8 +350,8 @@ export default {
                     onClick: () => this.$router.push({
                         name: 'users.edit',
                         params: {
-                            id: data.id, 
-                        }, 
+                            id: data.id,
+                        },
                     }),
                 })
                 this.vfm.close('createUserModal')
@@ -370,7 +370,7 @@ export default {
         resetCreateModal () {
             setTimeout(() => {
                 this.newUser = {
-                    ...newUserObject(), 
+                    ...newUserObject(),
                 }
             }, 200)
         },

@@ -163,7 +163,7 @@ export default {
         const configStore = useConfigStore()
 
         return {
-            configStore, 
+            configStore,
         }
     },
 
@@ -212,12 +212,12 @@ export default {
     methods: {
         mapLocalizedContent (data) {
             const localizedContent = {
-                ...data.localizedContent, 
+                ...data.localizedContent,
             }
 
             Object.keys(localizedContent).forEach((item, key) => {
                 this.localizedContent[item] = {
-                    ...localizedContent[item].content, 
+                    ...localizedContent[item].content,
                 }
             })
         },
@@ -233,7 +233,7 @@ export default {
 
                 this.contact = data
                 this.content = {
-                    ...data.content, 
+                    ...data.content,
                 }
                 this.tags = [...data.tags]
                 this.mapLocalizedContent(data)
@@ -245,17 +245,17 @@ export default {
         async updateContact () {
             try {
                 this.contact.tags = {
-                    ...this.nameTags, 
+                    ...this.nameTags,
                 }
                 this.contact.content = {
-                    ...this.content, 
+                    ...this.content,
                 }
                 this.contact.localizedContent = {
-                    ...this.localizedContent, 
+                    ...this.localizedContent,
                 }
                 await Contact.update(this.id, this.contact)
                 toast.success({
-                    title: 'Kontakten har uppdaterats!', 
+                    title: 'Kontakten har uppdaterats!',
                 })
             } catch (error) {
                 console.error(error)

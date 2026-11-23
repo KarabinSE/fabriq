@@ -158,7 +158,7 @@ import { createModal } from '@fabriq/helpers/utils'
 export default {
     name: 'MenusEdit',
     components: {
-        Draggable, 
+        Draggable,
     },
 
     beforeRouteLeave (from, to, next) {
@@ -172,7 +172,7 @@ export default {
 
         return {
             configStore,
-            vfm, 
+            vfm,
         }
     },
 
@@ -262,7 +262,7 @@ export default {
 
                 await Menu.updateTree(this.id, payload)
                 toast.success({
-                    title: 'Menyn har uppdaterats!', 
+                    title: 'Menyn har uppdaterats!',
                 })
                 this.fetchTree()
             } catch (error) {
@@ -283,7 +283,7 @@ export default {
             try {
                 await MenuItem.destroy(id)
                 toast.success({
-                    title: 'Menypunkten har raderats', 
+                    title: 'Menypunkten har raderats',
                 })
                 this.fetchTree()
             } catch (error) {

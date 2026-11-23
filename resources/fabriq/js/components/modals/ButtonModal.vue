@@ -125,7 +125,7 @@ import PageTree from '@fabriq/models/PageTree'
 import { ref } from 'vue'
 
 defineOptions({
-    name: 'ButtonModal', 
+    name: 'ButtonModal',
 })
 const model = defineModel({
     type: Object,

@@ -10,7 +10,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('events.show', {
-            event: id, 
+            event: id,
         }), payload)
 
         return data
@@ -18,7 +18,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('events.update', {
-            event: id, 
+            event: id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('events.destroy', {
-            event: id, 
+            event: id,
         }))
 
         return data

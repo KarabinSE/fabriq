@@ -97,8 +97,8 @@ export default {
             try {
                 const { data } = await AuthenticatedUser.index({
                     params: {
-                        field: 'id', 
-                    }, 
+                        field: 'id',
+                    },
                 })
 
                 this.currentUser = data
@@ -127,10 +127,10 @@ export default {
             try {
                 this.user.role_list = this.chosenRoles
                 await User.update(this.id, {
-                    ...this.user, 
+                    ...this.user,
                 })
                 toast.success({
-                    title: 'Användaren har uppdaterats', 
+                    title: 'Användaren har uppdaterats',
                 })
             } catch (error) {
                 console.error(error)

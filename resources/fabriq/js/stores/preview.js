@@ -60,7 +60,7 @@ export const usePreviewStore = defineStore('preview', () => {
     async function updatePreview () {
         try {
             const { data } = await axios.put(route('previews.update', {
-                id: pageStore.page.id, 
+                id: pageStore.page.id,
             }), previewPayload.value)
 
             previewUrl.value = data.preview_url
@@ -82,7 +82,7 @@ export const usePreviewStore = defineStore('preview', () => {
 
         iframeReference.value.contentWindow.postMessage({
             type: 'fabriq-preview-ready',
-            url: previewUrl.value, 
+            url: previewUrl.value,
         }, targetOrigin)
     }
 
@@ -96,7 +96,7 @@ export const usePreviewStore = defineStore('preview', () => {
         iframeReference.value.contentWindow.postMessage({
             type: 'fabriq-locate-block',
             url: previewUrl.value,
-            block: blockId, 
+            block: blockId,
         }, targetOrigin)
     }
 

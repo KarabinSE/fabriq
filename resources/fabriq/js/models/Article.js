@@ -16,7 +16,7 @@ export default {
 
     async count (payload) {
         const { data } = await axios.get(route('model.count.show', {
-            model: 'articles', 
+            model: 'articles',
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('articles.show', {
-            article: id, 
+            article: id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async update (id, object) {
         const { data } = await axios.patch(route('articles.update', {
-            article: id, 
+            article: id,
         }), object)
 
         return data
@@ -40,7 +40,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('articles.destroy', {
-            article: id, 
+            article: id,
         }))
 
         return data

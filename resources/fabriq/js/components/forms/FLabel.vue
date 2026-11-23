@@ -50,7 +50,7 @@ export default {
         const configStore = useConfigStore()
 
         return {
-            configStore, 
+            configStore,
         }
     },
 

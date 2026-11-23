@@ -31,13 +31,13 @@ export default {
     name: 'PagePaths',
     setup() {
         const { copy } = useClipboard({
-            legacy: true, 
+            legacy: true,
         })
         const eventBus = useEventBus()
 
         return {
             copy,
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -71,7 +71,7 @@ export default {
 
         copySuccess () {
             toast.success({
-                title: 'Länken har kopierats', 
+                title: 'Länken har kopierats',
             })
         },
 

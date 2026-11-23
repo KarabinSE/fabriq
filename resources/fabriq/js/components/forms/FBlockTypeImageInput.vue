@@ -77,8 +77,6 @@
 export default {
     name: 'FImageInput',
 
-    emits: ['input'],
-
     props: {
         value: {
             type: [File],
@@ -100,6 +98,8 @@ export default {
             default: null,
         },
     },
+
+    emits: ['input'],
 
     data () {
         return {

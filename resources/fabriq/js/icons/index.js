@@ -1,5 +1,5 @@
 const icons = import.meta.glob('./*.vue', {
-    eager: true, 
+    eager: true,
 })
 
 export default {

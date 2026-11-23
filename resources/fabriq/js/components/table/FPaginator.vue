@@ -92,8 +92,6 @@
 export default {
     name: 'FPaginator',
 
-    emits: ['change-page'],
-
     props: {
         pagination: {
             type: Object,
@@ -110,6 +108,8 @@ export default {
             default: 'left',
         },
     },
+
+    emits: ['change-page'],
 
     data () {
         return {

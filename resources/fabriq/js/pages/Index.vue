@@ -155,14 +155,14 @@ function defaultCreationObject () {
 export default {
     name: 'PagesIndex',
     components: {
-        Draggable, 
+        Draggable,
     },
 
     setup() {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -281,7 +281,7 @@ export default {
 
             Object.keys(this.pageToClone.localizedContent.data).forEach((item) => {
                 localizedContent[item] = {
-                    ...this.pageToClone.localizedContent.data[item].content, 
+                    ...this.pageToClone.localizedContent.data[item].content,
                 }
             })
             const payload = {
@@ -290,10 +290,10 @@ export default {
 
             await Page.clone(page.id, {
                 ...payload,
-                ...parameters, 
+                ...parameters,
             })
             toast.success({
-                title: 'Sidan har klonats!', 
+                title: 'Sidan har klonats!',
             })
             this.fetchPageTree()
         },
@@ -320,7 +320,7 @@ export default {
             if (page.children.length > 0) {
                 toast.info({
                     title: 'Kunde inte radera sidan',
-                    message: 'Sidan har sidor under sig, radera eller flytta dessa först', 
+                    message: 'Sidan har sidor under sig, radera eller flytta dessa först',
                 })
 
                 return false
@@ -329,7 +329,7 @@ export default {
             try {
                 await Page.destroy(page.id)
                 toast.success({
-                    title: 'Sidan har raderats ', 
+                    title: 'Sidan har raderats ',
                 })
                 this.fetchPageTree()
             } catch (error) {
@@ -356,9 +356,9 @@ export default {
             try {
                 if(this.newPage.template.locked) {
                     await this.clonePage({
-                        id: this.newPage.template.source_model_id, 
+                        id: this.newPage.template.source_model_id,
                     }, {
-                        name: this.newPage.name, 
+                        name: this.newPage.name,
                     })
                     this.vfm.close('createPageModal')
                     this.resetCreateModal()
@@ -375,8 +375,8 @@ export default {
                     onClick: () => this.$router.push({
                         name: 'pages.edit',
                         params: {
-                            id: data.id, 
-                        }, 
+                            id: data.id,
+                        },
                     }),
                 })
                 this.vfm.close('createPageModal')
@@ -433,7 +433,7 @@ export default {
         resetCreateModal () {
             setTimeout(() => {
                 this.newPage = {
-                    ...defaultCreationObject(), 
+                    ...defaultCreationObject(),
                 }
             }, 200)
         },

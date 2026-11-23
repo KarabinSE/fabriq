@@ -22,8 +22,6 @@
 export default {
     name: 'FCheckbox',
 
-    emits: ['input'],
-
     props: {
         label: {
             type: String,
@@ -46,6 +44,8 @@ export default {
         },
 
     },
+
+    emits: ['input'],
 
     data() {
         return {

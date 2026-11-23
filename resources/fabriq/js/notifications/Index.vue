@@ -113,7 +113,7 @@ export default {
 
         return {
             userStore,
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -217,12 +217,12 @@ export default {
                 this.$router.push({
                     name: 'pages.edit',
                     params: {
-                        id: row.notifiable.data.commentable_id, 
+                        id: row.notifiable.data.commentable_id,
                     },
                     query: {
                         openComments: true,
-                        commentId: row.notifiable_id, 
-                    }, 
+                        commentId: row.notifiable_id,
+                    },
                 })
             }
         },

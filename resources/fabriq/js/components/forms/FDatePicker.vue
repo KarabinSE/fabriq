@@ -118,7 +118,7 @@ import { useUserStore } from '@fabriq/stores'
 const userStore = useUserStore()
 
 defineOptions({
-    name: 'FDatePicker', 
+    name: 'FDatePicker',
 })
 const model = defineModel({
     type: [Object, Array, String, Date, Number],
@@ -254,7 +254,7 @@ const attributes = computed(() => {
                     fillMode: 'outline',
                     contentClass: '!text-gray-800',
                     style: {
-                        'border-color': '#BACBF2', 
+                        'border-color': '#BACBF2',
                     },
                 },
         },

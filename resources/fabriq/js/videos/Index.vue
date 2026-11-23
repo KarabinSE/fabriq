@@ -236,7 +236,7 @@ export default {
 
         return {
             vfm,
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -345,7 +345,7 @@ export default {
 
                 if (!this.suppressToast) {
                     toast.success({
-                        title: 'Videon har tagits bort', 
+                        title: 'Videon har tagits bort',
                     })
                     this.fetchVideos()
                 }
@@ -411,7 +411,7 @@ export default {
 
                 await Tag.store(payload)
                 toast.success({
-                    title: 'Taggarna har lagts till!', 
+                    title: 'Taggarna har lagts till!',
                 })
                 this.fetchVideos()
                 this.showTagsModal = false
@@ -443,7 +443,7 @@ export default {
             this.checkedRows.forEach(row => {
                 promises.push({
                     deleteFunction: this.deleteVideo,
-                    id: row, 
+                    id: row,
                 })
             })
             await Promise.all(
@@ -454,7 +454,7 @@ export default {
             this.suppressToast = false
             this.eventBus.emit('clear-checked-rows')
             toast.success({
-                title: 'Videorna har tagits bort', 
+                title: 'Videorna har tagits bort',
             })
             this.fetchVideos()
         },

@@ -273,7 +273,7 @@ const props = defineProps({
 
 
 const { copy } = useClipboard({
-    legacy: true, 
+    legacy: true,
 })
 
 const blockTypes = ref({
@@ -342,7 +342,7 @@ async function copyBlockId(id) {
         })
     } catch (error) {
         toast.error({
-            title: 'Ojdå! Det gick inte att kopiera ID', 
+            title: 'Ojdå! Det gick inte att kopiera ID',
         })
         console.error(error)
     }

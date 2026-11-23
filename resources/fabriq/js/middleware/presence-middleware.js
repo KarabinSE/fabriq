@@ -21,13 +21,13 @@ export default function PresenceMiddleware ({ app, to, store }) {
         .joining((user) => {
             store.commit('echo/USER_JOINING', {
                 identifier: identifier,
-                user: user, 
+                user: user,
             })
         })
         .leaving((user) => {
             store.commit('echo/USER_LEAVING', {
                 identifier: identifier,
-                user: user, 
+                user: user,
             })
         })
 

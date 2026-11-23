@@ -223,13 +223,14 @@ function defaultCreationObject () {
 
 export default {
     name: 'MenuItemModal',
-    emits: ['updated'],
     props: {
         item: {
             type: [null, Object],
             default: null,
         },
     },
+
+    emits: ['updated'],
 
     data () {
         return {

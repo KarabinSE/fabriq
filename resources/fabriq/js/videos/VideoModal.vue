@@ -140,7 +140,7 @@ export default {
         const eventBus = useEventBus()
 
         return {
-            eventBus, 
+            eventBus,
         }
     },
 
@@ -227,7 +227,7 @@ export default {
                 await Video.update(this.video.id, transformedVideo)
                 this.eventBus.emit('video-updated')
                 toast.success({
-                    title: 'Videon har uppdaterats!', 
+                    title: 'Videon har uppdaterats!',
                 })
                 this.closeModal()
             } catch (error) {
@@ -240,13 +240,13 @@ export default {
                 await Video.destroy(this.video.id)
                 this.eventBus.emit('video-updated')
                 toast.success({
-                    title: 'Videon har raderats', 
+                    title: 'Videon har raderats',
                 })
                 this.$emit('item-deleted')
                 this.closeModal()
             } catch (error) {
                 toast.error({
-                    title: 'Kunde inte radera videon', 
+                    title: 'Kunde inte radera videon',
                 })
                 console.error(error)
             }

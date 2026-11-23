@@ -13,7 +13,7 @@ import ArrowRightLongIcon from '@fabriq/icons/ArrowRightLongIcon.vue'
 
 export default {
     components: {
-        ArrowRightLongIcon, 
+        ArrowRightLongIcon,
     },
 
     props: {

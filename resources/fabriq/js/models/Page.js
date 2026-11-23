@@ -10,7 +10,7 @@ export default {
 
     async count (payload) {
         const { data } = await axios.get(route('model.count.show', {
-            model: 'pages', 
+            model: 'pages',
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('pages.show', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async update (id, object) {
         const { data } = await axios.patch(route('pages.update', {
-            id, 
+            id,
         }), object)
 
         return data
@@ -40,7 +40,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('pages.destroy', {
-            id, 
+            id,
         }))
 
         return data
@@ -48,7 +48,7 @@ export default {
 
     async publish (id) {
         const { data } = await axios.post(route('pages.publish.store', {
-            id, 
+            id,
         }))
 
         return data
@@ -56,7 +56,7 @@ export default {
 
     async signedPreview (id) {
         const { data } = await axios.get(route('pages.signed-url.show', {
-            id, 
+            id,
         }))
 
         return data
@@ -64,7 +64,7 @@ export default {
 
     async paths (id, payload) {
         const { data } = await axios.get(route('pages.paths.index', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -72,7 +72,7 @@ export default {
 
     async clone (id, payload) {
         const { data } = await axios.post(route('pages.clone.store', {
-            id, 
+            id,
         }), payload)
 
         return data

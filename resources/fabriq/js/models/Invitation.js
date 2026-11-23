@@ -12,7 +12,7 @@ export default {
 
     async store (id, payload) {
         const { data } = await axios.post(route('invitations.store', {
-            userId: id, 
+            userId: id,
         }), payload)
 
         return data
@@ -20,7 +20,7 @@ export default {
 
     async destroy (id, payload) {
         const { data } = await axios.delete(route('invitations.destroy', {
-            userId: id, 
+            userId: id,
         }), payload)
 
         return data

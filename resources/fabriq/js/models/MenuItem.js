@@ -4,7 +4,7 @@ import { route } from '@/generated/helpers/route'
 export default {
     async show (id, object) {
         const { data } = await axios.get(route('menu-items.show', {
-            id, 
+            id,
         }), object)
 
         return data
@@ -12,7 +12,7 @@ export default {
 
     async update (id, object) {
         const { data } = await axios.patch(route('menu-items.update', {
-            id, 
+            id,
         }), object)
 
         return data
@@ -20,7 +20,7 @@ export default {
 
     async store (id, object) {
         const { data } = await axios.post(route('menus.items.store', {
-            id, 
+            id,
         }), object)
 
         return data
@@ -28,7 +28,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('menu-items.destroy', {
-            id, 
+            id,
         }))
 
         return data

@@ -13,8 +13,6 @@ import { debounce } from '@fabriq/helpers/debounce.js'
 export default {
     name: 'FSearchInput',
 
-    emits: ['input', 'perform-search', 'clear-search'],
-
     props: {
         modelValue: {
             type: String,
@@ -22,6 +20,8 @@ export default {
             default: '',
         },
     },
+
+    emits: ['input', 'perform-search', 'clear-search'],
 
     data () {
         return {

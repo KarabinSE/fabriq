@@ -135,7 +135,7 @@ export default {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -230,8 +230,8 @@ export default {
                     onClick: () => this.$router.push({
                         name: 'articles.edit',
                         params: {
-                            id: data.id, 
-                        }, 
+                            id: data.id,
+                        },
                     }),
                 })
                 this.vfm.close('createArticleModal')
@@ -260,8 +260,8 @@ export default {
             this.$router.push({
                 name: 'articles.edit',
                 params: {
-                    id: item.id, 
-                }, 
+                    id: item.id,
+                },
             })
         },
 
@@ -274,7 +274,7 @@ export default {
         resetCreateModal () {
             setTimeout(() => {
                 this.newArticle = {
-                    ...defaultCreationObject(), 
+                    ...defaultCreationObject(),
                 }
             }, 200)
         },

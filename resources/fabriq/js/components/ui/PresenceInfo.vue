@@ -90,7 +90,7 @@ import { useEventBus } from '@fabriq/services/eventBus'
 export default {
     name: 'PresenceInfo',
     components: {
-        RefreshObjectModal, 
+        RefreshObjectModal,
     },
 
     setup() {
@@ -99,7 +99,7 @@ export default {
 
         return {
             vfm,
-            eventBus, 
+            eventBus,
         }
     },
 

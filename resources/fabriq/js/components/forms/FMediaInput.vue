@@ -40,7 +40,7 @@ import { Media } from '@fabriq/models/Media'
 import { watchEffect } from 'vue'
 
 defineOptions({
-    name: 'FMediaInput', 
+    name: 'FMediaInput',
 })
 const emits = defineEmits(['update:model-value'])
 const  props = defineProps({

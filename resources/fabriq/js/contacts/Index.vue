@@ -169,14 +169,14 @@ function defaultCreationObject () {
 export default {
     name: 'ContactsIndex',
     components: {
-        SortModal, 
+        SortModal,
     },
 
     setup() {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -267,7 +267,7 @@ export default {
             try {
                 await Contact.destroy(contact.id)
                 toast.success({
-                    title: 'Kontakten har raderats', 
+                    title: 'Kontakten har raderats',
                 })
                 this.fetchContacts()
             } catch (error) {
@@ -289,8 +289,8 @@ export default {
             this.$router.push({
                 name: 'contacts.edit',
                 params: {
-                    id: row.id, 
-                }, 
+                    id: row.id,
+                },
             })
         },
 
@@ -301,7 +301,7 @@ export default {
         resetCreateModal () {
             setTimeout(() => {
                 this.creationObject = {
-                    ...defaultCreationObject(), 
+                    ...defaultCreationObject(),
                 }
             }, 200)
         },
@@ -316,8 +316,8 @@ export default {
                     onClick: () => this.$router.push({
                         name: 'contacts.edit',
                         params: {
-                            id: data.id, 
-                        }, 
+                            id: data.id,
+                        },
                     }),
                 })
                 this.vfm.close('createContactModal')

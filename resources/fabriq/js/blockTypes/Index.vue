@@ -207,14 +207,14 @@ export default {
     name: 'BlockTypesIndex',
     components: {
         EditModal,
-        FBlockTypeImageInput, 
+        FBlockTypeImageInput,
     },
 
     setup() {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -338,7 +338,7 @@ export default {
         async openEditModal() {
             this.activeItem.options = {
                 ...defaultOptionsStructure,
-                ...this.activeItem.options, 
+                ...this.activeItem.options,
             }
             const payload = {
                 params: {
@@ -360,7 +360,7 @@ export default {
 
         resetCreateModal () {
             this.newItem = {
-                ...defaultCreationObject(), 
+                ...defaultCreationObject(),
             }
         },
 
@@ -401,7 +401,7 @@ export default {
             await this.updateBlockTypeImage()
             await this.updateBlockTypeData()
             toast.success({
-                title: 'Blocktypen har uppdaterats!', 
+                title: 'Blocktypen har uppdaterats!',
             })
             this.vfm.close('blockTypeEditModal')
             this.fetchItems()

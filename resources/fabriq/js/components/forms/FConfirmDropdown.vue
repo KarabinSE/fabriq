@@ -47,8 +47,6 @@
 export default {
     name: 'FConfirmDropdown',
 
-    emits: ['dismissed', 'confirmed'],
-
     props: {
         dismissText: {
             type: String,
@@ -75,6 +73,8 @@ export default {
             default: false,
         },
     },
+
+    emits: ['dismissed', 'confirmed'],
 
     methods: {
         focusDismiss () {

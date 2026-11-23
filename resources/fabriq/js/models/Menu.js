@@ -16,7 +16,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('menus.show', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async showTree (id, payload) {
         const { data } = await axios.get(route('menus.items.tree.index', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async updateTree (id, payload) {
         const { data } = await axios.patch(route('menus.items.tree.update', {
-            id, 
+            id,
         }), payload)
 
         return data

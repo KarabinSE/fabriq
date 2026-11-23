@@ -56,8 +56,6 @@ import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
 export default {
     name: 'FFileInput',
 
-    emits: ['input', 'file-picked'],
-
     props: {
         value: {
             type: [String, Number, Object, Array],
@@ -132,6 +130,8 @@ export default {
         },
 
     },
+
+    emits: ['input', 'file-picked'],
 
     setup() {
         const eventBus = useEventBus()

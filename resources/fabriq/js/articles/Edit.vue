@@ -137,7 +137,7 @@ export default {
             content: {
                 publishes_at: '',
                 image: {
-                    id: 0, 
+                    id: 0,
                 },
             },
 
@@ -162,7 +162,7 @@ export default {
 
                 this.article = data
                 this.content = {
-                    ...this.article.content, 
+                    ...this.article.content,
                 }
             } catch (error) {
                 console.error(error)
@@ -172,13 +172,13 @@ export default {
         async updateArticle () {
             try {
                 this.article.content = {
-                    ...this.content, 
+                    ...this.content,
                 }
                 await Article.update(this.id, {
-                    ...this.article, 
+                    ...this.article,
                 })
                 toast.success({
-                    title: 'Nyheten har uppdaterats', 
+                    title: 'Nyheten har uppdaterats',
                 })
             } catch (error) {
                 console.error(error)

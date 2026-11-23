@@ -57,16 +57,16 @@ export class Block {
 export default {
     async index (pageId, payload) {
         const { data } = await axios.get(route('pages.blocks.index', {
-            id: pageId, 
+            id: pageId,
         }), payload)
 
         return data
     },
     async put (pageId, blocks) {
         const { data } = await axios.put(route('blocks.update', {
-            id: pageId, 
+            id: pageId,
         }), {
-            blocks: blocks, 
+            blocks: blocks,
         })
 
         return data

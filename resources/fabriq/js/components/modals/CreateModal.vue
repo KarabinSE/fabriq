@@ -46,13 +46,6 @@
 export default {
     name: 'CreateModal',
 
-    emits: [
-        'closed',
-        'validated',
-        'opened',
-        'before-open',
-    ],
-
     props: {
         show: {
             type: Boolean,
@@ -69,6 +62,13 @@ export default {
             default: 'max-w-xl',
         },
     },
+
+    emits: [
+        'closed',
+        'validated',
+        'opened',
+        'before-open',
+    ],
 
     data () {
         return {

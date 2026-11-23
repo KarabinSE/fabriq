@@ -73,8 +73,6 @@
 export default {
     name: 'FFileList',
 
-    emits: ['input'],
-
     props: {
         value: {
             type: Array,
@@ -110,6 +108,8 @@ export default {
             default: false,
         },
     },
+
+    emits: ['input'],
 
     data () {
         return {

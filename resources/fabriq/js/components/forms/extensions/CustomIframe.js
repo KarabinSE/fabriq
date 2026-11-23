@@ -20,7 +20,7 @@ export default Node.create({
 
     parseHTML () {
         return [{
-            tag: 'iframe[src]', 
+            tag: 'iframe[src]',
         }]
     },
 

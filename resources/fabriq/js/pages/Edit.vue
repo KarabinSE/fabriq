@@ -372,7 +372,7 @@ export default {
             try {
                 await this.pageStore.update(this.pageId)
                 toast.success({
-                    title: 'Utkastet har sparats', 
+                    title: 'Utkastet har sparats',
                 })
                 this.eventBus.emit('page-updated')
             } catch (error) {

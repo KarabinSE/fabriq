@@ -220,7 +220,7 @@ import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'CardBlock',
     components: {
-        Draggable, 
+        Draggable,
     },
 
     props: {
@@ -255,11 +255,11 @@ export default {
 
     setup() {
         const { copy } = useClipboard({
-            legacy: true, 
+            legacy: true,
         })
 
         return {
-            copy, 
+            copy,
         }
     },
 
@@ -331,7 +331,7 @@ export default {
         copySuccess() {
             toast.success({
                 title: 'Kortets ID har kopierats',
-                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.',
             })
         },
 

@@ -51,8 +51,6 @@ import Draggable from 'vuedraggable'
 export default {
     name: 'SortModal',
 
-    emits: ['updated'],
-
     components: {
         Draggable,
     },
@@ -63,6 +61,8 @@ export default {
             default: () => { },
         },
     },
+
+    emits: ['updated'],
 
     data()  {
         return {

@@ -155,8 +155,6 @@ function defaultMainCreationObject () {
 export default {
     name: 'EventModal',
 
-    emits: ['updated'],
-
     props: {
         show: {
             type: Boolean,
@@ -176,6 +174,8 @@ export default {
             },
         },
     },
+
+    emits: ['updated'],
 
     setup () {
         const configStore = useConfigStore()

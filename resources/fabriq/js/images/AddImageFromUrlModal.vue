@@ -38,7 +38,6 @@ import Image from '@fabriq/models/Image.js'
 
 export default {
     name: 'AddImageFromUrlModal',
-    emits: ['image-added'],
     props: {
         name: {
             type: String,
@@ -50,6 +49,8 @@ export default {
             default: 'max-w-xl',
         },
     },
+
+    emits: ['image-added'],
 
     data () {
         return {

@@ -10,7 +10,7 @@ export default function RolesMiddleware ({ app, to }) {
     if (matchedRoles.length <= 0) {
         app.config.globalProperties.$toast.warning({
             title: 'Stopp i lagens namn!',
-            message: 'Du saknar behörighet att visa sidan', 
+            message: 'Du saknar behörighet att visa sidan',
         })
 
         return false

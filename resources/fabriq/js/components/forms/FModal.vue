@@ -59,7 +59,7 @@
 import { VueFinalModal } from 'vue-final-modal'
 
 defineOptions({
-    name: 'FModal', 
+    name: 'FModal',
 })
 const props = defineProps ({
     name: {

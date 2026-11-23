@@ -54,7 +54,7 @@ function createFabriqRouter (app, customRoutes = []) {
             app,
             from,
             router,
-            to, 
+            to,
         }
 
         return runMiddleware(middleware, context)

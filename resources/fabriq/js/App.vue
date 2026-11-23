@@ -68,7 +68,7 @@ export default {
         return {
             userStore,
             configStore,
-            eventBus, 
+            eventBus,
         }
     },
 

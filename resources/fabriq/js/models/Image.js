@@ -4,7 +4,7 @@ import { route } from '@/generated/helpers/route'
 export default {
     async show (id, payload) {
         const { data } = await axios.get(route('images.show', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async count (payload) {
         const { data } = await axios.get(route('model.count.show', {
-            model: 'images', 
+            model: 'images',
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('images.update', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -40,7 +40,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('images.destroy', {
-            id, 
+            id,
         }))
 
         return data
@@ -49,7 +49,7 @@ export default {
     async attachToModel (id, model, payload) {
         const { data } = await axios.post(route('images.imageable.store', {
             id,
-            model, 
+            model,
         }), payload)
 
         return data
@@ -59,7 +59,7 @@ export default {
     }) {
         const { data } = await axios.get(route('images.imageable.index', {
             id,
-            model, 
+            model,
         }), payload)
 
         return data
@@ -68,7 +68,7 @@ export default {
     async srcSet (id, payload = {
     }) {
         const { data } = await axios.get(route('images.src-set.show', {
-            id, 
+            id,
         }), payload)
 
         return data

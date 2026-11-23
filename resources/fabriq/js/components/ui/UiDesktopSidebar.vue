@@ -109,7 +109,7 @@ export default {
     name: 'UiDesktopSidebar',
     components: {
         UiLogo,
-        LogoutForm, 
+        LogoutForm,
     },
 
     setup() {
@@ -166,7 +166,7 @@ export default {
             try {
                 await Developer.bustCache()
                 toast.success({
-                    title: 'Cache was nuked successfully! 😵', 
+                    title: 'Cache was nuked successfully! 😵',
                 })
             } catch (error) {
                 console.error(error)

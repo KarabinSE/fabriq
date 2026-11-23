@@ -18,13 +18,13 @@ export function formatLocalTime(value, dateFormat = null, formatDistanceEnabled 
     if (formatDistanceEnabled) {
         return formatDistance(date, new Date(), {
             locale: sv,
-            addSuffix: true, 
+            addSuffix: true,
         })
     }
 
     if (dateFormat) {
         return format(date, dateFormat, {
-            locale: sv, 
+            locale: sv,
         })
     }
 

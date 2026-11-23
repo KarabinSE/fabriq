@@ -120,7 +120,7 @@ export default {
         const configStore = useConfigStore()
 
         return {
-            configStore, 
+            configStore,
         }
     },
 
@@ -135,15 +135,15 @@ export default {
             analyticsPeriods: [
                 {
                     label: 'Senaste 7 dagarna',
-                    value: '7d', 
+                    value: '7d',
                 },
                 {
                     label: 'Senaste 30 dagarna',
-                    value: '30d', 
+                    value: '30d',
                 },
                 {
                     label: 'Senaste 90 dagarna',
-                    value: '3m', 
+                    value: '3m',
                 },
             ],
 
@@ -153,19 +153,19 @@ export default {
             searchConsoleColumns: [
                 {
                     key: 'query',
-                    title: 'Vanligaste frågorna', 
+                    title: 'Vanligaste frågorna',
                 },
                 {
                     key: 'clicks',
                     title: 'Klick',
                     thClasses: 'text-right',
-                    tdClasses: 'text-right', 
+                    tdClasses: 'text-right',
                 },
                 {
                     key: 'impressions',
                     title: 'Exponeringar',
                     thClasses: 'text-right',
-                    tdClasses: 'text-right', 
+                    tdClasses: 'text-right',
                 },
             ],
         }

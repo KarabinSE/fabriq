@@ -131,7 +131,7 @@ import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'FChildren',
     components: {
-        Draggable, 
+        Draggable,
     },
 
     inheritAttrs: false,
@@ -196,11 +196,11 @@ export default {
 
     setup() {
         const { copy } = useClipboard({
-            legacy: true, 
+            legacy: true,
         })
 
         return {
-            copy, 
+            copy,
         }
     },
 
@@ -233,7 +233,7 @@ export default {
 
             toast.success({
                 title: `${this.labels.title}-ID har kopierats`,
-                message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+                message: 'Klistra in som en extern länk i fältet till kontrollen du önskar länka blocket till.',
             })
         },
     },

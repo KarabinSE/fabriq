@@ -99,7 +99,7 @@ import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
 const eventBus = useEventBus()
 
 defineOptions({
-    name: 'FVideoInput', 
+    name: 'FVideoInput',
 })
 
 const emit = defineEmits(['item-picked'])
@@ -229,7 +229,7 @@ function emitVideoSelected () {
         this.eventBus.emit('video-selected', {
             group: group,
             data: {
-                ...localVideo.value, 
+                ...localVideo.value,
             },
             uid: instanceId,
         })

@@ -60,7 +60,7 @@ const slots = useSlots()
 const emit = defineEmits(['before-open', 'before-close'])
 
 defineOptions({
-    name: 'UiCard', 
+    name: 'UiCard',
 })
 const props = defineProps({
     padding: {

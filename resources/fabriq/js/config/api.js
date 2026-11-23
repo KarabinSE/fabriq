@@ -34,35 +34,35 @@ export default function setup (vm) {
             if (status === 422) {
                 toast.warning({
                     title: 'Oj då!',
-                    message: 'Något är tosigt med datan du försöker skicka.', 
+                    message: 'Något är tosigt med datan du försöker skicka.',
                 })
             }
 
             if (status === 400) {
                 toast.info({
                     title: 'Pst!',
-                    message: data.error.message, 
+                    message: data.error.message,
                 })
             }
 
             if (status === 404) {
                 toast.warning({
                     title: 'Hmm!',
-                    message: 'Kunde inte hitta det du letade efter', 
+                    message: 'Kunde inte hitta det du letade efter',
                 })
             }
 
             if (status === 405) {
                 toast.warning({
                     title: 'Oj!',
-                    message: 'Det var ingen tillåten handling', 
+                    message: 'Det var ingen tillåten handling',
                 })
             }
 
             if (status === 403) {
                 toast.error({
                     title: 'Stopp!',
-                    message: 'Du saknar behörighet för att göra detta.', 
+                    message: 'Du saknar behörighet för att göra detta.',
                 })
             }
         }

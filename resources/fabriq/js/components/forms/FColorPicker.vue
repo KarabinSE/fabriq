@@ -36,49 +36,49 @@ export const colors = {
         {
             label: 'Primär',
             color: 'bg-btn-primary border-btn-primary',
-            value: 'primary', 
+            value: 'primary',
         },
         {
             label: 'Primär kontur',
             color: 'border-btn-primary',
-            value: 'primary-outline', 
+            value: 'primary-outline',
         },
         {
             label: 'Sekundär',
             color: 'bg-btn-secondary border-btn-secondary',
-            value: 'secondary', 
+            value: 'secondary',
         },
         {
             label: 'Sekundär kontur',
             color: 'border-btn-secondary',
-            value: 'secondary-outline', 
+            value: 'secondary-outline',
         },
         {
             label: 'Tertiär',
             color: 'bg-btn-tertiary border-btn-tertiary',
-            value: 'tertiary', 
+            value: 'tertiary',
         },
         {
             label: 'Tertiär kontur',
             color: 'border-btn-tertiary',
-            value: 'tertiary-outline', 
+            value: 'tertiary-outline',
         },
     ],
     backgroundColors: [
         {
             label: 'Primär',
             color: 'bg-primary',
-            value: 'primary', 
+            value: 'primary',
         },
         {
             label: 'Sekundär',
             color: 'bg-secondary',
-            value: 'secondary', 
+            value: 'secondary',
         },
         {
             label: 'Tertiär',
             color: 'bg-tertiary',
-            value: 'tertiary', 
+            value: 'tertiary',
         },
     ],
 }
@@ -87,7 +87,7 @@ export const colors = {
 <script setup>
 
 defineOptions({
-    name: 'FColorPicker', 
+    name: 'FColorPicker',
 })
 
 const  props = defineProps({

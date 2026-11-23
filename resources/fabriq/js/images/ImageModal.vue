@@ -194,7 +194,7 @@ const eventBus = useEventBus()
 const emit = defineEmits(['item-delete'])
 
 defineOptions({
-    name: 'BlockTypeModal', 
+    name: 'BlockTypeModal',
 })
 const props  =defineProps({
     id: {
@@ -293,7 +293,7 @@ async function updateImage () {
         await Image.update(image.value.id, payload)
         eventBus.emit('image-updated')
         toast.success({
-            title: 'Bilden har uppdaterats!', 
+            title: 'Bilden har uppdaterats!',
         })
         closeModal()
     } catch (error) {
@@ -306,13 +306,13 @@ async function deleteImage () {
         await Image.destroy(image.value.id)
         eventBus.emit('image-updated')
         toast.success({
-            title: 'Bilden har raderats', 
+            title: 'Bilden har raderats',
         })
         emit('item-delete')
         closeModal()
     } catch (error) {
         toast.error({
-            title: 'Kunde inte radera bilden', 
+            title: 'Kunde inte radera bilden',
         })
         console.error(error)
     }

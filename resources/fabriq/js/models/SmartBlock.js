@@ -16,7 +16,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('smart-blocks.update', {
-            smart_block: id, 
+            smart_block: id,
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('smart-blocks.show', {
-            smart_block: id, 
+            smart_block: id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async destroy (id) {
         const { data } = await axios.delete(route('smart-blocks.destroy', {
-            smart_block: id, 
+            smart_block: id,
         }))
 
         return data

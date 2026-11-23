@@ -80,7 +80,7 @@ export default {
         const routeHistoryStore = useRouteHistoryStore()
 
         return {
-            routeHistoryStore, 
+            routeHistoryStore,
         }
     },
 
@@ -155,7 +155,7 @@ export default {
 
             if (!this.lastRoute) {
                 this.$router.push({
-                    name: fallback, 
+                    name: fallback,
                 })
             } else {
                 this.$router.back()

@@ -137,7 +137,7 @@ import { toast } from '@fabriq/components/toast/toast'
 export default {
     name: 'CalendarIndex',
     components: {
-        EventModal, 
+        EventModal,
     },
 
     setup () {
@@ -146,7 +146,7 @@ export default {
 
         return {
             configStore,
-            vfm, 
+            vfm,
         }
     },
 
@@ -268,7 +268,7 @@ export default {
                 await Event.destroy(id)
                 this.fetchEvents()
                 toast.success({
-                    title: 'Händelsen har tagits bort', 
+                    title: 'Händelsen har tagits bort',
                 })
             } catch (error) {
                 console.error(error)
@@ -277,7 +277,7 @@ export default {
 
         editEvent (event) {
             this.activeEvent = {
-                ...this.eventData, 
+                ...this.eventData,
             }
             this.creatingEvent = false
             this.vfm.open('event-create-modal')

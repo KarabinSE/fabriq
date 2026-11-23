@@ -116,7 +116,7 @@ import LogoutForm from '@fabriq/components/LogoutForm.vue'
 export default {
     name: 'UiTopbar',
     components: {
-        LogoutForm, 
+        LogoutForm,
     },
 
     setup () {

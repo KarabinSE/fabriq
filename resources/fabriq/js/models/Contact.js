@@ -16,7 +16,7 @@ export default {
 
     async show (id, payload) {
         const { data } = await axios.get(route('contacts.show', {
-            contact: id, 
+            contact: id,
         }), payload)
 
         return data
@@ -24,7 +24,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('contacts.update', {
-            contact: id, 
+            contact: id,
         }), payload)
 
         return data
@@ -32,7 +32,7 @@ export default {
 
     async destroy (id, payload) {
         const { data } = await axios.delete(route('contacts.destroy', {
-            contact: id, 
+            contact: id,
         }), payload)
 
         return data

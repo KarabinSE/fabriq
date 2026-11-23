@@ -91,8 +91,8 @@ export default {
             this.$router.push({
                 name: 'menus.edit',
                 params: {
-                    id: row.id, 
-                }, 
+                    id: row.id,
+                },
             })
         },
 

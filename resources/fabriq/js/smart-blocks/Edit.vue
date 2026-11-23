@@ -181,7 +181,7 @@ import { useVfm } from 'vue-final-modal'
 export default {
     name: 'SmartBlocksEdit',
     components: {
-        Draggable, 
+        Draggable,
     },
 
     beforeRouteLeave (from, to, next) {
@@ -196,7 +196,7 @@ export default {
         const eventBus = useEventBus()
 
         const { copy } = useClipboard({
-            legacy: true, 
+            legacy: true,
         })
 
         return {
@@ -276,7 +276,7 @@ export default {
                 const payload = {
                     name: this.smartBlock.name,
                     localizedContent: {
-                        ...this.localizedContent, 
+                        ...this.localizedContent,
                     },
                 }
 
@@ -297,7 +297,7 @@ export default {
 
                 this.smartBlock = data
                 const localizedContent = {
-                    ...data.localizedContent.data, 
+                    ...data.localizedContent.data,
                 }
 
                 Object.keys(localizedContent).forEach((item) => {
@@ -313,7 +313,7 @@ export default {
                     }
 
                     this.localizedContent[item] = {
-                        ...thing, 
+                        ...thing,
                     }
                 })
             } catch (error) {
@@ -335,7 +335,7 @@ export default {
             }
 
             this.localizedContent[this.activeLocale].boxes.push({
-                ...item, 
+                ...item,
             })
             this.$nextTick(() => {
                 this.localizedContent[this.activeLocale].boxes[this.localizedContent[this.activeLocale].boxes.length - 1].newlyAdded = false
@@ -349,7 +349,7 @@ export default {
 
         refreshBlock (payload) {
             this.localizedContent[this.activeLocale].boxes[payload.index] = {
-                ...payload.item, 
+                ...payload.item,
             }
             console.log(payload.item)
         },
@@ -357,7 +357,7 @@ export default {
         copySuccess () {
             toast.success({
                 title: 'Blockets ID har kopierats',
-                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.', 
+                message: 'Klista in som en extern länk i fältet till kontrollen du önskar länka blocket till.',
             })
         },
 

@@ -68,7 +68,7 @@ import { VueFinalModal } from 'vue-final-modal'
 export default {
     name: 'FConfirm',
     components: {
-        VueFinalModal, 
+        VueFinalModal,
     },
 
     inheritAttrs: false,

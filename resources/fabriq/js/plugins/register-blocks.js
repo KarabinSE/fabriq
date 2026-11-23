@@ -1,5 +1,5 @@
 const blockTypes = import.meta.glob('@/block-types/*.vue', {
-    eager: true, 
+    eager: true,
 })
 
 export default {

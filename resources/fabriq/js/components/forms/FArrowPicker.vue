@@ -29,15 +29,15 @@
 export const buttonArrows = [
     {
         label: 'Ingen',
-        value: 'none', 
+        value: 'none',
     },
     {
         label: 'Ner',
-        value: 'down', 
+        value: 'down',
     },
     {
         label: 'Höger',
-        value: 'right', 
+        value: 'right',
     },
 ]
 </script>

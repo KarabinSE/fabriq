@@ -17,7 +17,7 @@ export default {
             ...payload,
         }
         const response = await axios.get(route('downloads.show', {
-            id, 
+            id,
         }), localPayload)
 
         return response
@@ -33,7 +33,7 @@ export default {
         binaryData.push(data)
 
         const objectUrl = window.URL.createObjectURL(new Blob(binaryData, {
-            type: headers['Content-Type'], 
+            type: headers['Content-Type'],
         }))
 
         anchor.href = objectUrl

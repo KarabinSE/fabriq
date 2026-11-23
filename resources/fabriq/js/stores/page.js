@@ -56,10 +56,10 @@ export const usePageStore = defineStore('page', () => {
     const blocks = computed(() => Object.values(localizedBlocks.value).flat())
     const localizedContent = ref({
         sv: {
-        }, 
+        },
     })
     const localizedBlocks = ref({
-        sv: [], 
+        sv: [],
     })
 
     const groupedFields = computed(() => page.value.template.data?.groupedFields?.data ?? {
@@ -103,7 +103,7 @@ export const usePageStore = defineStore('page', () => {
     async function fetchPage (pageId) {
         pageLoaded.value = new Promise((r) => markPageLoaded = r)
         localizedBlocks.value = {
-            sv: [], 
+            sv: [],
         }
         await config.initiated
 
@@ -186,7 +186,7 @@ export const usePageStore = defineStore('page', () => {
         } catch (error) {
             throw new PageUpdateError(error, {
                 page: pageId,
-                payload, 
+                payload,
             })
         }
     }
@@ -196,7 +196,7 @@ export const usePageStore = defineStore('page', () => {
             await Page.publish(pageId)
         } catch (error) {
             throw new PagePublishError(error, {
-                page: pageId, 
+                page: pageId,
             })
         }
     }

@@ -93,7 +93,7 @@ import { reactive } from 'vue'
 import { Button } from '@fabriq/models/Button'
 
 defineOptions({
-    name: 'FButtonList', 
+    name: 'FButtonList',
 })
 
 const buttons = defineModel({

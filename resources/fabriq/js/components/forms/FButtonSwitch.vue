@@ -33,14 +33,14 @@
 export default {
     name: 'FButtonSwitch',
 
-    emits: ['input'],
-
     props: {
         value: {
             type: [Number, Boolean, String],
             default: false,
         },
     },
+
+    emits: ['input'],
 
     data () {
         return {

@@ -42,8 +42,6 @@
 export default {
     name: 'RefreshObjectModal',
 
-    emits: ['opened', 'before-open'],
-
     props: {
         show: {
             type: Boolean,
@@ -60,6 +58,8 @@ export default {
             default: 'max-w-md',
         },
     },
+
+    emits: ['opened', 'before-open'],
 
     data () {
         return {

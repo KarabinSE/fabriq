@@ -7,7 +7,7 @@ export default {
     async index (modelName, modelId, payload) {
         const { data } = await axios.get(route('comments.commentable.index', {
             id: modelId,
-            model: modelName, 
+            model: modelName,
         }), payload)
 
         return data
@@ -16,7 +16,7 @@ export default {
     async store (modelName, modelId, payload) {
         const { data } = await axios.post(route('comments.commentable.store', {
             id: modelId,
-            model: modelName, 
+            model: modelName,
         }), payload)
 
         return data
@@ -30,7 +30,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('comments.update', {
-            id, 
+            id,
         }), payload)
 
         return data
@@ -38,7 +38,7 @@ export default {
 
     async destroy (id, payload) {
         const { data } = await axios.delete(route('comments.destroy', {
-            id, 
+            id,
         }), payload)
 
         return data

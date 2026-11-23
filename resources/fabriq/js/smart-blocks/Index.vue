@@ -99,7 +99,7 @@ export default {
         const vfm = useVfm()
 
         return {
-            vfm, 
+            vfm,
         }
     },
 
@@ -173,7 +173,7 @@ export default {
             try {
                 await SmartBlock.destroy(block.id)
                 toast.success({
-                    title: 'Det smarta blocket har tagits bort', 
+                    title: 'Det smarta blocket har tagits bort',
                 })
                 this.fetchItems()
             } catch (error) {
@@ -191,8 +191,8 @@ export default {
                     onClick: () => this.$router.push({
                         name: 'smartBlocks.edit',
                         params: {
-                            id: data.id, 
-                        }, 
+                            id: data.id,
+                        },
                     }),
                 })
                 this.vfm.close('createSmartBlockModal')
@@ -211,15 +211,15 @@ export default {
             this.$router.push({
                 name: 'smartBlocks.edit',
                 params: {
-                    id: row.id, 
-                }, 
+                    id: row.id,
+                },
             })
         },
 
         resetCreateModal () {
             setTimeout(() => {
                 this.newSmartBlock = {
-                    ...defaultCreationObject(), 
+                    ...defaultCreationObject(),
                 }
             }, 200)
         },

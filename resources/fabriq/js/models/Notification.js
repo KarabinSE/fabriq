@@ -10,7 +10,7 @@ export default {
 
     async update (id, payload) {
         const { data } = await axios.patch(route('user.notifications.update', {
-            id, 
+            id,
         }), payload)
 
         return data

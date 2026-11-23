@@ -327,7 +327,8 @@ const columns = ref([
     },
 ])
 
-const pagination = ref({})
+const pagination = ref({
+})
 
 const queryParams = ref({
     number: 15,

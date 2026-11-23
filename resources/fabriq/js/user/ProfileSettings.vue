@@ -141,7 +141,7 @@ export default {
         const userStore = useUserStore()
 
         return {
-            userStore, 
+            userStore,
         }
     },
 
@@ -203,7 +203,7 @@ export default {
                 await AuthenticatedUser.sendVerificationRequest()
                 toast.success({
                     title: 'E-postmeddelandet har skickats!',
-                    message: 'Följ instruktionerna i mailet', 
+                    message: 'Följ instruktionerna i mailet',
                 })
             } catch (error) {
                 console.error(error)
@@ -214,11 +214,11 @@ export default {
             try {
                 await AuthenticatedUser.update({
                     ...this.localUser,
-                    ...this.passwordFields, 
+                    ...this.passwordFields,
                 })
                 this.fetchUser()
                 toast.success({
-                    title: 'Ändringarna har sparats!', 
+                    title: 'Ändringarna har sparats!',
                 })
             } catch (error) {
                 console.error(error)
@@ -229,7 +229,7 @@ export default {
             await AuthenticatedUser.deleteImage()
             this.fetchUser().then(() => {
                 toast.success({
-                    title: 'Profilbild borttagen', 
+                    title: 'Profilbild borttagen',
                 })
             })
         },
@@ -238,7 +238,7 @@ export default {
             this.isUploading = false
             this.fetchUser().then(() => {
                 toast.success({
-                    title: 'Profilbild uppdaterad', 
+                    title: 'Profilbild uppdaterad',
                 })
             })
 

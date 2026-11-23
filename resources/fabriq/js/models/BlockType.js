@@ -11,7 +11,7 @@ export default {
     async update (id, payload, config = {
     }) {
         const { data } = await axios.patch(route('block-types.update', {
-            block_type: id, 
+            block_type: id,
         }), payload, config)
 
         return data
@@ -25,7 +25,7 @@ export default {
 
     async destroy (id, payload) {
         const { data } = await axios.delete(route('block-types.destroy', {
-            block_type: id, 
+            block_type: id,
         }), payload)
 
         return data
