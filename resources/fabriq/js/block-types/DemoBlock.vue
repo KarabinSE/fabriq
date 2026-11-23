@@ -242,14 +242,6 @@ export default {
         content: {
             type: [Array, Object],
             required: true,
-            default: () => {
-                return {
-                    name: '',
-                    headerType: {
-                        name: '',
-                    },
-                }
-            },
         },
     },
 

@@ -150,7 +150,6 @@ export default {
         rows: {
             type: Array,
             required: true,
-            default: () => [],
         },
 
         options: {

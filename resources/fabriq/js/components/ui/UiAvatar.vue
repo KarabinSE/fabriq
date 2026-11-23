@@ -11,18 +11,6 @@ export default {
     props: {
         user: {
             type: Object,
-            default: () => {
-                return {
-                    name: '',
-                    email: '',
-                    image: {
-                        data: {
-                            mime_type: 'image/avif',
-                        },
-                    },
-                }
-            },
-
             required: true,
         },
     },

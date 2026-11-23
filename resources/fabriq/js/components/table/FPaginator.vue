@@ -96,11 +96,6 @@ export default {
         pagination: {
             type: Object,
             required: true,
-            default () {
-                return {
-                    last_page: 1,
-                }
-            },
         },
 
         position: {

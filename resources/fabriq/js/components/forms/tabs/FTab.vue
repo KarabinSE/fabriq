@@ -21,7 +21,6 @@ export default {
         title: {
             required: true,
             type: String,
-            default: 'Tab',
         },
 
         valueKey: {

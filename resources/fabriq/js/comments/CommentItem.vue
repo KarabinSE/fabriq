@@ -49,6 +49,7 @@
                                 />
                                 <span class="text-xs text-gray-500">för {{ formatLocalTime(comment.created_at, null, true) }}</span>
                             </div>
+                            <!-- eslint-disable vue/no-v-html -->
                             <div
                                 class="inline-flex flex-col prose-sm prose origin-left transform scale-95 "
                                 v-html="comment.comment"
@@ -129,18 +130,6 @@ export default {
         comment: {
             type: Object,
             required: true,
-            default: () => {
-                return {
-                    user: {
-                        data: {
-                        },
-                    },
-
-                    children: {
-                        data: [],
-                    },
-                }
-            },
         },
     },
 

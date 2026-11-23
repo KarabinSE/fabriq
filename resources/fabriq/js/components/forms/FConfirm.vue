@@ -32,6 +32,7 @@
                         class="py-8 text-sm font-semibold"
                         v-text="text"
                     />
+                    <!-- eslint-disable vue/no-v-html -->
                     <div
                         v-if="htmlText"
                         v-html="htmlText"
