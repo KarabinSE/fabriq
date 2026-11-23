@@ -41,10 +41,10 @@
                 <div class="flex justify-between flex-1">
                     Menypunkter
                     <FButton
-                        :click="showMenuItemModal"
                         class="text-sm"
                         text-button
                         without-loader
+                        @click="showMenuItemModal(null)"
                     >
                         <PlusIcon class="w-4 h-4 mr-1" />Lägg till menypunkt
                     </FButton>

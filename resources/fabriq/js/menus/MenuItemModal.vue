@@ -12,8 +12,6 @@
                 class="text-gray-700"
                 v-text="isCreating ? 'Skapa menypunkt' : 'Redigera menypunkt'"
             />
-            <pre>{{ item }}</pre>
-            <pre>{{ isCreating }}</pre>
         </template>
 
         <template #actions="{ close }">
