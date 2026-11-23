@@ -8,6 +8,8 @@ import { createApp } from 'vue'
 import App from '@fabriq/App.vue'
 
 const app = createApp(App)
-    .use(fabriqPlugin, { customRoutes })
+    .use(fabriqPlugin, {
+        customRoutes,
+    })
     .use(blockTypes)
     .mount('#app')

@@ -148,6 +148,8 @@ export default [
             'vue/block-order': ['error', {
                 order: ['template', 'script', 'style'],
             }],
+
+            'no-trailing-spaces': ['error'],
         },
     },
 ]
