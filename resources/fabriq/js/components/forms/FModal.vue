@@ -38,7 +38,7 @@
             </div>
         </span>
         <div
-            class="relative z-0 w-screen h-full overflow-scroll"
+            class="relative z-0 w-screen h-full overflow-y-scroll"
             :class="[width, overflow]"
         >
             <div class="w-full px-6 py-3">
