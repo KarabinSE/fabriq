@@ -65,10 +65,11 @@
                         upload-name="image"
                         @upload-queue-complete="fetchImages"
                     >
-                        <template #button>
+                        <template #button="{ openFileDialog }">
                             <button
                                 type="button"
                                 class="fabriq-btn  btn-royal py-2.5 px-4 inline-flex items-center"
+                                @click="openFileDialog"
                             >
                                 Ladda upp bilder
                             </button>
@@ -267,7 +268,7 @@ import { createModal } from '@fabriq/helpers/utils'
 const eventBus = useEventBus()
 
 defineOptions({
-    name: 'ImagesIndex', 
+    name: 'ImagesIndex',
 })
 const vfm = useVfm()
 
@@ -278,8 +279,7 @@ const uploadInit = ref(true)
 const checkedRows = ref([])
 const suppressToast = ref(false)
 const showTagsModal = ref(false)
-const showUrlModal = ref(false)
-const imageUrl = ref('')
+
 const columns = ref([
     {
         key: 'image',
@@ -324,9 +324,11 @@ const columns = ref([
         title: '',
         tdClasses: 'text-right',
         thClasses: 'text-right',
-    }])
-const pagination = ref({
-})
+    },
+])
+
+const pagination = ref({})
+
 const queryParams = ref({
     number: 15,
     page: 1,
@@ -380,7 +382,7 @@ async function deleteImage (id) {
 
         if (!suppressToast.value) {
             toast.success({
-                title: 'Bilden har tagits bort', 
+                title: 'Bilden har tagits bort',
             })
             fetchImages()
         }
@@ -422,7 +424,7 @@ async function deleteCheckedImages () {
     checkedRows.value.forEach(row => {
         promises.push({
             deleteFunction: deleteImage,
-            id: row, 
+            id: row,
         })
     })
     await Promise.all(
@@ -433,7 +435,7 @@ async function deleteCheckedImages () {
     suppressToast.value = false
     eventBus.emit('clear-checked-rows')
     toast.success({
-        title: 'Bilderna har tagits bort', 
+        title: 'Bilderna har tagits bort',
     })
     fetchImages()
 }
@@ -468,7 +470,7 @@ async function addTagsToImages () {
 
         await Tag.store(payload)
         toast.success({
-            title: 'Taggarna har lagts till!', 
+            title: 'Taggarna har lagts till!',
         })
         fetchImages()
         showTagsModal.value = false

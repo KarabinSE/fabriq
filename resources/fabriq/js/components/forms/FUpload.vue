@@ -31,11 +31,14 @@
         </Transition>
 
         <div v-if="!withoutButton">
-            <slot name="button">
+            <slot
+                name="button"
+                v-bind="api"
+            >
                 <button
                     type="button"
                     class="px-6 leading-none py-2.5 text-sm font-semibold fabriq-btn btn-royal"
-                    @click="openFileDialog()"
+                    @click="openFileDialog"
                 >
                     Ladda upp
                 </button>
@@ -46,14 +49,15 @@
 
 <script setup>
 import {
-    ref, computed, onMounted, onUnmounted, watch, 
+    ref, computed, onMounted, onUnmounted, watch,
 } from 'vue'
 import { useDropZone, useFileDialog } from '@vueuse/core'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { reactive } from 'vue'
 
 defineOptions({
-    name: 'FUpload', 
+    name: 'FUpload',
 })
 
 const props = defineProps({
@@ -266,7 +270,7 @@ const uploadFiles = async (files) => {
     await Promise.all(
         Array.from(
             {
-                length: Math.min(5, queue.length), 
+                length: Math.min(5, queue.length),
             },
             () => worker(),
         ),
@@ -316,5 +320,10 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('paste', handlePaste)
+})
+
+const api = reactive({
+    openFileDialog: () => openFileDialog(),
+    isOverDropZone,
 })
 </script>
