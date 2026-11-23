@@ -1,13 +1,11 @@
 <template>
     <FModal
-        v-model="show"
-        :name="id"
+        name="button-edit-modal"
         :click-to-close="true"
-        :esc-to-close="model.linkType !== 'file'"
+        :esc-to-close="localButton.linkType !== 'file'"
         overflow="overflow-y-visible"
         width="max-w-xl"
         @before-open="fetchPages"
-        @closed="resetModal"
     >
         <template #title>
             <span
@@ -16,11 +14,11 @@
             />
         </template>
 
-        <template #actions>
+        <template #actions="{ close }">
             <div class="flex justify-end space-x-4">
                 <button
                     class="px-8 py-2.5 leading-none fabriq-btn btn-link"
-                    @click="show = false"
+                    @click="close"
                 >
                     Stäng
                 </button>
@@ -40,12 +38,12 @@
                 @submit.prevent="saveButton"
             >
                 <FInput
-                    v-model="model.text"
+                    v-model="localButton.text"
                     :disabled="disabled"
                     label="Knapptext"
                 />
                 <FInput
-                    v-model="model.linkType"
+                    v-model="localButton.linkType"
                     input-type="radio"
                     class="col-span-4 xl:col-span-3"
                     :disabled="disabled"
@@ -54,16 +52,16 @@
                     label="Länktyp"
                 />
                 <FInput
-                    v-if="model.linkType === 'external'"
-                    v-model="model.url"
+                    v-if="localButton.linkType === 'external'"
+                    v-model="localButton.url"
                     class="h-18"
                     :disabled="disabled"
                     label="Länk"
                     placeholder="https://exempel.se eller /min-sida"
                 />
                 <FSelect
-                    v-if="model.linkType === 'internal'"
-                    v-model="model.page_id"
+                    v-if="localButton.linkType === 'internal'"
+                    v-model="localButton.page_id"
                     class="h-18"
                     value-key="id"
                     label="Sida"
@@ -85,8 +83,8 @@
                 </FSelect>
 
                 <FFileInput
-                    v-if="model.linkType === 'file'"
-                    v-model="model.file"
+                    v-if="localButton.linkType === 'file'"
+                    v-model="localButton.file"
                     class="h-18"
                     :disabled="disabled"
                     label="Fil"
@@ -95,13 +93,13 @@
                 <template v-else>
                     <FColorPicker
                         v-if="color"
-                        v-model="model.color"
+                        v-model="localButton.color"
                         class="w-full"
                         :disabled="disabled"
                     />
                     <FArrowPicker
                         v-if="arrow"
-                        v-model="model.arrow"
+                        v-model="localButton.arrow"
                         class="w-full"
                         :disabled="disabled"
                     />
@@ -122,20 +120,17 @@ import { linkTypeOptions } from '@fabriq/components/forms/FButtonItem.vue'
 import FColorPicker from '@fabriq/components/forms/FColorPicker.vue'
 import { Button } from '@fabriq/models/Button'
 import PageTree from '@fabriq/models/PageTree'
+import { toRaw } from 'vue'
 import { ref } from 'vue'
 
 defineOptions({
     name: 'ButtonModal',
 })
-const model = defineModel({
-    type: Object,
-    default: () => new Button(),
-})
 
-const emit = defineEmits(['saved'])
+const emit = defineEmits(['save', 'closeModal'])
 const props = defineProps({
-    id: {
-        type: String,
+    button: {
+        type: Object,
         required: true,
     },
     disabled: {
@@ -152,16 +147,12 @@ const props = defineProps({
     },
 })
 
-const show = ref(false)
+const localButton = ref(structuredClone(toRaw(props.button ?? new Button)))
 const localPages = ref([])
 
-
 function saveButton () {
-    resetModal()
-}
-
-function resetModal (){
-    show.value = false
+    emit('save', localButton.value)
+    emit('closeModal')
 }
 
 async function fetchPages () {

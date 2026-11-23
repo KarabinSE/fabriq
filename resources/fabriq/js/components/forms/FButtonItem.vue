@@ -52,13 +52,6 @@
                 </span>
             </div>
         </div>
-
-        <ButtonModal
-            :id="modalId"
-            v-model="model"
-            :arrow="arrow"
-            :color="color"
-        />
     </div>
 </template>
 
@@ -87,10 +80,8 @@ import PenToSquareIcon from '@fabriq/icons/PenToSquareIcon.vue'
 import ArrowPresenter from '@fabriq/components/forms/ArrowPresenter.vue'
 import ButtonModal from '@fabriq/components/modals/ButtonModal.vue'
 import { Button } from '@fabriq/models/Button'
-import { useVfm } from 'vue-final-modal'
 import { onMounted, ref, computed } from 'vue'
-
-const vfm = useVfm()
+import { createModal } from '@fabriq/helpers/utils'
 
 defineOptions({
     name: 'FButtonItem',
@@ -99,8 +90,9 @@ const emit = defineEmits(['delete'])
 
 const model = defineModel({
     type: Object,
-    default: () => new Button(),
 })
+
+model.value ??= new Button
 
 const props = defineProps({
     pages: {
@@ -173,7 +165,6 @@ async function fetchPages () {
     try {
         const payload = {
             params: {
-                // field: 'id,name',
                 append: 'paths',
                 selectOptions: true,
             },
@@ -186,12 +177,13 @@ async function fetchPages () {
     }
 }
 
-function checkForPages () {
-    fetchPages()
-}
-
 function showModal () {
-    vfm.open(modalId.value)
+    createModal(ButtonModal, {
+        button: model.value,
+        arrow: props.arrow,
+        color: props.color,
+        onSave: (val) => model.value = val,
+    })
 }
 
 </script>
