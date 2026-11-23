@@ -13,7 +13,9 @@ class MediaGetter implements GetterInterface
 {
     public static function get(ContentValue $contentValue, bool $isPublishing = false): mixed
     {
-        if ($contentValue->value['type'] === 'image') {
+        $type = $contentValue->value['type'] ?? null;
+
+        if ($type === 'image') {
             $imageData = self::getImage($contentValue->value['image']);
             $videoData = array_key_exists('video', $contentValue->value)
                 ? self::getVideo($contentValue->value['video'])
@@ -27,7 +29,7 @@ class MediaGetter implements GetterInterface
             );
         }
 
-        if ($contentValue->value['type'] === 'video') {
+        if ($type === 'video') {
             $videoData = self::getVideo($contentValue->value['video']);
             $imageData = array_key_exists('image', $contentValue->value)
                 ? self::getImage($contentValue->value['image'])
