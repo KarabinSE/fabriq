@@ -223,6 +223,7 @@ function defaultCreationObject () {
 
 export default {
     name: 'MenuItemModal',
+    emits: ['updated'],
     props: {
         item: {
             type: [null, Object],
@@ -312,6 +313,7 @@ export default {
                 }
 
                 await MenuItem.store(this.$route.params.id, payload)
+                this.$emit('updated')
                 toast.success({
                     title: 'Menypunkten har skapats!',
                 })
@@ -345,6 +347,7 @@ export default {
                 }
 
                 await MenuItem.update(this.mItem.id, payload)
+                this.$emit('updated')
                 toast.success({
                     title: 'Menypunkten har uppdaterats!',
                 })
