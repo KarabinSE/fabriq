@@ -2,8 +2,8 @@
     <VueFinalModal
         v-slot="api"
         :lock-scroll="false"
-        class="flex items-start justify-center sm:pt-12 pt-4"
-        content-class="relative flex flex-col mx-4 bg-white rounded-lg shadow modal-content sm:mx-0"
+        class="flex items-start justify-center py-4 sm:py-12"
+        content-class="relative flex flex-col mx-4 bg-white rounded-lg shadow-lg modal-content sm:mx-0 max-h-full"
         :click-to-close="clickToClose"
         :esc-to-close="escToClose"
         overlay-transition="vfm-fade"
@@ -38,7 +38,7 @@
             </div>
         </span>
         <div
-            class="relative z-0 w-screen"
+            class="relative z-0 w-screen h-full overflow-scroll"
             :class="[width, overflow]"
         >
             <div class="w-full px-6 py-3">
