@@ -60,7 +60,10 @@
                         :name="field.key"
                         @update:model-value="value => setFieldValue(field, value)"
                     />
-                    <div v-else-if="field.type === 'image'" class="w-3/4">
+                    <div
+                        v-else-if="field.type === 'image'"
+                        class="w-3/4"
+                    >
                         <FImageInput
                             :model-value="contents[activeLocale]?.[field.key]"
                             :label="field.name"
