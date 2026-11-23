@@ -309,9 +309,9 @@ function clearDates() {
     @apply text-royal-300;
 }
 .vc-attr {
-    --vc-accent-200: var('--color-royal-200');
-    --vc-accent-600: var('--color-royal-300');
-    --vc-accent-700: var('--color-royal-400');
-    --vc-accent-900: var('--color-royal-500');
+    --vc-accent-200: var(--color-royal-200);
+    --vc-accent-600: var(--color-royal-300);
+    --vc-accent-700: var(--color-royal-400);
+    --vc-accent-900: var(--color-royal-500);
 }
 </style>
