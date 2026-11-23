@@ -47,7 +47,14 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center flex-1 space-x-6">
                                 <GripVerticalIcon class="block w-4 h-4 text-gray-400 handle" />
-                                <span class="inline-flex text-xs sm:text-sm font-medium text-gray-500">{{ child.name ?? child.heading }}</span>
+                                <span class="inline-flex text-xs sm:text-sm font-medium text-gray-500">
+                                    <slot
+                                        name="title"
+                                        :child="child"
+                                    >
+                                        {{ child.name ?? child.content.heading ?? child.content.header }}
+                                    </slot>
+                                </span>
                             </div>
                             <div class="flex items-center space-x-4">
                                 <button
