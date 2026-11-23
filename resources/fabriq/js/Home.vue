@@ -39,13 +39,13 @@
                     class="w-6 h-6 animate-spin text-royal-500"
                 />
                 <FSelect
+                    v-model="analyticsPeriod"
                     name="analytics-period"
-                    :value="analyticsPeriod"
                     :options="analyticsPeriods"
                     :disabled="analyticsLoading"
                     :clearable="false"
                     class="w-full sm:w-64"
-                    @input="changeAnalyticsPeriod"
+                    @update:model-value="changeAnalyticsPeriod"
                 />
             </div>
         </div>
@@ -185,14 +185,27 @@ export default {
         },
     },
 
+    watch: {
+        'config.loaded' (loaded) {
+            if (loaded) {
+                if (this.config.search_console_analytics) {
+                    this.fetchSearchConsole()
+                }
+
+                if (this.config.web_analytics) {
+                    this.fetchAnalytics()
+                }
+            }
+        },
+    },
+
     activated () {
         this.fetchPageCount()
         this.fetchArticleCount()
         this.fetchFileCount()
         this.fetchImageCount()
-        this.fetchAnalytics()
-        this.fetchSearchConsole()
     },
+
 
     methods: {
         async fetchPageCount () {

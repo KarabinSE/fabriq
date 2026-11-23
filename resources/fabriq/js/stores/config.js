@@ -8,6 +8,7 @@ export const useConfigStore = defineStore('config', () => {
     let resolve
     const initiated = ref(new Promise((r) => resolve = r))
     const config = ref({
+        loaded: false,
         modules: [],
         search_console_analytics: false,
         web_analytics: false,
@@ -33,6 +34,7 @@ export const useConfigStore = defineStore('config', () => {
         resolve()
 
         config.value = data
+        config.value.loaded = true
 
         const menuStore = useMenuStore()
 
