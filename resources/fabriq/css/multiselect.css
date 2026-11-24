@@ -34,7 +34,7 @@
 }
 
 .multiselect-option {
-    @apply text-sm/none px-3 py-3 mx-1 rounded;
+    @apply text-sm/none px-3 py-3 rounded;
     --ms-option-bg-pointed: var(--color-gray-100);
     --ms-option-color-pointed: var(--color-gray-800);
     --ms-option-bg-selected: #fff;
@@ -70,7 +70,15 @@
 }
 
 .multiselect-dropdown {
-    @apply absolute w-full z-1000 border rounded overflow-y-auto shadow-md py-1 -bottom-1 min-w-max;
+    @apply w-full z-1000 max-h-72 border rounded shadow-lg min-w-max translate-y-1.5 overflow-clip;
+}
+
+.multiselect-options {
+    @apply overflow-y-auto scrollbar-thin p-1;
+}
+
+.multiselect-dropdown.is-top {
+    @apply -translate-y-1.5;
 }
 
 .multiselect-single-label {

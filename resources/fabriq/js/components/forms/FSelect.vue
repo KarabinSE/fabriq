@@ -25,6 +25,7 @@
             :create-option="mode === 'tags'"
             :on-create="createOption"
             :append-new-option="pushTags"
+            :append-to-body="true"
             @open="emit('open')"
         >
             <template #singlelabel="{ value: option }">
