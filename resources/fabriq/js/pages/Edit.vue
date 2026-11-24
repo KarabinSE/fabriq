@@ -93,118 +93,115 @@
                             </div>
                         </UiCard>
 
-                        <div>
-                            <div
-                                v-for="(fieldGroup, group) in filteredGroupedFields"
-                                :key="'g' + group"
+                        <div
+                            v-for="(fieldGroup, group) in filteredGroupedFields"
+                            :key="'g' + group"
+                        >
+                            <UiCard
+                                v-if="!repeaterKeys.includes(group)"
+                                :group="group"
+                                sync-groups
+                                collapsible
                             >
-                                <BlockList
-                                    v-if="repeaterKeys.includes(group)"
-                                    :key="'blocks-' + configStore.activeLocale"
-                                />
+                                <template #header>
+                                    <h3 class>
+                                        <span v-if="group === 'meta'">Meta-fält</span>
+                                        <span v-else-if="group === 'main_content'">Sidtypsegenskaper</span>
+                                        <span v-else>{{ group }}</span>
+                                    </h3>
+                                </template>
 
-                                <UiCard
-                                    v-else
-                                    :group="group"
-                                    sync-groups
-                                    collapsible
-                                >
-                                    <template #header>
-                                        <h3 class>
-                                            <span v-if="group === 'meta'">Meta-fält</span>
-                                            <span v-else-if="group === 'main_content'">Sidtypsegenskaper</span>
-                                            <span v-else>{{ group }}</span>
-                                        </h3>
-                                    </template>
-
-                                    <div class="grid grid-cols-12 gap-x-6">
-                                        <div
-                                            v-for="(field, fieldIndex) in fieldGroup"
-                                            :key="'f' + fieldIndex"
-                                            :class="[field.options ? field.options.classes : 'col-span-12']"
-                                        >
+                                <div class="grid grid-cols-12 gap-x-6">
+                                    <div
+                                        v-for="(field, fieldIndex) in fieldGroup"
+                                        :key="'f' + fieldIndex"
+                                        :class="[field.options ? field.options.classes : 'col-span-12']"
+                                    >
+                                        <FInput
+                                            v-if="field.type == 'text'"
+                                            v-model="pageStore.activeLocaleContent[field.key]"
+                                            :label="field.name"
+                                            :name="field.key"
+                                            class="mb-6"
+                                        />
+                                        <div v-else-if="field.type == 'textarea'">
                                             <FInput
-                                                v-if="field.type == 'text'"
+                                                v-model="pageStore.activeLocaleContent[field.key]"
+                                                :label="field.name"
+                                                class="mb-6"
+                                                :name="field.key"
+                                                textarea
+                                            />
+                                        </div>
+                                        <div
+                                            v-else-if="field.type == 'html'"
+                                            class="mb-6"
+                                        >
+                                            <FEditor
                                                 v-model="pageStore.activeLocaleContent[field.key]"
                                                 :label="field.name"
                                                 :name="field.key"
-                                                class="mb-6"
                                             />
-                                            <div v-else-if="field.type == 'textarea'">
-                                                <FInput
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    :label="field.name"
-                                                    class="mb-6"
-                                                    :name="field.key"
-                                                    textarea
-                                                />
+                                        </div>
+                                        <div
+                                            v-else-if="field.type == 'image'"
+                                            class="mb-6"
+                                        >
+                                            <FImageInput
+                                                v-model="pageStore.activeLocaleContent[field.key]"
+                                                :label="field.name"
+                                                :group="field.options.group"
+                                                :name="field.key"
+                                                :field-key="field.key"
+                                                :model-id="page.id"
+                                            />
+                                        </div>
+                                        <div
+                                            v-else-if="field.type == 'video'"
+                                            class="mb-6"
+                                        >
+                                            <FVideoInput
+                                                v-model="pageStore.activeLocaleContent[field.key]"
+                                                :label="field.name"
+                                                :name="field.key"
+                                                :group="field.options.group"
+                                                :field-key="field.key"
+                                                :model-id="page.id"
+                                            />
+                                        </div>
+                                        <div
+                                            v-else-if="field.type == 'button'"
+                                            class="mb-6"
+                                        >
+                                            <div>
+                                                <FLabel :name="field.key">
+                                                    Knapp
+                                                </FLabel>
                                             </div>
-                                            <div
-                                                v-else-if="field.type == 'html'"
-                                                class="mb-6"
+                                            <FButtonItem
+                                                v-model="pageStore.activeLocaleContent[field.key]"
+                                                class="col-span-12 lg:col-span-8"
+                                            />
+                                        </div>
+                                        <div
+                                            v-else-if="field.type == 'switch'"
+                                            class="mb-6"
+                                        >
+                                            <FSwitch
+                                                v-model="pageStore.activeLocaleContent[field.key]"
+                                                column-layout
                                             >
-                                                <FEditor
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    :label="field.name"
-                                                    :name="field.key"
-                                                />
-                                            </div>
-                                            <div
-                                                v-else-if="field.type == 'image'"
-                                                class="mb-6"
-                                            >
-                                                <FImageInput
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    :label="field.name"
-                                                    :group="field.options.group"
-                                                    :name="field.key"
-                                                    :field-key="field.key"
-                                                    :model-id="page.id"
-                                                />
-                                            </div>
-                                            <div
-                                                v-else-if="field.type == 'video'"
-                                                class="mb-6"
-                                            >
-                                                <FVideoInput
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    :label="field.name"
-                                                    :name="field.key"
-                                                    :group="field.options.group"
-                                                    :field-key="field.key"
-                                                    :model-id="page.id"
-                                                />
-                                            </div>
-                                            <div
-                                                v-else-if="field.type == 'button'"
-                                                class="mb-6"
-                                            >
-                                                <div>
-                                                    <FLabel :name="field.key">
-                                                        Knapp
-                                                    </FLabel>
-                                                </div>
-                                                <FButtonItem
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    class="col-span-12 lg:col-span-8"
-                                                />
-                                            </div>
-                                            <div
-                                                v-else-if="field.type == 'switch'"
-                                                class="mb-6"
-                                            >
-                                                <FSwitch
-                                                    v-model="pageStore.activeLocaleContent[field.key]"
-                                                    column-layout
-                                                >
-                                                    {{ field.name }}
-                                                </FSwitch>
-                                            </div>
+                                                {{ field.name }}
+                                            </FSwitch>
                                         </div>
                                     </div>
-                                </UiCard>
-                            </div>
+                                </div>
+                            </UiCard>
                         </div>
+
+                        <BlockList
+                            :key="'blocks-' + configStore.activeLocale"
+                        />
                     </div>
 
                     <div class="@4xl:sticky top-6 w-full @4xl:max-w-sm">
