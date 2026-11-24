@@ -96,11 +96,6 @@ defineOptions({
     name: 'FButtonList',
 })
 
-const buttons = defineModel({
-    type: Array,
-    default: () => [],
-})
-
 const emit = defineEmits(['update:model-value'])
 const props = defineProps({
     options: {
@@ -126,11 +121,11 @@ const props = defineProps({
     },
 })
 
-watchEffect(() => {
-    if(buttons.value === undefined) {
-        emit('update:model-value', [])
-    }
+const buttons = defineModel({
+    type: Array,
 })
+
+buttons.value ??= []
 
 const pages = ref([])
 const defaultOptions = reactive({

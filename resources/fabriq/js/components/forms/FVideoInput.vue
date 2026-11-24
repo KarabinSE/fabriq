@@ -150,8 +150,9 @@ const props = defineProps({
 
 const localVideo =  defineModel({
     type: Object,
-    default: null,
 })
+
+localVideo.value ??= null
 
 const instanceId =  Math.random().toString(20).substring(2, 6)
 const isDraggingOver =  ref(false)

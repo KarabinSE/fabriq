@@ -151,8 +151,9 @@ const props = defineProps({
 
 const localImage =  defineModel({
     type: Object,
-    default: null,
 })
+
+localImage.value ??= null
 
 const instanceId =  Math.random().toString(20).substring(2, 6)
 const isDraggingOver =  ref(false)

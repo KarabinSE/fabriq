@@ -122,7 +122,6 @@ defineOptions({
 })
 const model = defineModel({
     type: [Object, Array, String, Date, Number],
-    default: '',
     set(value) {
         if(props.warnOnPastDate){
             if(isToday(value)) {
@@ -137,6 +136,8 @@ const model = defineModel({
         return value
     },
 })
+
+model.value ??= ''
 
 const props = defineProps({
     isRange: {

@@ -50,7 +50,6 @@ const  props = defineProps({
 
 const media = defineModel({
     type: Object,
-    required: true,
 })
 
 media.value ??= new Media

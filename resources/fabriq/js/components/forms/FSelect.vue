@@ -96,9 +96,10 @@ defineOptions({
 })
 
 const model = defineModel({
-    type: [String, Number, Object, Array, Boolean],
+    type: [String, Number, Object, Array, Boolean, null],
 })
 
+model.value ??= null
 
 const emit = defineEmits(['open', 'update:model-value'])
 const props = defineProps({

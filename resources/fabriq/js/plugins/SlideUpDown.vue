@@ -15,12 +15,13 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount } from 'vue'
 
 const open = defineModel({
     type: Boolean,
-    default: false,
 })
+
+open.value ??= false
 
 const props = defineProps({
     disabled: {

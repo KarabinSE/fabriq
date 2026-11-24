@@ -66,6 +66,7 @@ const props = defineProps({
 
 const arrow = defineModel({
     type: String,
-    default: 'none',
 })
+
+arrow.value ??= 'none'
 </script>

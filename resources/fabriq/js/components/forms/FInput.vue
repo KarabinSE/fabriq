@@ -251,7 +251,6 @@ const props = defineProps({
 })
 const modelValue = defineModel({
     type: [String, Number, Object, Array, Boolean],
-    required: true,
 })
 
 modelValue.value ??= props.defaultValue ?? ''

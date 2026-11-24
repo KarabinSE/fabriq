@@ -65,8 +65,9 @@ const fabriq = useFabriq()
 
 const color = defineModel({
     type: String,
-    default: 'primary',
 })
+
+color.value ??= 'primary'
 
 function getColorOptions() {
     try {
