@@ -22,20 +22,18 @@
                 </div>
             </template>
         </UiSectionHeader>
-        <div class="min-h-[55px]">
-            <FTabs
-                v-if="Object.keys(locales).length > 0"
-                @change="setLanguage"
-            >
-                <FTab
-                    v-for="(locale, code) in locales"
-                    :key="code"
-                    :value-key="code"
-                    :title="locale.native"
-                    class="py-0!"
-                />
-            </FTabs>
-        </div>
+        <FTabs
+            v-if="Object.keys(locales).length > 0"
+            @change="setLanguage"
+        >
+            <FTab
+                v-for="(locale, code) in locales"
+                :key="code"
+                :value-key="code"
+                :title="locale.native"
+                class="py-0!"
+            />
+        </FTabs>
         <UiCard>
             <template #header>
                 <div class="flex justify-between flex-1">

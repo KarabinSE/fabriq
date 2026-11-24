@@ -39,20 +39,18 @@
             </UiSectionHeader>
 
             <div>
-                <div class="min-h-[55px]">
-                    <FTabs
-                        v-if="Object.keys(locales).length > 0"
-                        @change="setLanguage"
-                    >
-                        <FTab
-                            v-for="(locale, lIndex) in locales"
-                            :key="lIndex"
-                            :value-key="lIndex"
-                            :title="locale.native"
-                            class="py-0!"
-                        />
-                    </FTabs>
-                </div>
+                <FTabs
+                    v-if="Object.keys(locales).length > 0"
+                    @change="setLanguage"
+                >
+                    <FTab
+                        v-for="(locale, lIndex) in locales"
+                        :key="lIndex"
+                        :value-key="lIndex"
+                        :title="locale.native"
+                        class="py-0!"
+                    />
+                </FTabs>
 
                 <div class="relative flex flex-wrap-reverse items-end gap-10 @container">
                     <div class="flex-1">
