@@ -98,7 +98,13 @@
                                 v-for="(fieldGroup, group) in filteredGroupedFields"
                                 :key="'g' + group"
                             >
+                                <BlockList
+                                    v-if="repeaterKeys.includes(group)"
+                                    :key="'blocks-' + configStore.activeLocale"
+                                />
+
                                 <UiCard
+                                    v-else
                                     :group="group"
                                     sync-groups
                                     collapsible
@@ -198,10 +204,6 @@
                                     </div>
                                 </UiCard>
                             </div>
-
-                            <BlockList
-                                :key="'blocks-' + configStore.activeLocale"
-                            />
                         </div>
                     </div>
 
@@ -306,6 +308,7 @@ export default {
             paths: [],
             drag: false,
             showBlockTypeModal: false,
+            repeaterKeys: ['boxes'],
         }
     },
 
