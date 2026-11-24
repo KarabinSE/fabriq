@@ -12,7 +12,7 @@
             <button
                 class="px-4 py-2 text-xs cursor-pointer link fabriq-button btn-gold whitespace-nowrap"
                 type="button"
-                @click="pickerOpen = true"
+                @click="showMediaPicker"
             >
                 Välj fil
             </button>
@@ -52,12 +52,13 @@ import File from '@fabriq/models/File.js'
 import { useVfm } from 'vue-final-modal'
 import { useEventBus } from '@fabriq/services/eventBus'
 import FMediaPicker from '@fabriq/components/forms/FMediaPicker.vue'
+import { createModal } from '@fabriq/helpers/utils'
 
 export default {
     name: 'FFileInput',
 
     props: {
-        value: {
+        modelValue: {
             type: [String, Number, Object, Array],
             default: null,
         },
@@ -131,7 +132,7 @@ export default {
 
     },
 
-    emits: ['input', 'file-picked'],
+    emits: ['update:model-value', 'file-picked'],
 
     setup() {
         const eventBus = useEventBus()
@@ -180,7 +181,7 @@ export default {
         this.localFile = {
             ...this.value,
         }
-        this.$emit('input', this.localFile)
+        this.$emit('update:model-value', this.localFile)
     },
 
     mounted () {
@@ -194,7 +195,7 @@ export default {
 
     methods: {
         clearFile () {
-            this.$emit('input', null)
+            this.$emit('update:model-value', null)
             this.localFile = {
             }
             this.isDraggingOver = false
@@ -221,7 +222,6 @@ export default {
                 const { data } = await File.attachToModel(id, this.modelName, payload)
 
                 this.$emit('file-picked', data)
-                this.pickerOpen = false
             } catch (error) {
                 console.error(error)
             }
@@ -236,22 +236,21 @@ export default {
                 const { data } = await File.show(id, payload)
 
                 this.localFile = data
-                this.$emit('input', data)
+                this.$emit('update:model-value', data)
                 this.emitFileSelected()
-                this.pickerOpen = false
             } catch (error) {
                 console.error(error)
             }
         },
 
-        async handleNewFile (item) {
-            await this.pickFile(item.id)
+        handleNewFile (item) {
+            this.pickFile(item.id)
         },
 
         setFile (payload) {
             if (this.group === payload.group && this.randomRef !== payload.randomRef) {
                 this.localFile = payload.data
-                this.$emit('input', payload.data)
+                this.$emit('update:model-value', payload.data)
             }
         },
 

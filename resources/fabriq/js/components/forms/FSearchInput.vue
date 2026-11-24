@@ -1,8 +1,7 @@
 <template>
     <input
+        v-model="localValue"
         type="search"
-        :value="modelValue"
-        @input="updateValue($event.target.modelValue)"
         @keydown.esc="clearValue"
     >
 </template>
@@ -20,16 +19,22 @@ export default {
         },
     },
 
-    emits: ['input', 'perform-search', 'clear-search'],
+    emits: ['update:model-value', 'perform-search', 'clear-search'],
 
-    data () {
-        return {
-            search: '',
-        }
+    computed: {
+        localValue: {
+            get() {
+                return this.modelValue
+            },
+
+            set(value) {
+                this.$emit('update:model-value', value)
+            },
+        },
     },
 
     watch: {
-        search: debounce(function (newValue) {
+        localValue: debounce(function (newValue) {
             this.$emit('perform-search')
         }, 250),
     },
@@ -37,13 +42,7 @@ export default {
     methods: {
         clearValue () {
             this.$emit('clear-search')
-            this.$emit('input', '')
-        },
-
-        updateValue (value) {
-            console.log('updating')
-            this.search = value
-            this.$emit('input', value)
+            this.localValue = ''
         },
     },
 

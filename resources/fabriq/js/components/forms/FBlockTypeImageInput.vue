@@ -78,7 +78,7 @@ export default {
     name: 'FImageInput',
 
     props: {
-        value: {
+        modelValue: {
             type: [File],
             default: null,
         },
@@ -99,7 +99,7 @@ export default {
         },
     },
 
-    emits: ['input'],
+    emits: ['update:model-value'],
 
     data () {
         return {
@@ -151,7 +151,7 @@ export default {
 
             window.URL.revokeObjectURL(this.selectedFilePreview)
             this.selectedFilePreview = null
-            this.$emit('input', null)
+            this.$emit('update:model-value', null)
         },
 
         onImageSelected(file) {
@@ -160,7 +160,7 @@ export default {
             }
 
             this.selectedFilePreview = window.URL.createObjectURL(file)
-            this.$emit('input', file)
+            this.$emit('update:model-value', file)
         },
     },
 }

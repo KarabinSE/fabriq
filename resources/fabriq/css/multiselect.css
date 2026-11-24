@@ -8,7 +8,6 @@
     --ms-border-color: transparent;
     --ms-border-color-active: transparent;
 
-    --ms-ring-width: 0;
     --ms-px: 1rem;
     --ms-py: 0.5rem;
     --ms-font-size: .875rem;
@@ -27,10 +26,8 @@
                 background-color .2s ease-out,
                 border-color .2s ease-out,
                 box-shadow .2s ease-out;
-}
 
-.multiselect-wrapper {
-    @apply min-h-10;
+    @apply ring-0 border border-gray-300 min-h-10 hover:border-gray-400;
 }
 
 .multiselect-option {
@@ -48,11 +45,11 @@
 }
 
 .multiselect.is-active {
-    box-shadow: 0 0 0 1px var(--color-gray-800);
+    @apply ring-0 border border-gray-800;
 }
 
 .multiselect.is-disabled {
-    background-color: var(--color-gray-100);
+    @apply cursor-not-allowed bg-gray-100;
 }
 
 .fabriq-multiselect-caret {

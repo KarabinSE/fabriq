@@ -74,7 +74,7 @@ export default {
     name: 'FFileList',
 
     props: {
-        value: {
+        modelValue: {
             type: Array,
             default: () => [],
         },
@@ -109,7 +109,7 @@ export default {
         },
     },
 
-    emits: ['input'],
+    emits: ['update:model-value'],
 
     data () {
         return {
@@ -141,7 +141,7 @@ export default {
 
     created () {
         if (!this.value) {
-            this.$emit('input', this.files)
+            this.$emit('update:model-value', this.files)
         }
 
         this.files = this.value
@@ -158,7 +158,7 @@ export default {
                     id: 0,
                 },
             })
-            this.$emit('input', this.files)
+            this.$emit('update:model-value', this.files)
 
             // this.fetchPages()
             // this.fetchTree()

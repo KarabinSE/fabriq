@@ -28,7 +28,7 @@ export default {
             default: '',
         },
 
-        value: {
+        modelValue: {
             type: [String, Array, Object, Boolean, Number],
             default: '',
         },
@@ -45,33 +45,17 @@ export default {
 
     },
 
-    emits: ['input'],
-
-    data() {
-        return {
-            newValue: this.value,
-        }
-    },
+    emits: ['update:model-value'],
 
     computed: {
         computedValue: {
             get() {
-                return this.newValue
+                return this.modelValue
             },
 
             set(value) {
-                this.newValue = value
-                this.$emit('input', value)
+                this.$emit('update:model-value', value)
             },
-        },
-    },
-
-    watch: {
-        /**
-        * When v-model change, set internal value.
-        */
-        value(value) {
-            this.newValue = value
         },
     },
 }

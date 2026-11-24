@@ -48,13 +48,13 @@
                     class="col-span-4 xl:col-span-3"
                     :disabled="disabled"
                     name="linkType"
+                    value-key="value"
                     :options="linkTypeOptions"
                     label="Länktyp"
                 />
                 <FInput
                     v-if="localButton.linkType === 'external'"
                     v-model="localButton.url"
-                    class="h-18"
                     :disabled="disabled"
                     label="Länk"
                     placeholder="https://exempel.se eller /min-sida"
@@ -62,7 +62,6 @@
                 <FSelect
                     v-if="localButton.linkType === 'internal'"
                     v-model="localButton.page_id"
-                    class="h-18"
                     value-key="id"
                     label="Sida"
                     :options="localPages"
@@ -85,7 +84,6 @@
                 <FFileInput
                     v-if="localButton.linkType === 'file'"
                     v-model="localButton.file"
-                    class="h-18"
                     :disabled="disabled"
                     label="Fil"
                 />
@@ -147,7 +145,7 @@ const props = defineProps({
     },
 })
 
-const localButton = ref(structuredClone(toRaw(props.button ?? new Button)))
+const localButton = ref(structuredClone(toRaw(props.button) ?? new Button))
 const localPages = ref([])
 
 function saveButton () {

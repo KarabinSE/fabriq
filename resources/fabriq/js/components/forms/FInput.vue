@@ -35,8 +35,9 @@
                     :name="id + name"
                     type="radio"
                     :checked="radioOption.value == modelValue"
+                    :value="radioOption[valueKey] ?? radioOption"
                     :class="inputClasses"
-                    :disabled="disabled"
+                    :disabled
                     class="size-5 fabriq-radio form-radio focus:outline-none focus:ring-offset-3 focus:border focus:ring-royal-300"
                 >
 
@@ -61,7 +62,7 @@
             ref="textarea"
             v-model="modelValue"
             :class="$attrs.class"
-            :disabled="disabled"
+            :disabled
             :name="name"
             :placeholder="placeholder"
             :readonly="readOnly"
@@ -100,7 +101,7 @@
                         ? 'bg-gray-100 text-gray-600 cursor-not-allowed'
                         : 'text-gray-800'
                 ]"
-                :disabled="disabled"
+                :disabled
                 :min="min"
                 :name="name"
                 :placeholder="placeholder"
@@ -132,18 +133,6 @@ import { useId } from 'vue'
 defineOptions({
     name: 'FInput',
     inheritAttrs: false,
-})
-
-const emits = defineEmits(['update:model-value'])
-const modelValue = defineModel({
-    type: [String, Number, Object, Array, Boolean],
-    default: '',
-})
-
-watchEffect(() => {
-    if(modelValue.value === undefined) {
-        emits('update:model-value', props.defaultValue)
-    }
 })
 
 const props = defineProps({
@@ -255,7 +244,18 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    valueKey: {
+        type: String,
+        default: undefined,
+    },
 })
+const modelValue = defineModel({
+    type: [String, Number, Object, Array, Boolean],
+    required: true,
+})
+
+modelValue.value ??= props.defaultValue ?? ''
+
 
 const id = useId()
 const slots = useSlots()

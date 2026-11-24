@@ -264,7 +264,7 @@ function pickItem (id) {
 async function fetchImages () {
     try {
         const payload = {
-            params: queryParams,
+            params: queryParams.value,
         }
         const { data, meta } = await Image.index(payload)
 
@@ -278,7 +278,7 @@ async function fetchImages () {
 async function fetchVideos () {
     try {
         const payload = {
-            params: queryParams,
+            params: queryParams.value,
         }
         const { data, meta } = await Video.index(payload)
 
@@ -292,7 +292,7 @@ async function fetchVideos () {
 async function fetchFiles () {
     try {
         const payload = {
-            params: queryParams,
+            params: queryParams.value,
         }
         const { data, meta } = await File.index(payload)
 
