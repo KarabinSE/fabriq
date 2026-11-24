@@ -10,6 +10,7 @@
         <Multiselect
             :id="name"
             v-model="model"
+            v-bind="$attrs"
             :options="options"
             :value-prop="valueKey"
             :object="object"
@@ -102,7 +103,7 @@ const model = defineModel({
 const emit = defineEmits(['open', 'update:model-value'])
 const props = defineProps({
     options: {
-        type: Array,
+        type: [Array, Function],
         required: false,
         default: () => [],
     },
